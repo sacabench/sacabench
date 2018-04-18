@@ -8,11 +8,11 @@
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-project(dsss)
+project(sacabench)
 
 # set(CMAKE_CXX_STANDARD 17)
 # set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# Not so noce C++17 integration, as CMake version >= 3.8 is not available here
+# Not so nice C++17 integration, as CMake version >= 3.8 is not available here
 set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
 
 if(NOT CMAKE_BUILD_TYPE)
