@@ -1,5 +1,5 @@
 /*******************************************************************************
- * util/sort.hpp
+ * bench/string.hpp
  *
  * Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
  *
@@ -8,17 +8,9 @@
 
 #pragma once
 
-#include <algorithm>
-
 #include "util/container.hpp"
 
-namespace sacabench::util {
-
-template <typename T, typename Compare>
-void sort(container_t<T>& data, Compare comp) {
-  std::sort(std::begin(data), std::end(data), comp);
-}
-
-} // namespace sacabench::util
+using char_t = unsigned char;
+using string_t = container_t<char_t>;
 
 /******************************************************************************/

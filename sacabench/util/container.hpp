@@ -1,5 +1,5 @@
 /*******************************************************************************
- * util/sort.hpp
+ * bench/container.hpp
  *
  * Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
  *
@@ -8,17 +8,9 @@
 
 #pragma once
 
-#include <algorithm>
+#include <vector>
 
-#include "util/container.hpp"
-
-namespace sacabench::util {
-
-template <typename T, typename Compare>
-void sort(container_t<T>& data, Compare comp) {
-  std::sort(std::begin(data), std::end(data), comp);
-}
-
-} // namespace sacabench::util
+template <typename T>
+using container_t = std::vector<T>;
 
 /******************************************************************************/
