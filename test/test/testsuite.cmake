@@ -1,3 +1,11 @@
+################################################################################
+# test/test/testsuite.cmake
+#
+# Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
+#
+# All rights reserved. Published under the BSD-3 license in the LICENSE file.
+################################################################################
+
 # Custom test target to run the googletest tests
 add_custom_target(check)
 add_custom_command(
