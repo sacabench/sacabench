@@ -29,11 +29,11 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif(NOT CMAKE_BUILD_TYPE)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmakemodules")
-
-include(git_submodule_subdirectories)
+# Add custom cmake extensions
+include(cmakemodules/git_submodule_subdirectories.cmake)
 
 git_submodule_subdirectory(external/gtest)
 add_subdirectory(sacabench)
+add_subdirectory(test)
 
 ################################################################################
