@@ -56,7 +56,6 @@ macro(generic_run_test test_target test_file
         ${test_file}
     )
     target_link_libraries(${test_target}_testrunner
-        glog
         ${driver_dep}
         ${TEST_TARGET_DEPS}
     )
