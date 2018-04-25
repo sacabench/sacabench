@@ -1,5 +1,8 @@
 #pragma once
 #include <cstdint>
+#include <vector>
+#include <memory>
+#include <array>
 
 template < typename T >
 class span_t;
@@ -21,6 +24,14 @@ public:
     }
 
     inline constexpr span_t(T* ptr, size_t size) : m_ptr(ptr), m_size(size)
+    {
+    }
+
+    inline constexpr span_t(std::vector<T>& x) : span_t(x.data(), x.size())
+    {
+    }
+
+    inline constexpr span_t(std::vector<T> const& x) : span_t(x.data(), x.size())
     {
     }
 

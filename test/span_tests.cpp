@@ -12,7 +12,7 @@
 // VERY quick and dirty tests that the code for span compiles
 
 template < typename T >
-void test_const_abstract_span(T& m)
+void test_const_abstract_span(T const& m)
 {
     auto f = [&](auto&& m) {
         m.begin();
@@ -31,7 +31,7 @@ void test_const_abstract_span(T& m)
 }
 
 template < typename T >
-void test_abstract_span(T& m)
+void test_abstract_span(T const& m)
 {
     test_const_abstract_span(m);
     m.fill();
@@ -39,11 +39,17 @@ void test_abstract_span(T& m)
 
 void test_string_span()
 {
-    string_span_t s = "hello"_s;
-    test_const_abstract_span(s);
 }
 
 TEST(Span, test1) {
+    string_span_t s = "hello"_s;
+    test_const_abstract_span(s);
+
+    std::vector<uint8_t> data = { 0, 1, 2 };
+    span_t<uint8_t> v;
+    test_const_abstract_span(v);
+    test_abstract_span(v);
+
     /* implement your quick tests here! */
     ASSERT_TRUE(true);
 }
