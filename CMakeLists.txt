@@ -6,8 +6,12 @@
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
 ################################################################################
 
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
+  message(FATAL_ERROR "In-source builds are not allowed. "
+    "Create a sub-directory and call cmake ..")
+endif()
 
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 project(sacabench)
 
 # Compile all code with ccache, if it exists in the system
