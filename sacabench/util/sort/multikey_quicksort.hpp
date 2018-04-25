@@ -3,6 +3,7 @@
 #include <inttypes>
 
 namespace util {
+namespace sort {
     // Sort the suffix indices in array by comparing one character in
     // input_text.
     void multikey_quicksort(span<index_t>& array, const input_t& input_text);
@@ -19,4 +20,5 @@ namespace util {
         // A reference to the input text.
         input_t& input_text;
     }
+}
 }
