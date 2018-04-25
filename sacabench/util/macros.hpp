@@ -20,26 +20,17 @@ namespace util {
 // __attribute__ ((packed))
 
 #if defined(__GNUC__) || defined(__clang__)
-#define TLX_ATTRIBUTE_PACKED __attribute__ ((packed))
+#define SB_ATTRIBUTE_PACKED __attribute__ ((packed))
 #else
-#define TLX_ATTRIBUTE_PACKED
+#define SB_ATTRIBUTE_PACKED
 #endif
 
-//! \}
-
-} // namespace tlx
-
-namespace tlx {
-
-//! \addtogroup tlx_define
-//! \{
-
 #if defined(__GNUC__) || defined(__clang__)
-#define TLX_LIKELY(c)   __builtin_expect((c), 1)
-#define TLX_UNLIKELY(c) __builtin_expect((c), 0)
+#define SB_LIKELY(c)   __builtin_expect((c), 1)
+#define SB_UNLIKELY(c) __builtin_expect((c), 0)
 #else
-#define TLX_LIKELY(c)   c
-#define TLX_UNLIKELY(c) c
+#define SB_LIKELY(c)   c
+#define SB_UNLIKELY(c) c
 #endif
 
 //! \}
