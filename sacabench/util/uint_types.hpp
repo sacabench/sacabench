@@ -13,46 +13,14 @@
 
 #pragma once
 
-#include <thrill/common/defines.hpp>
-#include <tlx/define/attribute_packed.hpp>
-#include <tlx/define/likely.hpp>
+// Includes TLX_LIKELY, TLX_UNLIKELY and TLX_ATTRIBUTE_PACKED.
+#include "macros.hpp"
 
 #include <type_traits>
 
 #include <cassert>
 #include <limits>
 #include <ostream>
-
-// From thrill/common/defines.hpp
-
-#ifndef THRILL_HAVE_THREAD_SANITIZER
-
-#if defined(__has_feature)
-
-// this works with clang
-#if __has_feature(thread_sanitizer)
-#define THRILL_HAVE_THREAD_SANITIZER 1
-#else
-#define THRILL_HAVE_THREAD_SANITIZER 0
-#endif
-
-#else
-
-// gcc's sanitizers cannot be detected?
-#define THRILL_HAVE_THREAD_SANITIZER 0
-
-#endif
-
-#endif  // THRILL_HAVE_THREAD_SANITIZER
-
-#if defined(__GLIBCXX__)
-template <typename T>
-struct is_trivially_copyable
-    : std::integral_constant<bool, __has_trivial_copy(T)>{ };  // NOLINT
-#else // GLIBCXX work-around
-template <typename T>
-using is_trivially_copyable = std::is_trivially_copyable<T>;
-#endif
 
 namespace util {
 
@@ -303,10 +271,10 @@ namespace std {
 
 //! template class providing some numeric_limits fields for UIntPair types.
 template <typename HighType>
-class numeric_limits<thrill::common::UIntPair<HighType> >
+class numeric_limits<util::UIntPair<HighType> >
 {
 public:
-    using UIntPair = thrill::common::UIntPair<HighType>;
+    using UIntPair = util::UIntPair<HighType>;
 
     //! yes we have information about UIntPair
     static const bool is_specialized = true;
@@ -363,7 +331,3 @@ public:
 };
 
 } // namespace std
-
-#endif // !THRILL_COMMON_UINT_TYPES_HEADER
-
-/******************************************************************************/
