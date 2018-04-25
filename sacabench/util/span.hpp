@@ -5,13 +5,13 @@
 #include <array>
 
 template < typename T >
-class span_t;
+class span;
 
-using string_span_t = span_t< char const >;
+using string_span = span< char const >;
 
 // Inspired by the span type in https://github.com/Microsoft/GSL
 template < typename T >
-class span_t {
+class span {
 private:
     T* m_ptr;
     size_t m_size;
@@ -19,19 +19,19 @@ private:
 public:
     static constexpr size_t npos = -1ll;
 
-    inline constexpr span_t() : m_ptr((T*)""), m_size(0)
+    inline constexpr span() : m_ptr((T*)""), m_size(0)
     {
     }
 
-    inline constexpr span_t(T* ptr, size_t size) : m_ptr(ptr), m_size(size)
+    inline constexpr span(T* ptr, size_t size) : m_ptr(ptr), m_size(size)
     {
     }
 
-    inline constexpr span_t(std::vector<T>& x) : span_t(x.data(), x.size())
+    inline constexpr span(std::vector<T>& x) : span(x.data(), x.size())
     {
     }
 
-    inline constexpr span_t(std::vector<T> const& x) : span_t(x.data(), x.size())
+    inline constexpr span(std::vector<T> const& x) : span(x.data(), x.size())
     {
     }
 
@@ -97,23 +97,23 @@ public:
         }
     }
 
-    inline constexpr operator span_t< T const >() const
+    inline constexpr operator span< T const >() const
     {
-        return span_t< T const >(data(), size());
+        return span< T const >(data(), size());
     }
 
-    inline constexpr span_t< T > slice(size_t from = 0, size_t to = npos) const
+    inline constexpr span< T > slice(size_t from = 0, size_t to = npos) const
     {
         if (to == npos) {
             to = size();
         }
         // TODO debug_assert(0 <= from && from <= to && to <= size(), "Call of slice() with out-of bound values"_s);
-        return span_t< T >(data() + from, to - from);
+        return span< T >(data() + from, to - from);
     }
 };
 
-inline constexpr string_span_t operator"" _s(
+inline constexpr string_span operator"" _s(
     char const* ptr, unsigned long length)
 {
-    return string_span_t(ptr, length);
+    return string_span(ptr, length);
 }

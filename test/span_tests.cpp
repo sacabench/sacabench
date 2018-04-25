@@ -42,11 +42,11 @@ void test_string_span()
 }
 
 TEST(Span, test1) {
-    string_span_t s = "hello"_s;
+    string_span s = "hello"_s;
     test_const_abstract_span(s);
 
     std::vector<uint8_t> data = { 0, 1, 2 };
-    span_t<uint8_t> v;
+    span<uint8_t> v;
     test_const_abstract_span(v);
     test_abstract_span(v);
 
