@@ -14,7 +14,7 @@ namespace util {
         uint32_t depth;
 
         // 0 if equal, -1 if the first is smaller, 1 if the first is larger.
-        int compare(const index_t&, const index_t&);
+        int compare(const index_t&, const index_t&) const noexcept;
     private:
         // A reference to the input text.
         input_t& input_text;
