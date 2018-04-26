@@ -1,5 +1,5 @@
 /*******************************************************************************
- * test/example_tests.cpp
+ * test/span_tests.cpp
  *
  * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
  *
