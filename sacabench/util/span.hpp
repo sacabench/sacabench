@@ -13,10 +13,12 @@
 #include <memory>
 #include <array>
 
+#include <util/string.hpp>
+
 template < typename T >
 class span;
 
-using string_span = span< char const >;
+using string_span = span< character const >;
 
 // Inspired by the span type in https://github.com/Microsoft/GSL
 template < typename T >
@@ -107,5 +109,5 @@ public:
 
 inline constexpr string_span operator"" _s(
     char const* ptr, unsigned long length) {
-    return string_span(ptr, length);
+    return string_span(reinterpret_cast<character const*>(ptr), length);
 }
