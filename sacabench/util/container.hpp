@@ -11,6 +11,6 @@
 #include <vector>
 
 template <typename T>
-using container_t = std::vector<T>;
+using container = std::vector<T>;
 
 /******************************************************************************/
