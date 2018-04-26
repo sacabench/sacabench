@@ -1,6 +1,6 @@
-void util::sort::multikey_quicksort(span<index_t>& array, const input_t& input_text) {
+void util::sort::multikey_quicksort(span<index_type> array, const input_type& input_text) {
     // Begin with first character.
-    uint32_t depth = 0;
+    index_type depth = 0;
 
     // Generate key function which compares only the character at position depth.
     auto key_func = generate_multikey_key_function(input_text, depth);
@@ -9,13 +9,13 @@ void util::sort::multikey_quicksort(span<index_t>& array, const input_t& input_t
     multikey_quicksort_internal(array, key_func, depth);
 }
 
-void util::sort::multikey_quicksort_internal(span<index_t>& array,
+void util::sort::multikey_quicksort_internal(span<index_type> array,
         util::sort::multikey_quicksort::compare_one_character_at_depth& key_func) {
     // If the set size is only one element, we don't need to sort.
     if(array.size() < 2) { return; }
 
     // FIXME: Choose a simple pivot element.
-    const T& pivot_element = array[0];
+    const index_type& pivot_element = array[0];
 
     // Swap elements using ternary quicksort partitioning.
     auto bounds = util::sort::ternary_quicksort::partition(array, key_func, pivot);
