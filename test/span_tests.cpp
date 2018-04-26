@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <util/span.hpp>
+#include <util/string.hpp>
 
 // VERY quick and dirty tests that the code for span compiles
 
