@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (C) 2018 Marvin Böcker <marvin.boecker@udo.edu>
+ * Copyright (C) 2018 Oliver Magiera <oliver.magiera@tu-dortmund.de>
+ *
+ * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ ******************************************************************************/
+
 void util::sort::multikey_quicksort(span<index_type> array, const input_type& input_text) {
     // Begin with first character.
     index_type depth = 0;
