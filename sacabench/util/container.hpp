@@ -10,17 +10,19 @@
 
 #include <vector>
 
-template <typename element_type>
-using container = std::vector<element_type>;
+namespace sacabench::util {
+    template <typename element_type>
+    using container = std::vector<element_type>;
 
-/**\brief Creates a container with space for exactly for `size` elements.
- */
-template <typename element_type>
-container<element_type> make_container(size_t size) {
-    container<element_type> r;
-    r.reserve(size);
-    r.resize(size);
-    return r;
+    /**\brief Creates a container with space for exactly for `size` elements.
+    */
+    template <typename element_type>
+    container<element_type> make_container(size_t size) {
+        container<element_type> r;
+        r.reserve(size);
+        r.resize(size);
+        return r;
+    }
 }
 
 /******************************************************************************/

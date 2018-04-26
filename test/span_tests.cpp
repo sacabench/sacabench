@@ -10,6 +10,8 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
+using namespace sacabench::util;
+
 // VERY quick and dirty tests that the code for span compiles
 
 template < typename T >

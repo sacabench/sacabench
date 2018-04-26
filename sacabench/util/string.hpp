@@ -10,13 +10,17 @@
 
 #include "util/container.hpp"
 
-using character = unsigned char;
-using string = container<character>;
+namespace sacabench::util {
+    using character = unsigned char;
+    using string = container<character>;
 
-using string_span = span< character const >;
-inline constexpr string_span operator"" _s(
+    using string_span = span< character const >;
+}
+
+inline constexpr sacabench::util::string_span operator"" _s(
     char const* ptr, unsigned long length) {
-    return string_span(reinterpret_cast<character const*>(ptr), length);
+    using namespace sacabench::util;
+    return string_span((character const*)(ptr), length);
 }
 
 /******************************************************************************/
