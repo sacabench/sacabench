@@ -13,20 +13,15 @@
 
 template < typename T >
 void test_const_abstract_span(T const& m) {
-    auto f = [&](auto&& m) {
-        m.begin();
-        m.end();
-        m.size();
-        m.empty();
-        m[0];
-        m.at(0);
-        m.front();
-        m.back();
-        m.data();
-    };
-
-    f(m);
-    f(static_cast< T const& >(m));
+    m.begin();
+    m.end();
+    m.size();
+    m.empty();
+    m[0];
+    m.at(0);
+    m.front();
+    m.back();
+    m.data();
 }
 
 template < typename T >
