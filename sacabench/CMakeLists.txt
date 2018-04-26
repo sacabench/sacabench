@@ -24,10 +24,6 @@ target_link_libraries(sacabench
   saca_bench_lib
 )
 
-set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra")
-set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb")
-set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native")
-
 target_compile_options(sacabench PUBLIC
   ${SACA_BENCH_FLAGS}
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>

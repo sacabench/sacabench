@@ -33,6 +33,10 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif(NOT CMAKE_BUILD_TYPE)
 
+set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra;-Werror=return-type")
+set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb")
+set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native")
+
 # Add custom cmake extensions
 include(cmakemodules/git_submodule_subdirectories.cmake)
 
