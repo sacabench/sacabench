@@ -12,7 +12,7 @@ void util::sort::multikey_quicksort(span<index_t>& array, const input_t& input_t
 void util::sort::multikey_quicksort_internal(span<index_t>& array,
         util::sort::multikey_quicksort::compare_one_character_at_depth& key_func) {
     // If the set size is only one element, we don't need to sort.
-    if(array.size() < 2) return;
+    if(array.size() < 2) { return; }
 
     // FIXME: Choose a simple pivot element.
     const T& pivot_element = array[0];
