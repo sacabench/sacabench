@@ -12,8 +12,7 @@
 // VERY quick and dirty tests that the code for span compiles
 
 template < typename T >
-void test_const_abstract_span(T const& m)
-{
+void test_const_abstract_span(T const& m) {
     auto f = [&](auto&& m) {
         m.begin();
         m.end();
@@ -31,14 +30,12 @@ void test_const_abstract_span(T const& m)
 }
 
 template < typename T >
-void test_abstract_span(T const& m)
-{
+void test_abstract_span(T const& m) {
     test_const_abstract_span(m);
     m.fill();
 }
 
-void test_string_span()
-{
+void test_string_span() {
 }
 
 TEST(Span, test1) {
