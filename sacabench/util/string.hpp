@@ -13,4 +13,10 @@
 using character = unsigned char;
 using string = container<character>;
 
+using string_span = span< character const >;
+inline constexpr string_span operator"" _s(
+    char const* ptr, unsigned long length) {
+    return string_span(reinterpret_cast<character const*>(ptr), length);
+}
+
 /******************************************************************************/
