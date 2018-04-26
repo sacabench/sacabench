@@ -14,10 +14,10 @@
 
 namespace sacabench::util {
 
-template <typename T, typename Compare>
-void sort(container_t<T>& data, Compare comp) {
-  std::sort(std::begin(data), std::end(data), comp);
-}
+    template <typename T, typename Compare>
+        void sort(container<T>& data, Compare comp) {
+            std::sort(std::begin(data), std::end(data), comp);
+        }
 
 } // namespace sacabench::util
 
