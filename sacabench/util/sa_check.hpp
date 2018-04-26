@@ -49,23 +49,21 @@ namespace sacabench::util {
         cases value;
     };
 
-    template <typename sa_type>
-    sa_check_result sa_check(sa_type const& sa, string_span text) {
-        using sa_item = typename sa_type::value_type;
-
+    template <typename sa_index_type>
+    sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
         if (sa.size() != text.size()) {
             return sa_check_result::wrong_length;
         }
-        size_t N = text.size();
+        size_t const N = text.size();
 
         struct pair {
-            sa_item text_pos;
-            sa_item sa_pos;
+            sa_index_type text_pos;
+            sa_index_type sa_pos;
         };
         auto P = make_container<pair>(N);
 
         for(size_t i = 0; i < N; ++i) {
-            P[i] = pair { sa[i], i + 1 }; // TODO: i could exceed valid range of sa_item
+            P[i] = pair { sa[i], i + 1 }; // TODO: i could exceed valid range of sa_index_type
         }
 
         sort(P, [](auto const& lhs, auto const& rhs) {
@@ -79,15 +77,15 @@ namespace sacabench::util {
         }
 
         struct tripple {
-            sa_item sa_pos;
+            sa_index_type sa_pos;
             character chr;
-            sa_item sa_pos_2;
+            sa_index_type sa_pos_2;
         };
         auto S = make_container<tripple>(N);
 
         for(size_t i = 0; i < N; ++i) {
-            sa_item r1 = P[i].sa_pos;
-            sa_item r2;
+            sa_index_type r1 = P[i].sa_pos;
+            sa_index_type r2;
             if (i + 1 < N) {
                 r2 = P[i + 1].sa_pos;
             } else {
