@@ -10,7 +10,7 @@
 
 #include "util/container.hpp"
 
-using char_t = unsigned char;
-using string_t = container_t<char_t>;
+using character = unsigned char;
+using string = container<character>;
 
 /******************************************************************************/

@@ -11,13 +11,13 @@
 #include "util/saca.hpp"
 
 std::int32_t main(std::int32_t /*argc*/, char const** /*argv*/) {
-  
-  auto& saca_list = saca_list::get();
-  for (const auto& a : saca_list) {
-    a->run_example();
-  }
 
-  return 0;
+    auto& saca_list = saca_list::get();
+    for (const auto& a : saca_list) {
+        a->run_example();
+    }
+
+    return 0;
 }
 
 /******************************************************************************/
