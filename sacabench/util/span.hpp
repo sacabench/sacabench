@@ -32,9 +32,6 @@ public:
     inline constexpr span(std::vector<T>& x) : span(x.data(), x.size()) {
     }
 
-    inline constexpr span(std::vector<T> const& x) : span(x.data(), x.size()) {
-    }
-
     // Iterators
     inline constexpr T* begin() const noexcept {
         return data();

@@ -10,6 +10,8 @@
 #include <util/span.hpp>
 #include <util/container.hpp>
 
+using namespace sacabench::util;
+
 TEST(Container, construct_empty) {
     container<uint8_t> c;
 }
