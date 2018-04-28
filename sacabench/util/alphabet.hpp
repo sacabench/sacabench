@@ -51,7 +51,6 @@ struct alphabet {
  * specified mapping in the given effective alphabet. Note that the
  * transformation relies on the correctness of the alphabet map.
  */
-//void apply_effective_alphabet(string& input, const alphabet& alphabet_map);
 void apply_effective_alphabet(string& input, const alphabet& alphabet_map) {
     // Map the characters using the new effective alphabet
     for (character& c : input) {
