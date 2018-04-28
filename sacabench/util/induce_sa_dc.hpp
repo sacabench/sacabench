@@ -8,7 +8,7 @@
  ******************************************************************************/
 #include <tuple>
 #include <array>
-#include <iostream>
+
 #pragma once
 
 namespace sacabench::util {
@@ -27,14 +27,14 @@ namespace sacabench::util {
   * with information of ranks of triplets starting in position i mod 3 != 0 of input string.
   * This method works correct because of the difference cover idea.
   */
-  void induce_sa_dc(T& input, I& isa12, S& sa0) {
+  void induce_sa_dc(T& input, I& isa_12, S& sa_0) {
     
-    static_assert(sa0.size() > 0, "Suffix Array has to be initialised.");
+    static_assert(sa_0.size() > 0, "Suffix Array has to be initialised.");
     
-    std::array<std::tuple<C,int>, sa0.size()> sa0_to_be_sorted;
+    std::array<std::tuple<C,int>, sa_0.size()> sa0_to_be_sorted;
     
     for(int i = 0; i < sa0.size(); i++) {
-      sa0_to_be_sorted[i] = std::tuple(input[3*i], isa12[i]);
+      sa0_to_be_sorted[i] = std::tuple(input[3*i], isa_12[i]);
     }  
     
     //TODO: sort Tupels with radix_sort
