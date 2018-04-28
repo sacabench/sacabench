@@ -9,6 +9,7 @@
 #pragma once
 
 #include "util/container.hpp"
+#include "util/span.hpp"
 
 using character = unsigned char;
 using string = container<character>;
