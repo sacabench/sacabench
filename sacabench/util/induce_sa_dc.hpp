@@ -29,12 +29,12 @@ namespace sacabench::util {
     */
     void induce_sa_dc(T& t_0, I& isa_12, S& sa_0) {
 
-        static_assert(sa_0.size() > 0, "Suffix Array has to be initialised.");
+        static_assert(sa_0.size() == t_0.size(), "sa_0 must be initialised and must have the same length as t_0.");
     
-        //init array of tuples 
+        //init array of tuples
         std::array<std::tuple<C,int>, sa_0.size()> sa0_to_be_sorted;
     
-        for(int i = 0; i < sa0.size(); i++) {
+        for(int i = 0; i < sa_0.size(); i++) {
             sa0_to_be_sorted[i] = std::tuple(t_0[i], isa_12[i]);
         }  
     
