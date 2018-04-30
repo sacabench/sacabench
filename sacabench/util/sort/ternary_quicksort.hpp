@@ -20,12 +20,12 @@ namespace ternary_quicksort {
 //
 template <typename content>
 content min(key_func_type<content> cmp, const content &a, const content &b) {
-  return (cmp(a, b) < 0 ? a : b);
+    return (cmp(a, b) < 0 ? a : b);
 }
 
 template <typename content>
 content max(key_func_type<content> cmp, const content &a, const content &b) {
-  return (cmp(a, b) < 0 ? b : a);
+    return (cmp(a, b) < 0 ? b : a);
 }
 
 /**\brief Returns pseudo-median according to three values
@@ -37,12 +37,12 @@ content max(key_func_type<content> cmp, const content &a, const content &b) {
  */
 template <typename content>
 size_t median_of_three(span<content> array, key_func_type<content> cmp) {
-  size_t first = array[0];
-  size_t middle = array[(array.size() - 1) / 2];
-  size_t last = array[array.size() - 1];
+    size_t first = array[0];
+    size_t middle = array[(array.size() - 1) / 2];
+    size_t last = array[array.size() - 1];
 
-  return max(cmp, min(cmp, first, middle),
-             min(cmp, max(cmp, first, middle), last));
+    return max(cmp, min(cmp, first, middle),
+               min(cmp, max(cmp, first, middle), last));
 }
 
 /**\brief Returns pseudo-median according to nine values
@@ -84,94 +84,94 @@ template <typename content>
 std::pair<size_t, size_t> partition(span<content> array,
                                     key_func_type<content> cmp,
                                     size_t pivot_element) {
-  // Init values, which keep track of the partition position
-  size_t left = 0;
-  size_t mid = 0;
-  size_t right = 0;
-  for (size_t i = 0; i < array.size(); i++) {
-    // Count Elements in less-Partition
-    if (cmp(array[i], pivot_element) < 0) {
-      mid++;
+    // Init values, which keep track of the partition position
+    size_t left = 0;
+    size_t mid = 0;
+    size_t right = 0;
+    for (size_t i = 0; i < array.size(); i++) {
+        // Count Elements in less-Partition
+        if (cmp(array[i], pivot_element) < 0) {
+            mid++;
+        }
+        // Count Elements in equal partition
+        else if (cmp(array[i], pivot_element) == 0) {
+            right++;
+        }
     }
-    // Count Elements in equal partition
-    else if (cmp(array[i], pivot_element) == 0) {
-      right++;
-    }
-  }
-  // Add #elements smaller than pivot to get correct start position
-  // for greater-partition counter
-  right = right + mid;
+    // Add #elements smaller than pivot to get correct start position
+    // for greater-partition counter
+    right = right + mid;
 
-  // Save these values, because we need to return them afterwards
-  size_t i = mid;
-  size_t j = right;
+    // Save these values, because we need to return them afterwards
+    size_t i = mid;
+    size_t j = right;
 
-  // Loop, which builds the less-partition
-  while (left < i) {
-    // If current element is the pivot_element, swap it into equal-partition
-    if (cmp(array[left], pivot_element) == 0) {
-      std::swap(array[left], array[mid]);
-      mid++;
+    // Loop, which builds the less-partition
+    while (left < i) {
+        // If current element is the pivot_element, swap it into equal-partition
+        if (cmp(array[left], pivot_element) == 0) {
+            std::swap(array[left], array[mid]);
+            mid++;
+        }
+        // else if the element belongs in the greater-partition, swap it there
+        else if (cmp(array[left], pivot_element) > 0) {
+            std::swap(array[left], array[right]);
+            right++;
+        }
+        // else, the current element is already at the right place
+        else {
+            left++;
+        }
     }
-    // else if the element belongs in the greater-partition, swap it there
-    else if (cmp(array[left], pivot_element) > 0) {
-      std::swap(array[left], array[right]);
-      right++;
+    // Loop, which builds the equal partition
+    while (mid < j) {
+        // if current element is bigger than the pivot_element, swap it
+        if (cmp(array[mid], pivot_element) > 0) {
+            std::swap(array[mid], array[right]);
+            right++;
+        }
+        // else, the element is ar the right place
+        else {
+            mid++;
+        }
+        // we dont need to consider less elements, because they are already in
+        // the right part of the array
     }
-    // else, the current element is already at the right place
-    else {
-      left++;
-    }
-  }
-  // Loop, which builds the equal partition
-  while (mid < j) {
-    // if current element is bigger than the pivot_element, swap it
-    if (cmp(array[mid], pivot_element) > 0) {
-      std::swap(array[mid], array[right]);
-      right++;
-    }
-    // else, the element is ar the right place
-    else {
-      mid++;
-    }
-    // we dont need to consider less elements, because they are already in
-    // the right part of the array
-  }
-  // less- and equal-partitions are built -> greater-partition is built
-  // implicitly
+    // less- and equal-partitions are built -> greater-partition is built
+    // implicitly
 
-  // return the bounds
-  return std::make_pair(i, j);
+    // return the bounds
+    return std::make_pair(i, j);
 }
 
 // This swaps elements until the array is sorted.
 template <typename content>
 void ternary_quicksort(span<content> array, key_func_type<content> cmp) {
-  size_t n = array.size();
+    size_t n = array.size();
 
-  if (n == 1) {
-    return;
-  }
-  if (n == 2) {
-    if (cmp(array[0], array[1]) > 0) {
-      std::swap(array[0], array[1]);
+    if (n <= 1) {
+        return;
     }
+    if (n == 2) {
+        if (cmp(array[0], array[1]) > 0) {
+            std::swap(array[0], array[1]);
+        }
+        return;
+    }
+
+    constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
+    constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
+
+    /*content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
+                        ? median_of_nine(array, key_func)
+                        : median_of_three(array, key_func);*/
+    content pivot = median_of_three(array, cmp);
+
+    auto result = partition(array, cmp, pivot);
+
+    ternary_quicksort(array.slice(0, result.first), cmp);
+    ternary_quicksort(array.slice(result.second), cmp);
     return;
-  }
-
-  constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
-  constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
-
-  /*content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
-                      ? median_of_nine(array, key_func)
-                      : median_of_three(array, key_func);*/
-  content pivot = median_of_three(array, cmp);
-
-  auto result = partition(array, cmp, pivot);
-
-  ternary_quicksort(array.slice(0, result.first), cmp);
-  ternary_quicksort(array.slice(result.second), cmp);
-  return;
 }
 } // namespace ternary_quicksort
 } // namespace sort
