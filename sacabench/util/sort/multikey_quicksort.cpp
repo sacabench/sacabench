@@ -16,6 +16,32 @@ void util::sort::multikey_quicksort(span<index_type> array, const input_type& in
     multikey_quicksort_internal(array, key_func, depth);
 }
 
+// Create a new key_func to compare two characters at depth t
+util::sort::compare_one_character_at_depth generate_multikey_key_function
+        (const input_type& input_text, index_type depth) {
+    util::sort::compare_one_character_at_depth obj;
+    obj.depth = depth;
+    obj.input_text = input_text;
+    return obj;
+}
+
+
+//TODO: Check if this construct accords with ternary quicksort.
+//Overwrites -> operator for quicksort
+int util::sort::compare_one_character_at_depth::operator->
+        (const index_type& index, const index_type& compare_to_index) 
+        const noexcept {
+    int diff = this->input_text[index] - this->input_text[compare_to_index];
+    return diff;
+}
+//Overwrites ->* operator for quicksort
+int util::sort::compare_one_character_at_depth::operator->*
+        (const index_type& index, const index_type& compare_to_index) 
+        const noexcept {
+    int diff = this->input_text[index] - this->input_text[compare_to_index];
+    return diff;
+}
+
 void util::sort::multikey_quicksort_internal(span<index_type> array,
         util::sort::multikey_quicksort::compare_one_character_at_depth& key_func) {
     // If the set size is only one element, we don't need to sort.
@@ -25,6 +51,7 @@ void util::sort::multikey_quicksort_internal(span<index_type> array,
     const index_type& pivot_element = array[0];
 
     // Swap elements using ternary quicksort partitioning.
+    // Casts key_func into type std::function<int(index_type, index_type)> 
     auto bounds = util::sort::ternary_quicksort::partition(array, key_func, pivot);
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
