@@ -7,26 +7,13 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
+#include "../sacabench/util/span.hpp"
 #include "../sacabench/util/sort/ternary_quicksort.hpp"
 
 TEST(ternary_quicksort, empty_set) {
-    using util::sort::ternary_quicksort;
+    using namespace util::sort::ternary_quicksort;
 
-    auto test_set = std::vector();
-
-    struct test_key_func {
-        int compare(const size_t a, const size_t b) {
-            return a < b;
-        }
-        int max(const size_t a, const size_t b) {
-            return compare(a,b) < 0 ? b : a;
-        }
-        int min(const size_t a, const size_t b) {
-            return compare(a,b) < 0 ? a : b;
-        }
-    };
-
-    ternary_quicksort(test_set, test_key_func);
-
-    ASSERT_EQ(true, is_sorted(ewigjewiogjwgioew))
+    auto test_set = std::vector<size_t>();
+    std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b){ return a - b; };
+    ternary_quicksort(span(test_set), cmp);
 }
