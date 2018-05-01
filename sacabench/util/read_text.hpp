@@ -1,0 +1,42 @@
+/*******************************************************************************
+ * Copyright (C) 2018 David Piper <david.piper@tu-dortmund.de>
+ *
+ * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ ******************************************************************************/
+
+#pragma once
+
+#include <string>
+#include <fstream>
+#include <iostream>
+#include "util/string.hpp"
+
+namespace sacabench::util {
+
+    /**
+     * \brief Reads content of a txt file into a string.
+     * \param filepath Path of the file to be read.
+     */
+    string read_text (std::string filepath) {
+
+        string text;
+        std::string line;
+        std::ifstream filestream(filepath.c_str());
+
+        // Make sure the file could be opened.
+        if (!filestream) {
+            std::cout << "Error! Incorrect file." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        while (!filestream.eof()) {
+            std::getline(filestream, line);
+            // Insert chars of current line into string text.
+            std::copy(line.begin(), line.end(), std::back_inserter(text));
+        }
+
+        return text;
+    }
+}
+
+/******************************************************************************/
