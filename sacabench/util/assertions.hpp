@@ -24,11 +24,21 @@ namespace sacabench::util {
         msg << ("the check failed: " #x) ;                       \
         throw std::runtime_error(msg.str());                     \
     }
+/// Macro for checking a boolean value, and printing a custom error message
+#define DCHECK_MSG(x, s)                                         \
+    if (!(x)) {                                                  \
+        std::sstream msg;                                        \
+        msg << " in file " << __FILE__ << ":" << __LINE__;       \
+        msg << "the check failed: ";                             \
+        msg << s;                                                \
+        throw std::runtime_error(msg.str());                     \
+    }
 #endif //DCHECK
 #else //DEBUG
 // Define macros as empty
 #define DCHECK_(x,y,z)
 #define DCHECK(x)
+#define DCHECK_MSG(x)
 #endif //DEBUG
 
 /// Check for equality (==)
