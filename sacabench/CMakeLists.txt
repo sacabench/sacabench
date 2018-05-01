@@ -39,7 +39,7 @@ foreach(SACA IN ITEMS ${SACA_BENCH_SACAS})
   get_filename_component(NEW_NAME ${SACA} NAME_WE)
   add_executable(${NEW_NAME}
     ${SACA}
-          util/read_text.hpp)
+  )
   target_link_libraries(${NEW_NAME}
     saca_bench_lib
   )
