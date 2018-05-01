@@ -58,4 +58,9 @@ namespace sacabench::util {
 /// Check for greater-than (<)
 #define DCHECK_GT(x, y) DCHECK_BINARY((x) >  (y), x, y)
 
+template<typename integer_type>
+bool can_represent_all_values(uint64_t distinct_values) {
+    return std::numeric_limits<integer_type>::max() >= (distinct_values - 1);
+}
+
 }
