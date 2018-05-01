@@ -36,15 +36,24 @@ void test_abstract_span(T const& m) {
 void test_string_span() {
 }
 
-TEST(Span, test1) {
+TEST(Span, string) {
     string_span s = "hello"_s;
     test_const_abstract_span(s);
+}
 
+TEST(Span, vector) {
     std::vector<uint8_t> data = { 0, 1, 2 };
-    span<uint8_t> v;
+    span<uint8_t> v { data };
     test_const_abstract_span(v);
     test_abstract_span(v);
+}
 
-    /* implement your quick tests here! */
-    ASSERT_TRUE(true);
+TEST(Span, error_messages) {
+    // NB: Disabled because they cause
+    // errors not checkable in a gtest
+
+    //auto s = "foo"_s;
+    //s[4];
+    //s.at(4);
+    //s.slice(4, 5);
 }

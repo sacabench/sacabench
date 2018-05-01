@@ -18,5 +18,5 @@ TEST(Container, construct_empty) {
 
 TEST(Container, make_container) {
     container<uint8_t> c = make_container<uint8_t>(10);
-    ASSERT_EQ(c.size(), 10);
+    ASSERT_EQ(c.size(), 10u);
 }
