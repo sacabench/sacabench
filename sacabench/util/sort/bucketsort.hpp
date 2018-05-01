@@ -23,7 +23,8 @@ namespace sacabench::util::sort {
             // the real alphabet includes $, so it has one more character
             const std::size_t real_alphabet_size = alphabet_size + 1;
             const std::size_t bucket_count = pow(real_alphabet_size, depth);
-            bucket<index_type>* buckets = new bucket<index_type>[bucket_count];
+            container<bucket<index_type>> buckets =
+                make_container<bucket<index_type>>(bucket_count);
 
             // calculate code pre first suffix
             std::size_t initial_code = 0;
@@ -107,7 +108,7 @@ namespace sacabench::util::sort {
             std::cout << std::endl;
 
             // free memory
-            delete[] buckets;
+            //delete[] buckets;
         }
 
 }
