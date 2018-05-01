@@ -54,14 +54,14 @@ public:
 
     // Element access
     inline constexpr T& operator[](size_t n) const {
-        DCHECK_MSG(n >= 0, "Call of [] with n < 0");
-        DCHECK_MSG(n < size(), "Call of [] with n >= size()");
+        DCHECK_MSG(n < size(),
+            "Trying to index at position " << n << " for span of size " << size());
         return *(data() + n);
     }
 
     inline constexpr T& at(size_t n) const {
-        DCHECK_MSG(n >= 0, "Call of at with n < 0");
-        DCHECK_MSG(n < size(), "Call of at with n >= size()");
+        DCHECK_MSG(n < size(),
+            "Trying to index at position " << n << " for span of size " << size());
         return *(data() + n);
     }
 
@@ -94,7 +94,9 @@ public:
         if (to == npos) {
             to = size();
         }
-        DCHECK_MSG(0 <= from && from <= to && to <= size(), "Call of slice() with out-of bound values");
+        DCHECK_MSG(0 <= from && from <= to && to <= size(),
+            "Slice with out-of-bound values " << from << ".." << to
+            << " for span of size " << size());
         return span< T >(data() + from, to - from);
     }
 };

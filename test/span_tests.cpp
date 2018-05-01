@@ -47,3 +47,13 @@ TEST(Span, vector) {
     test_const_abstract_span(v);
     test_abstract_span(v);
 }
+
+TEST(Span, error_messages) {
+    // NB: Disabled because they cause
+    // errors not checkable in a gtest
+
+    //auto s = "foo"_s;
+    //s[4];
+    //s.at(4);
+    //s.slice(4, 5);
+}
