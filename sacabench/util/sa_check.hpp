@@ -14,6 +14,7 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/sort.hpp>
+#include <util/assertions.hpp>
 
 namespace sacabench::util {
     class sa_check_result {
@@ -59,6 +60,10 @@ namespace sacabench::util {
 
     template <typename sa_index_type>
     sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
+        // Check for size + 1 because the algorithm
+        // calculates maxvalue + 1 at one point.
+        DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
+
         if (sa.size() != text.size()) {
             return sa_check_result::wrong_length;
         }
@@ -71,7 +76,7 @@ namespace sacabench::util {
         auto P = make_container<pair>(N);
 
         for(size_t i = 0; i < N; ++i) {
-            P[i] = pair { sa[i], i + 1 }; // TODO: i could exceed valid range of sa_index_type
+            P[i] = pair { sa[i], i + 1 };
         }
 
         sort(P, [](auto const& lhs, auto const& rhs) {
