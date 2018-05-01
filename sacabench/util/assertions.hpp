@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stringstream>
+#include <sstream>
 
 namespace sacabench::util {
 
@@ -10,8 +10,9 @@ namespace sacabench::util {
 /// and printing the two comparison values.
 #define DCHECK_BINARY(x,y,z)                                     \
     if (!(x)) {                                                  \
-        std::sstream msg;                                        \
+        std::stringstream msg;                                   \
         msg << " in file " << __FILE__ << ":" << __LINE__;       \
+        msg << ":\n";                                            \
         msg << ("the check failed: " #x) ;                       \
         msg << ", we got " << y << " vs " << z;                  \
         throw std::runtime_error(msg.str());                     \
@@ -19,8 +20,9 @@ namespace sacabench::util {
 /// Macro for checking a boolean value.
 #define DCHECK(x)                                                \
     if (!(x)) {                                                  \
-        std::sstream msg;                                        \
+        std::stringstream msg;                                   \
         msg << " in file " << __FILE__ << ":" << __LINE__;       \
+        msg << ":\n";                                            \
         msg << ("the check failed: " #x) ;                       \
         throw std::runtime_error(msg.str());                     \
     }
@@ -28,8 +30,9 @@ namespace sacabench::util {
 /// and printing a custom error message
 #define DCHECK_MSG(x, s)                                         \
     if (!(x)) {                                                  \
-        std::sstream msg;                                        \
+        std::stringstream msg;                                   \
         msg << " in file " << __FILE__ << ":" << __LINE__;       \
+        msg << ":\n";                                            \
         msg << "the check failed: ";                             \
         msg << s;                                                \
         throw std::runtime_error(msg.str());                     \
@@ -39,7 +42,7 @@ namespace sacabench::util {
 // Define macros as empty
 #define DCHECK_BINARY(x,y,z)
 #define DCHECK(x)
-#define DCHECK_MSG(x)
+#define DCHECK_MSG(x, s)
 #endif //DEBUG
 
 /// Check for equality (==)

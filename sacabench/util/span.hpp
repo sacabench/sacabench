@@ -13,6 +13,8 @@
 #include <memory>
 #include <array>
 
+#include <util/assertions.hpp>
+
 // Inspired by the span type in https://github.com/Microsoft/GSL
 template < typename T >
 class span {
@@ -52,24 +54,24 @@ public:
 
     // Element access
     inline constexpr T& operator[](size_t n) const {
-        // TODO debug_assert(n >= 0, "Call of [] with n < 0"_s);
-        // TODO debug_assert(n < size(), "Call of [] with n >= size()"_s);
+        DCHECK_MSG(n >= 0, "Call of [] with n < 0");
+        DCHECK_MSG(n < size(), "Call of [] with n >= size()");
         return *(data() + n);
     }
 
     inline constexpr T& at(size_t n) const {
-        // TODO debug_assert(n >= 0, "Call of at with n < 0"_s);
-        // TODO debug_assert(n < size(), "Call of at with n >= size()"_s);
+        DCHECK_MSG(n >= 0, "Call of at with n < 0");
+        DCHECK_MSG(n < size(), "Call of at with n >= size()");
         return *(data() + n);
     }
 
     inline constexpr T& front() const {
-        // TODO debug_assert(size() != 0, "Call of front() with size() == 0"_s);
+        DCHECK_MSG(size() != 0, "Call of front() with size() == 0");
         return *data();
     }
 
     inline constexpr T& back() const {
-        // TODO debug_assert(size() != 0, "Call of back() with size() == 0"_s);
+        DCHECK_MSG(size() != 0, "Call of back() with size() == 0");
         return *(data() + size() - 1);
     }
 
@@ -92,7 +94,7 @@ public:
         if (to == npos) {
             to = size();
         }
-        // TODO debug_assert(0 <= from && from <= to && to <= size(), "Call of slice() with out-of bound values"_s);
+        DCHECK_MSG(0 <= from && from <= to && to <= size(), "Call of slice() with out-of bound values");
         return span< T >(data() + from, to - from);
     }
 };
