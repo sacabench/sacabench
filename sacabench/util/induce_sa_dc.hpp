@@ -34,10 +34,9 @@ namespace sacabench::util {
 
         for (int i = 0; i < sa_0.size(); i++) {
             sa0_to_be_sorted[i] = std::tuple<C, int>(input[3 * i], isa_12[i]);
-        }
-
+        }  
+    
         //TODO: sort Tupels with radix_sort
         //radix_sort(sa0_to_be_sorted, sa0);
     }
-}
-/******************************************************************************/
+}  // namespace sacabench::util
