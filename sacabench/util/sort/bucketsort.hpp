@@ -17,7 +17,7 @@ namespace sacabench::util::sort {
         };
 
     template <typename index_type>
-        void bucketsort(const string& input, const std::size_t alphabet_size,
+        void bucketsort_presort(const string& input, const std::size_t alphabet_size,
                 const std::size_t depth, container<index_type>& sa) {
             const std::size_t length = input.size();
             // the real alphabet includes $, so it has one more character
@@ -110,5 +110,91 @@ namespace sacabench::util::sort {
             // free memory
             //delete[] buckets;
         }
+
+
+    void print_result(container<string> strings) {
+        std::cout << "Result: ";
+        for (string currentString : strings) {
+            for (int index = 0; index < currentString.size(); ++index) {
+                std::cout << currentString.at(index);
+            }
+            std::cout << ", ";
+        }
+        std::cout << std::endl;
+    }
+
+    void bucket_sort(const container<string>& strings,
+                     const int currentDepth,
+                     const int maxDepth,
+                     container<container<string>>& buckets) {
+
+        std::cout << "Started iteration of bucket sort." << std::endl;
+        std::cout << "Number of input strings: " << strings.size() << std::endl;
+        std::cout << "Current depth: " << currentDepth << std::endl;
+        std::cout << "Max depth: " << maxDepth << std::endl;
+
+        // check end of recursion
+        if (currentDepth == maxDepth) {
+            print_result(strings);
+            return;
+        }
+        for (string currentString : strings) {
+            if (currentString.size() < currentDepth) {
+                print_result(strings);
+                return;
+            }
+        }
+
+        // build new buckets
+        for (string currentString : strings) {
+
+            std::cout << "For string in strings with current string: ";
+            for (int index = 0; index < currentString.size(); ++index) {
+                std::cout << currentString.at(index);
+            }
+            std::cout << std::endl;
+
+            bool bucketFound = false;
+            char currentChar = currentString.at(currentDepth);
+
+            std::cout << "Current char: " << currentChar << std::endl;
+
+            // Add new bucket, if it is the first one.
+            if (buckets.empty()) {
+
+                std::cout << "There are no buckets yet." << std::endl;
+
+                container<string> newBucket;
+                newBucket.push_back(currentString);
+                buckets.push_back(newBucket);
+                bucketFound = true;
+                continue;
+            }
+
+            // Check each bucket to get one with the current key.
+            for (int index = 0; index < buckets.size(); ++index) {
+                container<string> bucket = buckets.at(index);
+                string firstStringInBucket = bucket.front();
+                char sortingKeyOfBucket = firstStringInBucket.at(currentDepth);
+                if (sortingKeyOfBucket == currentChar) {
+                    bucket.push_back(currentString);
+                    bucketFound = true;
+                    buckets.erase(buckets.begin() + index);
+                    buckets.insert(buckets.begin() + index, bucket);
+                }
+            }
+            // There is no bucket with this key yet, add a new one.
+            if (!bucketFound) {
+                container<string> newBucket;
+                newBucket.push_back(currentString);
+                buckets.push_back(newBucket);
+            }
+        }
+
+        // new recursion
+        for (container<string> bucket : buckets) {
+            bucket_sort(bucket, currentDepth + 1, maxDepth, buckets);
+        }
+    }
 
 }
