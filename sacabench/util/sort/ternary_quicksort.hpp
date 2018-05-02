@@ -8,26 +8,20 @@
 #pragma once
 
 #include "../span.hpp"
-#include <functional>
-
-template <typename content>
-using key_func_type = std::function<int(content, content)>;
 
 namespace util {
 namespace sort {
 namespace ternary_quicksort {
 
-    
 constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
 
-//
-template <typename content>
-content min(key_func_type<content> cmp, const content &a, const content &b) {
+template <typename content, typename key_func_type>
+content min(key_func_type cmp, const content& a, const content& b) {
     return (cmp(a, b) < 0 ? a : b);
 }
 
-template <typename content>
-content max(key_func_type<content> cmp, const content &a, const content &b) {
+template <typename content, typename key_func_type>
+content max(key_func_type cmp, const content& a, const content& b) {
     return (cmp(a, b) < 0 ? b : a);
 }
 
@@ -39,8 +33,8 @@ content max(key_func_type<content> cmp, const content &a, const content &b) {
  * Chooses the median of the given array by the median-of-three method
  * which chooses the median of the first, middle and last element of the array
  */
-template <typename content>
-size_t median_of_three(span<content> array, key_func_type<content> cmp) {
+template <typename content, typename key_func_type>
+size_t median_of_three(span<content> array, key_func_type cmp) {
     size_t first = array[0];
     size_t middle = array[(array.size() - 1) / 2];
     size_t last = array[array.size() - 1];
@@ -72,9 +66,9 @@ content median_of_nine(span<content> array, key_func_type cmp) {
 // partitioning is created. The function returns the two bounds for the
 // partitiongs, i and j. [0; i) is smaller than the partition [i, j), and
 // the partition [j, n) is larger than the other partitions.
-template <typename content>
+template <typename content, typename key_func_type>
 std::pair<size_t, size_t> partition(span<content> array,
-                                    key_func_type<content> cmp,
+                                    key_func_type cmp,
                                     size_t pivot_element) {
     // Init values, which keep track of the partition position
     size_t left = 0;
@@ -137,14 +131,14 @@ std::pair<size_t, size_t> partition(span<content> array,
 }
 
 // This swaps elements until the array is sorted.
-template <typename content>
-void ternary_quicksort(span<content> array, key_func_type<content> cmp) {
-    
+template <typename content, typename key_func_type>
+void ternary_quicksort(span<content> array, key_func_type cmp) {
     size_t n = array.size();
 
     if (n <= 1) {
         return;
     }
+
     if (n == 2) {
         if (cmp(array[0], array[1]) > 0) {
             std::swap(array[0], array[1]);
