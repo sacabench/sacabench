@@ -17,6 +17,9 @@ namespace util {
 namespace sort {
 namespace ternary_quicksort {
 
+    
+constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
+
 //
 template <typename content>
 content min(key_func_type<content> cmp, const content &a, const content &b) {
@@ -27,6 +30,7 @@ template <typename content>
 content max(key_func_type<content> cmp, const content &a, const content &b) {
     return (cmp(a, b) < 0 ? b : a);
 }
+
 
 /**\brief Returns pseudo-median according to three values
  * \param array array of elements
@@ -51,30 +55,18 @@ size_t median_of_three(span<content> array, key_func_type<content> cmp) {
  *
  * Chooses the median of the given array by median-of-nine method
  * according to Bentley and McIlroy "Engineering a Sort Function".
- * TODO überarbeiten
- *//*
+ */
 template <typename content, typename key_func_type>
-content median_of_nine(span<content> array, key_func_type cmp) {
-  size_t n = array.size();
-  // for small arrays, pseudomedian is the mid element
-  content median = array[n / 2];
-  if (n > 7) {
-    // for larger arrays, choose median_of_three
-    content lower = array[0];
-    content upper = array[n - 1];
-    if (n > 40) {
-      // for large arrays, choose median_of_nine
-      size_t step = (n / 8);
-      lower = median_of_three(array[step], array[2 * step], cmp);
-      median = median_of_three(key_func, array[(n / 2) - step], median,
-                               array[(n / 2) + step]);
-      upper = median_of_three(key_func, array[(n - 1) - 2 * step],
-                              array[(n - 1) - step], upper);
-    }
-    median = median_of_three(key_func, lower, median, upper);
-  }
-  return median;
-}*/
+content median_of_nine(span<content> array, key_func_type cmp) {  
+  size_t n = array.size()-1;
+  size_t step = (n / 8);
+  size_t lower = median_of_three(array.slice(0,2*step),cmp);
+  size_t middle = median_of_three(array.slice((n/2)-step,(n/2)+step),cmp);
+  size_t upper = median_of_three(array.slice(n-2*step,n),cmp);
+  
+  return max(cmp, min(cmp, lower, middle),
+               min(cmp, max(cmp, lower, middle), upper));
+}
 
 // This should swap elements in array such that a correct ternary
 // partitioning is created. The function returns the two bounds for the
@@ -147,6 +139,7 @@ std::pair<size_t, size_t> partition(span<content> array,
 // This swaps elements until the array is sorted.
 template <typename content>
 void ternary_quicksort(span<content> array, key_func_type<content> cmp) {
+    
     size_t n = array.size();
 
     if (n <= 1) {
@@ -159,13 +152,11 @@ void ternary_quicksort(span<content> array, key_func_type<content> cmp) {
         return;
     }
 
-    constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
-    constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
+    //constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
 
-    /*content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
-                        ? median_of_nine(array, key_func)
-                        : median_of_three(array, key_func);*/
-    content pivot = median_of_three(array, cmp);
+    content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
+                        ? median_of_nine(array, cmp)
+                        : median_of_three(array, cmp);
 
     auto result = partition(array, cmp, pivot);
 
