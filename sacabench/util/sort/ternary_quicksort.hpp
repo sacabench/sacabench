@@ -62,10 +62,17 @@ content median_of_nine(span<content> array, key_func_type cmp) {
                min(cmp, max(cmp, lower, middle), upper));
 }
 
-// This should swap elements in array such that a correct ternary
-// partitioning is created. The function returns the two bounds for the
-// partitiongs, i and j. [0; i) is smaller than the partition [i, j), and
-// the partition [j, n) is larger than the other partitions.
+/**\brief Swaps elements so that the given array is a correct ternary
+ *        partition according to pivot
+ *\param array array of elements
+ *\param cmp comparing function
+ *\param pivot_element pivot element for partitioning
+ *
+ *\return tuple (i,j), which corresponds to the equal partition
+ *
+ *Swaps the elements until the array is a ternary partition.
+ * 
+ */
 template <typename content, typename key_func_type>
 std::pair<size_t, size_t> partition(span<content> array,
                                     key_func_type cmp,
@@ -74,14 +81,14 @@ std::pair<size_t, size_t> partition(span<content> array,
     size_t left = 0;
     size_t mid = 0;
     size_t right = 0;
-    for (size_t i = 0; i < array.size(); i++) {
+    for (size_t i = 0; i < array.size(); ++i) {
         // Count Elements in less-Partition
         if (cmp(array[i], pivot_element) < 0) {
-            mid++;
+            ++mid;
         }
         // Count Elements in equal partition
         else if (cmp(array[i], pivot_element) == 0) {
-            right++;
+            ++right;
         }
     }
     // Add #elements smaller than pivot to get correct start position
@@ -97,16 +104,16 @@ std::pair<size_t, size_t> partition(span<content> array,
         // If current element is the pivot_element, swap it into equal-partition
         if (cmp(array[left], pivot_element) == 0) {
             std::swap(array[left], array[mid]);
-            mid++;
+            ++mid;
         }
         // else if the element belongs in the greater-partition, swap it there
         else if (cmp(array[left], pivot_element) > 0) {
             std::swap(array[left], array[right]);
-            right++;
+            ++right;
         }
         // else, the current element is already at the right place
         else {
-            left++;
+            ++left;
         }
     }
     // Loop, which builds the equal partition
@@ -114,11 +121,11 @@ std::pair<size_t, size_t> partition(span<content> array,
         // if current element is bigger than the pivot_element, swap it
         if (cmp(array[mid], pivot_element) > 0) {
             std::swap(array[mid], array[right]);
-            right++;
+            ++right;
         }
         // else, the element is ar the right place
         else {
-            mid++;
+            ++mid;
         }
         // we dont need to consider less elements, because they are already in
         // the right part of the array
@@ -129,12 +136,20 @@ std::pair<size_t, size_t> partition(span<content> array,
     // return the bounds
     return std::make_pair(i, j);
 }
-
-// This swaps elements until the array is sorted.
+/**\brief Sorts an array with the given comparing function
+ * 
+ *\param array array of elements
+ *\param cmp comparing function
+ *
+ *Sorts an given array (according to the first symbol in case of strings).
+ *The comparing function should return for given a,b a value <0 when a < b,
+ *vice versa.  
+ */
 template <typename content, typename key_func_type>
 void ternary_quicksort(span<content> array, key_func_type cmp) {
     size_t n = array.size();
 
+    //recursion termination
     if (n <= 1) {
         return;
     }
@@ -148,12 +163,12 @@ void ternary_quicksort(span<content> array, key_func_type cmp) {
 
     //constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
 
+    //Choose pivot according to array size
     content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
                         ? median_of_nine(array, cmp)
                         : median_of_three(array, cmp);
-
     auto result = partition(array, cmp, pivot);
-
+    //sorts greater and less partiotion recursivly
     ternary_quicksort(array.slice(0, result.first), cmp);
     ternary_quicksort(array.slice(result.second), cmp);
     return;
