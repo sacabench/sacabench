@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "util/assertions.hpp"
 #include <math.h>
 
 namespace sacabench::util::sort {
@@ -41,6 +42,9 @@ namespace sacabench::util::sort {
     template <typename index_type>
         void bucketsort(const string& input, const std::size_t alphabet_size,
                 const std::size_t depth, container<index_type>& sa) {
+            DCHECK_EQ(input.size(), sa.size());
+            DCHECK_LE(depth, sa.size());
+
             const std::size_t length = input.size();
             // the real alphabet includes $, so it has one more character
             const std::size_t real_alphabet_size = alphabet_size + 1;
