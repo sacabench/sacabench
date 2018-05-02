@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <span>
+#include "../sacabench/util/span.hpp"
 
 // Checks the sorting of the array in O(n).
 // Returns true if correctly sorted.
