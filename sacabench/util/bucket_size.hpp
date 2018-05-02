@@ -6,15 +6,16 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
-#include 'alphabet.hpp'
-#include 'string.hpp'
+#include "alphabet.hpp"
+#include "string.hpp"
+#include "container.hpp"
 
-inline int get_bucket_size(const string& input){
+inline container get_bucket_sizes(const string& input){
     alphabet input_alphabet = alphabet(input);
     apply_effective_alphabet(input, input_alphabet);
-    int bucket_size [input_alphabet.size];
+    auto bucket_sizes = make_container<int>(input_alphabet.size);
     for(const char c: input){
-        bucket_size[c]+=1;
+        ++bucket_sizes[c];
     }
-    return bucket_size;
+    return bucket_sizes;
 }
