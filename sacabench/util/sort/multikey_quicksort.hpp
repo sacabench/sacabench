@@ -35,23 +35,6 @@ namespace sort {
         return obj;
     }
 
-    // TODO: Check if this construct accords with ternary quicksort.
-    // Overwrites -> operator for quicksort
-    int util::sort::compare_one_character_at_depth::
-    operator->(const index_type& index, const index_type& compare_to_index) const
-        noexcept {
-        int diff = this->input_text[index] - this->input_text[compare_to_index];
-        return diff;
-    }
-
-    // Overwrites ->* operator for quicksort
-    int util::sort::compare_one_character_at_depth::
-    operator->*(const index_type& index, const index_type& compare_to_index) const
-        noexcept {
-        int diff = this->input_text[index] - this->input_text[compare_to_index];
-        return diff;
-    }
-
     // Our internal sort function.
     void util::sort::multikey_quicksort_internal(
         span<index_type> array,
@@ -94,11 +77,17 @@ namespace sort {
 
         // 0 if equal, < 0 if the first is smaller, > 0 if the first is larger.
         //Overwrites -> operator for quicksort
-        int util::sort::compare_one_character_at_depth::operator->(const
-        index_type&, const index_type&) const noexcept;
+        int operator->(const index_type&, const index_type&) const noexcept {
+            int diff = this->input_text[index] - this->input_text[compare_to_index];
+            return diff;
+        }
+
         //Overwrites ->* operator for quicksort
-        int util::sort::compare_one_character_at_depth::operator->*(const
-        index_type&, const index_type&) const noexcept;
+        int operator->*(const index_type&, const index_type&) const noexcept {
+            int diff = this->input_text[index] - this->input_text[compare_to_index];
+            return diff;
+        }
+
     private:
         // A reference to the input text.
         input_type& input_text;
