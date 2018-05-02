@@ -60,6 +60,12 @@ macro(generic_run_test test_target test_file
         ${TEST_TARGET_DEPS}
     )
 
+    target_compile_options(${test_target}_testrunner PUBLIC
+        ${SACA_BENCH_FLAGS}
+        $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
+        $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
+    )
+
     # Runs the test and generates a stamp file on success.
     add_custom_command(
         OUTPUT
