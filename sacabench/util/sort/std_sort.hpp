@@ -12,13 +12,13 @@
 
 #include "util/container.hpp"
 
-namespace sacabench::util {
+namespace sacabench::util::sort {
 
-    template <typename T, typename Compare>
-        void sort(container<T>& data, Compare comp) {
-            std::sort(std::begin(data), std::end(data), comp);
-        }
+template <typename T, typename Compare>
+void std_sort(container<T>& data, Compare comp) {
+    std::sort(std::begin(data), std::end(data), comp);
+}
 
-} // namespace sacabench::util
+} // namespace sacabench::util::sort
 
 /******************************************************************************/
