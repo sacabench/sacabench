@@ -38,18 +38,11 @@ namespace sacabench::util::sort {
 
             // count occurrences
             std::size_t code = initial_code;
-            std::cout << "Initial Code: " << code << std::endl;
-            std::cout << "Code Modulo:  " << code_modulo << std::endl;
             for (index_type index = 0; index < length - depth + 1; ++index) {
                 // induce code for nth suffix from (n-1)th suffix
-                std::cout << "Code before modulo: " << code << "\t";
                 code %= code_modulo;
-                std::cout << "Code before multiplication: " << code << "\t";
                 code *= real_alphabet_size;
-                std::cout << "Code before adding: " << code << "\t";
-                std::cout << "Index: " << index + depth - 1 << "\t";
                 code += input[index + depth - 1];
-                std::cout << "Code after adding: " << code << std::endl;
                 ++buckets[code].count;
             }
 
@@ -57,25 +50,16 @@ namespace sacabench::util::sort {
             for (index_type index = length - depth + 1; index < length;
                     ++index) {
                 // induce code for nth suffix from (n-1)th suffix
-                std::cout << "Code before modulo: " << code << "\t";
                 code %= code_modulo;
-                std::cout << "Code before multiplication: " << code << "\t";
                 code *= real_alphabet_size;
-                std::cout << "Code before adding: " << code << "\t";
-                std::cout << "Index: " << index + depth - 1 << "\t";
-                std::cout << "Code after adding: " << code << std::endl;
                 ++buckets[code].count;
             }
-            std::cout << std::endl;
 
             // calculate positions
-            std::cout << "Bucket 0 has position " << (uint32_t) buckets[0].position << " and size " << buckets[0].count << std::endl;
             for (size_t index = 1; index < bucket_count; ++index) {
                 buckets[index].position =
                     buckets[index - 1].position + buckets[index-1].count;
-                std::cout << "Bucket " << (uint32_t) index << " has position " << (uint32_t) buckets[index].position << " and size " << buckets[index].count << std::endl;
             }
-            std::cout << std::endl;
 
             // insert entries in suffix array
             code = initial_code;
@@ -84,11 +68,8 @@ namespace sacabench::util::sort {
                 code %= code_modulo;
                 code *= real_alphabet_size;
                 code += input[index + depth - 1];
-                std::cout << "Code " << code << " at index " << (uint32_t) index << "\t";
                 bucket<index_type>& current_bucket = buckets[code];
-                std::cout << "Bucket position " << (uint32_t) current_bucket.position << "\t";
                 sa[current_bucket.position] = index;
-                std::cout << "Set sa[" << (uint32_t) current_bucket.position << "] to " << (uint32_t) index << std::endl;
                 ++current_bucket.position;
             }
 
@@ -98,17 +79,10 @@ namespace sacabench::util::sort {
                 // induce code for nth suffix from (n-1)th suffix
                 code %= code_modulo;
                 code *= real_alphabet_size;
-                std::cout << "Code " << code << " at index " << (uint32_t) index << "\t";
                 bucket<index_type>& current_bucket = buckets[code];
-                std::cout << "Bucket position " << (uint32_t) current_bucket.position << "\t";
                 sa[current_bucket.position] = index;
-                std::cout << "Set sa[" << (uint32_t) current_bucket.position << "] to " << (uint32_t) index << std::endl;
                 ++current_bucket.position;
             }
-            std::cout << std::endl;
-
-            // free memory
-            //delete[] buckets;
         }
 
 }
