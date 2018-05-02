@@ -17,3 +17,27 @@ TEST(ternary_quicksort, empty_set) {
     std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b){ return a - b; };
     ternary_quicksort(span(test_set), cmp);
 }
+TEST(ternary_quicksort, exampleArray1) {
+    using namespace util::sort::ternary_quicksort;
+
+    auto test_set = std::vector<size_t>{10,5,7,2,8,10,756,1,0,65,4,42};
+    std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b){ return a - b; };
+    ternary_quicksort(span(test_set), cmp);
+    
+    for(size_t element : test_set) {
+        std::cout<<element<<", ";
+    }
+    std::cout<<std::endl;
+}
+TEST(ternary_quicksort, exampleArray2) {
+    using namespace util::sort::ternary_quicksort;
+
+    auto test_set = std::vector<size_t>{1,1,1,1,1,1,5,1,1,11,1,1};
+    std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b){ return a - b; };
+    ternary_quicksort(span(test_set), cmp);
+    
+    for(size_t element : test_set) {
+        std::cout<<element<<", ";
+    }
+    std::cout<<std::endl;
+}
