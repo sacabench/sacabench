@@ -42,8 +42,8 @@ public:
             return 1;
         }
 
-        size_t at_a = this->input_text.at(depth + a);
-        size_t at_b = this->input_text.at(depth + b);
+        size_t at_a = this->input_text[depth + a];
+        size_t at_b = this->input_text[depth + b];
         int diff = at_a - at_b;
 
         return diff;
