@@ -31,49 +31,64 @@ TEST(Bucketsort, other_function_call) {
     using namespace sacabench::util;
 
     try {
+
         container<string> input = make_container<string>(0);
 
-        string firstString = {'a', 'b', 'c'};
-        string secondString = {'a', 'b', 'e'};
-        string thirdString = {'m', 'b', 'm'};
-        string fourthString = {'a', 'm', 'a'};
-        string fifthString = {'m', 'b', 'a'};
+        string firstString = {'m', 'm', 'm'};
+        string secondString = {'a', 'b', 'c'};
+        string thirdString = {'x', 'y', 'z'};
+        string fourthString = {'m', 'b', 'm'};
+        string fifthString = {'a', 'm', 'a'};
+        string sixthString = {'m', 'b', 'a'};
+        string seventhString = {'a', 'b', 'e'};
 
         input.push_back(firstString);
         input.push_back(secondString);
         input.push_back(thirdString);
         input.push_back(fourthString);
         input.push_back(fifthString);
+        input.push_back(sixthString);
+        input.push_back(seventhString);
 
-        ASSERT_EQ(input.size(), 5);
-
-        std::cout << "======================================" << std::endl;
-        std::cout << "Starting bucket_sort with maxDepth = 1" << std::endl;
-
-        auto result = make_container<container<string>>(0);
+        auto result = make_container<string>(0);
         sort::bucket_sort(input, 0, 1, result);
 
-        ASSERT_EQ(result.at(0).at(0), firstString);
-        ASSERT_EQ(result.at(0).at(1), secondString);
-        ASSERT_EQ(result.at(0).at(2), fourthString);
-        ASSERT_EQ(result.at(1).at(0), thirdString);
-        ASSERT_EQ(result.at(1).at(1), fifthString);
+        ASSERT_EQ(result.at(0), secondString);
+        ASSERT_EQ(result.at(1), fifthString);
+        ASSERT_EQ(result.at(2), seventhString);
+        ASSERT_EQ(result.at(3), firstString);
+        ASSERT_EQ(result.at(4), fourthString);
+        ASSERT_EQ(result.at(5), sixthString);
+        ASSERT_EQ(result.at(6), thirdString);
 
-
-        std::cout << "======================================" << std::endl;
-        std::cout << "Starting bucket_sort with maxDepth = 2" << std::endl;
-        result = make_container<container<string>>(0);
+        result = make_container<string>(0);
         sort::bucket_sort(input, 0, 2, result);
 
+        ASSERT_EQ(result.at(0), secondString);
+        ASSERT_EQ(result.at(1), seventhString);
+        ASSERT_EQ(result.at(2), fifthString);
+        ASSERT_EQ(result.at(3), fourthString);
+        ASSERT_EQ(result.at(4), sixthString);
+        ASSERT_EQ(result.at(5), firstString);
+        ASSERT_EQ(result.at(6), thirdString);
+
+        result = make_container<string>(0);
+        sort::bucket_sort(input, 0, 3, result);
+
+        ASSERT_EQ(result.at(0), secondString);
+        ASSERT_EQ(result.at(1), seventhString);
+        ASSERT_EQ(result.at(2), fifthString);
+        ASSERT_EQ(result.at(3), sixthString);
+        ASSERT_EQ(result.at(4), fourthString);
+        ASSERT_EQ(result.at(5), firstString);
+        ASSERT_EQ(result.at(6), thirdString);
+
         std::cout << "Result of bucket sort:" << std::endl;
-        for (container<string> bucket : result) {
-            std::cout << "Current bucket:" << std::endl;
-            for (string content : bucket) {
-                for (int index = 0; index < content.size(); ++index) {
-                    std::cout << content.at(index);
-                }
-                std::cout << std::endl;
+        for (string bucket : result) {
+            for (int index = 0; index < bucket.size(); ++index) {
+                std::cout << bucket.at(index);
             }
+            std::cout << ", ";
         }
     } catch (std::bad_alloc& ba) {
         std::cerr << "bad_alloc caught: " << ba.what() << '\n';
