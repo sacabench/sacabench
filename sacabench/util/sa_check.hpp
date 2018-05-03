@@ -13,7 +13,7 @@
 
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/sort.hpp>
+#include <util/sort/std_sort.hpp>
 #include <util/assertions.hpp>
 
 namespace sacabench::util {
@@ -79,7 +79,7 @@ namespace sacabench::util {
             P[i] = pair { sa[i], i + 1 };
         }
 
-        sort(P, [](auto const& lhs, auto const& rhs) {
+        sort::std_sort(P, [](auto const& lhs, auto const& rhs) {
             return lhs.text_pos < rhs.text_pos;
         });
 
@@ -108,7 +108,7 @@ namespace sacabench::util {
             S[i] = tripple { r1, text[i], r2 };
         }
 
-        sort(S, [](auto const& lhs, auto const& rhs) {
+        sort::std_sort(S, [](auto const& lhs, auto const& rhs) {
             return lhs.sa_pos < rhs.sa_pos;
         });
 

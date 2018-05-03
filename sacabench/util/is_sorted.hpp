@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include <util/span.hpp>
+#include "span.hpp"
 
+namespace sacabench::util {
 // Checks the sorting of the array in O(n).
 // Returns true if correctly sorted.
 template <typename content, typename key_func_type>
@@ -20,3 +21,4 @@ bool is_sorted(const span<content> array, key_func_type cmp) {
     }
     return true;
 }
+} // namespace sacabench::util
