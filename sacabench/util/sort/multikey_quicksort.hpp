@@ -7,19 +7,10 @@
 
 #pragma once
 
-// #include <iostream>
 #include <cinttypes>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/sort/std_sort.hpp>
-
-void print_suffix(const sacabench::util::string_span& input_text, size_t start) {
-    // for(size_t i = start; i < input_text.size(); ++i) {
-    //     std::cout << (size_t) input_text[i] << " ";
-    // }
-    // std::cout << std::endl;
-}
 
 namespace sacabench::util::sort::multikey_quicksort {
 // Create a function with compares at one character depth.
@@ -35,25 +26,30 @@ public:
     // 0 if equal, < 0 if the first is smaller, > 0 if the first is larger.
     // Overwrites -> operator for quicksort
     int operator()(const index_type& a, const index_type& b) const {
-        if(this->depth + a >= this->input_text.size()) {
-            // a should be larger
+        if (this->depth + a >= this->input_text.size() &&
+            this->depth + b >= this->input_text.size()) {
+            // Both strings have equal length.
+            return 0;
+        }
+
+        if (this->depth + a >= this->input_text.size()) {
+            // b should be larger
             return -1;
         }
 
-        if(this->depth + b >= this->input_text.size()) {
+        if (this->depth + b >= this->input_text.size()) {
             // a should be larger
             return 1;
         }
 
         size_t at_a = this->input_text.at(depth + a);
         size_t at_b = this->input_text.at(depth + b);
-
         int diff = at_a - at_b;
 
         return diff;
     }
 
-//private: FIXME
+private:
     // A reference to the input text.
     const string_span input_text;
 };
@@ -79,30 +75,10 @@ void multikey_quicksort_internal(
     // FIXME: Choose a simple pivot element.
     const index_type& pivot_element = array[0];
 
-    // std::cout << "1---" << std::endl;
-    // for(size_t i = 0; i < array.size(); ++i) {
-    //     print_suffix(key_func.input_text, array[i]);
-    // }
-    // std::cout << "1---" << std::endl;
-
-    // FIXME: This is a work around, because the partitioning by ternary doesn't work correctly!
-    auto less = [key_func](const index_type& a, const index_type& b) { return(key_func(a,b) < 0); };
-    sort::std_sort(array, less);
-    // FIXME: End of workaround
-
     // Swap elements using ternary quicksort partitioning.
     // Casts key_func into type std::function<int(index_type, index_type)>
-    auto bounds = sort::ternary_quicksort::partition(array, key_func,
-                                                           pivot_element);
-
-    // std::cout << "Sorted until depth " <<  key_func.depth << std::endl;
-    // std::cout << "2---" << std::endl;
-    // for(size_t i = 0; i < array.size(); ++i) {
-    //     print_suffix(key_func.input_text, array[i]);
-    // }
-    // std::cout << "2---" << std::endl;
-
-    //assert(is_sorted(array, key_func));
+    auto bounds =
+        sort::ternary_quicksort::partition(array, key_func, pivot_element);
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
     // bounds[0] .. bounds[1] is equal to the pivot_element
@@ -124,11 +100,7 @@ void multikey_quicksort_internal(
 // Sort the suffix indices in array by comparing one character in
 // input_text.
 template <typename index_type>
-void multikey_quicksort(span<index_type> array,
-                               const string_span input_text) {
-
-    // print_suffix(input_text, 0);
-
+void multikey_quicksort(span<index_type> array, const string_span input_text) {
     // Generate key function which compares only the character at position 0.
     auto key_func = generate_multikey_key_function<index_type>(input_text);
 
