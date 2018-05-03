@@ -22,6 +22,14 @@ TEST(Container, make_container) {
     ASSERT_EQ(c.size(), 10u);
 }
 
+TEST(Container, make_container_span) {
+    std::array<uint8_t, 3> arr { 1, 2, 3 };
+
+    container<uint8_t> c = make_container<uint8_t>(span(arr));
+    ASSERT_EQ(c.size(), 3u);
+    ASSERT_EQ(c[1], 2);
+}
+
 TEST(String, make_string) {
     string c = make_string("hello"_s);
     ASSERT_EQ(string_span(c), "hello"_s);
