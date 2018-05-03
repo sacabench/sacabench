@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../sacabench/util/span.hpp"
+#include <util/span.hpp>
 
 // Checks the sorting of the array in O(n).
 // Returns true if correctly sorted.
@@ -14,6 +14,7 @@ template <typename content, typename key_func_type>
 bool is_sorted(const span<content> array, key_func_type cmp) {
     for (size_t i = 1; i < array.size(); ++i) {
         if (cmp(array[i - 1], array[i]) > 0) {
+            // if A[i-1] > A[i], the array cannot be sorted.
             return false;
         }
     }
