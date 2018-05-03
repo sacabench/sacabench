@@ -58,7 +58,7 @@ inline void multikey_quicksort_internal(
 
     // Swap elements using ternary quicksort partitioning.
     // Casts key_func into type std::function<int(index_type, index_type)>
-    auto bounds = ::util::sort::ternary_quicksort::partition(array, key_func,
+    auto bounds = sort::ternary_quicksort::partition(array, key_func,
                                                              pivot_element);
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element

@@ -14,6 +14,7 @@
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 
+using sacabench::util::is_sorted;
 using namespace sacabench::util::sort::ternary_quicksort;
 
 inline int cmp(size_t a, size_t b) { return a - b; }
