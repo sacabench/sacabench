@@ -7,11 +7,9 @@
 
 #pragma once
 
-#include "../span.hpp"
+#include <util/span.hpp>
 
-namespace util {
-namespace sort {
-namespace ternary_quicksort {
+namespace sacabench::util::sort::ternary_quicksort {
 
 constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
 
@@ -24,7 +22,6 @@ template <typename content, typename key_func_type>
 content max(key_func_type cmp, const content& a, const content& b) {
     return (cmp(a, b) < 0 ? b : a);
 }
-
 
 /**\brief Returns pseudo-median according to three values
  * \param array array of elements
@@ -51,14 +48,15 @@ size_t median_of_three(span<content> array, key_func_type cmp) {
  * according to Bentley and McIlroy "Engineering a Sort Function".
  */
 template <typename content, typename key_func_type>
-content median_of_nine(span<content> array, key_func_type cmp) {  
-  size_t n = array.size()-1;
-  size_t step = (n / 8);
-  size_t lower = median_of_three(array.slice(0,2*step),cmp);
-  size_t middle = median_of_three(array.slice((n/2)-step,(n/2)+step),cmp);
-  size_t upper = median_of_three(array.slice(n-2*step,n),cmp);
-  
-  return max(cmp, min(cmp, lower, middle),
+content median_of_nine(span<content> array, key_func_type cmp) {
+    size_t n = array.size() - 1;
+    size_t step = (n / 8);
+    size_t lower = median_of_three(array.slice(0, 2 * step), cmp);
+    size_t middle =
+        median_of_three(array.slice((n / 2) - step, (n / 2) + step), cmp);
+    size_t upper = median_of_three(array.slice(n - 2 * step, n), cmp);
+
+    return max(cmp, min(cmp, lower, middle),
                min(cmp, max(cmp, lower, middle), upper));
 }
 
@@ -71,11 +69,10 @@ content median_of_nine(span<content> array, key_func_type cmp) {
  *\return tuple (i,j), which corresponds to the equal partition
  *
  *Swaps the elements until the array is a ternary partition.
- * 
+ *
  */
 template <typename content, typename key_func_type>
-std::pair<size_t, size_t> partition(span<content> array,
-                                    key_func_type cmp,
+std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
                                     size_t pivot_element) {
     // Init values, which keep track of the partition position
     size_t left = 0;
@@ -136,20 +133,21 @@ std::pair<size_t, size_t> partition(span<content> array,
     // return the bounds
     return std::make_pair(i, j);
 }
+
 /**\brief Sorts an array with the given comparing function
- * 
+ *
  *\param array array of elements
  *\param cmp comparing function
  *
  *Sorts an given array (according to the first symbol in case of strings).
  *The comparing function should return for given a,b a value <0 when a < b,
- *vice versa.  
+ *vice versa.
  */
 template <typename content, typename key_func_type>
 void ternary_quicksort(span<content> array, key_func_type cmp) {
     size_t n = array.size();
 
-    //recursion termination
+    // recursion termination
     if (n <= 1) {
         return;
     }
@@ -161,18 +159,16 @@ void ternary_quicksort(span<content> array, key_func_type cmp) {
         return;
     }
 
-    //constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
+    // constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
 
-    //Choose pivot according to array size
+    // Choose pivot according to array size
     content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
                         ? median_of_nine(array, cmp)
                         : median_of_three(array, cmp);
     auto result = partition(array, cmp, pivot);
-    //sorts greater and less partiotion recursivly
+    // sorts greater and less partiotion recursivly
     ternary_quicksort(array.slice(0, result.first), cmp);
     ternary_quicksort(array.slice(result.second), cmp);
     return;
 }
-} // namespace ternary_quicksort
-} // namespace sort
-} // namespace util
+} // namespace sacabench::util::sort::ternary_quicksort
