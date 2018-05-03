@@ -67,24 +67,24 @@ public:
     }
 
     // Element access
-    inline constexpr T& operator[](size_t n) const {
+    inline T& operator[](size_t n) const {
         DCHECK_MSG(n < size(),
             "Trying to index at position " << n << " for span of size " << size());
         return *(data() + n);
     }
 
-    inline constexpr T& at(size_t n) const {
+    inline T& at(size_t n) const {
         DCHECK_MSG(n < size(),
             "Trying to index at position " << n << " for span of size " << size());
         return *(data() + n);
     }
 
-    inline constexpr T& front() const {
+    inline T& front() const {
         DCHECK_MSG(size() != 0, "Call of front() with size() == 0");
         return *data();
     }
 
-    inline constexpr T& back() const {
+    inline T& back() const {
         DCHECK_MSG(size() != 0, "Call of back() with size() == 0");
         return *(data() + size() - 1);
     }
@@ -94,7 +94,7 @@ public:
     }
 
     // Modifiers
-    inline constexpr void fill(const T& val = T()) const {
+    inline void fill(const T& val = T()) const {
         for (auto& e : *this) {
             e = val;
         }
@@ -104,7 +104,7 @@ public:
         return span< T const >(data(), size());
     }
 
-    inline constexpr span< T > slice(size_t from = 0, size_t to = npos) const {
+    inline span< T > slice(size_t from = 0, size_t to = npos) const {
         if (to == npos) {
             to = size();
         }
