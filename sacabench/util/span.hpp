@@ -31,7 +31,20 @@ public:
     inline constexpr span(T* ptr, size_t size) : m_ptr(ptr), m_size(size) {
     }
 
+    /// Constructor from a `std::vector`
     inline constexpr span(std::vector<T>& x) : span(x.data(), x.size()) {
+    }
+
+    /// Constructor from a `std::array`
+    template<size_t N>
+    inline constexpr span(std::array<T, N>& x) : span(x.data(), x.size()) {
+    }
+
+    /// Constructor from a std container.
+    ///
+    /// This means a type providing a `data()` and `size()` method.
+    template<typename std_container_type>
+    inline constexpr span(std_container_type& x) : span(x.data(), x.size()) {
     }
 
     // Iterators

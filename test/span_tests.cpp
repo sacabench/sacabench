@@ -48,6 +48,19 @@ TEST(Span, vector) {
     test_abstract_span(v);
 }
 
+TEST(Span, const_vector) {
+    std::vector<uint8_t> const data = { 0, 1, 2 };
+    span<uint8_t const> v { data };
+    test_const_abstract_span(v);
+}
+
+TEST(Span, array) {
+    std::array<uint8_t, 3> data = { 0, 1, 2 };
+    span<uint8_t> v { data };
+    test_const_abstract_span(v);
+    test_abstract_span(v);
+}
+
 TEST(Span, error_messages) {
     // NB: Disabled because they cause
     // errors not checkable in a gtest
