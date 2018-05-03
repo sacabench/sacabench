@@ -9,8 +9,19 @@
 #pragma once
 
 #include "util/container.hpp"
+#include "util/span.hpp"
 
-using char_t = unsigned char;
-using string_t = container_t<char_t>;
+namespace sacabench::util {
+    using character = unsigned char;
+    using string = container<character>;
+
+    using string_span = span< character const >;
+}
+
+inline constexpr sacabench::util::string_span operator"" _s(
+    char const* ptr, unsigned long length) {
+    using namespace sacabench::util;
+    return string_span((character const*)(ptr), length);
+}
 
 /******************************************************************************/
