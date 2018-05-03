@@ -85,7 +85,7 @@ void multikey_quicksort_internal(
     // bounds[1] .. n is greater than the pivot_element
     auto lesser = array.slice(0, bounds.first);
     auto equal = array.slice(bounds.first, bounds.second);
-    auto greater = array.slice(bounds.second, array.size());
+    auto greater = array.slice(bounds.second);
 
     // Recursively sort the lesser and greater partitions by the same depth.
     multikey_quicksort_internal(lesser, key_func);
