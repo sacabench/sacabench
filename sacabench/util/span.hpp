@@ -12,6 +12,7 @@
 #include <vector>
 #include <memory>
 #include <array>
+#include <algorithm>
 
 #include <util/assertions.hpp>
 
@@ -111,5 +112,31 @@ public:
             "Slice with out-of-bound values " << from << ".." << to
             << " for span of size " << size());
         return span< T >(data() + from, to - from);
+    }
+
+    inline friend bool operator==(span<T> const& lhs, span<T> const& rhs) {
+        return std::equal(lhs.begin(), lhs.end(),
+                          rhs.begin(), rhs.end());
+    }
+
+    inline friend bool operator!=(span<T> const& lhs, span<T> const& rhs) {
+        return !(lhs == rhs);
+    }
+
+    inline friend bool operator<(span<T> const& lhs, span<T> const& rhs) {
+        return std::lexicographical_compare(lhs.begin(), lhs.end(),
+                                            rhs.begin(), rhs.end());
+    }
+
+    inline friend bool operator>(span<T> const& lhs, span<T> const& rhs) {
+        return rhs < lhs;
+    }
+
+    inline friend bool operator<=(span<T> const& lhs, span<T> const& rhs) {
+        return !(lhs > rhs);
+    }
+
+    inline friend bool operator>=(span<T> const& lhs, span<T> const& rhs) {
+        return !(lhs < rhs);
     }
 };

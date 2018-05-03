@@ -70,3 +70,38 @@ TEST(Span, error_messages) {
     //s.at(4);
     //s.slice(4, 5);
 }
+
+TEST(Compare, less) {
+    string_span a = "hello0"_s;
+    string_span b = "hello1"_s;
+    ASSERT_LT(a, b);
+}
+TEST(Compare, greater) {
+    string_span a = "hello1"_s;
+    string_span b = "hello0"_s;
+    ASSERT_GT(a, b);
+}
+TEST(Compare, equal) {
+    string_span a = "hello0"_s;
+    string_span b = "hello0"_s;
+    ASSERT_EQ(a, b);
+}
+TEST(Compare, not_equal) {
+    string_span a = "hello0"_s;
+    string_span b = "hello1"_s;
+    ASSERT_NE(a, b);
+}
+TEST(Compare, less_equal) {
+    string_span a = "hello0"_s;
+    string_span b = "hello1"_s;
+    string_span c = "hello1"_s;
+    ASSERT_LE(a, b);
+    ASSERT_LE(b, c);
+}
+TEST(Compare, greater_equal) {
+    string_span a = "hello1"_s;
+    string_span b = "hello0"_s;
+    string_span c = "hello0"_s;
+    ASSERT_GE(a, b);
+    ASSERT_GE(b, c);
+}
