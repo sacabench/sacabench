@@ -16,10 +16,20 @@
 
 namespace sacabench::util {
     using character = unsigned char;
+
+    /// A container of characters
     using string = container<character>;
 
+    /// A span (pointer+len pair) to a sequence of
+    /// read-only characters.
     using string_span = span< character const >;
 
+    /// Creates a `string` from a `string_span`.
+    ///
+    /// Example:
+    /// ```
+    /// string s = make_string("hello"_s);
+    /// ```
     inline string make_string(string_span s) {
         string r;
         r.reserve(s.size());
@@ -28,6 +38,12 @@ namespace sacabench::util {
         return r;
     }
 
+    /// Creates a `string` from a C-string literal.
+    ///
+    /// Example:
+    /// ```
+    /// string s = make_string("hello");
+    /// ```
     inline string make_string(char const* cs) {
         string_span s { (character const*) cs, std::strlen(cs) };
         return make_string(s);
