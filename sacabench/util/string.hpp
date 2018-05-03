@@ -18,8 +18,14 @@ namespace sacabench::util {
     using string_span = span< character const >;
 }
 
+/// Custom literal operator for creating a `string_span`.
+///
+/// Example:
+/// ```
+/// string_span s = "hello"_s;
+/// ```
 inline constexpr sacabench::util::string_span operator"" _s(
-    char const* ptr, unsigned long length) {
+    char const* ptr, size_t length) {
     using namespace sacabench::util;
     return string_span((character const*)(ptr), length);
 }
