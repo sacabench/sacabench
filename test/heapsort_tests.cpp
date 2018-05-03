@@ -1,5 +1,5 @@
 /*******************************************************************************
- * test/insertsort_tests.cpp
+ * test/heapsort_tests.cpp
  *
  * Copyright (C) 2018 Rosa Pink
  *
@@ -7,7 +7,7 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
-#include <util/insertionsort.hpp>
+#include <util/heapsort.hpp>
 #include <util/container.hpp>
 
 using namespace sacabench::util;
@@ -15,7 +15,7 @@ using namespace sacabench::util;
 TEST(InSort, sort_correct) {
     container<int> test_inst = {3,1,9,6,4,2,7,8,5};
     container<int> control_inst = {1,2,3,4,5,6,7,8,9};
-    //insertion_sort(span(test_inst));
-    insertion_sort<int>(test_inst);
+    //heapsort(span(test_inst));
+    heapsort<int>(test_inst);
     ASSERT_EQ(test_inst, control_inst);
 }

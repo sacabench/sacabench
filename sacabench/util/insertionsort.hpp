@@ -1,5 +1,5 @@
 /*******************************************************************************
- * sacabench/util/span.hpp
+ * sacabench/util/insertionsort.hpp
  *
  * Copyright (C) 2018 Rosa Pink
  *
@@ -13,15 +13,14 @@ namespace sacabench::util{
 
 
 struct greater_than {
-  template<typename T>
-  bool operator()(T const& a, T const& b) {
-    return a - b;
-  }
+    template<typename T> int64_t operator()(T const& a, T const& b) {
+        return (int64_t)a - (int64_t)b;
+    }
 };
 
   template<typename T, typename F = greater_than> void insertion_sort(span<T> A, F compare_fun = F()){
       //Adapter for "a > b"
-      auto greater = [](auto a, auto b) { return compare_fun(a, b) > 0; };
+      auto greater = [&](auto a, auto b) { return compare_fun(a, b) > 0; };
 
       for(size_t i = 1; i < A.size(); i++) {
       auto to_sort = A[i];
