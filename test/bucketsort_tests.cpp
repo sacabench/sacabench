@@ -36,11 +36,12 @@ TEST(Bucketsort, other_function_call) {
 
         string firstString = {'m', 'm', 'm'};
         string secondString = {'a', 'b', 'c'};
-        string thirdString = {'x', 'y', 'z'};
+        string thirdString = {'x', 'y', 'z', 'z'};
         string fourthString = {'m', 'b', 'm'};
         string fifthString = {'a', 'm', 'a'};
         string sixthString = {'m', 'b', 'a'};
         string seventhString = {'a', 'b', 'e'};
+        string eightString = {'x', 'y', 'z', 'a'};
 
         input.push_back(firstString);
         input.push_back(secondString);
@@ -49,6 +50,7 @@ TEST(Bucketsort, other_function_call) {
         input.push_back(fifthString);
         input.push_back(sixthString);
         input.push_back(seventhString);
+        input.push_back(eightString);
 
         auto result = make_container<string>(0);
         sort::bucket_sort(input, 0, 1, result);
@@ -60,6 +62,7 @@ TEST(Bucketsort, other_function_call) {
         ASSERT_EQ(result.at(4), fourthString);
         ASSERT_EQ(result.at(5), sixthString);
         ASSERT_EQ(result.at(6), thirdString);
+        ASSERT_EQ(result.at(7), eightString);
 
         result = make_container<string>(0);
         sort::bucket_sort(input, 0, 2, result);
@@ -71,6 +74,7 @@ TEST(Bucketsort, other_function_call) {
         ASSERT_EQ(result.at(4), sixthString);
         ASSERT_EQ(result.at(5), firstString);
         ASSERT_EQ(result.at(6), thirdString);
+        ASSERT_EQ(result.at(7), eightString);
 
         result = make_container<string>(0);
         sort::bucket_sort(input, 0, 3, result);
@@ -82,6 +86,19 @@ TEST(Bucketsort, other_function_call) {
         ASSERT_EQ(result.at(4), fourthString);
         ASSERT_EQ(result.at(5), firstString);
         ASSERT_EQ(result.at(6), thirdString);
+        ASSERT_EQ(result.at(7), eightString);
+
+        result = make_container<string>(0);
+        sort::bucket_sort(input, 0, 4, result);
+
+        ASSERT_EQ(result.at(0), secondString);
+        ASSERT_EQ(result.at(1), seventhString);
+        ASSERT_EQ(result.at(2), fifthString);
+        ASSERT_EQ(result.at(3), sixthString);
+        ASSERT_EQ(result.at(4), fourthString);
+        ASSERT_EQ(result.at(5), firstString);
+        ASSERT_EQ(result.at(6), eightString);
+        ASSERT_EQ(result.at(7), thirdString);
 
         std::cout << "Result of bucket sort:" << std::endl;
         for (string bucket : result) {

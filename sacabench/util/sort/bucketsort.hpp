@@ -122,11 +122,9 @@ namespace sacabench::util::sort {
             }
             return;
         }
-        for (string currentString : strings) {
-            if (currentString.size() < currentDepth) {
-                result.push_back(currentString);
-                return;
-            }
+        if (strings.size() == 1) {
+            result.push_back(strings[0]);
+            return;
         }
 
         // build new buckets
@@ -137,14 +135,13 @@ namespace sacabench::util::sort {
 
             // Check each bucket to get one with the current key.
             for (int index = 0; index < newBuckets.size(); ++index) {
-                container<string> bucket = newBuckets.at(index);
+                container<string> bucket = newBuckets[index];
                 string firstStringInBucket = bucket.front();
                 char sortingKeyOfBucket = firstStringInBucket.at(currentDepth);
                 if (sortingKeyOfBucket == currentChar) {
-                    bucket.push_back(currentString);
+                    newBuckets[index].push_back(currentString);
                     bucketFound = true;
-                    newBuckets.erase(newBuckets.begin() + index);
-                    newBuckets.insert(newBuckets.begin() + index, bucket);
+                    break;
                 }
             }
 
@@ -158,7 +155,7 @@ namespace sacabench::util::sort {
 
                     // Insert new bucket at correct position in buckets.
                     int position = 0;
-                    while (position < newBuckets.size() && newBuckets.at(position).at(0) < currentString) {
+                    while (position < newBuckets.size() && newBuckets[position][0] < currentString) {
                         ++position;
                     }
                     newBuckets.insert(newBuckets.begin() + position, newBucket);
