@@ -2,17 +2,29 @@
 #include <iostream>
 #include <tuple>
 #include <array>
-#include "induce_sa_dc.hpp"
+#include <util/induce_sa_dc.hpp>
+#include <util/container.hpp>
+#include <util/string.hpp>
 
 int main() {
     std::cout << "Running example1" << std::endl;
 
-    std::string input_string = "caabaccaabacaa$";
-    std::string t_0 = "cbcba"; //positions i mod 3 = 0 of input_string
-    std::array<uint32_t, 10> isa = { 4,8,3,7,2,6,10,5,9,1 };
-    std::array<uint32_t, 5> sa0;
+    sacabench::util::string input_string = {'c', 'a', 'a', 'b', 'a', 'c', 'c',
+            'a', 'a', 'b', 'a', 'c', 'a', 'a'};
+            
+    //positions i mod 3 = 0 of input_string
+    sacabench::util::string t_0 = {'c', 'b', 'c', 'b', 'a'}; 
+    
+    //inverse SA of triplets beginning in positions i mod 3 != 0
+    auto isa_12 = sacabench::util::container<size_t> { 4,8,3,7,2,6,10,5,9,1 };
+    
+    //empty SA which should be filled correctly with method induce_sa_dc
+    auto sa_0 = sacabench::util::container<size_t> {0,0,0,0,0};
+    
+    //run method to test it
+    sacabench::util::induce_sa_dc<unsigned char>(t_0, isa_12, sa_0);
 
-    sacabench::util::induce_sa_dc<char>(t_0, isa, sa0);
+    sacabench::util::induce_sa_dc<char>(t_0, isa_12, sa_0);
     
     std::cout << "Finished example1" << std::endl;
 }

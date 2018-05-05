@@ -7,7 +7,9 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 #include <tuple>
-#include <array>
+#include <vector>
+#include <util/assertions.hpp>
+#include <algorithm>
 
 #pragma once
 namespace sacabench::util {
@@ -27,19 +29,21 @@ namespace sacabench::util {
     * This method works correct because of the difference cover idea.
     */
     void induce_sa_dc(T& t_0, I& isa_12, S& sa_0) {
+        
+        DCHECK_MSG(sa_0.size() == t_0.size(), "sa_0 must have the same length as t_0");
 
-        //static_assert(sa_0.size() == t_0.size(), "sa_0 must be initialised and must have the same length as t_0.");
-        //TODO: Use DCHECK() 
+        std::vector<std::tuple<C, int, int>> sa_0_to_be_sorted;
 
-        std::array<std::tuple<C, int>, sa_0.size()> sa_0_to_be_sorted;
-
-        for (int i = 0; i < sa_0.size(); i++) {
-            sa_0_to_be_sorted[i] = std::tuple<C, int>(t_0[i], isa_12[i]);
+        for (size_t i = 0; i < sa_0.size(); i++) {
+            sa_0_to_be_sorted.push_back(std::tuple<C, int, int>(t_0[i], isa_12[i], i));
         }  
     
         //TODO: sort Tupels with radix_sort
         //radix_sort(sa0_to_be_sorted, sa0);
         
-        
+        std::sort(sa_0_to_be_sorted.begin(),sa_0_to_be_sorted.end());
+        for(size_t i = 0; i<sa_0_to_be_sorted.size();i++){
+            sa_0[i] = std::get<2>(sa_0_to_be_sorted[i]);
+        }
     }
 }  // namespace sacabench::util
