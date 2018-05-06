@@ -9,3 +9,7 @@
 include(test/testsuite.cmake)
 
 run_test(example_tests DEPS saca_bench_lib)
+run_test(test_uint40)
+run_test(span_tests DEPS saca_bench_lib)
+run_test(container_tests DEPS saca_bench_lib)
+run_test(alphabet_tests DEPS saca_bench_lib)
