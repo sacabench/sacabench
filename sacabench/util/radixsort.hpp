@@ -6,12 +6,9 @@
 
 #pragma once
  
-#include<vector>
+#include <vector>
 #include <string>
 #include <unordered_map> 
-
-#include<vector>
-#include<unordered_map>
 
 namespace sacabench::util {
     void radixsort(std::vector<std::string>* input);
