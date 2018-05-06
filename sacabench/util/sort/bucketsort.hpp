@@ -113,7 +113,10 @@ namespace sacabench::util::sort {
             }
         }
 
-    void bucket_sort(container<string>& strings, int currentDepth, int maxDepth, container<string>& result) {
+    /// This is the recursiv helper function for the function bucket sort.
+    /// Do not use this function directly, instead use
+    /// void bucket_sort(container<string>& strings, int maxDepth, container<string>& result).
+    void bucket_sort_recursiv(container<string>& strings, int currentDepth, int maxDepth, container<string>& result) {
 
         // check end of recursion
         if (currentDepth == maxDepth) {
@@ -165,8 +168,20 @@ namespace sacabench::util::sort {
 
         // new recursion
         for (container<string> bucket : newBuckets) {
-            bucket_sort(bucket, currentDepth + 1, maxDepth, result);
+            bucket_sort_recursiv(bucket, currentDepth + 1, maxDepth, result);
         }
     }
 
+    /**\brief Sorts the given strings to a given number of chars.
+     * \param strings The strings to be sorted.
+     * \param maxDepth The number of chars until which the strings will be sorted.
+     * \param result The place in which the sorted strings will be saved.
+     *
+     * Bucketsort sorts the given strings by placing them into buckets with the same prefix.
+     * The result contains all buckets in sorted ascending order.
+     * The strings within each bucket are not necessarily sorted.
+     */
+    void bucket_sort(container<string>& strings, int maxDepth, container<string>& result) {
+        bucket_sort_recursiv(strings, 0, maxDepth, result);
+    }
 }

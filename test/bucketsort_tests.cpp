@@ -53,7 +53,7 @@ TEST(Bucketsort, other_function_call) {
         input.push_back(eightString);
 
         auto result = make_container<string>(0);
-        sort::bucket_sort(input, 0, 1, result);
+        sort::bucket_sort(input, 1, result);
 
         ASSERT_EQ(result.at(0), secondString);
         ASSERT_EQ(result.at(1), fifthString);
@@ -65,7 +65,7 @@ TEST(Bucketsort, other_function_call) {
         ASSERT_EQ(result.at(7), eightString);
 
         result = make_container<string>(0);
-        sort::bucket_sort(input, 0, 2, result);
+        sort::bucket_sort(input, 2, result);
 
         ASSERT_EQ(result.at(0), secondString);
         ASSERT_EQ(result.at(1), seventhString);
@@ -77,7 +77,7 @@ TEST(Bucketsort, other_function_call) {
         ASSERT_EQ(result.at(7), eightString);
 
         result = make_container<string>(0);
-        sort::bucket_sort(input, 0, 3, result);
+        sort::bucket_sort(input, 3, result);
 
         ASSERT_EQ(result.at(0), secondString);
         ASSERT_EQ(result.at(1), seventhString);
@@ -89,7 +89,7 @@ TEST(Bucketsort, other_function_call) {
         ASSERT_EQ(result.at(7), eightString);
 
         result = make_container<string>(0);
-        sort::bucket_sort(input, 0, 4, result);
+        sort::bucket_sort(input, 4, result);
 
         ASSERT_EQ(result.at(0), secondString);
         ASSERT_EQ(result.at(1), seventhString);
