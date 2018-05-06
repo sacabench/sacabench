@@ -39,3 +39,9 @@ TEST(String, make_cstring) {
     string c = make_string("hello");
     ASSERT_EQ(string_span(c), "hello"_s);
 }
+
+TEST(Container, string_container) {
+    container<string> v = { make_string("foo"), make_string("bar") };
+
+    ASSERT_EQ(v[0], "foo"_s);
+}
