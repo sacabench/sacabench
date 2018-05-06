@@ -9,8 +9,17 @@
 #include <util/string.hpp>
 #include <util/container.hpp>
 
+//implementation of get-substring method
+span<uint32_t> get_substring(sacabench::util::string& t, int pos, int n) {
+    return sacabench::util::string_span(pos, n);
+}
 
-TEST(DC, induce) {    
+// implementation of comp method
+bool comp(sacabench::util::string& a, sacabench::util::string& b) {
+    return a < b;
+}
+
+TEST(DC, merge) {    
     sacabench::util::string input_string = {'c', 'a', 'a', 'b', 'a', 'c', 'c',
             'a', 'a', 'b', 'a', 'c', 'a', 'a'};
     
@@ -22,19 +31,9 @@ TEST(DC, induce) {
     //empty SA which should be filled correctly with method merge_sa_dc
     auto sa = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     
-    //implementation of get-substring method
-    template <typename T>
-    span<t> get_substring(T& t, int pos, int n) {
-        return t.subspan(pos, n);
-    }
-    
-    // implementation of comp method
-    bool comp(sacabench::util::string a, sacabench::util::string b) {
-        return a < b;
-    }
-    
     //run method to test it
-    sacabench::util::merge_sa_dc<unsigned char>(input_string, sa_0, sa_12, isa_12, sa, comp);
+    sacabench::util::merge_sa_dc<unsigned char>(input_string, sa_0, sa_12, isa_12, sa, comp, 
+                                get_substring);
 
     //expected values for induced SA with DC
     auto expected = sacabench::util::container<size_t> {14,13,12,7,1,8,2,10,4,9,3,11,6,0,5};
