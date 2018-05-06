@@ -33,6 +33,7 @@ namespace sacabench::util {
             std::getline(filestream, line);
             // Insert chars of current line into string text.
             std::copy(line.begin(), line.end(), std::back_inserter(text));
+            text.push_back('\n');
         }
 
         return text;
