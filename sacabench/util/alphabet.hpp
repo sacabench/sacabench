@@ -8,7 +8,7 @@
 #pragma once
 
 #include "util/string.hpp"
-
+namespace sacabench::util{
 struct alphabet {
     std::size_t size;
     std::array<character, std::numeric_limits<character>::max() + 1> effective;
@@ -57,5 +57,5 @@ void apply_effective_alphabet(string& input, const alphabet& alphabet_map) {
         c = alphabet_map.effective[c];
     }
 }
-
+}
 /******************************************************************************/
