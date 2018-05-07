@@ -30,7 +30,7 @@ set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
 # The configuration affects things like compiler optimizations
 # and debugging symbols in the binary.
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
+  set(CMAKE_BUILD_TYPE "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
 set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra;-Werror=return-type")
