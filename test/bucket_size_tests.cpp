@@ -15,6 +15,15 @@ using namespace sacabench::util;
 TEST(Bucket_Size, get) {
     string input = {'b','l','a','b','l','a','b','l','u','b'};
     container<int> bucket_sizes = get_bucket_sizes(input);
-    ASSERT_EQ(bucket_sizes.size(), 4);
+    ASSERT_EQ(bucket_sizes.size(), 5);
+}
+
+TEST(Bucket_Size, sizes){
+        string input = {'b','l','a','b','l','a','b','l','u','b'};
+        container<int> bucket_sizes = get_bucket_sizes(input);
+        ASSERT_EQ(bucket_sizes.at(1), 2);
+        ASSERT_EQ(bucket_sizes.at(2), 4);
+        ASSERT_EQ(bucket_sizes.at(3), 3);
+        ASSERT_EQ(bucket_sizes.at(4), 1);
 }
 
