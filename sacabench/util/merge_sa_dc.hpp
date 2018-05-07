@@ -7,7 +7,9 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 #include <array>
-#inlcude "span.hpp"
+#include "span.hpp"
+//#include <util/assertions.hpp>
+
 
 #pragma once
 namespace sacabench::util {
@@ -32,9 +34,9 @@ namespace sacabench::util {
     * contains the lexicographical ranks of positions i mod 3 != 0.
     * This method works correct because of the difference cover idea.
     */
-    void merge_sa_dc(T& t, S& sa_0, S& sa_12 I& isa_12, S& sa, Compare comp, Substring get_substring) {
+    void merge_sa_dc(T& t, S& sa_0, S& sa_12, I& isa_12, S& sa, Compare comp, Substring get_substring) {
 
-        DCHECK(sa.size() > 0);
+        //DCHECK_MSG(sa.size() == t.size(), "sa must be initialised and must have the same length as t.");
 
         int i = 0;
         int j = 0;
@@ -42,27 +44,25 @@ namespace sacabench::util {
         
         while (counter < sa.size()) {
             if (i < sa_0.size() && j < sa_12.size()) {
+                span<unsigned char> t_0;
+                span<unsigned char> t_12;
                 if (sa_12[j] % 3 == 1) {
-                    span<T> t_0 = get_substring(t, sa_0[i], 1);    
-                    span<T> t_12 = get_substring(t, sa_12[j], 1); 
-                    
-                    if (comp(t_0, t_12) || (!comp(t_0, t_12) && !comp(t_12, t_0) && isa_12[i+t_0.size()] < isa_12[j+t_12.size())) { 
-                        sa[counter] = sa_0[i++];
-                    }
-                    else {
-                        sa[counter] = sa_12[j++];
-                    }
+                    t_0 = get_substring(t, &t[sa_0[i]], 1);    
+                    t_12 = get_substring(t, &t[sa_12[j]], 1); 
                 }
                 else {
-                    span<T> t_0 = get_substring(t, sa_0[i], 2);     
-                    span<T> t_12 = get_substring(t, sa_12[j], 2);  
-                    
-                    if (comp(t_0, t_12) || (!comp(t_0, t_12) && !comp(t_12, t_0) && isa_12[i+t_0.size()] < isa_12[j+t_12.size())) { 
-                        sa[counter] = sa_0[i++];
-                    }
-                    else {
-                        sa[counter] = sa_12[j++];
-                    }
+                    t_0 = get_substring(t, &t[sa_0[i]], 2);    
+                    t_12 = get_substring(t, &t[sa_12[j]], 2); 
+                }
+                if (comp(t_0, t_12) // t_0 is lexicographically smaller than t_12
+                    || (!comp(t_0, t_12) && !comp(t_12, t_0) // or t_0 and t_12 are lexicographically equal and
+                    && isa_12[(2*(sa_0[i]+t_0.size()))/3] // the following suffix of t_0 is lexicographically smaller than that of t_12
+                        < isa_12[2*((sa_12[j]+t_12.size()))/3])) { 
+                
+                    sa[counter] = sa_0[i++];
+                }
+                else {
+                    sa[counter] = sa_12[j++];
                 }
             }
             
@@ -75,6 +75,12 @@ namespace sacabench::util {
             }
             
             ++counter;
+            
+            std::string test = "" + std::to_string(sa[0]);
+            for (int i = 1; i < sa.size(); i++) {
+                test += ", " + std::to_string(sa[i]);
+            }
+            std::cout << test << std::endl;
         }
     }
 }  // namespace sacabench::util
