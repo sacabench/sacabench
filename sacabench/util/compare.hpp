@@ -11,8 +11,8 @@
 #include <cstdint>
 
 namespace sacabench::util {
-    /// Adapter to turn a less-than comparison into an STL-conform
-    /// greater-than binary predicate.
+    /// Adapter to turn a less-than comparison into an
+    /// greater-than comparison.
     template<typename compare_type>
     struct as_greater {
         as_greater(compare_type functor): less(functor) {}
@@ -25,8 +25,8 @@ namespace sacabench::util {
         compare_type less;
     };
 
-    /// Adapter to turn a less-than comparison into an STL-conform
-    /// equal binary predicate.
+    /// Adapter to turn a less-than comparison into an
+    /// equal comparison.
     template<typename compare_type>
     struct as_equal {
         as_equal(compare_type functor): less(functor) {}
@@ -39,8 +39,8 @@ namespace sacabench::util {
         compare_type less;
     };
 
-    /// Adapter to turn a less-than comparison into an STL-conform
-    /// less-equal binary predicate.
+    /// Adapter to turn a less-than comparison into an
+    /// less-equal comparison.
     template<typename compare_type>
     struct as_less_equal {
         as_less_equal(compare_type functor): less(functor) {}
@@ -53,8 +53,8 @@ namespace sacabench::util {
         compare_type less;
     };
 
-    /// Adapter to turn a less-than comparison into an STL-conform
-    /// greater-equal binary predicate.
+    /// Adapter to turn a less-than comparison into an
+    /// greater-equal comparison.
     template<typename compare_type>
     struct as_greater_equal {
         as_greater_equal(compare_type functor): less(functor) {}
@@ -67,8 +67,8 @@ namespace sacabench::util {
         compare_type less;
     };
 
-    /// Adapter to turn a less-than comparison into an STL-conform
-    /// not-equal binary predicate.
+    /// Adapter to turn a less-than comparison into an
+    /// not-equal comparison.
     template<typename compare_type>
     struct as_not_equal {
         as_not_equal(compare_type functor): less(functor) {}
