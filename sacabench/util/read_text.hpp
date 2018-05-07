@@ -29,11 +29,16 @@ namespace sacabench::util {
             exit(EXIT_FAILURE);
         }
 
+        // Insert first line.
+        std::getline(filestream, line);
+        std::copy(line.begin(), line.end(), std::back_inserter(text));
+
+        // Insert rest of lines together with a '\n'.
         while (!filestream.eof()) {
+            text.push_back('\n');
             std::getline(filestream, line);
             // Insert chars of current line into string text.
             std::copy(line.begin(), line.end(), std::back_inserter(text));
-            text.push_back('\n');
         }
 
         return text;
