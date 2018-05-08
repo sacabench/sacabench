@@ -15,7 +15,7 @@ namespace sacabench::util {
 
     /*
      * struct containing the default comparison function.
-     * TODO: replace with
+     * TODO: replace with new group decision (similar to standard)
      */
     struct greater_than {
         template<typename T>
