@@ -12,18 +12,36 @@
 
 using namespace sacabench::util;
 
-TEST(is_sorted, correctly_sorted) {
-    std::vector<size_t> test_case = {1, 2, 3, 4, 5};
-    std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b) {
-        return (a - b);
-    };
+std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b) {
+    return (a - b);
+};
+
+TEST(is_sorted, correctly_sorted_empty) {
+    std::vector<size_t> test_case;
     ASSERT_TRUE(is_sorted(span(test_case), cmp));
 }
 
-TEST(is_sorted, wrongly_sorted) {
+TEST(is_sorted, correctly_sorted_one) {
+    std::vector<size_t> test_case = {5};
+    ASSERT_TRUE(is_sorted(span(test_case), cmp));
+}
+
+TEST(is_sorted, correctly_sorted_two) {
+    std::vector<size_t> test_case = {4, 5};
+    ASSERT_TRUE(is_sorted(span(test_case), cmp));
+}
+
+TEST(is_sorted, correctly_sorted_five) {
+    std::vector<size_t> test_case = {1, 2, 3, 4, 5};
+    ASSERT_TRUE(is_sorted(span(test_case), cmp));
+}
+
+TEST(is_sorted, wrongly_sorted_two) {
+    std::vector<size_t> test_case = {1, 0};
+    ASSERT_FALSE(is_sorted(span(test_case), cmp));
+}
+
+TEST(is_sorted, wrongly_sorted_five) {
     std::vector<size_t> test_case = {5, 4, 1, 2, 3};
-    std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b) {
-        return (a - b);
-    };
     ASSERT_FALSE(is_sorted(span(test_case), cmp));
 }

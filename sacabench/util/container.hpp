@@ -9,6 +9,7 @@
 #pragma once
 
 #include <vector>
+#include "span.hpp"
 
 namespace sacabench::util {
     template <typename element_type>
@@ -21,6 +22,17 @@ namespace sacabench::util {
         container<element_type> r;
         r.reserve(size);
         r.resize(size);
+        return r;
+    }
+
+    /**\brief Creates a container as a copy of the elements of a `span`.
+    */
+    template <typename element_type>
+    container<element_type> make_container(span<element_type> s) {
+        container<element_type> r;
+        r.reserve(s.size());
+        r.resize(s.size());
+        std::copy(s.begin(), s.end(), r.begin());
         return r;
     }
 }
