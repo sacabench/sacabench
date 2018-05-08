@@ -1,6 +1,4 @@
 /*******************************************************************************
- * test/example_tests.cpp
- *
  * Copyright (C) 2018 Marvin Böcker <marvin.boecker@udo.edu>
  * Copyright (C) 2018 Hermann Foot <hermann.foot@tu-dortmunde.de>
  *
