@@ -18,7 +18,7 @@ namespace sacabench::util {
         as_greater(compare_type functor): less(functor) {}
 
         template<typename element_t>
-        bool operator()(element_t const& lhs, element_t const& rhs) {
+        bool operator()(element_t const& lhs, element_t const& rhs) const {
             return less(rhs, lhs);
         }
     private:
@@ -32,7 +32,7 @@ namespace sacabench::util {
         as_equal(compare_type functor): less(functor) {}
 
         template<typename element_t>
-        bool operator()(element_t const& lhs, element_t const& rhs) {
+        bool operator()(element_t const& lhs, element_t const& rhs) const {
             return !less(lhs, rhs) && !less(rhs, lhs);
         }
     private:
@@ -46,7 +46,7 @@ namespace sacabench::util {
         as_less_equal(compare_type functor): less(functor) {}
 
         template<typename element_t>
-        bool operator()(element_t const& lhs, element_t const& rhs) {
+        bool operator()(element_t const& lhs, element_t const& rhs) const {
             return !less(rhs, lhs);
         }
     private:
@@ -60,7 +60,7 @@ namespace sacabench::util {
         as_greater_equal(compare_type functor): less(functor) {}
 
         template<typename element_t>
-        bool operator()(element_t const& lhs, element_t const& rhs) {
+        bool operator()(element_t const& lhs, element_t const& rhs) const {
             return !less(lhs, rhs);
         }
     private:
@@ -74,7 +74,7 @@ namespace sacabench::util {
         as_not_equal(compare_type functor): less(functor) {}
 
         template<typename element_t>
-        bool operator()(element_t const& lhs, element_t const& rhs) {
+        bool operator()(element_t const& lhs, element_t const& rhs) const {
             return less(lhs, rhs) || less(rhs, lhs);
         }
     private:
