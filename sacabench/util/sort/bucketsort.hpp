@@ -129,41 +129,15 @@ namespace sacabench::util::sort {
             result.push_back(strings[0]);
             return;
         }
+        if (strings.size() == 0) {
+            return;
+        }
 
         // build new buckets
-        container<container<string>> newBuckets;
+        container<container<string>> newBuckets = make_container<container<string>>(256);
         for (string currentString : strings) {
-            bool bucketFound = false;
             char currentChar = currentString.at(currentDepth);
-
-            // Check each bucket to get one with the current key.
-            for (int index = 0; index < newBuckets.size(); ++index) {
-                container<string> bucket = newBuckets[index];
-                string firstStringInBucket = bucket.front();
-                char sortingKeyOfBucket = firstStringInBucket.at(currentDepth);
-                if (sortingKeyOfBucket == currentChar) {
-                    newBuckets[index].push_back(currentString);
-                    bucketFound = true;
-                    break;
-                }
-            }
-
-            // There is no bucket with this key yet, add a new one.
-            if (!bucketFound) {
-                container<string> newBucket;
-                newBucket.push_back(currentString);
-                if (newBuckets.empty()) {
-                    newBuckets.push_back(newBucket);
-                } else {
-
-                    // Insert new bucket at correct position in buckets.
-                    int position = 0;
-                    while (position < newBuckets.size() && newBuckets[position][0] < currentString) {
-                        ++position;
-                    }
-                    newBuckets.insert(newBuckets.begin() + position, newBucket);
-                }
-            }
+            newBuckets[currentChar].push_back(currentString);
         }
 
         // new recursion

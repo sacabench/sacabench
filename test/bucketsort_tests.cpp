@@ -26,90 +26,76 @@ TEST(Bucketsort, function_call) {
     std::cout << std::endl;
 }
 
-TEST(Bucketsort, other_function_call) {
+TEST(Bucketsort, recursiv_bucket_sort_test) {
 
     using namespace sacabench::util;
+    container<string> input = make_container<string>(0);
 
-    try {
+    string firstString = {'m', 'm', 'm'};
+    string secondString = {'a', 'b', 'c'};
+    string thirdString = {'x', 'y', 'z', 'z'};
+    string fourthString = {'m', 'b', 'm'};
+    string fifthString = {'a', 'm', 'a'};
+    string sixthString = {'m', 'b', 'a'};
+    string seventhString = {'a', 'b', 'e'};
+    string eightString = {'x', 'y', 'z', 'a'};
 
-        container<string> input = make_container<string>(0);
+    input.push_back(firstString);
+    input.push_back(secondString);
+    input.push_back(thirdString);
+    input.push_back(fourthString);
+    input.push_back(fifthString);
+    input.push_back(sixthString);
+    input.push_back(seventhString);
+    input.push_back(eightString);
 
-        string firstString = {'m', 'm', 'm'};
-        string secondString = {'a', 'b', 'c'};
-        string thirdString = {'x', 'y', 'z', 'z'};
-        string fourthString = {'m', 'b', 'm'};
-        string fifthString = {'a', 'm', 'a'};
-        string sixthString = {'m', 'b', 'a'};
-        string seventhString = {'a', 'b', 'e'};
-        string eightString = {'x', 'y', 'z', 'a'};
+    auto result = make_container<string>(0);
+    sort::bucket_sort(input, 1, result);
 
-        input.push_back(firstString);
-        input.push_back(secondString);
-        input.push_back(thirdString);
-        input.push_back(fourthString);
-        input.push_back(fifthString);
-        input.push_back(sixthString);
-        input.push_back(seventhString);
-        input.push_back(eightString);
+    ASSERT_EQ(result.at(0), secondString);
+    ASSERT_EQ(result.at(1), fifthString);
+    ASSERT_EQ(result.at(2), seventhString);
+    ASSERT_EQ(result.at(3), firstString);
+    ASSERT_EQ(result.at(4), fourthString);
+    ASSERT_EQ(result.at(5), sixthString);
+    ASSERT_EQ(result.at(6), thirdString);
+    ASSERT_EQ(result.at(7), eightString);
 
-        auto result = make_container<string>(0);
-        sort::bucket_sort(input, 1, result);
+    result = make_container<string>(0);
+    sort::bucket_sort(input, 2, result);
 
-        ASSERT_EQ(result.at(0), secondString);
-        ASSERT_EQ(result.at(1), fifthString);
-        ASSERT_EQ(result.at(2), seventhString);
-        ASSERT_EQ(result.at(3), firstString);
-        ASSERT_EQ(result.at(4), fourthString);
-        ASSERT_EQ(result.at(5), sixthString);
-        ASSERT_EQ(result.at(6), thirdString);
-        ASSERT_EQ(result.at(7), eightString);
+    ASSERT_EQ(result.at(0), secondString);
+    ASSERT_EQ(result.at(1), seventhString);
+    ASSERT_EQ(result.at(2), fifthString);
+    ASSERT_EQ(result.at(3), fourthString);
+    ASSERT_EQ(result.at(4), sixthString);
+    ASSERT_EQ(result.at(5), firstString);
+    ASSERT_EQ(result.at(6), thirdString);
+    ASSERT_EQ(result.at(7), eightString);
 
-        result = make_container<string>(0);
-        sort::bucket_sort(input, 2, result);
+    result = make_container<string>(0);
+    sort::bucket_sort(input, 3, result);
 
-        ASSERT_EQ(result.at(0), secondString);
-        ASSERT_EQ(result.at(1), seventhString);
-        ASSERT_EQ(result.at(2), fifthString);
-        ASSERT_EQ(result.at(3), fourthString);
-        ASSERT_EQ(result.at(4), sixthString);
-        ASSERT_EQ(result.at(5), firstString);
-        ASSERT_EQ(result.at(6), thirdString);
-        ASSERT_EQ(result.at(7), eightString);
+    ASSERT_EQ(result.at(0), secondString);
+    ASSERT_EQ(result.at(1), seventhString);
+    ASSERT_EQ(result.at(2), fifthString);
+    ASSERT_EQ(result.at(3), sixthString);
+    ASSERT_EQ(result.at(4), fourthString);
+    ASSERT_EQ(result.at(5), firstString);
+    ASSERT_EQ(result.at(6), thirdString);
+    ASSERT_EQ(result.at(7), eightString);
 
-        result = make_container<string>(0);
-        sort::bucket_sort(input, 3, result);
+    result = make_container<string>(0);
+    sort::bucket_sort(input, 4, result);
 
-        ASSERT_EQ(result.at(0), secondString);
-        ASSERT_EQ(result.at(1), seventhString);
-        ASSERT_EQ(result.at(2), fifthString);
-        ASSERT_EQ(result.at(3), sixthString);
-        ASSERT_EQ(result.at(4), fourthString);
-        ASSERT_EQ(result.at(5), firstString);
-        ASSERT_EQ(result.at(6), thirdString);
-        ASSERT_EQ(result.at(7), eightString);
-
-        result = make_container<string>(0);
-        sort::bucket_sort(input, 4, result);
-
-        ASSERT_EQ(result.at(0), secondString);
-        ASSERT_EQ(result.at(1), seventhString);
-        ASSERT_EQ(result.at(2), fifthString);
-        ASSERT_EQ(result.at(3), sixthString);
-        ASSERT_EQ(result.at(4), fourthString);
-        ASSERT_EQ(result.at(5), firstString);
-        ASSERT_EQ(result.at(6), eightString);
-        ASSERT_EQ(result.at(7), thirdString);
-
-        std::cout << "Result of bucket sort:" << std::endl;
-        for (string bucket : result) {
-            for (int index = 0; index < bucket.size(); ++index) {
-                std::cout << bucket.at(index);
-            }
-            std::cout << ", ";
-        }
-    } catch (std::bad_alloc& ba) {
-        std::cerr << "bad_alloc caught: " << ba.what() << '\n';
-    }
+    ASSERT_EQ(result.at(0), secondString);
+    ASSERT_EQ(result.at(1), seventhString);
+    ASSERT_EQ(result.at(2), fifthString);
+    ASSERT_EQ(result.at(3), sixthString);
+    ASSERT_EQ(result.at(4), fourthString);
+    ASSERT_EQ(result.at(5), firstString);
+    ASSERT_EQ(result.at(6), eightString);
+    ASSERT_EQ(result.at(7), thirdString);
 }
 
 
