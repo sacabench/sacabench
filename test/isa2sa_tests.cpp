@@ -27,3 +27,10 @@ TEST(isa2sa, inplace_stupid_test) {
     ASSERT_EQ(isa, sa);
 
 }
+TEST(isa2sa, multiscan_test) {
+    std::vector<size_t> isa {13,4,6,10,8,14,12,3,5,9,7,11,2,1,0};
+    std::vector<size_t> sa {14,13,12,7,1,8,2,10,4,9,3,11,6,0,5 };
+    isa2sa_multiscan(isa);
+    ASSERT_EQ(isa, sa);
+
+}
