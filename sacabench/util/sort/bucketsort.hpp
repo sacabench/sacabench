@@ -115,8 +115,8 @@ namespace sacabench::util::sort {
 
     /// This is the recursiv helper function for the function bucket sort.
     /// Do not use this function directly, instead use
-    /// void bucket_sort(container<string>& strings, int maxDepth, container<string>& result).
-    void bucket_sort_recursiv(container<string>& strings, int currentDepth, int maxDepth, container<string>& result) {
+    /// void bucket_sort(container<string>& strings, size_t maxDepth, container<string>& result).
+    void bucket_sort_recursiv(container<string>& strings, size_t currentDepth, size_t maxDepth, container<string>& result) {
 
         // check end of recursion
         if (currentDepth == maxDepth) {
@@ -155,7 +155,7 @@ namespace sacabench::util::sort {
      * The result contains all buckets in sorted ascending order.
      * The strings within each bucket are not necessarily sorted.
      */
-    void bucket_sort(container<string>& strings, int maxDepth, container<string>& result) {
+    void bucket_sort(container<string>& strings, size_t maxDepth, container<string>& result) {
         bucket_sort_recursiv(strings, 0, maxDepth, result);
     }
 }
