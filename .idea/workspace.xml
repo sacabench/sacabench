@@ -10,10 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81d98609-48c1-40ff-b6f6-5e56fb3dcfa8" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sacabench/util/bucket_size.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/sacabench/util/bucket_size.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sacabench/util/type_extraction.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/bucket_size_tests.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/bucket_size_tests.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,11 +22,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="bucket_size.hpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="bucket_size.hpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sacabench/util/bucket_size.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="22" column="31" selection-start-line="22" selection-start-column="31" selection-end-line="22" selection-end-column="31" />
+            <state>
+              <caret column="80" selection-start-column="80" selection-end-column="80" />
               <folding>
                 <element signature="e#356#380#0" expanded="true" />
               </folding>
@@ -37,7 +34,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bucket_size_tests.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="bucket_size_tests.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/bucket_size_tests.cpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="425">
@@ -58,8 +55,8 @@
         <option value="$PROJECT_DIR$/sacabench/sacabench.cpp" />
         <option value="$PROJECT_DIR$/test/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/test/container_tests.cpp" />
-        <option value="$PROJECT_DIR$/sacabench/util/bucket_size.hpp" />
         <option value="$PROJECT_DIR$/test/bucket_size_tests.cpp" />
+        <option value="$PROJECT_DIR$/sacabench/util/bucket_size.hpp" />
       </list>
     </option>
   </component>
@@ -138,12 +135,12 @@
       <updated>1525338044472</updated>
       <workItem from="1525338047820" duration="2414000" />
       <workItem from="1525673016956" duration="646000" />
-      <workItem from="1525673721579" duration="4066000" />
+      <workItem from="1525673721579" duration="4439000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7126000" />
+    <option name="totallyTimeSpent" value="7499000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="-6" width="1381" height="885" extended-state="6" />
@@ -286,20 +283,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sacabench/util/bucket_size.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="31" selection-start-line="22" selection-start-column="31" selection-end-line="22" selection-end-column="31" />
-          <folding>
-            <element signature="e#356#380#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/bucket_size_tests.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="425">
           <caret line="25" column="39" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sacabench/util/bucket_size.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="80" selection-start-column="80" selection-end-column="80" />
+          <folding>
+            <element signature="e#356#380#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

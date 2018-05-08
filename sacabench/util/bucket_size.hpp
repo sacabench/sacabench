@@ -1,6 +1,4 @@
 /*******************************************************************************
- * sacabench/util/bucket_size.hpp
- * 
  * Copyright (C) 2018 Janina Michaelis <janina.michaelis@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -20,7 +18,7 @@ namespace sacabench::util {
         apply_effective_alphabet(temp_input, input_alphabet);
         container<int> bucket_sizes = make_container<int>(input_alphabet.size+1);
         for (const char c: temp_input) {
-            ++bucket_sizes.at(c);        }
+            ++bucket_sizes[c];        }
         return bucket_sizes;
     }
 }
