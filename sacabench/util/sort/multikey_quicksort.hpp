@@ -42,14 +42,9 @@ public:
         DCHECK_LT(depth + a, input_text.size());
         DCHECK_LT(depth + b, input_text.size());
 
-        std::cout << depth << "a" << a << ":" << input_text.size() << std::endl;
-        std::cout << depth << "b" << b << ":" << input_text.size() << std::endl;
-
         character at_a = this->input_text[depth + a];
         character at_b = this->input_text[depth + b];
         bool diff = at_a < at_b;
-
-        std::cout << "ok" << std::endl;
 
         return diff;
     }
@@ -82,10 +77,8 @@ void multikey_quicksort_internal(
 
     // Swap elements using ternary quicksort partitioning.
     // Casts key_func into type std::function<int(index_type, index_type)>
-    std::cout << "beginne qs" << std::endl;
     auto bounds =
         sort::ternary_quicksort::partition(array, key_func, pivot_element);
-std::cout << "beende qs" << std::endl;
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
     // bounds[0] .. bounds[1] is equal to the pivot_element

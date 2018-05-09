@@ -51,11 +51,13 @@ size_t median_of_three(span<content> array, key_func_type cmp) {
 template <typename content, typename key_func_type>
 content median_of_nine(span<content> array, key_func_type cmp) {
     size_t n = array.size() - 1;
+    std::cout << 1 << std::endl;
     size_t step = (n / 8);
     size_t lower = median_of_three(array.slice(0, 2 * step), cmp);
     size_t middle =
         median_of_three(array.slice((n / 2) - step, (n / 2) + step), cmp);
     size_t upper = median_of_three(array.slice(n - 2 * step, n), cmp);
+    std::cout << 2 << std::endl;
 
     return max(cmp, min(cmp, lower, middle),
                min(cmp, max(cmp, lower, middle), upper));
@@ -118,8 +120,12 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
             ++left;
         }
     }
+
     // Loop, which builds the equal partition
     while (mid < j) {
+        DCHECK_LT(mid, array.size());
+        DCHECK_LT(right, array.size());
+
         // if current element is bigger than the pivot_element, swap it
         if (greater(array[mid], pivot_element)) {
             std::swap(array[mid], array[right]);
