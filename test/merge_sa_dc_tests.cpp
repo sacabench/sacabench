@@ -17,7 +17,7 @@ span<unsigned char> get_substring(sacabench::util::string& t, unsigned char* ptr
 
 // implementation of comp method
 bool comp(span<unsigned char>& a, span<unsigned char>& b) {
-    for (int i = 0; i < a.size(); i++) {
+    for (size_t i = 0; i < a.size(); i++) {
         if (b.at(i) == '$') {
             return false;
         }
@@ -52,7 +52,7 @@ TEST(DC, merge) {
             9,3,11,6,0,5};
     
     //compare results with expected values
-    for (int i = 0; i < expected.size(); i++) {
+    for (size_t i = 0; i < expected.size(); i++) {
         ASSERT_EQ(sa[i], expected[i]);
     }
 }
