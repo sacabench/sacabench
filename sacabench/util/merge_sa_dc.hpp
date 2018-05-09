@@ -5,8 +5,9 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 #include <array>
-#include "span.hpp"
+#include <util/span.hpp>
 #include <util/assertions.hpp>
+#include <util/string.hpp>
 
 
 #pragma once
@@ -35,8 +36,8 @@ namespace sacabench::util {
     * contains the lexicographical ranks of positions i mod 3 != 0.
     * This method works correct because of the difference cover idea.
     */
-    void merge_sa_dc(const T& t, const S& sa_0, const S& sa_12, const I& isa_12, S& sa, Compare comp, 
-            Substring get_substring) {
+    void merge_sa_dc(const T& t, const S& sa_0, const S& sa_12, const I& isa_12, S& sa, const Compare comp, 
+            const Substring get_substring) {
 
         DCHECK_MSG(sa.size() == t.size(), 
                 "sa must be initialised and must have the same length as t.");
@@ -51,8 +52,8 @@ namespace sacabench::util {
         
         while (counter < sa.size()) {
             if (i < sa_0.size() && j < sa_12.size()) {
-                span<const unsigned char> t_0;
-                span<const unsigned char> t_12;
+                string_span t_0;
+                string_span t_12;
                 if (sa_12[j] % 3 == 1) {
                     t_0 = get_substring(t, &t[sa_0[i]], 1);    
                     t_12 = get_substring(t, &t[sa_12[j]], 1); 

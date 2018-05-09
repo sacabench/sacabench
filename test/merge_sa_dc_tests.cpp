@@ -10,30 +10,18 @@
 #include <util/container.hpp>
 
 //implementation of get-substring method
-span<const unsigned char> get_substring(const sacabench::util::string& t, const unsigned char* ptr,
+sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
         int n) {
     return span(ptr, n);
 }
 
 // implementation of comp method
-bool comp(const span<const unsigned char>& a, const span<const unsigned char>& b) {
-    for (size_t i = 0; i < a.size(); i++) {
-        if (b.at(i) == '$') {
-            return false;
-        }
-        else if (a.at(i) == '$' || a.at(i) < b.at(i)) {
-            return true;
-        }
-        else if (a.at(i) > b.at(i)) {
-            return false;
-        }
-    }
-    return false;
+bool comp(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
+    return a < b;
 }
 
 TEST(DC, merge) {    
-    sacabench::util::string input_string = {'c', 'a', 'a', 'b', 'a', 'c', 'c',
-            'a', 'a', 'b', 'a', 'c', 'a', 'a', '$'};
+    sacabench::util::string input_string = sacabench::util::make_string("caabaccaabacaa$");
     
     //initialize suffix array and inverse suffix array
     auto sa_0 = sacabench::util::container<size_t> { 12,9,3,6,0 };
@@ -44,7 +32,7 @@ TEST(DC, merge) {
     auto sa = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     
     //run method to test it
-    sacabench::util::merge_sa_dc<unsigned char>(input_string, sa_0, sa_12, 
+    sacabench::util::merge_sa_dc<sacabench::util::character>(input_string, sa_0, sa_12, 
             isa_12, sa, comp, get_substring);
 
     //expected values for merged SA with DC
