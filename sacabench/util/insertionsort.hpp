@@ -8,20 +8,20 @@
 
 #pragma once
 #include "span.hpp"
+#include "compare.hpp"
 
 namespace sacabench::util{
 
-
+/*
 struct greater_than {
     template<typename T> int64_t operator()(T const& a, T const& b) {
         return (int64_t)a - (int64_t)b;
     }
-};
+};*/
 
-  template<typename T, typename F = greater_than> void insertion_sort(span<T> A, F compare_fun = F()){
+  template<typename T, typename F = std::less<T>> void insertion_sort(span<T> A, F compare_fun = F()){
       //Adapter for "a > b"
-      auto greater = [&](auto a, auto b) { return compare_fun(a, b) > 0; };
-
+      auto greater = as_greater(compare_fun);
       for(size_t i = 1; i < A.size(); i++) {
       auto to_sort = A[i];
       auto j = i;

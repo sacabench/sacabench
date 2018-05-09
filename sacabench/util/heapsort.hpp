@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include "span.hpp"
+#include "compare.hpp"
 
 namespace sacabench::util {
 
@@ -17,12 +18,12 @@ namespace sacabench::util {
      * struct containing the default comparison function.
      * TODO: replace with new group decision (similar to standard)
      */
-    struct greater_than {
+    /*struct greater_than {
         template<typename T>
         int64_t operator()(T const& a, T const& b) {
             return (int64_t)a - (int64_t)b;
         }
-    };
+    };*/
     /*
      * Returns the position of the left child of a node in a heap.
      *
@@ -50,11 +51,11 @@ namespace sacabench::util {
      * data.size())
      * compare_fun: The comparison function to compare elements with.
      */
-    template<typename T, typename F=greater_than> void max_heapify
+    template<typename T, typename F=std::less<T>> void max_heapify
             (span<T> data, size_t heap_size, size_t node, F compare_fun=F()) {
         //TODO: Add assertion: node contained in heap
         //Adapter for "a > b"
-        auto greater = [&](auto a, auto b) { return compare_fun(a, b) > 0; };
+        auto greater = as_greater(compare_fun);
 
         auto left = child_left(node);
         auto right = child_right(node);
@@ -77,11 +78,12 @@ namespace sacabench::util {
      * Build a heap for a given span, i.e. ensure the max-heap condition for
      * all inner nodes.
      */
-    template<typename T, typename F=greater_than> void
+    template<typename T, typename F=std::less<T>> void
         build_max_heap(span<T> data, F compare_fun=F()) {
         // +1 to work around size_t being unsigned
         for (size_t i = std::floor(data.size() / 2); i != 0; --i) {
             // Call max_heapify for all non-leaves
+            // -1 for correct index (first element computed in loop + 1)
             max_heapify(data, data.size(), i - 1, compare_fun);
         }
     }
@@ -92,7 +94,7 @@ namespace sacabench::util {
      * data: The input data to be sorted.
      * compare_fun: The comparison function to be used.
      */
-    template<typename T, typename F=greater_than> void
+    template<typename T, typename F=std::less<T>> void
         heapsort(span<T> data, F compare_fun=F()) {
         build_max_heap(data);
         // Invariant: data[0...heap_size) unsorted,

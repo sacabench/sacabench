@@ -1,6 +1,4 @@
 /*******************************************************************************
- * sacabench/util/introsort.hpp
- *
  * Copyright (C) 2018 Oliver Magiera
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -25,36 +23,6 @@ namespace sacabench::util {
     // Value of 2 for testing
     const size_t SIZE_THRESHOLD = 2; /*< \brief Defines the threshold for using
     insertionsort instead of quicksort. */
-
-    /**
-     * \brief Sorts the given span in increasing order according to the given
-     * comparison function.
-     *
-     * Sorts the submitted data via Introspective Sort (see Introspective
-     * Sorting and Selection Algorithms, David R. Musser). It partitions the
-     * data to be sorted in the ternary quicksort fashion using median of 3 as
-     * pivot element. After a depth of floor(lg(|data|)) heapsort is used
-     * instead of quicksort. At any time when |data| < SIZE_THRESHOLD, the final
-     * interval is sorted by insertionsort.
-     *
-     * @tparam T The data type to be sorted. Needs to be comparable.
-     * @tparam F The used compare function. Uses std::less<T> by default.
-     * @param[in,out] data The span containing all elements to be sorted.
-     * @param[in] compare_fun The comparison function of type F to be used for
-     * comparing two elements
-     */
-    template<typename T, typename F=std::less<T>>
-    void introsort
-            (span<T> data, F compare_fun = F()) {
-        // Max. number of allowed iterations: 2*log(size)
-        // due to empirically good results
-        size_t max_iterations = 2 * floor(log(last_index - first_index));
-        introsort_internal(data, max_iterations, compare_fun);
-
-        // Call insertion sort at the end - finally sorts the intervals divided by
-        // introsort_internal (but does not sort into different intervals)
-        insertion_sort(data, compare_fun);
-    }
 
     /**
      * \brief The internal loop of introsort.
@@ -86,15 +54,15 @@ namespace sacabench::util {
                 --depth_limit;
                 // Compute pivot element using median of three
                 size_t pivot = sort::ternary_quicksort::median_of_three
-                         (data, compare_fun);
+                        (data, compare_fun);
 
                 // Partition data with ternary_quicksort::partition
                 auto bounds = sort::ternary_quicksort::partition
-                         (data, compare_fun, pivot);
+                        (data, compare_fun, pivot);
 
                 // Create partitions with partitioning bounds
-                span<T> lesser = data.slice(0, bounds[0]);
-                span<T> greater = data.slice(bounds[1], data.size());
+                span<T> lesser = data.slice(0, bounds.first);
+                span<T> greater = data.slice(bounds.second, data.size());
 
                 // Recursive call only on interval with elements greater pivot
                 introsort_internal(greater, depth_limit, compare_fun);
@@ -103,5 +71,35 @@ namespace sacabench::util {
                 data = lesser;
             }
         }
+    }
+
+    /**
+     * \brief Sorts the given span in increasing order according to the given
+     * comparison function.
+     *
+     * Sorts the submitted data via Introspective Sort (see Introspective
+     * Sorting and Selection Algorithms, David R. Musser). It partitions the
+     * data to be sorted in the ternary quicksort fashion using median of 3 as
+     * pivot element. After a depth of floor(lg(|data|)) heapsort is used
+     * instead of quicksort. At any time when |data| < SIZE_THRESHOLD, the final
+     * interval is sorted by insertionsort.
+     *
+     * @tparam T The data type to be sorted. Needs to be comparable.
+     * @tparam F The used compare function. Uses std::less<T> by default.
+     * @param[in,out] data The span containing all elements to be sorted.
+     * @param[in] compare_fun The comparison function of type F to be used for
+     * comparing two elements
+     */
+    template<typename T, typename F=std::less<T>>
+    void introsort
+            (span<T> data, F compare_fun = F()) {
+        // Max. number of allowed iterations: 2*log(size)
+        // due to empirically good results
+        size_t max_iterations = 2 * floor(log(data.size()));
+        introsort_internal(data, max_iterations, compare_fun);
+
+        // Call insertion sort at the end - finally sorts the intervals divided by
+        // introsort_internal (but does not sort into different intervals)
+        insertion_sort(data, compare_fun);
     }
 }
