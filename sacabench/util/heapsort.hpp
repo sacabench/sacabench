@@ -14,45 +14,43 @@
 
 namespace sacabench::util {
 
-    /*
-     * struct containing the default comparison function.
-     * TODO: replace with new group decision (similar to standard)
+    /**
+     * \file heapsort.hpp
+     * \brief Implements heapsort for spans of input.
      */
-    /*struct greater_than {
-        template<typename T>
-        int64_t operator()(T const& a, T const& b) {
-            return (int64_t)a - (int64_t)b;
-        }
-    };*/
-    /*
-     * Returns the position of the left child of a node in a heap.
-     *
-     * node: The parent to retrieve the child from.
+
+    /**
+     * \brief Returns the left child of the submitted node.
+     * @param node The parent node.
+     * @return The left child of node.
      */
-    size_t child_left(size_t node) {
+    size_t child_left(const size_t node) {
         return 2 * (node+1) - 1;
     }
 
-    /*
-     * Returns the position of the right child of a node in a heap.
-     *
-     * node: The parent to retrieve the child from.
+    /**
+     * \brief Returns the right child of the submitted node.
+     * @param node The parent node.
+     * @return The right child of the node.
      */
-    size_t child_right(size_t node) {
+    size_t child_right(const size_t node) {
         return 2 * (node + 1);
     }
 
-
-    /*
-     * Applies the max-heap condition on a given node.
+    /**
+     * \brief Applies the max-heap condition for the given node.
      *
-     * data: The data to work on.
-     * heap_size: The current size of the heap (not necessarily same with
-     * data.size())
-     * compare_fun: The comparison function to compare elements with.
+     *
+     * @tparam T The type of the sorted elements.
+     * @tparam F The comparison function. std::less<T> by default.
+     * @param data The span to be sorted.
+     * @param heap_size The current heap size (considered elements in heap).
+     * May be smaller than data.size().
+     * @param node The node to check the max-heap condition for.
+     * @param compare_fun The function used for comparison.
      */
     template<typename T, typename F=std::less<T>> void max_heapify
-            (span<T> data, size_t heap_size, size_t node, F compare_fun=F()) {
+            (span<T> data, const size_t heap_size, size_t node, F compare_fun=F()) {
         //TODO: Add assertion: node contained in heap
         //Adapter for "a > b"
         auto greater = as_greater(compare_fun);
@@ -74,9 +72,14 @@ namespace sacabench::util {
         }
     }
 
-    /*
-     * Build a heap for a given span, i.e. ensure the max-heap condition for
-     * all inner nodes.
+    /**
+     * \brief Constructs a max-heap by rearranging all inner nodes to satisfy
+     * the max-heap condition.
+     *
+     * @tparam T The type of the sorted elements.
+     * @tparam F The comparison function type. std::less<T> by default.
+     * @param data Span containing all elements to be sorted.
+     * @param compare_fun The function to be used when comparing two elements.
      */
     template<typename T, typename F=std::less<T>> void
         build_max_heap(span<T> data, F compare_fun=F()) {
@@ -88,11 +91,18 @@ namespace sacabench::util {
         }
     }
 
-    /*
-     * Sort an input according to heapsort in ascending order.
+    /**
+     * \brief Sorts a span of elements according to heapsort.
      *
-     * data: The input data to be sorted.
-     * compare_fun: The comparison function to be used.
+     * Heapsort first builds a heap with max-heap condition. After each
+     * iteration, the first (largest) element is swapped with the last element
+     * in the heap and restores the max-heap condition for the root (and
+     * recursively for all inner nodes which are swapped).
+     *
+     * @tparam T The type of the sorted elements.
+     * @tparam F The comparison function type. std::less<T> by default.
+     * @param data Span containing all elements to be sorted.
+     * @param compare_fun The function to be used when comparing two elements.
      */
     template<typename T, typename F=std::less<T>> void
         heapsort(span<T> data, F compare_fun=F()) {
