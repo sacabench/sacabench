@@ -35,7 +35,7 @@ namespace sacabench::util {
     * contains the lexicographical ranks of positions i mod 3 != 0.
     * This method works correct because of the difference cover idea.
     */
-    void merge_sa_dc(T& t, S& sa_0, S& sa_12, I& isa_12, S& sa, Compare comp, 
+    void merge_sa_dc(const T& t, const S& sa_0, const S& sa_12, const I& isa_12, S& sa, Compare comp, 
             Substring get_substring) {
 
         DCHECK_MSG(sa.size() == t.size(), 
@@ -51,8 +51,8 @@ namespace sacabench::util {
         
         while (counter < sa.size()) {
             if (i < sa_0.size() && j < sa_12.size()) {
-                span<unsigned char> t_0;
-                span<unsigned char> t_12;
+                span<const unsigned char> t_0;
+                span<const unsigned char> t_12;
                 if (sa_12[j] % 3 == 1) {
                     t_0 = get_substring(t, &t[sa_0[i]], 1);    
                     t_12 = get_substring(t, &t[sa_12[j]], 1); 
@@ -62,9 +62,9 @@ namespace sacabench::util {
                     t_12 = get_substring(t, &t[sa_12[j]], 2); 
                 }
                 
-                bool less_than = comp(t_0, t_12);
-                bool eq = !comp(t_0, t_12) && !comp(t_12, t_0);
-                bool lesser_suf = isa_12[(2*(sa_0[i]+t_0.size()))/3] 
+                const bool less_than = comp(t_0, t_12);
+                const bool eq = !comp(t_0, t_12) && !comp(t_12, t_0);
+                const bool lesser_suf = isa_12[(2*(sa_0[i]+t_0.size()))/3] 
                     < isa_12[2*((sa_12[j]+t_12.size()))/3];
                 if (less_than || (eq && lesser_suf)) { 
                     sa[counter] = sa_0[i++];

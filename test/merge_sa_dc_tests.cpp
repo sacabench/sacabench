@@ -10,13 +10,13 @@
 #include <util/container.hpp>
 
 //implementation of get-substring method
-span<unsigned char> get_substring(sacabench::util::string& t, unsigned char* ptr,
+span<const unsigned char> get_substring(const sacabench::util::string& t, const unsigned char* ptr,
         int n) {
     return span(ptr, n);
 }
 
 // implementation of comp method
-bool comp(span<unsigned char>& a, span<unsigned char>& b) {
+bool comp(const span<const unsigned char>& a, const span<const unsigned char>& b) {
     for (size_t i = 0; i < a.size(); i++) {
         if (b.at(i) == '$') {
             return false;
