@@ -5,6 +5,8 @@
  ******************************************************************************/
 
 #include <cstdint>
+#include "util/bucket_size.hpp"
+#include "util/container.hpp"
 
 #include "util/saca.hpp"
 
