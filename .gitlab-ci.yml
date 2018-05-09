@@ -1,0 +1,12 @@
+make:
+    script:
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make
+make_check:
+    script:
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make check

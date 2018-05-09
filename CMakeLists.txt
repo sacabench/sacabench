@@ -1,6 +1,4 @@
 ################################################################################
-# CMakeLists.txt
-#
 # Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -30,8 +28,12 @@ set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
 # The configuration affects things like compiler optimizations
 # and debugging symbols in the binary.
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
+  set(CMAKE_BUILD_TYPE "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
+
+set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra;-Werror=return-type")
+set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb;-DDEBUG")
+set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG")
 
 # Add custom cmake extensions
 include(cmakemodules/git_submodule_subdirectories.cmake)

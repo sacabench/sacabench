@@ -1,6 +1,4 @@
 ################################################################################
-# sacabench/CMakeLists.txt
-#
 # Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -23,10 +21,6 @@ add_executable(sacabench
 target_link_libraries(sacabench
   saca_bench_lib
 )
-
-set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra")
-set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb")
-set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native")
 
 target_compile_options(sacabench PUBLIC
   ${SACA_BENCH_FLAGS}

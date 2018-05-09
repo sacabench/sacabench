@@ -1,6 +1,4 @@
 ################################################################################
-# test/test/testsuite.cmake
-#
 # Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -58,6 +56,12 @@ macro(generic_run_test test_target test_file
     target_link_libraries(${test_target}_testrunner
         ${driver_dep}
         ${TEST_TARGET_DEPS}
+    )
+
+    target_compile_options(${test_target}_testrunner PUBLIC
+        ${SACA_BENCH_FLAGS}
+        $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
+        $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
     )
 
     # Runs the test and generates a stamp file on success.
