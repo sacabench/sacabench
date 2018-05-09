@@ -16,9 +16,10 @@ namespace sacabench::util {
         const alphabet input_alphabet = alphabet(input);
         string temp_input = input;
         apply_effective_alphabet(temp_input, input_alphabet);
-        container<int> bucket_sizes = make_container<int>(input_alphabet.size+1);
+        container<int> bucket_sizes = make_container<int>(input_alphabet.size + 1);
         for (const char c: temp_input) {
-            ++bucket_sizes[c];        }
+            ++bucket_sizes[c];
+        }
         return bucket_sizes;
     }
 }
