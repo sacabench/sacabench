@@ -8,6 +8,7 @@
 #pragma once
 
 #include <util/span.hpp>
+#include <util/compare.hpp>
 
 namespace sacabench::util::sort::ternary_quicksort {
 
@@ -15,12 +16,12 @@ constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
 
 template <typename content, typename key_func_type>
 content min(key_func_type cmp, const content& a, const content& b) {
-    return (cmp(a, b) < 0 ? a : b);
+    return (cmp(a, b) ? a : b);
 }
 
 template <typename content, typename key_func_type>
 content max(key_func_type cmp, const content& a, const content& b) {
-    return (cmp(a, b) < 0 ? b : a);
+    return (cmp(a, b) ? b : a);
 }
 
 /**\brief Returns pseudo-median according to three values
@@ -74,17 +75,21 @@ content median_of_nine(span<content> array, key_func_type cmp) {
 template <typename content, typename key_func_type>
 std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
                                     size_t pivot_element) {
+    const auto less = cmp;
+    const auto equal = util::as_equal(cmp);
+    const auto greater = util::as_greater(cmp);
+
     // Init values, which keep track of the partition position
     size_t left = 0;
     size_t mid = 0;
     size_t right = 0;
     for (size_t i = 0; i < array.size(); ++i) {
         // Count Elements in less-Partition
-        if (cmp(array[i], pivot_element) < 0) {
+        if (less(array[i], pivot_element)) {
             ++mid;
         }
         // Count Elements in equal partition
-        else if (cmp(array[i], pivot_element) == 0) {
+        else if (equal(array[i], pivot_element)) {
             ++right;
         }
     }
@@ -99,12 +104,12 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
     // Loop, which builds the less-partition
     while (left < i) {
         // If current element is the pivot_element, swap it into equal-partition
-        if (cmp(array[left], pivot_element) == 0) {
+        if (equal(array[left], pivot_element)) {
             std::swap(array[left], array[mid]);
             ++mid;
         }
         // else if the element belongs in the greater-partition, swap it there
-        else if (cmp(array[left], pivot_element) > 0) {
+        else if (greater(array[left], pivot_element)) {
             std::swap(array[left], array[right]);
             ++right;
         }
@@ -116,7 +121,7 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
     // Loop, which builds the equal partition
     while (mid < j) {
         // if current element is bigger than the pivot_element, swap it
-        if (cmp(array[mid], pivot_element) > 0) {
+        if (greater(array[mid], pivot_element)) {
             std::swap(array[mid], array[right]);
             ++right;
         }
@@ -153,7 +158,7 @@ void ternary_quicksort(span<content> array, key_func_type cmp) {
     }
 
     if (n == 2) {
-        if (cmp(array[0], array[1]) > 0) {
+        if (cmp(array[1], array[0])) {
             std::swap(array[0], array[1]);
         }
         return;

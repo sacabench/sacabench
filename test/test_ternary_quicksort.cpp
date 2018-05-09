@@ -15,7 +15,7 @@
 using sacabench::util::is_sorted;
 using namespace sacabench::util::sort::ternary_quicksort;
 
-inline int cmp(size_t a, size_t b) { return a - b; }
+constexpr auto cmp = std::less<size_t>();
 
 TEST(ternary_quicksort, empty_set) {
     auto test_set = std::vector<size_t>();
