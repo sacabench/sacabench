@@ -18,14 +18,14 @@ TEST(DC, induce) {
     sacabench::util::string t_0 = {'c', 'b', 'c', 'b', 'a'}; 
     
     //inverse SA of triplets beginning in positions i mod 3 != 0
-    auto isa_12 = sacabench::util::container<size_t> { 4,8,3,7,2,6,10,5,9,1 };
+    auto isa_12 = sacabench::util::container<size_t> {4, 8, 3, 7, 2, 6, 10, 5, 9, 1};
     
     //empty SA which should be filled correctly with method induce_sa_dc
     auto sa_0 = sacabench::util::container<size_t> {0,0,0,0,0};
     
     //run method to test it
     sacabench::util::induce_sa_dc<unsigned char>(t_0, isa_12, sa_0);
-
+    
     //expected values for induced SA with DC
     auto expected = sacabench::util::container<size_t> {4, 3, 1, 2, 0};
     
