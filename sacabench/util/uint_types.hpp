@@ -1,5 +1,5 @@
 /*******************************************************************************
- * util/uint_types.hpp
+ * https://github.com/thrill/thrill/blob/master/thrill/common/uint_types.hpp
  *
  * Class representing a 40-bit or 48-bit unsigned integer encoded in five or
  * six bytes.
@@ -46,8 +46,7 @@ namespace util {
 #pragma pack(push, 1)
 #endif
 template <typename High_>
-class UIntPair
-{
+class UIntPair {
 public:
     //! lower part type, always 32-bit
     using Low = uint32_t;
@@ -61,17 +60,13 @@ private:
     High high_;
 
     //! return highest value storable in lower part, also used as a mask.
-    static unsigned low_max() {
-        return std::numeric_limits<Low>::max();
-    }
+    static unsigned low_max() { return std::numeric_limits<Low>::max(); }
 
     //! number of bits in the lower integer part, used a bit shift value.
     static constexpr size_t low_bits = 8 * sizeof(Low);
 
     //! return highest value storable in higher part, also used as a mask.
-    static unsigned high_max() {
-        return std::numeric_limits<High>::max();
-    }
+    static unsigned high_max() { return std::numeric_limits<High>::max(); }
 
     //! number of bits in the higher integer part, used a bit shift value.
     static constexpr size_t high_bits = 8 * sizeof(High);
@@ -91,8 +86,7 @@ public:
     UIntPair() = default;
 
     //! construct unit pair from lower and higher parts.
-    UIntPair(const Low& l, const High& h)
-        : low_(l), high_(h) { }
+    UIntPair(const Low& l, const High& h) : low_(l), high_(h) {}
 
     //! copy constructor
     UIntPair(const UIntPair&) = default;
@@ -101,10 +95,10 @@ public:
 
     //! const from a simple 32-bit unsigned integer
     UIntPair(const uint32_t& a) // NOLINT
-        : low_(a), high_(0) { }
+        : low_(a), high_(0) {}
 
     //! const from a simple 32-bit signed integer
-    UIntPair(const int32_t& a)  // NOLINT
+    UIntPair(const int32_t& a) // NOLINT
         : low_(a), high_(0) {
         if (a >= 0)
             low_ = a;
@@ -122,16 +116,16 @@ public:
 
     //! construct from an 64-bit signed integer
     UIntPair(const unsigned long& a) // NOLINT
-        : UIntPair(static_cast<unsigned long long>(a)) { }
+        : UIntPair(static_cast<unsigned long long>(a)) {}
 
     //! construct from an 64-bit signed integer
-    UIntPair(const int64_t& a)       // NOLINT
-        : UIntPair(static_cast<unsigned long long>(a)) { }
+    UIntPair(const int64_t& a) // NOLINT
+        : UIntPair(static_cast<unsigned long long>(a)) {}
 
     //! copy assignment operator
-    UIntPair& operator = (const UIntPair&) = default;
+    UIntPair& operator=(const UIntPair&) = default;
     //! move assignment operator
-    UIntPair& operator = (UIntPair&&) = default;
+    UIntPair& operator=(UIntPair&&) = default;
 
     //! return the number as an uint64 (unsigned long long)
     uint64_t ull() const {
@@ -139,9 +133,7 @@ public:
     }
 
     //! implicit cast to an unsigned long long
-    operator uint64_t () const {
-        return ull();
-    }
+    operator uint64_t() const { return ull(); }
 
     //! return the number as a uint64_t
     uint64_t u64() const {
@@ -149,7 +141,7 @@ public:
     }
 
     //! prefix increment operator (directly manipulates the integer parts)
-    UIntPair& operator ++ () {
+    UIntPair& operator++() {
         if (SB_UNLIKELY(low_ == low_max()))
             ++high_, low_ = 0;
         else
@@ -158,7 +150,7 @@ public:
     }
 
     //! prefix decrement operator (directly manipulates the integer parts)
-    UIntPair& operator -- () {
+    UIntPair& operator--() {
         if (SB_UNLIKELY(low_ == 0))
             --high_, low_ = (Low)low_max();
         else
@@ -167,7 +159,7 @@ public:
     }
 
     //! addition operator (uses 64-bit arithmetic)
-    UIntPair& operator += (const UIntPair& b) {
+    UIntPair& operator+=(const UIntPair& b) {
         uint64_t add = low_ + uint64_t(b.low_);
         low_ = (Low)(add & low_max());
         high_ = (High)(high_ + b.high_ + ((add >> low_bits) & high_max()));
@@ -175,7 +167,7 @@ public:
     }
 
     //! addition operator (uses 64-bit arithmetic)
-    UIntPair operator + (const UIntPair& b) const {
+    UIntPair operator+(const UIntPair& b) const {
         uint64_t add = low_ + uint64_t(b.low_);
         return UIntPair(
             (Low)(add & low_max()),
@@ -183,7 +175,7 @@ public:
     }
 
     //! subtraction operator (uses 64-bit arithmetic)
-    UIntPair& operator -= (const UIntPair& b) {
+    UIntPair& operator-=(const UIntPair& b) {
         uint64_t sub = low_ - uint64_t(b.low_);
         low_ = (Low)(sub & low_max());
         high_ = (High)(high_ - b.high_ + ((sub >> low_bits) & high_max()));
@@ -191,7 +183,7 @@ public:
     }
 
     //! subtraction operator (uses 64-bit arithmetic)
-    UIntPair operator - (const UIntPair& b) const {
+    UIntPair operator-(const UIntPair& b) const {
         uint64_t sub = low_ - uint64_t(b.low_);
         return UIntPair(
             (Low)(sub & low_max()),
@@ -199,42 +191,40 @@ public:
     }
 
     //! equality checking operator
-    bool operator == (const UIntPair& b) const {
+    bool operator==(const UIntPair& b) const {
         return (low_ == b.low_) && (high_ == b.high_);
     }
 
     //! inequality checking operator
-    bool operator != (const UIntPair& b) const {
+    bool operator!=(const UIntPair& b) const {
         return (low_ != b.low_) || (high_ != b.high_);
     }
 
     //! less-than comparison operator
-    bool operator < (const UIntPair& b) const {
+    bool operator<(const UIntPair& b) const {
         return (high_ < b.high_) || (high_ == b.high_ && low_ < b.low_);
     }
 
     //! less-than comparison operator
-    bool operator < (const uint64_t& b) const {
-        return ull() < b;
-    }
+    bool operator<(const uint64_t& b) const { return ull() < b; }
 
     //! less-or-equal comparison operator
-    bool operator <= (const UIntPair& b) const {
+    bool operator<=(const UIntPair& b) const {
         return (high_ < b.high_) || (high_ == b.high_ && low_ <= b.low_);
     }
 
     //! greater comparison operator
-    bool operator > (const UIntPair& b) const {
+    bool operator>(const UIntPair& b) const {
         return (high_ > b.high_) || (high_ == b.high_ && low_ > b.low_);
     }
 
     //! greater-or-equal comparison operator
-    bool operator >= (const UIntPair& b) const {
+    bool operator>=(const UIntPair& b) const {
         return (high_ > b.high_) || (high_ == b.high_ && low_ >= b.low_);
     }
 
     //! make a UIntPair outputtable via iostreams, using unsigned long long.
-    friend std::ostream& operator << (std::ostream& os, const UIntPair& a) {
+    friend std::ostream& operator<<(std::ostream& os, const UIntPair& a) {
         return os << a.ull();
     }
 
@@ -265,14 +255,13 @@ using uint48 = UIntPair<uint16_t>;
 static_assert(sizeof(uint40) == 5, "sizeof uint40 is wrong");
 static_assert(sizeof(uint48) == 6, "sizeof uint48 is wrong");
 
-} // namespace common
+} // namespace util
 
 namespace std {
 
 //! template class providing some numeric_limits fields for UIntPair types.
 template <typename HighType>
-class numeric_limits<util::UIntPair<HighType> >
-{
+class numeric_limits<util::UIntPair<HighType>> {
 public:
     using UIntPair = util::UIntPair<HighType>;
 
@@ -280,16 +269,13 @@ public:
     static const bool is_specialized = true;
 
     //! return an UIntPair instance containing the smallest value possible
-    static UIntPair min()
-    { return UIntPair::min(); }
+    static UIntPair min() { return UIntPair::min(); }
 
     //! return an UIntPair instance containing the largest value possible
-    static UIntPair max()
-    { return UIntPair::max(); }
+    static UIntPair max() { return UIntPair::max(); }
 
     //! return an UIntPair instance containing the smallest value possible
-    static UIntPair lowest()
-    { return min(); }
+    static UIntPair lowest() { return min(); }
 
     //! unit_pair types are unsigned
     static const bool is_signed = false;
@@ -307,12 +293,10 @@ public:
     static const int digits = UIntPair::digits;
 
     //! epsilon is zero
-    static const UIntPair epsilon()
-    { return UIntPair(0, 0); }
+    static const UIntPair epsilon() { return UIntPair(0, 0); }
 
     //! rounding error is zero
-    static const UIntPair round_error()
-    { return UIntPair(0, 0); }
+    static const UIntPair round_error() { return UIntPair(0, 0); }
 
     //! no exponent
     static const int min_exponent = 0;

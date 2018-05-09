@@ -1,6 +1,6 @@
 /*******************************************************************************
- * tlx/define/attribute_packed.hpp
- * tlx/define/likely.hpp
+ * https://github.com/tlx/tlx/blob/master/tlx/define/attribute_packed.hpp
+ * https://github.com/tlx/tlx/blob/master/tlx/define/likely.hpp
  *
  * Part of tlx - http://panthema.net/tlx
  *
@@ -26,10 +26,10 @@ namespace util {
 #endif
 
 #if defined(__GNUC__) || defined(__clang__)
-#define SB_LIKELY(c)   __builtin_expect((c), 1)
+#define SB_LIKELY(c) __builtin_expect((c), 1)
 #define SB_UNLIKELY(c) __builtin_expect((c), 0)
 #else
-#define SB_LIKELY(c)   c
+#define SB_LIKELY(c) c
 #define SB_UNLIKELY(c) c
 #endif
 
