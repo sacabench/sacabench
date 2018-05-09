@@ -35,7 +35,7 @@ TEST(DC, merge) {
     sacabench::util::string input_string = {'c', 'a', 'a', 'b', 'a', 'c', 'c',
             'a', 'a', 'b', 'a', 'c', 'a', 'a', '$'};
     
-    //TODO
+    //initialize suffix array and inverse suffix array
     auto sa_0 = sacabench::util::container<size_t> { 12,9,3,6,0 };
     auto sa_12 = sacabench::util::container<size_t> { 14,13,7,1,8,2,10,4,11,5 };
     auto isa_12 = sacabench::util::container<size_t> { 3,5,7,9,2,4,6,8,1,0 };

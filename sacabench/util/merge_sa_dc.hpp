@@ -6,7 +6,7 @@
  ******************************************************************************/
 #include <array>
 #include "span.hpp"
-//#include <util/assertions.hpp>
+#include <util/assertions.hpp>
 
 
 #pragma once
@@ -38,12 +38,12 @@ namespace sacabench::util {
     void merge_sa_dc(T& t, S& sa_0, S& sa_12, I& isa_12, S& sa, Compare comp, 
             Substring get_substring) {
 
-        //DCHECK_MSG(sa.size() == t.size(), "sa must be initialised and must 
-        //      have the same length as t.");
-        //DCHECK_MSG(sa.size() == (sa_0.size() + sa_12.size()), "the length 
-        //      of sa must be the sum of the length of sa_0 and sa_12");
-        //DCHECK_MSG(sa_12.size() == isa_12.size(), "the length of sa_12 must 
-        //      be equal to isa_12");
+        DCHECK_MSG(sa.size() == t.size(), 
+                "sa must be initialised and must have the same length as t.");
+        DCHECK_MSG(sa.size() == (sa_0.size() + sa_12.size()), 
+                "the length of sa must be the sum of the length of sa_0 and sa_12");
+        DCHECK_MSG(sa_12.size() == isa_12.size(), 
+                "the length of sa_12 must be equal to isa_12");
 
         size_t i = 0;
         size_t j = 0;
