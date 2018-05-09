@@ -1,2 +1,12 @@
-test:
-  script: "rm -rf build;mkdir build;cd build;cmake ..; make && make check"
+make:
+    script:
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make
+make_check:
+    script:
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make check
