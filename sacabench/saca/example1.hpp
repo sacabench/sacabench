@@ -17,9 +17,14 @@ namespace sacabench::example1 {
     class example1 {
         public:
             template<typename sa_index>
-            static void construct_saca(util::string_span test_input,
+            static void construct_saca(util::string_span text,
                                        size_t alphabet_size,
-                                       util::span<sa_index> output) {
+                                       util::span<sa_index> out_sa) {
+                // Suppress unused variable warnings:
+                (void) text;
+                (void) alphabet_size;
+                (void) out_sa;
+
                 std::cout << "Running example1" << std::endl;
             }
     }; // class example1

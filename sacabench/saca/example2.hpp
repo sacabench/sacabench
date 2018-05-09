@@ -20,9 +20,14 @@ namespace sacabench::example2 {
     class example2 {
         public:
             template<typename sa_index>
-            static void construct_saca(util::string_span test_input,
+            static void construct_saca(util::string_span text,
                                        size_t alphabet_size,
-                                       util::span<sa_index> output) {
+                                       util::span<sa_index> out_sa) {
+                // Suppress unused variable warnings:
+                (void) text;
+                (void) alphabet_size;
+                (void) out_sa;
+
                 std::vector<std::size_t> data = { 39, 3192, 29, 1923, 29, 0, 19238, 2, 4 };
                 sacabench::util::sort::std_sort(data, [](const std::size_t a, const std::size_t b) {
                         return a < b;
