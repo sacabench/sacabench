@@ -10,6 +10,7 @@
 #include <vector>
 #include "container.hpp"
 #include "string.hpp"
+#include "span.hpp"
 
 namespace sacabench::util {
 
@@ -52,7 +53,7 @@ class saca {
         virtual void run_example() const = 0;
         virtual void construct_saca(string_span test_input,
                                     size_t alphabet_size,
-                                    container<size_t>& output) const = 0;
+                                    span<size_t> output) const = 0;
 
         std::string const& name() const { return name_; }
         std::string const& description() const { return description_; }
@@ -70,16 +71,17 @@ class concrete_saca : saca {
 
         virtual void construct_saca(string_span test_input,
                                     size_t alphabet_size,
-                                    container<size_t>& output) const override {
+                                    span<size_t> output) const override {
             Algorithm::construct_saca(test_input, alphabet_size, output);
         }
         virtual void run_example() const override {
-            using sa_index_t = uint64_t;
+            using sa_index_t = uint32_t;
             string_span test_input = "hello world"_s;
             size_t alphabet_size = 256;
             auto output = make_container<sa_index_t>(test_input.size());
+            span<sa_index_t> output_span = output;
 
-            Algorithm::construct_saca(test_input, alphabet_size, output);
+            Algorithm::construct_saca(test_input, alphabet_size, output_span);
         }
 }; // class concrete_saca
 
