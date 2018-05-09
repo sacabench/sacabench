@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
+ *
+ * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ ******************************************************************************/
+
 #pragma once
 
 #include <sstream>
@@ -57,5 +63,10 @@ namespace sacabench::util {
 #define DCHECK_GE(x, y) DCHECK_BINARY((x) >= (y), x, y)
 /// Check for greater-than (<)
 #define DCHECK_GT(x, y) DCHECK_BINARY((x) >  (y), x, y)
+
+template<typename integer_type>
+bool can_represent_all_values(uint64_t distinct_values) {
+    return std::numeric_limits<integer_type>::max() >= (distinct_values - 1);
+}
 
 }
