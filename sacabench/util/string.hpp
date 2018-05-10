@@ -47,6 +47,10 @@ namespace sacabench::util {
         string_span s { (character const*) cs, std::strlen(cs) };
         return make_string(s);
     }
+
+    /// Special `character` values that is smaller than all possible
+    /// input characters.
+    constexpr character DOLLAR = 0;
 }
 
 /// Custom literal operator for creating a `string_span`.
