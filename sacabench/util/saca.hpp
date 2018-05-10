@@ -51,9 +51,9 @@ class saca {
             }
 
         virtual void run_example() const = 0;
-        virtual void construct_saca(string_span test_input,
-                                    size_t alphabet_size,
-                                    span<size_t> output) const = 0;
+        virtual void construct_sa(string_span test_input,
+                                  size_t alphabet_size,
+                                  span<size_t> output) const = 0;
 
         std::string const& name() const { return name_; }
         std::string const& description() const { return description_; }
@@ -69,10 +69,10 @@ class concrete_saca : saca {
         concrete_saca(const std::string& name, const std::string& description)
             : saca(name, description) { }
 
-        virtual void construct_saca(string_span test_input,
-                                    size_t alphabet_size,
-                                    span<size_t> output) const override {
-            Algorithm::construct_saca(test_input, alphabet_size, output);
+        virtual void construct_sa(string_span test_input,
+                                  size_t alphabet_size,
+                                  span<size_t> output) const override {
+            Algorithm::construct_sa(test_input, alphabet_size, output);
         }
         virtual void run_example() const override {
             using sa_index_t = uint32_t;
@@ -81,7 +81,7 @@ class concrete_saca : saca {
             auto output = make_container<sa_index_t>(test_input.size());
             span<sa_index_t> output_span = output;
 
-            Algorithm::construct_saca(test_input, alphabet_size, output_span);
+            Algorithm::construct_sa(test_input, alphabet_size, output_span);
         }
 }; // class concrete_saca
 
