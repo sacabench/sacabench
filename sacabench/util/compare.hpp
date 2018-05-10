@@ -80,6 +80,28 @@ namespace sacabench::util {
     private:
         compare_type less;
     };
+
+    /// Adapter that allows defining a compare
+    /// function by mapping the values into another value and comparing that.
+    ///
+    /// Example: Sorting strings only according to their length.
+    /// ```cpp
+    /// auto by_size = compare_key([](auto const& s) { return s.size(); });
+    /// sort(list_of_strings, by_size);
+    /// ```
+    template<typename key_function, typename compare_function = std::less<void>>
+    struct compare_key {
+        compare_key(key_function key, compare_function cmp = compare_function()):
+            m_key(key), m_cmp(cmp) {}
+
+        template<typename element_type>
+        bool operator()(element_type const& lhs, element_type const& rhs) {
+            return m_cmp(m_key(lhs), m_key(rhs));
+        }
+    private:
+        key_function m_key;
+        compare_function m_cmp;
+    };
 }
 
 /******************************************************************************/
