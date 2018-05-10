@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <iostream>
 
 #include "util/container.hpp"
 #include "util/span.hpp"
@@ -58,6 +59,12 @@ inline constexpr sacabench::util::string_span operator"" _s(
     char const* ptr, size_t length) {
     using namespace sacabench::util;
     return string_span((character const*)(ptr), length);
+}
+
+/// Custom `std::ostream` operator for a `string_span`
+inline std::ostream& operator<<(std::ostream& out,
+    sacabench::util::string_span const& span) {
+    return out.write((char const*) span.data(), span.size());
 }
 
 /******************************************************************************/
