@@ -24,8 +24,8 @@ namespace test {
         using namespace sacabench::util;
 
         auto test = [](string_span text, size_t alphabet_size = 256) {
-            if (text.size() > 20) {
-                std::cout << "Test SACA on '" << text.slice(0, 20) << "[...]'\n";
+            if (text.size() > 40) {
+                std::cout << "Test SACA on '" << text.slice(0, 40) << "[...]'\n";
             } else {
                 std::cout << "Test SACA on '" << text << "'\n";
             }
@@ -35,7 +35,12 @@ namespace test {
 
             Algorithm::construct_sa(text, alphabet_size, output_span);
 
-            ASSERT_EQ(sa_check(output_span, text), sa_check_result::ok);
+            auto fast_result = sa_check(output_span, text);
+            if (fast_result != sa_check_result::ok) {
+                auto slow_result = sa_check_naive(output_span, text);
+                ASSERT_EQ(fast_result, slow_result) << "BUG IN SA CHECKER DETECTED!";
+                ASSERT_EQ(fast_result, sa_check_result::ok);
+            }
         };
 
         test(""_s);
