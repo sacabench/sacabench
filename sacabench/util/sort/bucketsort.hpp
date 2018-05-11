@@ -42,7 +42,7 @@ namespace sacabench::util::sort {
     template <typename index_type>
         void bucketsort_presort(const string_span& input,
                 const std::size_t alphabet_size, const std::size_t depth,
-                container<index_type>& sa) {
+                span<index_type>& sa) {
             DCHECK_EQ(input.size(), sa.size());
             DCHECK_LE(depth, sa.size());
 
