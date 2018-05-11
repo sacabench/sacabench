@@ -10,13 +10,24 @@
 #include <iostream>
 #include <vector>
 
-#include "util/sort/std_sort.hpp"
+#include <util/sort/std_sort.hpp>
+#include <util/string.hpp>
+#include <util/container.hpp>
+#include <util/span.hpp>
 
 namespace sacabench::example2 {
 
     class example2 {
         public:
-            static void run_example() {
+            template<typename sa_index>
+            static void construct_sa(util::string_span text,
+                                     size_t alphabet_size,
+                                     util::span<sa_index> out_sa) {
+                // Suppress unused variable warnings:
+                (void) text;
+                (void) alphabet_size;
+                (void) out_sa;
+
                 std::vector<std::size_t> data = { 39, 3192, 29, 1923, 29, 0, 19238, 2, 4 };
                 sacabench::util::sort::std_sort(data, [](const std::size_t a, const std::size_t b) {
                         return a < b;

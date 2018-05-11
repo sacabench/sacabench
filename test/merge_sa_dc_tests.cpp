@@ -12,7 +12,7 @@
 //implementation of get-substring method
 sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
         int n) {
-    return span(ptr, n);
+    return sacabench::util::span(ptr, n);
 }
 
 // implementation of comp method
@@ -20,25 +20,25 @@ bool comp(const sacabench::util::string_span& a, const sacabench::util::string_s
     return a < b;
 }
 
-TEST(DC, merge) {    
+TEST(DC, merge) {
     sacabench::util::string input_string = sacabench::util::make_string("caabaccaabacaa$");
-    
+
     //initialize suffix array and inverse suffix array
     auto sa_0 = sacabench::util::container<size_t> { 12,9,3,6,0 };
     auto sa_12 = sacabench::util::container<size_t> { 14,13,7,1,8,2,10,4,11,5 };
     auto isa_12 = sacabench::util::container<size_t> { 3,5,7,9,2,4,6,8,1,0 };
-    
+
     //empty SA which should be filled correctly with method merge_sa_dc
     auto sa = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    
+
     //run method to test it
-    sacabench::util::merge_sa_dc<sacabench::util::character>(input_string, sa_0, sa_12, 
+    sacabench::util::merge_sa_dc<sacabench::util::character>(input_string, sa_0, sa_12,
             isa_12, sa, comp, get_substring);
 
     //expected values for merged SA with DC
     auto expected = sacabench::util::container<size_t> {14,13,12,7,1,8,2,10,4,
             9,3,11,6,0,5};
-    
+
     //compare results with expected values
     for (size_t i = 0; i < expected.size(); i++) {
         ASSERT_EQ(sa[i], expected[i]);
