@@ -18,7 +18,7 @@ TEST(Bucketsort, function_call) {
 
     sacabench::util::container<uint8_t> sa =
         sacabench::util::make_container<uint8_t>(input.size());
-    sacabench::util::sort::bucketsort_presort(span(input), a.size, 2, sa);
+    sacabench::util::sort::bucketsort_presort(sacabench::util::span(input), a.size, 2, sa);
 
     std::cout << "Suffix Array: ";
     for (auto const& c : sa)
