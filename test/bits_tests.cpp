@@ -27,3 +27,45 @@ TEST(Bits, bits_of) {
     };
     ASSERT_EQ(bits_of<Foo>, 128u);
 }
+
+TEST(Bits, ceil_log2) {
+    ASSERT_EQ(ceil_log2(0), 0u);
+    ASSERT_EQ(ceil_log2(1), 0u);
+
+    ASSERT_EQ(ceil_log2(2), 1u);
+
+    ASSERT_EQ(ceil_log2(3), 2u);
+    ASSERT_EQ(ceil_log2(4), 2u);
+
+    ASSERT_EQ(ceil_log2(5), 3u);
+    ASSERT_EQ(ceil_log2(6), 3u);
+    ASSERT_EQ(ceil_log2(7), 3u);
+    ASSERT_EQ(ceil_log2(8), 3u);
+
+    ASSERT_EQ(ceil_log2(9), 4u);
+    ASSERT_EQ(ceil_log2(10), 4u);
+    ASSERT_EQ(ceil_log2(11), 4u);
+    ASSERT_EQ(ceil_log2(12), 4u);
+    ASSERT_EQ(ceil_log2(13), 4u);
+    ASSERT_EQ(ceil_log2(14), 4u);
+    ASSERT_EQ(ceil_log2(15), 4u);
+    ASSERT_EQ(ceil_log2(16), 4u);
+
+    ASSERT_EQ(ceil_log2(17), 5u);
+    // ...
+    ASSERT_EQ(ceil_log2(32), 5u);
+
+    ASSERT_EQ(ceil_log2(33), 6u);
+    // ...
+    ASSERT_EQ(ceil_log2(64), 6u);
+
+    ASSERT_EQ(ceil_log2(65), 7u);
+    // ...
+    ASSERT_EQ(ceil_log2(128), 7u);
+
+    for(size_t i = 8; i < 64; i++) {
+        ASSERT_EQ(ceil_log2((1ull << (i - 1)) + 1), i);
+        // ...
+        ASSERT_EQ(ceil_log2(1ull << i), i);
+    }
+}
