@@ -12,6 +12,7 @@
 #include <util/span.hpp>
 #include <vector>
 #include <util/container.hpp>
+#include <util/merge_sa_dc.hpp>
 #include <tuple>
 #include <string>
 
@@ -106,55 +107,57 @@ namespace sacabench::saca {
             static void construct_sa(util::string_span text,
                                      size_t alphabet_size,
                                      util::span<sa_index> out_sa) {
-                // Suppress unused variable warnings:
-                (void) text;
-                (void) alphabet_size;
-                (void) out_sa;
-                
-                
-                
-                
-            //empty SA which should be filled correctly with method induce_sa_dc
-            auto t_12 = sacabench::util::make_container<2*text.size()/3>;
-            
-            //run method to test it
-            sacabench::saca::determine_triplets<unsigned char>(text, t_12);    
-            
-            //empty SA which should be filled correctly with method induce_sa_dc
-            auto sa_12 = sacabench::util::make_container<2*text.size()/3>;
-            
-            bool recursion = false;
-            //run method to test it
-            sacabench::saca::determine_leq(text, t_12, sa_12, recursion);
-            
-            if(recursion){
-                
-                construct_sa(sa_12, alphabet_size, out_sa);
-                
-            }
-            
-            
-            //empty SA which should be filled correctly with method induce_sa_dc
-            auto isa_12 = sacabench::util::make_container<sa_12.size()>;
-            sacabench::saca::determine_isa(sa_12, isa_12);
-            
-            //positions i mod 3 = 0 of sa_12
-            std::string t_0;
-            for(size_t i = 0; i < text.size()/3; i+3){
-                t_0 += text[i];
-            }
-                
                 //empty SA which should be filled correctly with method induce_sa_dc
-                //auto sa_0 = sacabench::util::make_container<t_0.size()>;
+                auto t_12 = sacabench::util::make_container<size_t>(2*text.size()/3);
                 
                 //run method to test it
-                //sacabench::util::induce_sa_dc<unsigned char>(t_0, isa_12, sa_0);
+                sacabench::saca::determine_triplets<sacabench::util::character>(text, t_12);    
+                
+                //empty SA which should be filled correctly with method induce_sa_dc
+                auto sa_12 = sacabench::util::make_container<size_t>(2*text.size()/3);
+                
+                bool recursion = false;
+                //run method to test it
+                sacabench::saca::determine_leq(text, t_12, sa_12, recursion);
+                
+                if(recursion){
+                    
+                    construct_sa(sa_12, alphabet_size, out_sa);
+                    
+                }
                 
                 
+                //empty SA which should be filled correctly with method induce_sa_dc
+                auto isa_12 = sacabench::util::make_container<size_t>(sa_12.size());
+                sacabench::saca::determine_isa(sa_12, isa_12);
                 
+                //positions i mod 3 = 0 of sa_12
+                std::string t_0;
+                for(size_t i = 0; i < text.size()/3; i+3){
+                    t_0 += text[i];
+                }
                 
+                //empty SA which should be filled correctly with method induce_sa_dc
+                auto sa_0 = sacabench::util::make_container<size_t>(t_0.size());
+                
+                //run method to test it
+                sacabench::util::induce_sa_dc<sacabench::util::character>(t_0, isa_12, sa_0);
+                
+                //run method to test it
+                sacabench::util::merge_sa_dc<sacabench::util::character>(text, sa_0, sa_12,
+                        isa_12, out_sa, comp, get_substring);
 
                 std::cout << "Running example1" << std::endl;
+            }
+            
+            sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
+                    int n) {
+                return sacabench::util::span(ptr, n);
+            }
+
+            // implementation of comp method
+            bool comp(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
+                return a < b;
             }
             
             
