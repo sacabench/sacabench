@@ -89,6 +89,17 @@ namespace sacabench::saca {
         
         //TODO: Abfragen ob INPUT_STRING und t_12 out of bounce
     }
+    
+    template<typename S>
+    void determine_isa(const S& sa_12, S& isa_12){
+        
+        
+        DCHECK_MSG(isa_12.size() == sa_12.size(), "isa_12 must have the same length as sa_12");
+        
+        for(size_t i = 0; i < sa_12.size(); i++) {
+            isa_12[sa_12[i]] = i+1;
+        }        
+    }
         
 }  // namespace sacabench::util
 
