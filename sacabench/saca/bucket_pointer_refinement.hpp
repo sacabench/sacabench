@@ -44,7 +44,7 @@ namespace sacabench::bucket_pointer_refinement {
                 const size_t n = sa.size();
 
                 // create bucket pointer array
-                bptr<sa_index> = util::make_container<sa_index>(n);
+                bptr = util::make_container<sa_index>(n);
 
                 const std::size_t real_alphabet_size = alphabet_size + 1;
                 const std::size_t code_modulo = pow(real_alphabet_size,
@@ -67,7 +67,7 @@ namespace sacabench::bucket_pointer_refinement {
                         // we passed a border between two buckets
                         current_bucket = current_sa_position;
                     }
-                    bptr<sa_index>[sa[current_sa_position]] = current_bucket;
+                    bptr[sa[current_sa_position]] = current_bucket;
                 } while (current_sa_position > 0);
             }
 
