@@ -50,7 +50,7 @@ namespace sacabench::util {
 
     /// Special `character` values that is smaller than all possible
     /// input characters.
-    constexpr character DOLLAR = 0;
+    constexpr character SENTINEL = 0;
 }
 
 /// Custom literal operator for creating a `string_span`.
