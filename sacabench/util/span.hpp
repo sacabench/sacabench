@@ -14,6 +14,8 @@
 
 #include <util/assertions.hpp>
 
+namespace sacabench::util {
+
 // Inspired by the span type in https://github.com/Microsoft/GSL
 /// A wrapper around a (pointer, len) pair.
 ///
@@ -162,3 +164,5 @@ public:
         return !(lhs < rhs);
     }
 };
+
+}

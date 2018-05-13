@@ -27,7 +27,7 @@ namespace sacabench::util {
     * with information of ranks of triplets starting in position i mod 3 != 0 of input string.
     * This method works correct because of the difference cover idea.
     */
-    void induce_sa_dc(T& t_0, I& isa_12, S& sa_0) {
+    void induce_sa_dc(const T& t_0, const I& isa_12, S& sa_0) {
         
         DCHECK_MSG(sa_0.size() == t_0.size(), "sa_0 must have the same length as t_0");
         DCHECK_MSG(isa_12.size() >= t_0.size(), "isa_12 must have at least the same length as t_0");
