@@ -22,3 +22,5 @@ run_test(compare_tests DEPS saca_bench_lib)
 run_test(radixsort_tests DEPS saca_bench_lib)
 run_test(sa_induce_dc_tests DEPS saca_bench_lib)
 run_test(test_signed_size_type DEPS saca_bench_lib)
+
+run_test(test_saca_deep_shallow DEPS saca_bench_lib)
