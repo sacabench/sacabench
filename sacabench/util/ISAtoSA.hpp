@@ -1,6 +1,4 @@
 /*******************************************************************************
- * bench/ISAtoSA.hpp
- *
  * Copyright (C) 2018 Rosa Pink <rosa.pink@tu-dortmund.de>
  * Copyright (C) 2018 Hermann Foot <hermann.foot@tu-dortmund.de>
  *
@@ -12,20 +10,20 @@
 #include "container.hpp"
 
 namespace sacabench::util {
-template <typename T>
 /**\brief Transforms inverse Suffix Array to Suffix Array
  * \param isa calculated ISA
  * \param sa memory block for resulting SA
  *
  * This method transforms the ISA to SA using a simple scan from right to left
  */
+template <typename T>
 void isa2sa_simple_scan(const T &isa, T &sa) {
     for (size_t i = 0; i < isa.size(); ++i) {
         sa[isa[i]] = i;
     }
 }
 
-template <typename T>
+
 /**\brief Transforms inverse Suffix Array to Suffix Array, using no extra space
  * \param isa calculated ISA
  *
@@ -33,6 +31,7 @@ template <typename T>
  * cyclically replacing ranks with suffix-indices
  * Note: ranks are always < 0!
  */
+template <typename T>
 void isa2sa_inplace(T &isa) {
     for (size_t i = 0; i < isa.size(); i++) {
         if (isa[i] < 0) {
@@ -50,7 +49,7 @@ void isa2sa_inplace(T &isa) {
     }
 }
 
-template <typename T>
+
 /**\brief Transforms inverse Suffix Array to Suffix Array with less space
  * than with simple scan but more scans
  * \param isa calculated ISA
@@ -63,6 +62,7 @@ template <typename T>
  *
  * Note: the three MSBs of each rank must be unused!
  */
+template <typename T>
 void isa2sa_multiscan(T &isa) {
 
     size_t n = isa.size();
@@ -98,10 +98,10 @@ void isa2sa_multiscan(T &isa) {
     k = 2;
     while (k <= 4) {
         size_t pointer_to_other_half = 0;
-        // if k is odd, move elements to xB
+        // if k is even, move elements to xB
         if (k % 2 == 0) {
             for (size_t index = 0; index < n; ++index) {
-                    if (isa[index] >= (n * (k - 1) / 4) && isa[index] < (n * (k) / 4)) {
+                    if (isa[index] >= (n * (k - 1) / 4) && isa[index] < (n * k / 4)) {
                         x[isa[index] - (n * (k - 1) / 4) + n_quarter] = index;
                         isa[index] = invalid_number;
                 }
@@ -117,7 +117,7 @@ void isa2sa_multiscan(T &isa) {
         // else move elements to xA
         else {
             for (size_t index = 0; index < n; ++index) {
-                if (isa[index] >= (n * (k - 1) / 4) && isa[index] < (n * (k) / 4)) {
+                if (isa[index] >= (n * (k - 1) / 4) && isa[index] < (n * k / 4)) {
                     x[isa[index] - (n * (k - 1) / 4)] = index;
                     isa[index] = invalid_number;
                 }
