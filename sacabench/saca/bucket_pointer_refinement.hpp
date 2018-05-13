@@ -14,9 +14,9 @@
 
 namespace sacabench::bucket_pointer_refinement {
 
+    template<typename sa_index>
     class bucket_pointer_refinement {
         public:
-            template<typename sa_index>
             static void construct_sa(util::string_span input,
                     size_t alphabet_size, util::span<sa_index> sa) {
                 size_t const n = input.size();
@@ -29,18 +29,17 @@ namespace sacabench::bucket_pointer_refinement {
 
                 util::sort::bucketsort_presort(input, alphabet_size,
                         bucketsort_depth, sa);
-                // TODO: initialize bucket pointers
-                initialize_bucket_pointers(input, alphabet_size,
-                        bucketsort_depth, sa);
-            }
-        private:
-            template<typename sa_index>
-            static util::container<sa_index> bptr;
 
-            template<typename sa_index>
+                // TODO: initialize bucket pointers
+                static util::container<sa_index> bptr;
+                initialize_bucket_pointers(input, alphabet_size,
+                        bucketsort_depth, sa, bptr);
+            }
+
+        private:
             static void initialize_bucket_pointers(util::string_span input,
                     size_t alphabet_size, size_t bucketsort_depth,
-                    util::span<sa_index> sa) {
+                    util::span<sa_index> sa, util::container<sa_index> bptr) {
                 const size_t n = sa.size();
 
                 // create bucket pointer array
@@ -62,13 +61,30 @@ namespace sacabench::bucket_pointer_refinement {
                     --current_sa_position;
                     // TODO: find current code by inspecting
                     // sa[current_sa_position]
+                    current_code = code_d(input, alphabet_size,
+                            bucketsort_depth, sa[current_sa_position]);
                     
                     if (current_code != recent_code) {
                         // we passed a border between two buckets
                         current_bucket = current_sa_position;
+                        recent_code = current_code;
                     }
                     bptr[sa[current_sa_position]] = current_bucket;
                 } while (current_sa_position > 0);
+            }
+
+            static size_t code_d (util::string_span input, size_t alphabet_size,
+                    size_t depth, size_t start_index) {
+                size_t code = 0;
+                size_t stop_index = start_index + depth;
+                size_t real_alphabet_size = alphabet_size + 1; // include '$'
+
+                while (start_index < stop_index && start_index < input.size()) {
+                    code *= real_alphabet_size;
+                    code += input[start_index++];
+                }
+
+                return code;
             }
 
     }; // class bucket_pointer_refinement
