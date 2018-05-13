@@ -9,9 +9,11 @@
 
 #include <iostream>
 #include <util/string.hpp>
+#include <util/span.hpp>
 #include <vector>
 #include <util/container.hpp>
 #include <tuple>
+#include <string>
 
 namespace sacabench::saca {
     
@@ -76,23 +78,18 @@ namespace sacabench::saca {
             }else{
                 sa_12[sa_12.size()/2 + t_12[i]/3] = leq_name;
             }
-            if(INPUT_STRING[t_12[i]] != INPUT_STRING[t_12[i+1]]){
-                leq_name++;
-            }else if(INPUT_STRING[t_12[i]+1] != INPUT_STRING[t_12[i+1]+1]){
-                leq_name++;
-            }else if(INPUT_STRING[t_12[i]+2] != INPUT_STRING[t_12[i+1]+2]){
+            
+            if(sacabench::util::span(&INPUT_STRING[t_12[i]], 3) != sacabench::util::span(&INPUT_STRING[t_12[i+1]], 3)){
                 leq_name++;
             }else{
                 recursion = true;
             }
         }  
-        
         //TODO: Abfragen ob INPUT_STRING und t_12 out of bounce
     }
     
     template<typename S>
     void determine_isa(const S& sa_12, S& isa_12){
-        
         
         DCHECK_MSG(isa_12.size() == sa_12.size(), "isa_12 must have the same length as sa_12");
         
@@ -100,6 +97,139 @@ namespace sacabench::saca {
             isa_12[sa_12[i]] = i+1;
         }        
     }
+    
+    
+    
+    class dc3 {
+        public:
+            template<typename sa_index>
+            static void construct_sa(util::string_span text,
+                                     size_t alphabet_size,
+                                     util::span<sa_index> out_sa) {
+                // Suppress unused variable warnings:
+                (void) text;
+                (void) alphabet_size;
+                (void) out_sa;
+                
+                
+                
+                
+            //empty SA which should be filled correctly with method induce_sa_dc
+            auto t_12 = sacabench::util::make_container<2*text.size()/3>;
+            
+            //run method to test it
+            sacabench::saca::determine_triplets<unsigned char>(text, t_12);    
+            
+            //empty SA which should be filled correctly with method induce_sa_dc
+            auto sa_12 = sacabench::util::make_container<2*text.size()/3>;
+            
+            bool recursion = false;
+            //run method to test it
+            sacabench::saca::determine_leq(text, t_12, sa_12, recursion);
+            
+            if(recursion){
+                
+                construct_sa(sa_12, alphabet_size, out_sa);
+                
+            }
+            
+            
+            //empty SA which should be filled correctly with method induce_sa_dc
+            auto isa_12 = sacabench::util::make_container<sa_12.size()>;
+            sacabench::saca::determine_isa(sa_12, isa_12);
+            
+            //positions i mod 3 = 0 of sa_12
+            std::string t_0;
+            for(size_t i = 0; i < text.size()/3; i+3){
+                t_0 += text[i];
+            }
+                
+                //empty SA which should be filled correctly with method induce_sa_dc
+                //auto sa_0 = sacabench::util::make_container<t_0.size()>;
+                
+                //run method to test it
+                //sacabench::util::induce_sa_dc<unsigned char>(t_0, isa_12, sa_0);
+                
+                
+                
+                
+
+                std::cout << "Running example1" << std::endl;
+            }
+            
+            
+    private:
+        template<typename C, typename T, typename S>
+        void determine_triplets(const T& INPUT_STRING, S& t_12) {
+            
+            
+            DCHECK_MSG(t_12.size() == 2*INPUT_STRING.size()/3, "t_12 must have the length (2*INPUT_STRING.size()/3)");
+            
+            
+            const unsigned char SMALLEST_CHAR = ' ';
+            //Container to store all tuples with the same length as t_12
+            //Tuples contains a char and a rank 
+            auto t_12_to_be_sorted = sacabench::util::make_container<std::tuple<C, C, C, size_t>>(2*INPUT_STRING.size()/3);
+    
+            size_t counter = 0;
+            for(size_t i = 1; i < INPUT_STRING.size(); i++) {
+                if(i % 3 != 0){
+                    if((i+2) >= INPUT_STRING.size()){
+                        if((i+1) >= INPUT_STRING.size()){
+                            t_12_to_be_sorted[counter++] = std::tuple<C, C, C, size_t>(INPUT_STRING[i], SMALLEST_CHAR, SMALLEST_CHAR, i);
+                        }else{
+                            t_12_to_be_sorted[counter++] = std::tuple<C, C, C, size_t>(INPUT_STRING[i], INPUT_STRING[i+1], SMALLEST_CHAR, i);
+                        }
+                    }else{
+                        t_12_to_be_sorted[counter++] = std::tuple<C, C, C, size_t>(INPUT_STRING[i], INPUT_STRING[i+1], INPUT_STRING[i+2], i);
+                    }
+                }
+            }  
+            
+            //TODO: sort Tupels with radix_sort
+            //radix_sort(sa0_to_be_sorted, sa0);        
+            std::sort(t_12_to_be_sorted.begin(),t_12_to_be_sorted.end());
+            
+            for(size_t i = 0; i<t_12_to_be_sorted.size();i++){   
+                t_12[i] = std::get<3>(t_12_to_be_sorted[i]);
+            }
+                    
+        }
+        
+        template<typename T, typename S>
+        void determine_leq(const T& INPUT_STRING, const S& t_12, S& sa_12, bool& recursion){
+            
+            
+            DCHECK_MSG(t_12.size() == sa_12.size(), "t_12 must have the same length as sa_12");
+            
+            size_t leq_name = 0;
+            
+            for(size_t i = 0; i < t_12.size(); i++) {
+                if(t_12[i] % 3 == 1){
+                    sa_12[t_12[i]/3] = leq_name;
+                }else{
+                    sa_12[sa_12.size()/2 + t_12[i]/3] = leq_name;
+                }
+                
+                if(sacabench::util::span(&INPUT_STRING[t_12[i]], 3) != sacabench::util::span(&INPUT_STRING[t_12[i+1]], 3)){
+                    leq_name++;
+                }else{
+                    recursion = true;
+                }
+            }  
+            //TODO: Abfragen ob INPUT_STRING und t_12 out of bounce
+        }
+        
+        template<typename S>
+        void determine_isa(const S& sa_12, S& isa_12){
+            
+            DCHECK_MSG(isa_12.size() == sa_12.size(), "isa_12 must have the same length as sa_12");
+            
+            for(size_t i = 0; i < sa_12.size(); i++) {
+                isa_12[sa_12[i]] = i+1;
+            }        
+        }
+    }; // class dc3
         
 }  // namespace sacabench::util
 
