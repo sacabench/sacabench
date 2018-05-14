@@ -39,12 +39,11 @@ namespace sacabench::prefix_doubling {
         name_type r = 0;
         auto last_pair = atuple { util::SENTINEL, util::SENTINEL };
 
-        size_t result_i = 0;
         bool only_unique = true;
 
-        for (auto&& elem : S) {
-            auto const& current_pair = elem.first;
-            size_t const current_i = elem.second;
+        for (size_t i = 0; i < S.size(); i++) {
+            auto const& current_pair = S[i].first;
+            size_t const current_i = S[i].second;
             ++q;
             if (current_pair != last_pair) {
                 r = q;
@@ -52,7 +51,7 @@ namespace sacabench::prefix_doubling {
             } else {
                 only_unique = false;
             }
-            P[result_i++] = P_tuple { r, current_i };
+            P[i] = P_tuple { r, current_i };
         }
 
         return only_unique;
