@@ -33,25 +33,51 @@ namespace sacabench::prefix_doubling {
     using P_tuple = std::pair<name_type, size_t>;
 
     /// Create a unique name for each S tuple,
-    /// returning true if all names are unique
+    /// returning true if all names are unique.
+    ///
+    /// Precondition: The tuple in S are lexicographical sorted.
     inline static bool name(util::span<S_tuple> S, util::span<P_tuple> P) {
-        name_type q = 0;
-        name_type r = 0;
-        auto last_pair = atuple { util::SENTINEL, util::SENTINEL };
+        // A name is determined as follows:
+        // `last_pair` contains the last `S` tuple looked at, or
+        // ($, $) initially.
+        //
+        // We iterate over all tuples in `S`, and set `name` to the current
+        // iteration index + 1 each time we see a different tuple.
+        //
+        // Since the tuple in S are sorted, `name`s are therefore always
+        // integer that sort to the same positions as their tuple would.
+        //
+        // We skip `name=0`, because we want to reserve
+        // it for the sentinel value.
+        //
+        // In `only_unique` we keep track of whether we've seen a tuple more
+        // than once.
+        //
+        // Example:
+        //
+        // Text: ababab$
+        // |      S            P   |
+        // | ((a, b), 0) => (1, 0) |
+        // | ((a, b), 2) => (1, 2) |
+        // | ((a, b), 4) => (1, 4) |
+        // | ((b, a), 1) => (4, 1) |
+        // | ((b, a), 3) => (4, 3) |
+        // | ((b, $), 5) => (6, 5) |
+        // only_unique = false
 
+        name_type name = 0;
+        auto last_pair = atuple { util::SENTINEL, util::SENTINEL };
         bool only_unique = true;
 
         for (size_t i = 0; i < S.size(); i++) {
-            auto const& current_pair = S[i].first;
-            size_t const current_i = S[i].second;
-            ++q;
-            if (current_pair != last_pair) {
-                r = q;
-                last_pair = current_pair;
+            auto const& pair = S[i].first;
+            if (pair != last_pair) {
+                name = i + 1;
+                last_pair = pair;
             } else {
                 only_unique = false;
             }
-            P[i] = P_tuple { r, current_i };
+            P[i] = P_tuple { name, S[i].second };
         }
 
         return only_unique;
