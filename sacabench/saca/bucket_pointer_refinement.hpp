@@ -14,9 +14,9 @@
 
 namespace sacabench::bucket_pointer_refinement {
 
-    template<typename sa_index>
     class bucket_pointer_refinement {
         public:
+            template<typename sa_index>
             static void construct_sa(util::string_span input,
                     size_t alphabet_size, util::span<sa_index> sa) {
                 size_t const n = input.size();
@@ -32,11 +32,12 @@ namespace sacabench::bucket_pointer_refinement {
 
                 // TODO: initialize bucket pointers
                 static util::container<sa_index> bptr;
-                initialize_bucket_pointers(input, alphabet_size,
+                initialize_bucket_pointers<sa_index>(input, alphabet_size,
                         bucketsort_depth, sa, bptr);
             }
 
         private:
+            template<typename sa_index>
             static void initialize_bucket_pointers(util::string_span input,
                     size_t alphabet_size, size_t bucketsort_depth,
                     util::span<sa_index> sa, util::container<sa_index> bptr) {
@@ -45,9 +46,6 @@ namespace sacabench::bucket_pointer_refinement {
                 // create bucket pointer array
                 bptr = util::make_container<sa_index>(n);
 
-                const std::size_t real_alphabet_size = alphabet_size + 1;
-                const std::size_t code_modulo = pow(real_alphabet_size,
-                        bucketsort_depth);
                 size_t current_bucket = n - 1;
                 size_t current_sa_position = n;
                 
@@ -61,7 +59,7 @@ namespace sacabench::bucket_pointer_refinement {
                     --current_sa_position;
                     // TODO: find current code by inspecting
                     // sa[current_sa_position]
-                    current_code = code_d(input, alphabet_size,
+                    current_code = code_d<sa_index>(input, alphabet_size,
                             bucketsort_depth, sa[current_sa_position]);
                     
                     if (current_code != recent_code) {
@@ -73,11 +71,12 @@ namespace sacabench::bucket_pointer_refinement {
                 } while (current_sa_position > 0);
             }
 
+            template<typename sa_index>
             static size_t code_d (util::string_span input, size_t alphabet_size,
                     size_t depth, size_t start_index) {
                 size_t code = 0;
-                size_t stop_index = start_index + depth;
-                size_t real_alphabet_size = alphabet_size + 1; // include '$'
+                const size_t stop_index = start_index + depth;
+                const size_t real_alphabet_size = alphabet_size + 1; // incl '$'
 
                 while (start_index < stop_index && start_index < input.size()) {
                     code *= real_alphabet_size;

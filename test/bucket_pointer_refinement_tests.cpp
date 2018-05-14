@@ -9,7 +9,7 @@
 #include <util/string.hpp>
 #include <saca/bucket_pointer_refinement.hpp>
 
-using bpr = sacabench::bucket_pointer_refinement::bucket_pointer_refinement<uint8_t>;
+using bpr = sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
 
 TEST(Bucketsort, function_call) {
     sacabench::util::string input =
