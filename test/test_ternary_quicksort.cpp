@@ -63,8 +63,6 @@ TEST(ternary_quicksort, array_sizes) {
 
     // Test with 1000 different array-sizes
     for (size_t k = 0; k < 1000; ++k) {
-        std::vector<size_t> test_set;
-
         auto cmp2 = [k](size_t a, size_t b) -> bool {
             EXPECT_LT(a, k);
             EXPECT_LT(b, k);
@@ -73,6 +71,7 @@ TEST(ternary_quicksort, array_sizes) {
 
         // Try 100 times
         for (size_t j = 0; j < 10; ++j) {
+            std::vector<size_t> test_set;
 
             // Insert k random numbers.
             for (size_t i = 0; i < k; ++i) {
@@ -86,6 +85,7 @@ TEST(ternary_quicksort, array_sizes) {
 }
 
 TEST(ternary_quicksort, not_size_t) {
+
     // Initialize random number generator.
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -93,16 +93,15 @@ TEST(ternary_quicksort, not_size_t) {
 
     // Test with 1000 different array-sizes
     for (size_t k = 0; k < 1000; ++k) {
-        std::vector<uint8_t> test_set;
-
         auto cmp2 = [k](uint8_t a, uint8_t b) -> bool {
-            //EXPECT_LT(a, k);
-            //EXPECT_LT(b, k);
+            EXPECT_LT(a, k);
+            EXPECT_LT(b, k);
             return a < b;
         };
 
         // Try 100 times
         for (size_t j = 0; j < 10; ++j) {
+            std::vector<uint8_t> test_set;
 
             // Insert k random numbers.
             for (size_t i = 0; i < k; ++i) {
