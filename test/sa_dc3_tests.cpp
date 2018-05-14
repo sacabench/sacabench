@@ -9,6 +9,7 @@
 #include <util/string.hpp>
 #include <util/container.hpp>
 #include <saca/dc3.hpp>
+#include "test/saca.hpp"
 #include <iostream>
 
 
@@ -19,7 +20,7 @@ TEST(DC3, determine_triplets) {
     auto t_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0};
     
     //run method to test it
-    sacabench::saca::determine_triplets<unsigned char>(input_string, t_12);
+    sacabench::dc3::determine_triplets<unsigned char>(input_string, t_12);
     
     
     //expected values for induced SA with DC
@@ -44,7 +45,7 @@ TEST(DC3, determine_triplets_with_sentinel) {
     auto t_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0};
     
     //run method to test it
-    sacabench::saca::determine_triplets<unsigned char>(input_string, t_12);
+    sacabench::dc3::determine_triplets<unsigned char>(input_string, t_12);
     
     
     //expected values for induced SA with DC
@@ -70,14 +71,14 @@ TEST(DC3, calc_sa) {
     auto t_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0};
     
     //run method to test it
-    sacabench::saca::determine_triplets<unsigned char>(input_string, t_12);    
+    sacabench::dc3::determine_triplets<unsigned char>(input_string, t_12);    
     
     //empty SA which should be filled correctly with method induce_sa_dc
     auto sa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0};
     
     bool recursion = false;
     //run method to test it
-    sacabench::saca::determine_leq(input_string, t_12, sa_12, recursion);
+    sacabench::dc3::determine_leq(input_string, t_12, sa_12, recursion);
     
     //expected values for induced SA with DC
     auto expected = sacabench::util::container<size_t> {2, 5, 2, 4, 1, 3, 7, 3, 6, 0};
@@ -105,27 +106,27 @@ TEST(DC3, sa_after_recursion_task_1) {
     auto t_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0};
     
     //run method to test it
-    sacabench::saca::determine_triplets<unsigned char>(input_string, t_12);    
+    sacabench::dc3::determine_triplets<unsigned char>(input_string, t_12);    
     
     //empty SA which should be filled correctly with method induce_sa_dc
     auto sa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0};
     
     bool recursion = false;
     //run method to test it
-    sacabench::saca::determine_leq(input_string, t_12, sa_12, recursion);
+    sacabench::dc3::determine_leq(input_string, t_12, sa_12, recursion);
     
     if(recursion){
         auto r_t_12 = sacabench::util::container<size_t> {0,0,0,0,0,0};
         
         //run method to test it
-        sacabench::saca::determine_triplets<size_t>(sa_12, r_t_12);    
+        sacabench::dc3::determine_triplets<size_t>(sa_12, r_t_12);    
     
         //empty SA which should be filled correctly with method induce_sa_dc
         auto r_sa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0};
     
         bool recursion = false;
         //run method to test it
-        sacabench::saca::determine_leq(sa_12, r_t_12, r_sa_12, recursion);
+        sacabench::dc3::determine_leq(sa_12, r_t_12, r_sa_12, recursion);
     
         //expected values for induced SA with DC
         auto expected_sa = sacabench::util::container<size_t> {4, 0, 2, 1, 3, 5};
@@ -141,7 +142,7 @@ TEST(DC3, sa_after_recursion_task_1) {
         
         //empty SA which should be filled correctly with method induce_sa_dc
         auto r_isa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0};
-        sacabench::saca::determine_isa(r_sa_12, r_isa_12);
+        sacabench::dc3::determine_isa(r_sa_12, r_isa_12);
 
         
         //expected values for induced SA with DC
@@ -165,27 +166,27 @@ TEST(DC3, dc3_complete) {
     auto t_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0};
     
     //run method to test it
-    sacabench::saca::determine_triplets<unsigned char>(input_string, t_12);    
+    sacabench::dc3::determine_triplets<unsigned char>(input_string, t_12);    
     
     //empty SA which should be filled correctly with method induce_sa_dc
     auto sa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0};
     
     bool recursion = false;
     //run method to test it
-    sacabench::saca::determine_leq(input_string, t_12, sa_12, recursion);
+    sacabench::dc3::determine_leq(input_string, t_12, sa_12, recursion);
     
     if(recursion){
         auto r_t_12 = sacabench::util::container<size_t> {0,0,0,0,0,0};
         
         //run method to test it
-        sacabench::saca::determine_triplets<size_t>(sa_12, r_t_12);    
+        sacabench::dc3::determine_triplets<size_t>(sa_12, r_t_12);    
     
         //empty SA which should be filled correctly with method induce_sa_dc
         auto r_sa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0};
     
         bool recursion = false;
         //run method to test it
-        sacabench::saca::determine_leq(sa_12, r_t_12, r_sa_12, recursion);
+        sacabench::dc3::determine_leq(sa_12, r_t_12, r_sa_12, recursion);
     
         //expected values for induced SA with DC
         auto expected_sa = sacabench::util::container<size_t> {4, 0, 2, 1, 3, 5};
@@ -193,7 +194,7 @@ TEST(DC3, dc3_complete) {
         
         //empty SA which should be filled correctly with method induce_sa_dc
         auto r_isa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0};
-        sacabench::saca::determine_isa(r_sa_12, r_isa_12);
+        sacabench::dc3::determine_isa(r_sa_12, r_isa_12);
 
         
         //expected values for induced SA with DC
@@ -246,11 +247,12 @@ TEST(DC3, dc3_complete) {
 }
 
 
-TEST(DC3, dc3_complete) {    
-    sacabench::util::string input_string = sacabench::util::make_string("caabaccaabacaa$");
+
     
-    auto out_sa = sacabench::util::make_container(input_string.size());
-    
-    sacabench::saca::
+using namespace sacabench::dc3;
+
+TEST(dc3, test) {
+    test::saca_corner_cases<dc3>();
 }
+
 
