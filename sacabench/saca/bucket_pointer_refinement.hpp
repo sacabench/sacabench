@@ -36,8 +36,7 @@ class bucket_pointer_refinement {
             initialize_bucket_pointers<sa_index>(input, alphabet_size,
                     bucketsort_depth, sa, bptr);
 
-            refine_buckets<sa_index>(buckets, input, sa, bptr,
-                    bucketsort_depth);
+            refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
         }
 
     private:
@@ -91,23 +90,44 @@ class bucket_pointer_refinement {
         }
 
         template<typename sa_index>
-        static void refine_buckets (
-                util::span<util::sort::bucket<sa_index>> buckets,
-                util::string_span input, util::span<sa_index> sa,
+        static void refine_all_buckets (
+                util::span<util::sort::bucket> buckets, util::span<sa_index> sa,
                 util::span<sa_index> bptr, size_t offset) {
             // sort each bucket in naive order
             for (auto& b : buckets) {
-                refine_bucket<sa_index>(input, offset, bptr,
-                        sa.slice(b.position, b.position + b.count));
+                if (b.count > 0) {
+                    refine_single_bucket<sa_index>(offset, offset, bptr,
+                            sa.slice(b.position - b.count + 1, b.position + 1));
+                }
             }
         }
 
         template<typename sa_index>
-        static void refine_bucket (
-                util::string_span /*input*/, size_t /*offset*/,
-                util::span<sa_index> /*bptr*/, util::span<sa_index> /*sa*/) {
+        static void refine_single_bucket (size_t offset, size_t step_size,
+                util::span<sa_index> bptr, util::span<sa_index> sa) {
+
+            if (sa.size() < 2) {
+                return;
+            }
+
+            std::cout << "Sorting { ";
+            for (auto s : sa) {
+                std::cout << (int) s << " ";
+            }
+            std::cout << "}" << std::endl;
+
+            auto sort_key = [=] (sa_index suffix) {
+                if (suffix >= sa.size() - offset) {
+                    return (sa_index) 0;
+                } else {
+                    return bptr[suffix + offset];
+                }
+            };
+
             // TODO: Sort sa
             // TODO: Refine bucket pointers
+            // TODO: Determine sub-buckets
+            // TODO: Sort recursively
         }
 
 }; // class bucket_pointer_refinement
