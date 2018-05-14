@@ -7,7 +7,7 @@
 include(test/testsuite.cmake)
 
 run_test(example_tests DEPS saca_bench_lib)
-run_test(test_uint40)
+run_test(test_uint40 DEPS saca_bench_lib)
 run_test(span_tests DEPS saca_bench_lib)
 run_test(container_tests DEPS saca_bench_lib)
 run_test(bucket_size_tests DEPS saca_bench_lib)
@@ -22,3 +22,4 @@ run_test(compare_tests DEPS saca_bench_lib)
 run_test(merge_sa_dc_tests DEPS saca_bench_lib)
 run_test(radixsort_tests DEPS saca_bench_lib)
 run_test(sa_induce_dc_tests DEPS saca_bench_lib)
+run_test(test_signed_size_type DEPS saca_bench_lib)
