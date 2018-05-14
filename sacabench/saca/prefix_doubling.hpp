@@ -130,20 +130,22 @@ namespace sacabench::prefix_doubling {
                 auto S = util::make_container<S_tuple>(N);
                 auto P = util::make_container<P_tuple>(N);
 
-                // Create the initial S array of character tuples + text position
+                // Create the initial S array of character tuples + text
+                // position
                 for(size_t i = 0; i < N - 1; ++i) {
-                    S[i] = std::make_pair(atuple { text[i], text[i + 1] }, i);
+                    S[i] = std::make_pair(
+                        atuple { text[i], text[i + 1] }, i);
                 }
-                S[N - 1] = std::make_pair(atuple { text[N - 1], util::SENTINEL }, N - 1);
+                S[N - 1] = std::make_pair(
+                    atuple { text[N - 1], util::SENTINEL }, N - 1);
 
                 // We iterate up to ceil(log2(N)) times - but because we
                 // always have a break condition in the loop body,
                 // we don't need to check for it explicitly
                 for(size_t k = 1;;k++) {
-                    size_t const k_length = 1ull << k;
-
-                    // std::cout << "k = " << k << ", substring size: " << k_length << "\n";
                     DCHECK_LE(k, util::ceil_log2(N));
+
+                    size_t const k_length = 1ull << k;
 
                     // Sort the S tuples lexicographical
                     sorting_algorithm::sort(util::span(S));
@@ -160,12 +162,15 @@ namespace sacabench::prefix_doubling {
                     }
 
                     // Sort P by its i position mapped to the tuple
-                    // (i % (2**k), i / (2**k), implemented as a single integer value
-                    sorting_algorithm::sort(util::span(P), util::compare_key([k](auto value) {
-                        size_t const i = value.second;
-                        auto const anti_k = util::bits_of<size_t> - k;
-                        return (i << anti_k) | (i >> k);
-                    }));
+                    // (i % (2**k), i / (2**k), implemented as a single
+                    // integer value
+                    sorting_algorithm::sort(util::span(P), util::compare_key(
+                        [k](auto value) {
+                            size_t const i = value.second;
+                            auto const anti_k = util::bits_of<size_t> - k;
+                            return (i << anti_k) | (i >> k);
+                        }
+                    ));
 
                     for (size_t j = 0; j < N; j++) {
                         size_t const i1 = P[j].second;
