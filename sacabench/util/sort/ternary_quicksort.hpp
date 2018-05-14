@@ -32,10 +32,10 @@ content max(key_func_type cmp, const content& a, const content& b) {
  * which chooses the median of the first, middle and last element of the array
  */
 template <typename content, typename key_func_type>
-size_t median_of_three(span<content> array, key_func_type cmp) {
-    size_t first = array[0];
-    size_t middle = array[(array.size() - 1) / 2];
-    size_t last = array[array.size() - 1];
+content median_of_three(span<content> array, key_func_type cmp) {
+    const content& first = array[0];
+    const content& middle = array[(array.size() - 1) / 2];
+    const content& last = array[array.size() - 1];
 
     return max(cmp, min(cmp, first, middle),
                min(cmp, max(cmp, first, middle), last));
@@ -51,14 +51,13 @@ size_t median_of_three(span<content> array, key_func_type cmp) {
 template <typename content, typename key_func_type>
 content median_of_nine(span<content> array, key_func_type cmp) {
     size_t n = array.size() - 1;
-    std::cout << 1 << std::endl;
     size_t step = (n / 8);
-    size_t lower = median_of_three(array.slice(0, 2 * step), cmp);
-    size_t middle =
+    const content& lower =
+        median_of_three(array.slice(0, 2 * step), cmp);
+    const content& middle =
         median_of_three(array.slice((n / 2) - step, (n / 2) + step), cmp);
-    size_t upper = median_of_three(array.slice(n - 2 * step, n), cmp);
-    std::cout << 2 << std::endl;
-
+    const content& upper =
+        median_of_three(array.slice(n - 2 * step, n), cmp);
     return max(cmp, min(cmp, lower, middle),
                min(cmp, max(cmp, lower, middle), upper));
 }
@@ -76,7 +75,7 @@ content median_of_nine(span<content> array, key_func_type cmp) {
  */
 template <typename content, typename key_func_type>
 std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
-                                    size_t pivot_element) {
+                                    const content& pivot_element) {
     const auto less = cmp;
     const auto equal = util::as_equal(cmp);
     const auto greater = util::as_greater(cmp);
@@ -107,11 +106,15 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
     while (left < i) {
         // If current element is the pivot_element, swap it into equal-partition
         if (equal(array[left], pivot_element)) {
+            DCHECK_LT(left, array.size());
+            DCHECK_LT(mid, array.size());
             std::swap(array[left], array[mid]);
             ++mid;
         }
         // else if the element belongs in the greater-partition, swap it there
         else if (greater(array[left], pivot_element)) {
+            DCHECK_LT(left, array.size());
+            DCHECK_LT(right, array.size());
             std::swap(array[left], array[right]);
             ++right;
         }
@@ -123,11 +126,10 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
 
     // Loop, which builds the equal partition
     while (mid < j) {
-        DCHECK_LT(mid, array.size());
-        DCHECK_LT(right, array.size());
-
         // if current element is bigger than the pivot_element, swap it
         if (greater(array[mid], pivot_element)) {
+            DCHECK_LT(mid, array.size());
+            DCHECK_LT(right, array.size());
             std::swap(array[mid], array[right]);
             ++right;
         }

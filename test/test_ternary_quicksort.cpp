@@ -79,6 +79,35 @@ TEST(ternary_quicksort, array_sizes) {
     }
 }
 
+TEST(ternary_quicksort, not_size_t) {
+    // Initialize random number generator.
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 10);
+
+    // Test with 1000 different array-sizes
+    for (size_t k = 0; k < 1000; ++k) {
+        std::vector<size_t> test_set;
+
+        // Try 100 times
+        for (size_t j = 0; j < 10; ++j) {
+
+            // Insert k random numbers.
+            for (size_t i = 0; i < k; ++i) {
+                test_set.push_back(dist(gen));
+            }
+
+            auto cmp2 = [k](uint8_t a, uint8_t b) -> bool {
+                EXPECT_LT(a, k);
+                EXPECT_LT(b, k);
+                return (2 * a) < (3 * b);
+            };
+
+            ternary_quicksort(span(test_set), cmp2);
+            ASSERT_TRUE(is_sorted(span(test_set), cmp2));
+        }
+    }
+}
 
 TEST(ternary_quicksort, random_array) {
     // Initialize random number generator.
