@@ -107,6 +107,7 @@ namespace sacabench::saca {
             static void construct_sa(util::string_span text,
                                      size_t alphabet_size,
                                      util::span<sa_index> out_sa) {
+                
                 //empty SA which should be filled correctly with method induce_sa_dc
                 auto t_12 = sacabench::util::make_container<size_t>(2*text.size()/3);
                 
@@ -120,16 +121,16 @@ namespace sacabench::saca {
                 //run method to test it
                 sacabench::saca::determine_leq(text, t_12, sa_12, recursion);
                 
+                auto tmp_out_sa = sacabench::util::span(out_sa[0], 2*out_sa.size()/3);
+                
                 if(recursion){
-                    
-                    construct_sa(sa_12, alphabet_size, out_sa);
-                    
+                    construct_sa(sa_12, alphabet_size, tmp_out_sa);              
                 }
                 
                 
                 //empty SA which should be filled correctly with method induce_sa_dc
-                auto isa_12 = sacabench::util::make_container<size_t>(sa_12.size());
-                sacabench::saca::determine_isa(sa_12, isa_12);
+                auto isa_12 = sacabench::util::make_container<size_t>(tmp_out_sa.size());
+                sacabench::saca::determine_isa(tmp_out_sa, isa_12);
                 
                 //positions i mod 3 = 0 of sa_12
                 std::string t_0;
@@ -144,7 +145,7 @@ namespace sacabench::saca {
                 sacabench::util::induce_sa_dc<sacabench::util::character>(t_0, isa_12, sa_0);
                 
                 //run method to test it
-                sacabench::util::merge_sa_dc<sacabench::util::character>(text, sa_0, sa_12,
+                sacabench::util::merge_sa_dc<sacabench::util::character>(text, sa_0, tmp_out_sa,
                         isa_12, out_sa, comp, get_substring);
 
                 std::cout << "Running example1" << std::endl;

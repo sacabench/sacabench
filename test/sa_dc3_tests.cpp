@@ -246,3 +246,11 @@ TEST(DC3, dc3_complete) {
 }
 
 
+TEST(DC3, dc3_complete) {    
+    sacabench::util::string input_string = sacabench::util::make_string("caabaccaabacaa$");
+    
+    auto out_sa = sacabench::util::make_container(input_string.size());
+    
+    sacabench::saca::
+}
+
