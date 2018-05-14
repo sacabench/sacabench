@@ -14,79 +14,103 @@
 
 namespace sacabench::bucket_pointer_refinement {
 
-    class bucket_pointer_refinement {
-        public:
-            template<typename sa_index>
-            static void construct_sa(util::string_span input,
-                    size_t alphabet_size, util::span<sa_index> sa) {
-                size_t const n = input.size();
-                if (n == 0) { // There's nothing to do
-                    return;
-                }
+class bucket_pointer_refinement {
+    public:
+        template<typename sa_index>
+        static void construct_sa(util::string_span input,
+                size_t alphabet_size, util::span<sa_index> sa) {
+            size_t const n = input.size();
+            if (n == 0) { // There's nothing to do
+                return;
+            }
 
-                // TODO: choose appropiate value
-                size_t bucketsort_depth = 2;
+            // TODO: choose appropiate value
+            size_t bucketsort_depth = 2;
 
+            auto buckets =
                 util::sort::bucketsort_presort(input, alphabet_size,
                         bucketsort_depth, sa);
 
-                // TODO: initialize bucket pointers
-                static util::container<sa_index> bptr;
-                initialize_bucket_pointers<sa_index>(input, alphabet_size,
-                        bucketsort_depth, sa, bptr);
-            }
+            // TODO: initialize bucket pointers
+            static util::container<sa_index> bptr;
+            initialize_bucket_pointers<sa_index>(input, alphabet_size,
+                    bucketsort_depth, sa, bptr);
 
-        private:
-            template<typename sa_index>
-            static void initialize_bucket_pointers(util::string_span input,
-                    size_t alphabet_size, size_t bucketsort_depth,
-                    util::span<sa_index> sa, util::container<sa_index> bptr) {
-                const size_t n = sa.size();
+            refine_buckets<sa_index>(buckets, input, sa, bptr,
+                    bucketsort_depth);
+        }
 
-                // create bucket pointer array
-                bptr = util::make_container<sa_index>(n);
+    private:
+        template<typename sa_index>
+        static void initialize_bucket_pointers(util::string_span input,
+                size_t alphabet_size, size_t bucketsort_depth,
+                util::span<sa_index> sa, util::container<sa_index> bptr) {
+            const size_t n = sa.size();
 
-                size_t current_bucket = n - 1;
-                size_t current_sa_position = n;
-                
-                // TODO: find current code
-                size_t current_code = 0;
-                size_t recent_code = current_code;
+            // create bucket pointer array
+            bptr = util::make_container<sa_index>(n);
 
-                // from right to left: Calculate codes in order to determine
-                // bucket borders
-                do {
-                    --current_sa_position;
-                    // TODO: find current code by inspecting
-                    // sa[current_sa_position]
-                    current_code = code_d<sa_index>(input, alphabet_size,
-                            bucketsort_depth, sa[current_sa_position]);
-                    
-                    if (current_code != recent_code) {
-                        // we passed a border between two buckets
-                        current_bucket = current_sa_position;
-                        recent_code = current_code;
-                    }
-                    bptr[sa[current_sa_position]] = current_bucket;
-                } while (current_sa_position > 0);
-            }
+            size_t current_bucket = n - 1;
+            size_t current_sa_position = n;
 
-            template<typename sa_index>
-            static size_t code_d (util::string_span input, size_t alphabet_size,
-                    size_t depth, size_t start_index) {
-                size_t code = 0;
-                const size_t stop_index = start_index + depth;
-                const size_t real_alphabet_size = alphabet_size + 1; // incl '$'
+            // TODO: find current code
+            size_t current_code = 0;
+            size_t recent_code = current_code;
 
-                while (start_index < stop_index && start_index < input.size()) {
-                    code *= real_alphabet_size;
-                    code += input[start_index++];
+            // from right to left: Calculate codes in order to determine
+            // bucket borders
+            do {
+                --current_sa_position;
+                // TODO: find current code by inspecting
+                // sa[current_sa_position]
+                current_code = code_d<sa_index>(input, alphabet_size,
+                        bucketsort_depth, sa[current_sa_position]);
+
+                if (current_code != recent_code) {
+                    // we passed a border between two buckets
+                    current_bucket = current_sa_position;
+                    recent_code = current_code;
                 }
+                bptr[sa[current_sa_position]] = current_bucket;
+            } while (current_sa_position > 0);
+        }
 
-                return code;
+        template<typename sa_index>
+        static size_t code_d (util::string_span input, size_t alphabet_size,
+                size_t depth, size_t start_index) {
+            size_t code = 0;
+            const size_t stop_index = start_index + depth;
+            const size_t real_alphabet_size = alphabet_size + 1; // incl '$'
+
+            while (start_index < stop_index && start_index < input.size()) {
+                code *= real_alphabet_size;
+                code += input[start_index++];
             }
 
-    }; // class bucket_pointer_refinement
+            return code;
+        }
+
+        template<typename sa_index>
+        static void refine_buckets (
+                util::span<util::sort::bucket<sa_index>> buckets,
+                util::string_span input, util::span<sa_index> sa,
+                util::span<sa_index> bptr, size_t offset) {
+            // sort each bucket in naive order
+            for (auto& b : buckets) {
+                refine_bucket<sa_index>(input, offset, bptr,
+                        sa.slice(b.position, b.position + b.count));
+            }
+        }
+
+        template<typename sa_index>
+        static void refine_bucket (
+                util::string_span /*input*/, size_t /*offset*/,
+                util::span<sa_index> /*bptr*/, util::span<sa_index> /*sa*/) {
+            // TODO: Sort sa
+            // TODO: Refine bucket pointers
+        }
+
+}; // class bucket_pointer_refinement
 
 } // namespace sacabench::bucket_pointer_refinement
 

@@ -38,9 +38,11 @@ namespace sacabench::util::sort {
      * suffix array. After a call of the function, the suffix array contains all
      * buckets in sorted ascending order. The suffixes within each bucket are
      * not necessarily sorted.
+     *
+     * \return Size and starting position for each bucket in the suffix array.
      */
     template <typename index_type>
-        void bucketsort_presort(const string_span& input,
+        span<bucket<index_type>> bucketsort_presort(const string_span& input,
                 const std::size_t alphabet_size, const std::size_t depth,
                 span<index_type>& sa) {
             DCHECK_EQ(input.size(), sa.size());
@@ -50,8 +52,9 @@ namespace sacabench::util::sort {
             // the real alphabet includes $, so it has one more character
             const std::size_t real_alphabet_size = alphabet_size + 1;
             const std::size_t bucket_count = pow(real_alphabet_size, depth);
-            container<bucket<index_type>> buckets =
+            auto buckets_container =
                 make_container<bucket<index_type>>(bucket_count);
+            util::span<bucket<index_type>> buckets = buckets_container;
 
             // calculate code for an (imaginary) 0-th suffix
             std::size_t initial_code = 0;
@@ -112,6 +115,13 @@ namespace sacabench::util::sort {
                 sa[current_bucket.position] = index;
                 ++current_bucket.position;
             }
+
+            // determine starting positions for each bucket
+            for (auto& bucket : buckets) {
+                bucket.position -= bucket.count;
+            }
+
+            return buckets;
         }
 
     /// This is the recursiv helper function for the function bucket sort.
