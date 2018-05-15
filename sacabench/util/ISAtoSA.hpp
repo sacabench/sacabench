@@ -144,13 +144,15 @@ void isa2sa_multiscan(T &isa) {
     size_t a_pointer = 0;
     size_t b_pointer = n_quarter;
     size_t last_q1 = 0;
+    size_t remove_tag_mask= std::numeric_limits<size_t>::max()>>3;
+    
     // place other elements in ISA according to their tag
     for (size_t index = 0; index < n_quarter + (n / 2); ++index) {
         size_t group = (isa[index] >> shift_size);
         switch (group) {
             // Group 1 moves to the beginning of ISA
             case 1:
-                isa[most_left_free] = isa[index] & n;
+                isa[most_left_free] = isa[index] & remove_tag_mask;
                 isa[index] = invalid_number;
                 last_q1 = most_left_free;
                 while (isa[++most_left_free] != invalid_number) {
@@ -158,13 +160,13 @@ void isa2sa_multiscan(T &isa) {
                 break;
             // Group 2 moves to xA
             case 2:
-                x[a_pointer] = isa[index] & n;
+                x[a_pointer] = isa[index] & remove_tag_mask;
                 isa[index] = invalid_number;
                 ++a_pointer;
                 break;
             // Group 3 moves to xB
             case 3:
-                x[b_pointer] = isa[index] & n;
+                x[b_pointer] = isa[index] & remove_tag_mask;
                 isa[index] = invalid_number;
                 ++b_pointer;
             break;
