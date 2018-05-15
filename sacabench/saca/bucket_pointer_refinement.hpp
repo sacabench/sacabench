@@ -165,7 +165,19 @@ class bucket_pointer_refinement {
             } while (current_bucket_position > 0);
 
             // TODO: Determine sub-buckets
-            // TODO: Sort recursively
+            size_t start_of_bucket = 0;
+            size_t end_of_bucket;
+            // from right to left: Calculate codes in order to determine
+            // bucket borders
+            while (start_of_bucket < bucket.size()) {
+                end_of_bucket = bptr[bucket[start_of_bucket]] - bucket_start;
+                std::cout << "from " << start_of_bucket << " to " << end_of_bucket << std::endl;
+                // TODO: Sort sub-buckets recursively
+                refine_single_bucket<sa_index>(offset + step_size, step_size,
+                        bptr, start_of_bucket + bucket_start,
+                        bucket.slice(start_of_bucket, ++end_of_bucket));
+                start_of_bucket = end_of_bucket;
+            }
         }
 
 }; // class bucket_pointer_refinement
