@@ -118,7 +118,6 @@ namespace sacabench::util::sort {
             // determine rightmost index of each bucket
             for (auto& bucket : buckets) {
                 --bucket.position;
-                std::cout << (int) bucket.position << "\t" << bucket.count << std::endl;
             }
 
             return buckets;

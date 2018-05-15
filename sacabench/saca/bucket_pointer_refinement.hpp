@@ -11,6 +11,7 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/sort/bucketsort.hpp>
+#include <util/sort/std_sort.hpp>
 
 namespace sacabench::bucket_pointer_refinement {
 
@@ -37,13 +38,23 @@ class bucket_pointer_refinement {
                     bucketsort_depth, sa, bptr);
 
             refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
+
+            for (auto& x : sa) {
+                std::cout << (int) x << "\t";
+            }
+            std::cout << std::endl;
+
+            for (auto& x : bptr) {
+                std::cout << (int) x << "\t";
+            }
+            std::cout << std::endl;
         }
 
     private:
         template<typename sa_index>
         static void initialize_bucket_pointers(util::string_span input,
                 size_t alphabet_size, size_t bucketsort_depth,
-                util::span<sa_index> sa, util::container<sa_index> bptr) {
+                util::span<sa_index> sa, util::container<sa_index>& bptr) {
             const size_t n = sa.size();
 
             // create bucket pointer array
@@ -52,7 +63,6 @@ class bucket_pointer_refinement {
             size_t current_bucket = n - 1;
             size_t current_sa_position = n;
 
-            // TODO: find current code
             size_t current_code = 0;
             size_t recent_code = current_code;
 
@@ -60,8 +70,7 @@ class bucket_pointer_refinement {
             // bucket borders
             do {
                 --current_sa_position;
-                // TODO: find current code by inspecting
-                // sa[current_sa_position]
+                // find current code by inspecting sa[current_sa_position]
                 current_code = code_d<sa_index>(input, alphabet_size,
                         bucketsort_depth, sa[current_sa_position]);
 
@@ -96,36 +105,65 @@ class bucket_pointer_refinement {
             // sort each bucket in naive order
             for (auto& b : buckets) {
                 if (b.count > 0) {
+                    size_t bucket_start = b.position - b.count + 1;
                     refine_single_bucket<sa_index>(offset, offset, bptr,
-                            sa.slice(b.position - b.count + 1, b.position + 1));
+                            bucket_start,
+                            sa.slice(bucket_start, b.position + 1));
                 }
             }
         }
 
         template<typename sa_index>
         static void refine_single_bucket (size_t offset, size_t step_size,
-                util::span<sa_index> bptr, util::span<sa_index> sa) {
+                util::span<sa_index> bptr, size_t bucket_start,
+                util::span<sa_index> bucket) {
 
-            if (sa.size() < 2) {
+            if (bucket.size() < 2) {
                 return;
             }
 
             std::cout << "Sorting { ";
-            for (auto s : sa) {
+            for (auto s : bucket) {
                 std::cout << (int) s << " ";
             }
             std::cout << "}" << std::endl;
 
             auto sort_key = [=] (sa_index suffix) {
-                if (suffix >= sa.size() - offset) {
+                if (suffix >= bptr.size() - offset) {
                     return (sa_index) 0;
                 } else {
                     return bptr[suffix + offset];
                 }
             };
 
-            // TODO: Sort sa
+            // TODO: use ternary quicksort
+            util::sort::std_sort(bucket,
+                [&sort_key](const auto& lhs, const auto& rhs) {
+                    return sort_key(lhs) < sort_key(rhs);
+                });
+
             // TODO: Refine bucket pointers
+            size_t current_bucket_position = bucket.size();
+            size_t current_bucket_key = bucket_start + bucket.size() - 1;
+
+            size_t current_code = 0;
+            size_t recent_code = current_code;
+
+            // from right to left: Calculate codes in order to determine
+            // bucket borders
+            do {
+                --current_bucket_position;
+                // find current code by inspecting sa[current_sa_position]
+                current_code = sort_key(bucket[current_bucket_position]);
+
+                if (current_code != recent_code) {
+                    // we passed a border between two buckets
+                    current_bucket_key = bucket_start + current_bucket_position;
+                    recent_code = current_code;
+                }
+                bptr[bucket[current_bucket_position]] = current_bucket_key;
+            } while (current_bucket_position > 0);
+
             // TODO: Determine sub-buckets
             // TODO: Sort recursively
         }
