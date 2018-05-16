@@ -5,12 +5,18 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
+#include <util/container.hpp>
+#include <util/span.hpp>
+#include <util/string.hpp>
 #include <saca/deep_shallow.hpp>
 
 using namespace sacabench;
-using deep_shallow = sacabench::deep_shallow::saca;
+using ds = sacabench::deep_shallow::saca;
 
 TEST(deep_shallow, simple) {
-    saca::construct_sa(nullptr, 0, nullptr);
+    auto input = "hallo"_s;
+    auto sa = util::make_container<size_t>(input.size());
+
+    ds::construct_sa<size_t>(input, 0, sa);
     ASSERT_TRUE(true);
 }

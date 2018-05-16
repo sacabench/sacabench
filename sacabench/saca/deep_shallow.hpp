@@ -10,10 +10,10 @@
 #include <util/string.hpp>
 
 namespace sacabench::deep_shallow {
-struct saca {
+class saca {
 public:
     template<typename sa_index_type>
     static void construct_sa(util::string_span text, size_t alphabet_size,
-                             util::span<sa_index_type> sa) {}
+                             span<sa_index_type> sa) {}
 };
 } // namespace sacabench::deep_shallow
