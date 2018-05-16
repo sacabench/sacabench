@@ -22,13 +22,13 @@ namespace sacabench::gsaca {
 
     class gsaca {
     private:
-        static unsigned int *ISA, *PREV;
-        static void *GSIZE;
-        static unsigned int i, j;
-        static unsigned int group_start, group_end;
-        static unsigned int suffix, previous, sr;
-        static unsigned int tmp, gstarttmp, gendtmp;
-        static unsigned int C[2*C_SIZE]; //counts and cumulative counts
+        inline static unsigned int *ISA, *PREV;
+        inline static void *GSIZE;
+        inline static unsigned int i, j;
+        inline static unsigned int group_start, group_end;
+        inline static unsigned int suffix, previous, sr;
+        inline static unsigned int tmp, gstarttmp, gendtmp;
+        inline static unsigned int C[2*C_SIZE]; //counts and cumulative counts
 
         template<typename sa_index>
         static void build_initial_group_structure(sacabench::util::string_span text,
