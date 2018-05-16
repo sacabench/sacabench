@@ -30,6 +30,11 @@ public:
         const bool b_is_too_short = depth + b >= input_text.size();
 
         if (a_is_too_short) {
+            if (b_is_too_short) {
+                // but if both are over the edge, one cannot be smaller.
+                return false;
+            }
+
             // b should be larger
             return true;
         }
