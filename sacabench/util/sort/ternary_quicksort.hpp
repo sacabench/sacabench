@@ -52,11 +52,11 @@ template <typename content, typename key_func_type>
 content median_of_nine(span<content> array, key_func_type cmp) {
     size_t n = array.size() - 1;
     size_t step = (n / 8);
-    const content& lower =
+    const content lower =
         median_of_three(array.slice(0, 2 * step), cmp);
-    const content& middle =
+    const content middle =
         median_of_three(array.slice((n / 2) - step, (n / 2) + step), cmp);
-    const content& upper =
+    const content upper =
         median_of_three(array.slice(n - 2 * step, n), cmp);
     return max(cmp, min(cmp, lower, middle),
                min(cmp, max(cmp, lower, middle), upper));
