@@ -41,6 +41,17 @@ TEST(ternary_quicksort, two_elements_sorted) {
     ASSERT_TRUE(is_sorted(span(test_set), cmp));
 }
 
+TEST(ternary_quicksort, three_elements_equal_mod_three) {
+    auto test_set = std::vector<size_t>{1, 4, 7};
+
+    constexpr auto cmp2 = [](size_t a, size_t b) {
+        return (a%3) < (b%3);
+    };
+
+    ternary_quicksort(span(test_set), cmp2);
+    ASSERT_TRUE(is_sorted(span(test_set), cmp2));
+}
+
 TEST(ternary_quicksort, example_array_1) {
     auto test_set =
         std::vector<size_t>{10, 5, 7, 2, 8, 10, 756, 1, 0, 65, 4, 42};

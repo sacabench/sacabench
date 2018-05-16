@@ -37,6 +37,10 @@ TEST(multikey_quicksort, test_compare_function) {
     // $ < a
     ASSERT_TRUE(less(4,3));
     ASSERT_FALSE(less(3,4));
+
+    // $$ < acba
+    ASSERT_TRUE(less(5,0));
+    ASSERT_FALSE(less(0,5));
 }
 
 TEST(multikey_quicksort, abc) {
