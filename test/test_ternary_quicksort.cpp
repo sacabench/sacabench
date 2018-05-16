@@ -63,12 +63,6 @@ TEST(ternary_quicksort, array_sizes) {
 
     // Test with 1000 different array-sizes
     for (size_t k = 0; k < 1000; ++k) {
-        auto cmp2 = [k](size_t a, size_t b) -> bool {
-            EXPECT_LT(a, k);
-            EXPECT_LT(b, k);
-            return a < b;
-        };
-
         // Try 100 times
         for (size_t j = 0; j < 10; ++j) {
             std::vector<size_t> test_set;
@@ -78,8 +72,8 @@ TEST(ternary_quicksort, array_sizes) {
                 test_set.push_back(dist(gen));
             }
 
-            ternary_quicksort(span(test_set), cmp2);
-            ASSERT_TRUE(is_sorted(span(test_set), cmp2));
+            ternary_quicksort(span(test_set), cmp);
+            ASSERT_TRUE(is_sorted(span(test_set), cmp));
         }
     }
 }
@@ -93,9 +87,7 @@ TEST(ternary_quicksort, not_size_t) {
 
     // Test with 1000 different array-sizes
     for (size_t k = 0; k < 1000; ++k) {
-        auto cmp2 = [k](uint8_t a, uint8_t b) -> bool {
-            EXPECT_LT(a, k);
-            EXPECT_LT(b, k);
+        auto cmp2 = [](uint8_t a, uint8_t b) -> bool {
             return a < b;
         };
 
