@@ -18,7 +18,7 @@ namespace sacabench::util::sort::multikey_quicksort {
 template <typename index_type>
 struct compare_one_character_at_depth {
 public:
-    compare_one_character_at_depth(const string_span& _input_text)
+    compare_one_character_at_depth(const string_span _input_text)
         : depth(0), input_text(_input_text) {}
 
     // The depth at which we compare.
@@ -26,8 +26,8 @@ public:
 
     // This returns true, if a < b.
     bool operator()(const index_type& a, const index_type& b) const {
-        bool a_is_too_short = depth + a >= input_text.size();
-        bool b_is_too_short = depth + b >= input_text.size();
+        const bool a_is_too_short = depth + a >= input_text.size();
+        const bool b_is_too_short = depth + b >= input_text.size();
 
         if (a_is_too_short) {
             // b should be larger
@@ -42,9 +42,9 @@ public:
         DCHECK_LT(depth + a, input_text.size());
         DCHECK_LT(depth + b, input_text.size());
 
-        character at_a = this->input_text[depth + a];
-        character at_b = this->input_text[depth + b];
-        bool diff = at_a < at_b;
+        const character at_a = this->input_text[depth + a];
+        const character at_b = this->input_text[depth + b];
+        const bool diff = at_a < at_b;
 
         return diff;
     }

@@ -14,6 +14,31 @@
 
 using namespace sacabench::util;
 
+TEST(multikey_quicksort, test_compare_function) {
+    const auto input = "acba"_s;
+    const sort::multikey_quicksort::compare_one_character_at_depth<size_t> less(input);
+
+    // acba < cba
+    ASSERT_TRUE(less(0,1));
+    ASSERT_FALSE(less(1,0));
+
+    // cba < ba
+    ASSERT_FALSE(less(1,2));
+    ASSERT_TRUE(less(2,1));
+
+    // ba < cba
+    ASSERT_FALSE(less(2,3));
+    ASSERT_TRUE(less(3,2));
+
+    // a == acba
+    ASSERT_FALSE(less(3,0));
+    ASSERT_FALSE(less(0,3));
+
+    // $ < a
+    ASSERT_TRUE(less(4,3));
+    ASSERT_FALSE(less(3,4));
+}
+
 TEST(multikey_quicksort, abc) {
     const string_span input = "abc"_s;
 
