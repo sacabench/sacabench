@@ -11,7 +11,7 @@
 
 #pragma once
 
-namespace util {
+namespace sacabench::util {
 
 //! \addtogroup tlx_define
 //! \{
