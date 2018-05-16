@@ -36,6 +36,30 @@ TEST(DC3, determine_triplets) {
     ASSERT_EQ(t_12[6], expected[6]);
     ASSERT_EQ(t_12[7], expected[7]);
     ASSERT_EQ(t_12[8], expected[8]);
+    
+    
+    
+    //empty SA which should be filled correctly with method induce_sa_dc
+    auto sa_12 = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0};
+    
+    bool recursion = false;
+    //run method to test it
+    sacabench::dc3::determine_leq(input_string, t_12, sa_12, recursion);
+    
+    
+    //expected values for induced SA with DC
+    auto expected_leq = sacabench::util::container<size_t> {1, 4, 1, 3, 0, 2, 6, 2, 5};
+    
+    //compare results with expected values
+    ASSERT_EQ(sa_12[0], expected_leq[0]);
+    ASSERT_EQ(sa_12[1], expected_leq[1]);
+    ASSERT_EQ(sa_12[2], expected_leq[2]);
+    ASSERT_EQ(sa_12[3], expected_leq[3]);
+    ASSERT_EQ(sa_12[4], expected_leq[4]);
+    ASSERT_EQ(sa_12[5], expected_leq[5]);
+    ASSERT_EQ(sa_12[6], expected_leq[6]);
+    ASSERT_EQ(sa_12[7], expected_leq[7]);
+    ASSERT_EQ(sa_12[8], expected_leq[8]);
 }
 
 TEST(DC3, determine_triplets_with_sentinel) {    

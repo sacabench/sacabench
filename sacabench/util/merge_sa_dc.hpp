@@ -12,7 +12,7 @@
 
 #pragma once
 namespace sacabench::util {
-    template<typename C, typename T, typename I, typename S, typename Compare, 
+    template<typename C, typename S,typename T, typename I, typename Compare, 
             typename Substring>
     //template T for input string
     //template C for input characters
