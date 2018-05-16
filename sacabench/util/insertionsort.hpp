@@ -1,6 +1,4 @@
 /*******************************************************************************
- * sacabench/util/insertionsort.hpp
- *
  * Copyright (C) 2018 Rosa Pink
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -11,13 +9,6 @@
 #include "compare.hpp"
 
 namespace sacabench::util{
-
-/*
-struct greater_than {
-    template<typename T> int64_t operator()(T const& a, T const& b) {
-        return (int64_t)a - (int64_t)b;
-    }
-};*/
 
   template<typename T, typename F = std::less<T>> void insertion_sort(span<T> A, F compare_fun = F()){
       //Adapter for "a > b"
