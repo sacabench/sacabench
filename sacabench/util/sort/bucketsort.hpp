@@ -40,8 +40,9 @@ namespace sacabench::util::sort {
      * not necessarily sorted.
      */
     template <typename index_type>
-        void bucketsort_presort(const string& input, const std::size_t alphabet_size,
-                const std::size_t depth, container<index_type>& sa) {
+        void bucketsort_presort(const string_span& input,
+                const std::size_t alphabet_size, const std::size_t depth,
+                span<index_type>& sa) {
             DCHECK_EQ(input.size(), sa.size());
             DCHECK_LE(depth, sa.size());
 
