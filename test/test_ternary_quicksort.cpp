@@ -1,6 +1,4 @@
 /*******************************************************************************
- * test/example_tests.cpp
- *
  * Copyright (C) 2018 Marvin Böcker <marvin.boecker@udo.edu>
  * Copyright (C) 2018 Hermann Foot <hermann.foot@tu-dortmunde.de>
  *
@@ -16,6 +14,7 @@
 
 using sacabench::util::is_sorted;
 using namespace sacabench::util::sort::ternary_quicksort;
+using sacabench::util::span;
 
 inline int cmp(size_t a, size_t b) { return a - b; }
 

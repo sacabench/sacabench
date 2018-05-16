@@ -1,6 +1,4 @@
 /*******************************************************************************
- * sacabench/util/span.hpp
- *
  * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -15,6 +13,8 @@
 #include <algorithm>
 
 #include <util/assertions.hpp>
+
+namespace sacabench::util {
 
 // Inspired by the span type in https://github.com/Microsoft/GSL
 /// A wrapper around a (pointer, len) pair.
@@ -164,3 +164,5 @@ public:
         return !(lhs < rhs);
     }
 };
+
+}

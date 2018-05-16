@@ -1,6 +1,4 @@
 /*******************************************************************************
- * sacabench/util/sa_check.hpp
- *
  * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -15,6 +13,7 @@
 #include <util/string.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/assertions.hpp>
+#include <util/compare.hpp>
 
 namespace sacabench::util {
     class sa_check_result {
@@ -57,6 +56,36 @@ namespace sacabench::util {
     private:
         cases value;
     };
+
+    template <typename sa_index_type>
+    sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
+        DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
+
+        if (sa.size() != text.size()) {
+            return sa_check_result::wrong_length;
+        }
+        size_t const N = text.size();
+
+        // Create an container of every index positions.
+        auto naive = util::make_container<sa_index_type>(N);
+        for (size_t i = 0; i < N; i++) {
+            naive[i] = i;
+        }
+
+        // Construct a SA by sorting according
+        // to the suffix starting at that index.
+        sort::std_sort(naive, util::compare_key([&](size_t i) {
+            return text.slice(i);
+        }));
+
+        for (size_t i = 0; i < N; i++) {
+            if (naive[i] != sa[i]) {
+                return sa_check_result::not_suffix_sorted;
+            }
+        }
+
+        return sa_check_result::ok;
+    }
 
     template <typename sa_index_type>
     sa_check_result sa_check(span<sa_index_type> sa, string_span text) {

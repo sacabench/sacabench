@@ -1,6 +1,4 @@
 /*******************************************************************************
- * test/sa_check_tests.cpp
- *
  * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -46,4 +44,21 @@ TEST(SaCheck, example_string_1_wrong_length) {
         //                  ^ cut off after 4
     };
     ASSERT_EQ(sa_check<size_t>(sa, text), sa_check_result::wrong_length);
+}
+
+TEST(SaCheckNaive, example_string_1_ok) {
+    auto text = "caabaccaabacaa"_s;
+    auto sa = container<size_t> {
+        13, 12, 7, 1, 8, 2, 10, 4, 9, 3, 11, 6, 0, 5,
+    };
+    ASSERT_EQ(sa_check_naive<size_t>(sa, text), sa_check_result::ok);
+}
+
+TEST(SaCheckNaive, example_string_1_not_suffix_sorted) {
+    auto text = "caabaccaabacaa"_s;
+    auto sa = container<size_t> {
+        13, 12, 7, 1, 8, 2, 4, 10, 9, 3, 11, 6, 0, 5,
+        //                  ^ swapped 4 and 10
+    };
+    ASSERT_EQ(sa_check_naive<size_t>(sa, text), sa_check_result::not_suffix_sorted);
 }

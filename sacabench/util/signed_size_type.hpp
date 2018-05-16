@@ -1,12 +1,11 @@
 /*******************************************************************************
- * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
+ * Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
-#include "gtest/gtest.h"
+#pragma once
 
-int main(int argc, char **argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+namespace sacabench::util {
+using ssize = std::make_signed_t<size_t>;
 }

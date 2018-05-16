@@ -1,6 +1,4 @@
 ################################################################################
-# sacabench/CMakeLists.txt
-#
 # Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -31,23 +29,25 @@ target_compile_options(sacabench PUBLIC
 )
 
 # Register all SACAs to generate an executable for each SACA
-set(SACA_BENCH_SACAS
-  saca/example1.cpp
-  saca/example2.cpp)
-
-foreach(SACA IN ITEMS ${SACA_BENCH_SACAS})
-  get_filename_component(NEW_NAME ${SACA} NAME_WE)
-  add_executable(${NEW_NAME}
-    ${SACA}
-  )
-  target_link_libraries(${NEW_NAME}
-    saca_bench_lib
-  )
-  target_compile_options(${NEW_NAME} PUBLIC
-    ${SACA_BENCH_FLAGS}
-    $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
-    $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
-  )
-endforeach(SACA)
+# TODO: If extra launchers are needed, use a single common
+#       source file parametric over different different headers.
+# set(SACA_BENCH_SACAS
+#   saca/example1.cpp
+#   saca/example2.cpp)
+#
+# foreach(SACA IN ITEMS ${SACA_BENCH_SACAS})
+#   get_filename_component(NEW_NAME ${SACA} NAME_WE)
+#   add_executable(${NEW_NAME}
+#     ${SACA}
+#   )
+#   target_link_libraries(${NEW_NAME}
+#     saca_bench_lib
+#   )
+#   target_compile_options(${NEW_NAME} PUBLIC
+#     ${SACA_BENCH_FLAGS}
+#     $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
+#     $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
+#   )
+# endforeach(SACA)
 
 ################################################################################

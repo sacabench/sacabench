@@ -1,6 +1,4 @@
 /*******************************************************************************
- * bench/saca.hpp
- *
  * Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -10,6 +8,11 @@
 
 #include <string>
 #include <vector>
+#include "container.hpp"
+#include "string.hpp"
+#include "span.hpp"
+
+namespace sacabench::util {
 
 class saca;
 
@@ -48,9 +51,12 @@ class saca {
             }
 
         virtual void run_example() const = 0;
+        virtual void construct_sa(string_span test_input,
+                                  size_t alphabet_size,
+                                  span<size_t> output) const = 0;
 
-        std::string name() const { return name_; }
-        std::string description() const { return description_; }
+        std::string const& name() const { return name_; }
+        std::string const& description() const { return description_; }
 
     private:
         std::string name_;
@@ -63,13 +69,25 @@ class concrete_saca : saca {
         concrete_saca(const std::string& name, const std::string& description)
             : saca(name, description) { }
 
-        void run_example() const override {
-            Algorithm::run_example();
+        virtual void construct_sa(string_span test_input,
+                                  size_t alphabet_size,
+                                  span<size_t> output) const override {
+            Algorithm::construct_sa(test_input, alphabet_size, output);
+        }
+        virtual void run_example() const override {
+            using sa_index_t = uint32_t;
+            string_span test_input = "hello world"_s;
+            size_t alphabet_size = 256;
+            auto output = make_container<sa_index_t>(test_input.size());
+            span<sa_index_t> output_span = output;
+
+            Algorithm::construct_sa(test_input, alphabet_size, output_span);
         }
 }; // class concrete_saca
 
 #define SACA_REGISTER(saca_name, saca_description, saca_impl) \
     static const auto _saca_algo_ ## saca_impl ## _register     \
-    = concrete_saca<saca_impl>(saca_name, saca_description);
+    = ::sacabench::util::concrete_saca<saca_impl>(saca_name, saca_description);
 
+}
 /******************************************************************************/
