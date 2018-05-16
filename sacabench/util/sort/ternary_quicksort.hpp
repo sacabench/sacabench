@@ -76,8 +76,6 @@ content median_of_nine(span<content> array, key_func_type cmp) {
 template <typename content, typename key_func_type>
 std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
                                     const content& pivot_element) {
-    DCHECK_MSG(array.size() > 2, "Ternary Quicksort doesn't work for partition size less than 3.");
-
     const auto less = cmp;
     const auto equal = util::as_equal(cmp);
     const auto greater = util::as_greater(cmp);
