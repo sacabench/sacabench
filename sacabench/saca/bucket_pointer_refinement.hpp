@@ -28,20 +28,36 @@ class bucket_pointer_refinement {
             // TODO: choose appropiate value
             size_t bucketsort_depth = 2;
 
+            std::cout << "generating buckets..." << std::endl;
+
             auto buckets =
                 util::sort::bucketsort_presort(input, alphabet_size,
                         bucketsort_depth, sa);
 
+            for (auto& b : buckets) {
+                std::cout << "Bucket position " << b.position << "\t size " << b.count << std::endl;
+            }
+
+            std::cout << std::endl;
+            std::cout << "initializing bptr..." << std::endl;
+
             // TODO: initialize bucket pointers
-            static util::container<sa_index> bptr;
+            util::container<sa_index> bptr;
             initialize_bucket_pointers<sa_index>(input, alphabet_size,
                     bucketsort_depth, sa, bptr);
+
+            std::cout << "refining buckets..." << std::endl;
+
+            for (auto& b : buckets) {
+                std::cout << "Bucket position " << b.position << "\t size " << b.count << std::endl;
+            }
 
             refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
 
             for (auto& x : sa) {
                 std::cout << (int) x << "\t";
             }
+
             std::cout << std::endl;
 
             for (auto& x : bptr) {
@@ -105,10 +121,11 @@ class bucket_pointer_refinement {
             // sort each bucket in naive order
             for (auto& b : buckets) {
                 if (b.count > 0) {
-                    size_t bucket_start = b.position - b.count + 1;
+                    size_t bucket_end_exclusive = b.position + b.count;
+                    std::cout << "Refine [" << b.position << ".." << bucket_end_exclusive << ")" << std::endl;
                     refine_single_bucket<sa_index>(offset, offset, bptr,
-                            bucket_start,
-                            sa.slice(bucket_start, b.position + 1));
+                            b.position,
+                            sa.slice(b.position, bucket_end_exclusive));
                 }
             }
         }

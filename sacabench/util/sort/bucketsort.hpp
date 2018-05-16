@@ -115,9 +115,9 @@ namespace sacabench::util::sort {
                 ++current_bucket.position;
             }
 
-            // determine rightmost index of each bucket
+            // determine leftmost index of each bucket
             for (auto& bucket : buckets) {
-                --bucket.position;
+                bucket.position -= bucket.count;
             }
 
             return buckets;
