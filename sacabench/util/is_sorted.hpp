@@ -11,10 +11,10 @@
 namespace sacabench::util {
 // Checks the sorting of the array in O(n).
 // Returns true if correctly sorted.
-template <typename content, typename key_func_type>
-bool is_sorted(const span<content> array, key_func_type cmp) {
+template <typename content, typename Compare>
+bool is_sorted(const span<content> array, Compare less) {
     for (size_t i = 1; i < array.size(); ++i) {
-        if (cmp(array[i - 1], array[i]) > 0) {
+        if (less(array[i], array[i-1])) {
             // if A[i-1] > A[i], the array cannot be sorted.
             return false;
         }
