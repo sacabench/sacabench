@@ -76,6 +76,8 @@ content median_of_nine(span<content> array, key_func_type cmp) {
 template <typename content, typename key_func_type>
 std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
                                     const content& pivot_element) {
+    DCHECK_MSG(array.size() > 2, "Ternary Quicksort doesn't work for partition size less than 3.");
+
     const auto less = cmp;
     const auto equal = util::as_equal(cmp);
     const auto greater = util::as_greater(cmp);
@@ -94,6 +96,7 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
             ++right;
         }
     }
+
     // Add #elements smaller than pivot to get correct start position
     // for greater-partition counter
     right = right + mid;
@@ -104,10 +107,12 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
 
     // Loop, which builds the less-partition
     while (left < i) {
+        DCHECK_LT(left, array.size());
+
         // If current element is the pivot_element, swap it into equal-partition
         if (equal(array[left], pivot_element)) {
-            DCHECK_MSG(left < array.size(), "left < array.size() failed while building the less-partition. left=" << left << ", array_size=" << array.size());
-            DCHECK_MSG(mid < array.size(), "mid < array.size() failed while building the less-partition. mid=" << mid << ", array_size=" << array.size());
+            DCHECK_MSG(left < array.size(), "left < array.size() failed while building the less-partition. pivot=" << pivot_element << ", left=" << left << ", array_size=" << array.size());
+            DCHECK_MSG(mid < array.size(), "mid < array.size() failed while building the less-partition. pivot=" << pivot_element << ", mid=" << mid << ", array_size=" << array.size());
             std::swap(array[left], array[mid]);
             ++mid;
         }
@@ -175,7 +180,7 @@ void ternary_quicksort(span<content> array, key_func_type cmp) {
     // constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
 
     // Choose pivot according to array size
-    content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
+    const content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
                         ? median_of_nine(array, cmp)
                         : median_of_three(array, cmp);
     auto result = partition(array, cmp, pivot);

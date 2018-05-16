@@ -72,13 +72,26 @@ void multikey_quicksort_internal(
         return;
     }
 
+    const auto cmp_equal = util::as_equal(key_func);
+
+    if (array.size() == 2) {
+        if (cmp_equal(array[0], array[1])) {
+            // Sort the equal partition by the next character.
+            ++key_func.depth;
+            multikey_quicksort_internal(array, key_func);
+            --key_func.depth;
+        }
+        else if (key_func(array[1], array[0])) {
+            std::swap(array[0], array[1]);
+        }
+        return;
+    }
+
     // FIXME: Choose a simple pivot element.
-    const index_type& pivot_element = array[0];
+    const index_type pivot_element = array[0];
 
     // Swap elements using ternary quicksort partitioning.
-    // Casts key_func into type std::function<int(index_type, index_type)>
-    auto bounds =
-        sort::ternary_quicksort::partition(array, key_func, pivot_element);
+    auto bounds = sort::ternary_quicksort::partition(array, key_func, pivot_element);
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
     // bounds[0] .. bounds[1] is equal to the pivot_element
