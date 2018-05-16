@@ -26,17 +26,13 @@ class bucket_pointer_refinement {
             }
 
             // TODO: choose appropiate value
-            size_t bucketsort_depth = 2;
+            size_t bucketsort_depth = 1;
 
             std::cout << "generating buckets..." << std::endl;
 
             auto buckets =
                 util::sort::bucketsort_presort(input, alphabet_size,
                         bucketsort_depth, sa);
-
-            for (auto& b : buckets) {
-                std::cout << "Bucket position " << b.position << "\t size " << b.count << std::endl;
-            }
 
             std::cout << std::endl;
             std::cout << "initializing bptr..." << std::endl;
@@ -47,10 +43,6 @@ class bucket_pointer_refinement {
                     bucketsort_depth, sa, bptr);
 
             std::cout << "refining buckets..." << std::endl;
-
-            for (auto& b : buckets) {
-                std::cout << "Bucket position " << b.position << "\t size " << b.count << std::endl;
-            }
 
             refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
 

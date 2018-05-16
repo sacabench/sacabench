@@ -41,7 +41,7 @@ namespace sacabench::util::sort {
      * \return Size and starting position for each bucket in the suffix array.
      */
     template <typename index_type>
-        span<bucket> bucketsort_presort(const string_span& input,
+        container<bucket> bucketsort_presort(const string_span& input,
                 const std::size_t alphabet_size, const std::size_t depth,
                 span<index_type>& sa) {
             DCHECK_EQ(input.size(), sa.size());
@@ -51,9 +51,7 @@ namespace sacabench::util::sort {
             // the real alphabet includes $, so it has one more character
             const std::size_t real_alphabet_size = alphabet_size + 1;
             const std::size_t bucket_count = pow(real_alphabet_size, depth);
-            auto buckets_container =
-                make_container<bucket>(bucket_count);
-            util::span<bucket> buckets = buckets_container;
+            auto buckets = make_container<bucket>(bucket_count);
 
             // calculate code for an (imaginary) 0-th suffix
             std::size_t initial_code = 0;
