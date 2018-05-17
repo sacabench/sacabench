@@ -29,5 +29,5 @@ TEST(bucket_pointer_refinement, function_call) {
 }
 
 TEST(bucket_pointer_refinement, test) {
-    //test::saca_corner_cases<bpr>();
+    test::saca_corner_cases<bpr>();
 }

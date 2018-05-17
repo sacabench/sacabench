@@ -31,38 +31,16 @@ class bucket_pointer_refinement {
                 bucketsort_depth = input.size();
             }
 
-            std::cout << "generating buckets..." << std::endl;
-
             auto buckets =
                 util::sort::bucketsort_presort(input, alphabet_size,
                         bucketsort_depth, sa);
 
-            for (auto& b : buckets) {
-                std::cout << "Position " << b.position << ",\t Size " << b.count << std::endl;
-            }
-
-            std::cout << std::endl;
-            std::cout << "initializing bptr..." << std::endl;
-
-            // TODO: initialize bucket pointers
+            // initialize bucket pointers
             util::container<sa_index> bptr;
             initialize_bucket_pointers<sa_index>(input, alphabet_size,
                     bucketsort_depth, sa, bptr);
 
-            std::cout << "refining buckets..." << std::endl;
-
             refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
-
-            for (auto& x : sa) {
-                std::cout << (int) x << "\t";
-            }
-
-            std::cout << std::endl;
-
-            //for (auto& x : bptr) {
-            //    std::cout << (int) x << "\t";
-            //}
-            //std::cout << std::endl;
         }
 
     private:
@@ -121,7 +99,6 @@ class bucket_pointer_refinement {
             for (auto& b : buckets) {
                 if (b.count > 0) {
                     size_t bucket_end_exclusive = b.position + b.count;
-                    std::cout << "Refine [" << b.position << ".." << bucket_end_exclusive - 1 << "]" << std::endl;
                     refine_single_bucket<sa_index>(offset, offset, bptr,
                             b.position,
                             sa.slice(b.position, bucket_end_exclusive));
@@ -137,13 +114,6 @@ class bucket_pointer_refinement {
             if (bucket.size() < 2) {
                 return;
             }
-
-            for (size_t i = 0; i < offset; ++i) {std::cout << " ";}
-            std::cout << "Sorting { ";
-            for (auto s : bucket) {
-                std::cout << (int) s << " ";
-            }
-            std::cout << "} with offset " << offset << std::endl;
 
             auto sort_key = [=] (sa_index suffix) {
                 if (suffix >= bptr.size() - offset) {
@@ -161,45 +131,51 @@ class bucket_pointer_refinement {
                     return sort_key(lhs) < sort_key(rhs);
                 });
 
-            for (size_t i = 0; i < offset; ++i) {std::cout << " ";}
-            std::cout << "Done:   { ";
-            for (auto s : bucket) {
-                std::cout << (int) s << " ";
-            }
-            std::cout << "}" << std::endl;
-
-            // TODO: Refine bucket pointers
+            // Refine bucket pointers
             size_t current_bucket_position = bucket.size();
-            size_t current_bucket_key = bucket_start + bucket.size() - 1;
 
             size_t current_code = 0;
             size_t recent_code = current_code;
 
+            util::container<bool> right_bounds =
+                util::make_container<bool>(bucket.size());
             // from right to left: Calculate codes in order to determine
-            // bucket borders
+            // bucket borders and store them in temp_bptr
             do {
                 --current_bucket_position;
+
                 // find current code by inspecting sa[current_sa_position]
                 current_code = sort_key(bucket[current_bucket_position]);
 
                 if (current_code != recent_code) {
                     // we passed a border between two buckets
-                    current_bucket_key = bucket_start + current_bucket_position;
+                    right_bounds[current_bucket_position] = true;
                     recent_code = current_code;
                 }
+            } while (current_bucket_position > 0);
+
+            current_bucket_position = bucket.size();
+            size_t current_bucket_key = bucket_start + bucket.size() - 1;
+
+            do {
+                --current_bucket_position;
+
+                if (right_bounds[current_bucket_position]) {
+                    // we passed a border between two buckets
+                    current_bucket_key = bucket_start + current_bucket_position;
+                }
+
                 bptr[bucket[current_bucket_position]] = current_bucket_key;
             } while (current_bucket_position > 0);
 
-            // TODO: Determine sub-buckets
+            // Determine sub-buckets
             size_t start_of_bucket = 0;
             size_t end_of_bucket;
             // from right to left: Calculate codes in order to determine
             // bucket borders
             while (start_of_bucket < bucket.size()) {
                 end_of_bucket = bptr[bucket[start_of_bucket]] - bucket_start;
-                //for (size_t i = 0; i < offset; ++i) {std::cout << " ";}
-                //std::cout << "    sub-bucket from " << start_of_bucket << " to " << end_of_bucket << std::endl;
-                // TODO: Sort sub-buckets recursively
+                // Sort sub-buckets recursively
                 refine_single_bucket<sa_index>(offset + step_size, step_size,
                         bptr, start_of_bucket + bucket_start,
                         bucket.slice(start_of_bucket, ++end_of_bucket));
