@@ -4,7 +4,6 @@
  * 
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
-#include <array>
 #include <util/span.hpp>
 #include <util/assertions.hpp>
 #include <util/string.hpp>
@@ -12,7 +11,7 @@
 
 #pragma once
 namespace sacabench::util {
-    template<typename C, typename S,typename T, typename I, typename Compare, 
+    template<typename S, typename S0, typename T, typename I, typename Compare, 
             typename Substring>
     //template T for input string
     //template C for input characters
@@ -36,7 +35,7 @@ namespace sacabench::util {
     * contains the lexicographical ranks of positions i mod 3 != 0.
     * This method works correct because of the difference cover idea.
     */
-    void merge_sa_dc(const T& t, const S& sa_0, const S& sa_12, const I& isa_12, S& sa, const Compare comp, 
+    static void merge_sa_dc(const T& t, const S0& sa_0, const S& sa_12, const I& isa_12, S& sa, Compare comp, 
             const Substring get_substring) {
 
         DCHECK_MSG(sa.size() == t.size(), 
@@ -52,8 +51,8 @@ namespace sacabench::util {
         
         while (counter < sa.size()) {
             if (i < sa_0.size() && j < sa_12.size()) {
-                string_span t_0;
-                string_span t_12;
+                sacabench::util::string_span t_0;
+                sacabench::util::string_span t_12;
                 if (sa_12[j] % 3 == 1) {
                     t_0 = get_substring(t, &t[sa_0[i]], 1);    
                     t_12 = get_substring(t, &t[sa_12[j]], 1); 

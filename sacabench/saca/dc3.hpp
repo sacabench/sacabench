@@ -10,7 +10,6 @@
 #include <iostream>
 #include <util/string.hpp>
 #include <util/span.hpp>
-#include <vector>
 #include <util/container.hpp>
 #include <util/induce_sa_dc.hpp>
 #include <util/merge_sa_dc.hpp>
@@ -29,7 +28,7 @@ namespace sacabench::dc3 {
     * with information of ranks of triplets starting in position i mod 3 != 0 of input string.
     * This method works correct because of the difference cover idea.
     */
-    
+    /*
     template<typename C, typename T, typename S>
     void determine_triplets(const T& INPUT_STRING, S& t_12) {
         
@@ -107,7 +106,7 @@ namespace sacabench::dc3 {
         for(size_t i = 0; i < sa_12.size(); i++) {
             isa_12[sa_12[i]] = i+1;
         }        
-    }
+    }*/
     
     
     
@@ -125,7 +124,7 @@ namespace sacabench::dc3 {
                 modified_text.push_back(' ');
                 modified_text.push_back(' ');
                 
-                construct_sa_dc3(modified_text, alphabet_size, out_sa);
+                construct_sa_dc3<size_t, sacabench::util::character>(modified_text, alphabet_size, out_sa);
             }
             
             
@@ -223,7 +222,7 @@ namespace sacabench::dc3 {
             }        
         }
         
-        template<typename sa_index, typename S>
+        template<typename sa_index, typename C, typename S>
         static void construct_sa_dc3(S text,
                                      size_t alphabet_size,
                                      util::span<sa_index> out_sa) {
@@ -234,7 +233,7 @@ namespace sacabench::dc3 {
                 auto t_12 = sacabench::util::make_container<size_t>(2*(text.size()-2)/3);
                 
                 //determine positions and calculate the sorted order
-                determine_triplets<sacabench::util::character>(text, t_12);   
+                determine_triplets<C>(text, t_12);   
                 
                 //empty SA which should be filled correctly with lexicographical 
                 //names of triplets
@@ -262,7 +261,7 @@ namespace sacabench::dc3 {
                 
                 //run the algorithm recursivly if the names are not unique
                 if(recursion){
-                    construct_sa_dc3<size_t>(sa_12, alphabet_size, tmp_out_sa);              
+                    construct_sa_dc3<size_t, size_t>(sa_12, alphabet_size, tmp_out_sa);              
                 }
                 
                 std::cout << "nach der Rekursion" << std::endl;
@@ -270,13 +269,16 @@ namespace sacabench::dc3 {
                 
                 //empty isa_12 which should be filled correctly with method determine_isa
                 //which calculates the ranks of triplets in i mod 3 != 0
-                auto isa_12 = sacabench::util::make_container<size_t>(tmp_out_sa.size());
+                auto isa_12 = sacabench::util::make_container<size_t>(0);
                 //auto isa_12 = sacabench::util::span<size_t>(tmp_out_sa.size());
                 
+                //if in recursion use temporary sa. Otherwise sa_12
                 if(recursion){
-                    sacabench::dc3::determine_isa(tmp_out_sa, isa_12);
+                    isa_12 = sacabench::util::make_container<size_t>(tmp_out_sa.size());
+                    determine_isa(tmp_out_sa, isa_12);
                 }else{
-                    sacabench::dc3::determine_isa(sa_12, isa_12);
+                    isa_12 = sacabench::util::make_container<size_t>(sa_12.size());
+                    determine_isa(sa_12, isa_12);
                 }
                 
                 std::cout << "isa: " << std::endl;
@@ -285,7 +287,7 @@ namespace sacabench::dc3 {
                 }
                 
                 //positions i mod 3 = 0 of text
-                auto t_0 = sacabench::util::make_container<sacabench::util::character>(text.size()/3);
+                auto t_0 = sacabench::util::make_container<C>(text.size()/3);
 
                 size_t counter = 0;
                 for(size_t i = 0; i < (text.size()-2); i+=3){
@@ -298,25 +300,25 @@ namespace sacabench::dc3 {
                 
                 //fill sa_0 by inducing with characters at i mod 3 = 0 and ranks of triplets 
                 //beginning in positions i mod 3 != 0
-                sacabench::util::induce_sa_dc<sacabench::util::character>(t_0, isa_12, sa_0);
+                sacabench::util::induce_sa_dc<C>(t_0, isa_12, sa_0);
                 for(size_t i = 0; i < sa_0.size(); i++){
                     std::cout << t_0[i] << "  :  " << sa_0[i] << std::endl;
                 }
                 
+                
                 //merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
-                sacabench::util::merge_sa_dc<sacabench::util::character, sacabench::util::container>(text, sa_0, tmp_out_sa,
+                sacabench::util::merge_sa_dc(text, sa_0, tmp_out_sa,
                         isa_12, out_sa, comp, get_substring);
-
-                std::cout << "Running example1" << std::endl;
             }
-                        
-            static sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
-                    int n) {
+            template<typename T, typename C>            
+            static const sacabench::util::string_span get_substring(const T& t, const C* ptr,
+                    size_t n) {
                 return sacabench::util::span(ptr, n);
             }
 
             // implementation of comp method
-            static bool comp(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
+            template<typename T>
+            static bool comp(const T& a, const T& b) {
                 return a < b;
             }
     }; // class dc3

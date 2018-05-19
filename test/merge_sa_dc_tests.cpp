@@ -32,7 +32,7 @@ TEST(DC, merge) {
     auto sa = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
     //run method to test it
-    sacabench::util::merge_sa_dc<sacabench::util::character>(input_string, sa_0, sa_12,
+    sacabench::util::merge_sa_dc(input_string, sa_0, sa_12,
             isa_12, sa, comp, get_substring);
 
     //expected values for merged SA with DC
