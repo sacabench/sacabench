@@ -154,9 +154,9 @@ public:
         // Create the initial S array of character tuples + text
         // position
         for (size_t i = 0; i < N - 1; ++i) {
-            S[i] = std::make_pair(atuple{text[i], text[i + 1]}, i);
+            S[i] = names_tuple{atuple{text[i], text[i + 1]}, i};
         }
-        S[N - 1] = std::make_pair(atuple{text[N - 1], util::SENTINEL}, N - 1);
+        S[N - 1] = names_tuple{atuple{text[N - 1], util::SENTINEL}, N - 1};
 
         // We iterate up to ceil(log2(N)) times - but because we
         // always have a break condition in the loop body,
@@ -207,7 +207,7 @@ public:
                         c2 = util::SENTINEL;
                     }
                 }
-                S[j] = std::make_pair(atuple{c1, c2}, i1);
+                S[j] = names_tuple{atuple{c1, c2}, i1};
             }
         }
     }
@@ -385,10 +385,10 @@ public:
         // Create the initial S array of character tuples + text
         // position
         for (size_t i = 0; i < N - 1; ++i) {
-            supf.S()[i] = std::make_pair(atuple{text[i], text[i + 1]}, i);
+            supf.S()[i] = names_tuple{atuple{text[i], text[i + 1]}, i};
         }
         supf.S()[N - 1] =
-            std::make_pair(atuple{text[N - 1], util::SENTINEL}, N - 1);
+            names_tuple{atuple{text[N - 1], util::SENTINEL}, N - 1};
 
         // Sort the S tuples lexicographical
         sorting_algorithm::sort(supf.S());
@@ -420,7 +420,7 @@ public:
                 size_t const i = supf.U()[j].second;
 
                 if (is_uniq) {
-                    auto ci_tuple = std::make_pair(c, i);
+                    auto ci_tuple = name_tuple{c, i};
 
                     if (count < 2) {
                         supf.append_f(ci_tuple);
