@@ -28,6 +28,9 @@ struct std_sorting_algorithm {
     }
 };
 
+/// The type to use for lexicographical sorted "names".
+/// For discarding, is required to have a width of at least 1 bit more than
+/// needed.
 using name_type = size_t;
 using atuple = std::array<name_type, 2>;
 using names_tuple = std::pair<atuple, size_t>;
@@ -90,20 +93,24 @@ inline static name_type unique_mask() {
     return mask;
 }
 
+/// Check if the extra bit in `name_type` is set.
 inline static bool is_marked(name_type v) { return (v & unique_mask()) != 0; }
 
-inline static name_type set_marked(name_type v) {
+/// Sets the extra bit in `v`, and returns the changed value.
+inline static name_type marked(name_type v) {
     v |= unique_mask();
     DCHECK(is_marked(v));
     return v;
 }
 
-inline static name_type unset_marked(name_type v) {
+/// Unsets the extra bit in `v`, and returns the changed value.
+inline static name_type unmarked(name_type v) {
     v &= ~unique_mask();
     DCHECK(!is_marked(v));
     return v;
 }
 
+/// Debug output, prints a span of `names_tuple`
 inline void print_names(util::span<names_tuple> S) {
     std::cout << "[\n";
     for (auto& e : S) {
@@ -113,10 +120,11 @@ inline void print_names(util::span<names_tuple> S) {
     std::cout << "]\n";
 }
 
+/// Debug output, prints a span of `name_tuple`, while isolating the extra bit
 inline void print_name(util::span<name_tuple> S) {
     std::cout << "[\n";
     for (auto& e : S) {
-        auto name = unset_marked(e.first);
+        auto name = unmarked(e.first);
         if (is_marked(e.first)) {
             std::cout << "  * " << name << ", " << e.second << "\n";
         } else {
@@ -219,13 +227,17 @@ inline static void mark_not_unique(util::span<name_tuple> U) {
         auto& a = U[i - 1].first;
         auto& b = U[i].first;
 
-        if (unset_marked(a) == unset_marked(b)) {
-            a = set_marked(a);
-            b = set_marked(b);
+        if (unmarked(a) == unmarked(b)) {
+            a = marked(a);
+            b = marked(b);
         }
     }
 }
 
+/// Helper class to contain the S,U,P and F arrays.
+///
+/// This type exists so that further optimizations could reduce the
+/// memory footprint by merging some of the arrays.
 class supf_containers {
     util::container<names_tuple> m_s;
     util::container<name_tuple> m_u;
@@ -252,11 +264,8 @@ public:
     }
 
     inline auto S() { return m_s_span; }
-
     inline auto U() { return m_u_span; }
-
     inline auto P() { return m_p_span; }
-
     inline auto F() { return m_f_span; }
 
     inline auto extend_u_by(size_t size) {
@@ -266,9 +275,7 @@ public:
     }
 
     inline void reset_p() { m_p_span = util::span<name_tuple>(); }
-
     inline void reset_s() { m_s_span = util::span<names_tuple>(); }
-
     inline void reset_u() { m_u_span = util::span<name_tuple>(); }
 
     inline void append_f(name_tuple v) {
@@ -287,11 +294,14 @@ public:
     }
 };
 
+/// Merges the (name,index) tuples from P into U,
+/// and ensures the combined U is sorted according to `k`.
 template <typename sorting_algorithm>
 inline static void sort_U_by_index_and_merge_P_into_it(supf_containers& supf,
                                                        size_t k) {
 
     auto P = supf.P();
+
     auto U_P_extra = supf.extend_u_by(P.size());
 
     for (size_t i = 0; i < P.size(); i++) {
@@ -300,13 +310,6 @@ inline static void sort_U_by_index_and_merge_P_into_it(supf_containers& supf,
     supf.reset_p();
 
     auto U_merged = supf.U();
-
-    /*
-    // TODO: Check which one need actual unsetting
-    for(size_t i = 0; i < U_merged.size(); i++) {
-        U_merged[i].first = unset_marked(U_merged[i].first);
-    }
-    */
 
     // TODO: Change to just merge U_P_extra later
 
@@ -320,9 +323,13 @@ inline static void sort_U_by_index_and_merge_P_into_it(supf_containers& supf,
                             }));
 }
 
+/// Get a clean (== not extra bit set) `names_tuple`
+/// of the names at `U[j]` and `U[j+1]`.
 inline static names_tuple get_next(util::span<name_tuple> U, size_t j,
-                                   size_t k_length) {
-    name_type c1 = unset_marked(U[j].first);
+                                   size_t k) {
+    size_t const k_length = 1ull << k;
+
+    name_type c1 = unmarked(U[j].first);
     name_type c2 = util::SENTINEL;
 
     auto i1 = U[j].second;
@@ -330,14 +337,28 @@ inline static names_tuple get_next(util::span<name_tuple> U, size_t j,
     if (j + 1 < U.size()) {
         auto i2 = U[j + 1].second;
         if (i2 == i1 + k_length) {
-            c2 = unset_marked(U[j + 1].first);
+            c2 = unmarked(U[j + 1].first);
         }
     }
 
     return names_tuple{atuple{c1, c2}, i1};
 }
 
+/// Create a unique name for each S tuple.
+///
+/// Precondition: The tuple in S are lexicographical sorted.
 inline static void name2(util::span<names_tuple> S, util::span<name_tuple> U) {
+    /// Names are formed by taking the name of the first tuple element,
+    /// and adding a offset that increments if the second element changes.
+    ///
+    // Example:
+    //
+    // |      S                U       |
+    // | ((1, 2), 0) => (1 + 0 = 1, 0) |
+    // | ((1, 2), 2) => (1 + 0 = 1, 2) |
+    // | ((2, 1), 1) => (2 + 0 = 2, 1) |
+    // | ((2, 0), 5) => (2 + 1 = 3, 5) |
+
     name_type name_counter = 0;
     name_type name_offset = 0;
 
@@ -402,35 +423,42 @@ public:
         for (size_t k = 1;; k++) {
             DCHECK_LE(k, util::ceil_log2(N));
 
-            size_t const k_length = 1ull << k;
-
+            // Mark all not unique names in U by setting their extra bit.
             mark_not_unique(supf.U());
 
+            // Merge the previous unique names from P
+            // into U and sort them by index.
             sort_U_by_index_and_merge_P_into_it<sorting_algorithm>(supf, k);
 
-            supf.reset_s();
+            // Reset P, because we just emptied it.
             supf.reset_p();
 
+            // Reset S, because we want to fill it anew
+            supf.reset_s();
+
+            // Iterate through U, either appending tuples to S
+            // or to F or P.
             size_t count = 0;
             for (size_t j = 0; j < supf.U().size(); j++) {
-                name_type c = supf.U()[j].first;
-                bool const is_uniq = !is_marked(c);
-                c = unset_marked(c);
+                // Get the name at U[j], and check if its unique,
+                // while also removing the extra bit in any case.
+                name_type c = unmarked(supf.U()[j].first);
+                bool const is_uniq = !is_marked(supf.U()[j].first);
 
                 size_t const i = supf.U()[j].second;
 
                 if (is_uniq) {
-                    auto ci_tuple = name_tuple{c, i};
-
                     if (count < 2) {
-                        supf.append_f(ci_tuple);
+                        // fully discard tuple
+                        supf.append_f(name_tuple{c, i});
                     } else {
-                        supf.append_p(ci_tuple);
+                        // partially discard tuple
+                        supf.append_p(name_tuple{c, i});
                     }
-
                     count = 0;
                 } else {
-                    auto c1c2i1 = get_next(supf.U(), j, k_length);
+                    // Get neighboring names from U[j], U[j+1]
+                    auto c1c2i1 = get_next(supf.U(), j, k);
 
                     auto c1 = c1c2i1.first[0];
                     auto i1 = c1c2i1.second;
@@ -441,6 +469,9 @@ public:
                     count += 1;
                 }
             }
+
+            // If S is empty, the algorithm terminates, and
+            // F contains names for unique prefixes.
             if (supf.S().empty()) {
                 auto F = supf.F();
 
@@ -456,8 +487,12 @@ public:
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(supf.S());
 
+            // Make U the same length as S
+            // TODO: Make this nicer
             supf.reset_u();
             supf.extend_u_by(supf.S().size());
+
+            // Rename S tuple into U tuple
             name2(supf.S(), supf.U());
         }
     }
