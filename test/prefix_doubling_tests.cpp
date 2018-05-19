@@ -11,6 +11,10 @@
 
 using namespace sacabench::prefix_doubling;
 
-TEST(prefix_doubling, test) {
+TEST(prefix_doubling, naive) {
     test::saca_corner_cases<prefix_doubling<>>();
+}
+
+TEST(prefix_doubling, discarding) {
+    test::saca_corner_cases<prefix_doubling_discarding<>>();
 }
