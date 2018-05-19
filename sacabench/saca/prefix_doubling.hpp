@@ -9,9 +9,9 @@
 #include <array>
 #include <cstdint>
 #include <iostream>
+#include <limits>
 #include <tuple>
 #include <vector>
-#include <limits>
 
 #include <util/bits.hpp>
 #include <util/compare.hpp>
@@ -90,9 +90,7 @@ inline static name_type unique_mask() {
     return mask;
 }
 
-inline static bool is_marked(name_type v) {
-    return (v & unique_mask()) != 0;
-}
+inline static bool is_marked(name_type v) { return (v & unique_mask()) != 0; }
 
 inline static name_type set_marked(name_type v) {
     v |= unique_mask();
@@ -109,8 +107,8 @@ inline static name_type unset_marked(name_type v) {
 inline void print_names(util::span<names_tuple> S) {
     std::cout << "[\n";
     for (auto& e : S) {
-        std::cout << "  (" << (e.first[0]) << ", " << (e.first[1])
-                  << "), " << e.second << "\n";
+        std::cout << "  (" << (e.first[0]) << ", " << (e.first[1]) << "), "
+                  << e.second << "\n";
     }
     std::cout << "]\n";
 }
@@ -124,7 +122,6 @@ inline void print_name(util::span<name_tuple> S) {
         } else {
             std::cout << "    " << name << ", " << e.second << "\n";
         }
-
     }
     std::cout << "]\n";
 }
@@ -216,7 +213,6 @@ public:
     }
 }; // class prefix_doubling
 
-
 /// Marks elements as not unique by setting the highest extra bit
 inline static void mark_not_unique(util::span<name_tuple> U) {
     for (size_t i = 1; i < U.size(); i++) {
@@ -241,6 +237,7 @@ class supf_containers {
     util::span<name_tuple> m_u_span;
     util::span<name_tuple> m_p_span;
     util::span<name_tuple> m_f_span;
+
 public:
     inline supf_containers(size_t N) {
         m_s = util::make_container<names_tuple>(N);
@@ -254,21 +251,13 @@ public:
         m_f_span = util::span<name_tuple>();
     }
 
-    inline auto S() {
-        return m_s_span;
-    }
+    inline auto S() { return m_s_span; }
 
-    inline auto U() {
-        return m_u_span;
-    }
+    inline auto U() { return m_u_span; }
 
-    inline auto P() {
-        return m_p_span;
-    }
+    inline auto P() { return m_p_span; }
 
-    inline auto F() {
-        return m_f_span;
-    }
+    inline auto F() { return m_f_span; }
 
     inline auto extend_u_by(size_t size) {
         auto r = util::span(m_u).slice(m_u_span.size(), m_u_span.size() + size);
@@ -276,17 +265,11 @@ public:
         return r;
     }
 
-    inline void reset_p() {
-        m_p_span = util::span<name_tuple>();
-    }
+    inline void reset_p() { m_p_span = util::span<name_tuple>(); }
 
-    inline void reset_s() {
-        m_s_span = util::span<names_tuple>();
-    }
+    inline void reset_s() { m_s_span = util::span<names_tuple>(); }
 
-    inline void reset_u() {
-        m_u_span = util::span<name_tuple>();
-    }
+    inline void reset_u() { m_u_span = util::span<name_tuple>(); }
 
     inline void append_f(name_tuple v) {
         m_f_span = util::span(m_f).slice(0, m_f_span.size() + 1);
@@ -302,18 +285,16 @@ public:
         m_s_span = util::span(m_s).slice(0, m_s_span.size() + 1);
         m_s_span.back() = v;
     }
-
 };
 
-
 template <typename sorting_algorithm>
-inline static void sort_U_by_index_and_merge_P_into_it(
-    supf_containers& supf, size_t k) {
+inline static void sort_U_by_index_and_merge_P_into_it(supf_containers& supf,
+                                                       size_t k) {
 
     auto P = supf.P();
     auto U_P_extra = supf.extend_u_by(P.size());
 
-    for(size_t i = 0; i < P.size(); i++) {
+    for (size_t i = 0; i < P.size(); i++) {
         U_P_extra[i] = P[i];
     }
     supf.reset_p();
@@ -332,33 +313,29 @@ inline static void sort_U_by_index_and_merge_P_into_it(
     // Sort <U?> by its i position mapped to the tuple
     // (i % (2**k), i / (2**k), implemented as a single
     // integer value
-    sorting_algorithm::sort(
-        U_merged, util::compare_key([k](auto value) {
-            size_t const i = value.second;
-            auto const anti_k = util::bits_of<size_t> - k;
-            return (i << anti_k) | (i >> k);
-        }));
+    sorting_algorithm::sort(U_merged, util::compare_key([k](auto value) {
+                                size_t const i = value.second;
+                                auto const anti_k = util::bits_of<size_t> - k;
+                                return (i << anti_k) | (i >> k);
+                            }));
 }
 
-inline static names_tuple get_next(util::span<name_tuple> U, size_t j, size_t k_length) {
+inline static names_tuple get_next(util::span<name_tuple> U, size_t j,
+                                   size_t k_length) {
     name_type c1 = unset_marked(U[j].first);
-    name_type c2;
+    name_type c2 = util::SENTINEL;
 
-    auto i = U[j].second;
+    auto i1 = U[j].second;
 
-    if (j + 1 >= U.size()) {
-        c2 = 0;
-    } else {
-        c2 = unset_marked(U[j + 1].first);
+    if (j + 1 < U.size()) {
         auto i2 = U[j + 1].second;
-        if (i2 != i + k_length) {
-            c2 = 0;
+        if (i2 == i1 + k_length) {
+            c2 = unset_marked(U[j + 1].first);
         }
     }
 
-    return names_tuple { atuple {c1, c2}, i };
+    return names_tuple{atuple{c1, c2}, i1};
 }
-
 
 inline static void name2(util::span<names_tuple> S, util::span<name_tuple> U) {
     name_type name_counter = 0;
@@ -382,7 +359,6 @@ inline static void name2(util::span<names_tuple> S, util::span<name_tuple> U) {
         U[i] = name_tuple{pair[0] + name_offset, S[i].second};
         name_counter += 1;
     }
-
 }
 
 /// Doubling with discarding
@@ -411,47 +387,29 @@ public:
         for (size_t i = 0; i < N - 1; ++i) {
             supf.S()[i] = std::make_pair(atuple{text[i], text[i + 1]}, i);
         }
-        supf.S()[N - 1] = std::make_pair(atuple{text[N - 1], util::SENTINEL}, N - 1);
-
-        std::cout << "anfänglich S: "; print_names(supf.S());
+        supf.S()[N - 1] =
+            std::make_pair(atuple{text[N - 1], util::SENTINEL}, N - 1);
 
         // Sort the S tuples lexicographical
         sorting_algorithm::sort(supf.S());
 
-        std::cout << "sorted S: "; print_names(supf.S());
-
         // Rename the S tuples into U
         name(supf.S(), supf.U());
-
-        std::cout << "renamed U: "; print_name(supf.U());
 
         // We iterate up to ceil(log2(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
         for (size_t k = 1;; k++) {
-            std::cout << "--------------------------\n";
-            std::cout << "start iteration k=" << k << "\n";
-
             DCHECK_LE(k, util::ceil_log2(N));
 
             size_t const k_length = 1ull << k;
 
             mark_not_unique(supf.U());
 
-            std::cout << "marked U: "; print_name(supf.U());
-
-            std::cout << "Merge and sort with P: "; print_name(supf.P());
-
             sort_U_by_index_and_merge_P_into_it<sorting_algorithm>(supf, k);
 
-            std::cout << "=> U: "; print_name(supf.U());
-
-            std::cout << "reset S, P\n";
             supf.reset_s();
             supf.reset_p();
-
-            std::cout << "classify\n";
-            std::cout << ("│ U│     S      │   P   │   F   │\n");
 
             size_t count = 0;
             for (size_t j = 0; j < supf.U().size(); j++) {
@@ -466,61 +424,41 @@ public:
 
                     if (count < 2) {
                         supf.append_f(ci_tuple);
-                        std::cout<<"│"<<c<<"│            │       │("<<c<<","<<i<<")│\n";
                     } else {
                         supf.append_p(ci_tuple);
-                        std::cout<<"│"<<c<<"│            │("<<c<<","<<i<<")│       │\n";
                     }
 
                     count = 0;
                 } else {
-                    //std::cout << "U before get_next(U,"<<j<<","<<k_length<<"):\n";
-                    //print_name(supf.U());
                     auto c1c2i1 = get_next(supf.U(), j, k_length);
 
                     auto c1 = c1c2i1.first[0];
-                    auto c2 = c1c2i1.first[1];
                     auto i1 = c1c2i1.second;
                     DCHECK_EQ(c1, c);
                     DCHECK_EQ(i1, i);
 
                     supf.append_s(c1c2i1);
                     count += 1;
-                    std::cout<<"│"<<c<<"│(("<<c1<<","<<c2<<"),"<<i1<<")│       │       │\n";
                 }
             }
-            std::cout << "F: "; print_name(supf.F());
-
-            std::cout << "check S empty\n";
             if (supf.S().empty()) {
-                std::cout << "=> yes\n";
                 auto F = supf.F();
 
                 // Sort the F tuples lexicographical
                 sorting_algorithm::sort(F);
 
-                std::cout << "sorted F: "; print_name(F);
-
                 for (size_t i = 0; i < N; i++) {
                     out_sa[i] = F[i].second;
                 }
                 return;
-            } else {
-                std::cout << "=> no, continue\n";
             }
-
-            std::cout << "sort S\n";
 
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(supf.S());
 
-            std::cout << "S: "; print_names(supf.S());
-
-            std::cout << "rename S into U\n";
             supf.reset_u();
             supf.extend_u_by(supf.S().size());
             name2(supf.S(), supf.U());
-            std::cout << "U: "; print_name(supf.U());
         }
     }
 }; // class prefix_doubling_discarding
