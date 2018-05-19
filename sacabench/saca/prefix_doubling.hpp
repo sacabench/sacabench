@@ -278,7 +278,10 @@ struct prefix_doubling_impl {
 
         inline void reset_p() { m_p_span = util::span<name_tuple>(); }
         inline void reset_s() { m_s_span = util::span<names_tuple>(); }
-        inline void reset_u() { m_u_span = util::span<name_tuple>(); }
+
+        inline void resize_u(size_t size) {
+            m_u_span = util::span(m_u).slice(0, size);
+        }
 
         inline void append_f(name_tuple v) {
             m_f_span = util::span(m_f).slice(0, m_f_span.size() + 1);
@@ -488,8 +491,7 @@ struct prefix_doubling_impl {
 
             // Make U the same length as S
             // TODO: Make this nicer
-            supf.reset_u();
-            supf.extend_u_by(supf.S().size());
+            supf.resize_u(supf.S().size());
 
             // Rename S tuple into U tuple
             name2(supf.S(), supf.U());
