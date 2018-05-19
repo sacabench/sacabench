@@ -18,9 +18,14 @@ SACA_REGISTER("Example1", "Description of Example1", saca_example1)
 using saca_example2 = sacabench::example2::example2;
 SACA_REGISTER("Example2", "Description of Example2", saca_example2)
 
-using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling<>;
+using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling;
 SACA_REGISTER("Prefix Doubling", "TODO", saca_prefix_doubling)
 
-}
+using saca_prefix_doubling_discarding =
+    sacabench::prefix_doubling::prefix_doubling_discarding;
+SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
+              saca_prefix_doubling_discarding)
+
+} // namespace sacabench::saca
 
 /******************************************************************************/
