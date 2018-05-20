@@ -10,13 +10,13 @@
 #include <util/container.hpp>
 
 //implementation of get-substring method
-sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
+static const sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
         int n, size_t index) {
     return sacabench::util::span(ptr, n);
 }
 
 // implementation of comp method
-bool comp(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
+static const bool comp(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
     return a < b;
 }
 
@@ -32,7 +32,7 @@ TEST(DC, merge) {
     auto sa = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
     //run method to test it
-    sacabench::util::merge_sa_dc(input_string, sa_0, sa_12,
+    sacabench::util::merge_sa_dc<const sacabench::util::character>(input_string, sa_0, sa_12,
             isa_12, sa, comp, get_substring);
 
     //expected values for merged SA with DC

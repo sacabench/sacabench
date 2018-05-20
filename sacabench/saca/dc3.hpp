@@ -334,17 +334,17 @@ namespace sacabench::dc3 {
                 
                 //merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
                 if(rec){
-                    sacabench::util::merge_sa_dc(text, sa_0, tmp_out_sa,
+                    sacabench::util::merge_sa_dc<const size_t>(sa_12, sa_0, tmp_out_sa,
                         isa_12, out_sa, comp_recursion, get_substring_recursion);
                 }else{
-                    sacabench::util::merge_sa_dc(text, sa_0, tmp_out_sa,
+                    sacabench::util::merge_sa_dc<const sacabench::util::character>(text, sa_0, tmp_out_sa,
                         isa_12, out_sa, comp, get_substring);
                 }
                 
 
                 
             }            
-            static const sacabench::util::string_span get_substring(const sacabench::util::container<sacabench::util::character>& t, const sacabench::util::character* ptr,
+            static const sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
                     size_t n, size_t index) {
                 return sacabench::util::span(ptr, n);
             }
@@ -355,18 +355,14 @@ namespace sacabench::dc3 {
                 return a < b;
             }
                        
-            static const sacabench::util::container<size_t> get_substring_recursion(const sacabench::util::container<size_t>& t, const size_t* ptr,
+            static const sacabench::util::span<const size_t> get_substring_recursion(const sacabench::util::container<size_t>& t, const size_t* ptr,
                     size_t n, size_t index) {
-                auto subcontainer = sacabench::util::make_container<size_t>(n+1);
-                for(size_t i = 0; i < n+1; i++){
-                    subcontainer[i] = t[index + i];
-                }
-                return subcontainer;
+                return sacabench::util::span(ptr, n);
             }
 
             // implementation of comp method
             
-            static bool comp_recursion(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
+            static bool comp_recursion(const sacabench::util::span<const size_t>& a, const sacabench::util::span<const size_t>& b) {
                 return a < b;
             }
     }; // class dc3

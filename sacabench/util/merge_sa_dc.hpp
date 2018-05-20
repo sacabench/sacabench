@@ -11,12 +11,14 @@
 
 #pragma once
 namespace sacabench::util {
-    template<typename Compare, typename Substring, typename S, 
+    template<typename C, typename Compare, typename Substring, typename S, 
             typename S0, typename T, typename I>
     //template T for input string
     //template C for input characters
     //template I for ISA
     //template S for SA
+    //template Compare for comp function
+    //template Substring for get_substring function
 
     /**\brief Merge two suffix array with the difference cover idea.
     * \param t input text
@@ -51,8 +53,8 @@ namespace sacabench::util {
         
         while (counter < sa.size()) {
             if (i < sa_0.size() && j < sa_12.size()) {
-                sacabench::util::string_span t_0;
-                sacabench::util::string_span t_12;
+                sacabench::util::span<C> t_0;
+                sacabench::util::span<C> t_12;
                 if (sa_12[j] % 3 == 1) {
                     t_0 = get_substring(t, &t[sa_0[i]], 1, sa_0[i]);    
                     t_12 = get_substring(t, &t[sa_12[j]], 1, sa_12[j]); 
