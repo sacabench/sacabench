@@ -11,8 +11,8 @@
 
 #pragma once
 namespace sacabench::util {
-    template<typename S, typename S0, typename T, typename I, typename Compare, 
-            typename Substring>
+    template<typename Compare, typename Substring, typename S, 
+            typename S0, typename T, typename I>
     //template T for input string
     //template C for input characters
     //template I for ISA
@@ -54,12 +54,12 @@ namespace sacabench::util {
                 sacabench::util::string_span t_0;
                 sacabench::util::string_span t_12;
                 if (sa_12[j] % 3 == 1) {
-                    t_0 = get_substring(t, &t[sa_0[i]], 1);    
-                    t_12 = get_substring(t, &t[sa_12[j]], 1); 
+                    t_0 = get_substring(t, &t[sa_0[i]], 1, sa_0[i]);    
+                    t_12 = get_substring(t, &t[sa_12[j]], 1, sa_12[j]); 
                 }
                 else {
-                    t_0 = get_substring(t, &t[sa_0[i]], 2);    
-                    t_12 = get_substring(t, &t[sa_12[j]], 2); 
+                    t_0 = get_substring(t, &t[sa_0[i]], 2, sa_0[i]);    
+                    t_12 = get_substring(t, &t[sa_12[j]], 2, sa_12[j]); 
                 }
                 
                 const bool less_than = comp(t_0, t_12);

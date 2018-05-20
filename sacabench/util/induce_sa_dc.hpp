@@ -37,13 +37,13 @@ namespace sacabench::util {
         //Tuples contains a char and a rank 
         auto sa_0_to_be_sorted = make_container<std::tuple<C, size_t, size_t>>(sa_0.size());
         
-        for (size_t i = 0; i < sa_0.size(); i++) {
+        /*for (size_t i = 0; i < sa_0.size(); i++) {
             std::cout << i << ": " << t_0[i] << std::endl;
-        } 
+        } */
         
         for (size_t i = 0; i < sa_0.size(); i++) {
             sa_0_to_be_sorted[i] = (std::tuple<C, size_t, size_t>(t_0[i], isa_12[i], i));
-            std::cout << t_0[i] << " " << isa_12[i] << std::endl;
+            //std::cout << t_0[i] << " " << isa_12[i] << std::endl;
         }  
     
         //TODO: sort Tupels with radix_sort

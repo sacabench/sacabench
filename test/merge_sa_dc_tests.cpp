@@ -11,7 +11,7 @@
 
 //implementation of get-substring method
 sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
-        int n) {
+        int n, size_t index) {
     return sacabench::util::span(ptr, n);
 }
 

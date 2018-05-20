@@ -144,6 +144,9 @@ namespace sacabench::dc3 {
             auto t_12_to_be_sorted = sacabench::util::make_container<std::tuple<C, C, C, size_t>>(2*(INPUT_STRING.size()-2)/3);
     
             size_t counter = 0;
+            
+            //--------------------------------hier ohne extra Sentinals--------------------------------------//
+   
             /*for(size_t i = 1; i < INPUT_STRING.size(); i++) {
                 if(i % 3 != 0){
                     if((i+2) >= INPUT_STRING.size()){
@@ -158,11 +161,12 @@ namespace sacabench::dc3 {
                 }
             }*/  
             
-            std::cout << t_12_to_be_sorted.size() << std::endl;
-            std::cout << t_12.size() << std::endl;
+            //-----------------------------------------------------------------------------------------------//
+            
+            
             for(size_t i = 1; i < INPUT_STRING.size()-2; i++) {
                 if(i % 3 != 0){
-                    std::cout << i << ": " << INPUT_STRING[i] << " " << INPUT_STRING[i+1] << " " << INPUT_STRING[i+2] << std::endl;
+                    //std::cout << i << ": " << INPUT_STRING[i] << " " << INPUT_STRING[i+1] << " " << INPUT_STRING[i+2] << std::endl;
                     
                     t_12_to_be_sorted[counter++] = std::tuple<C, C, C, size_t>(INPUT_STRING[i], INPUT_STRING[i+1], INPUT_STRING[i+2], i);
                 }
@@ -172,7 +176,7 @@ namespace sacabench::dc3 {
             //radix_sort(sa0_to_be_sorted, sa0);        
             std::sort(t_12_to_be_sorted.begin(),t_12_to_be_sorted.end());
             
-            std::cout << t_12_to_be_sorted.size() << std::endl;
+            
             for(size_t i = 0; i<t_12_to_be_sorted.size();i++){   
                 t_12[i] = std::get<3>(t_12_to_be_sorted[i]);
             }
@@ -207,6 +211,28 @@ namespace sacabench::dc3 {
                         recursion = true;
                     }
                 }
+                
+                //--------------------------------hier ohne extra Sentinals--------------------------------------//
+                
+                /*if(i+1 < t_12.size()){
+                    
+                    if(t_12[i]+3 < INPUT_STRING.size()){
+                        
+                        if(t_12[i+1]+3 < INPUT_STRING.size(){
+                            if(sacabench::util::span(&INPUT_STRING[t_12[i]], 3) != sacabench::util::span(&INPUT_STRING[t_12[i+1]], 3)){
+                                leq_name++;
+                            }else{ //if lexicographical names are not uniqe set recursion = true
+                                recursion = true;
+                            }
+                        }else{
+                            leq_name++;
+                        }
+                        
+                    }else
+                        leq_name++;
+                } */ 
+                
+                //-----------------------------------------------------------------------------------------------//
                 
             }  
             //TODO: Abfragen ob INPUT_STRING und t_12 out of bounce
@@ -245,10 +271,10 @@ namespace sacabench::dc3 {
                                 
                 //fill sa_12 with lexicographical names
                 determine_leq(text, t_12, sa_12, recursion);
-                std::cout << "sa: " << std::endl;
+                /*std::cout << "sa: " << std::endl;
                 for(size_t i = 0; i < sa_12.size(); i++){
                     std::cout << sa_12[i] << std::endl;
-                }
+                }*/
                 
                 //auto tmp_out_sa = util::span<sa_index>(&out_sa[0], 2*out_sa.size()/3);
                 //auto tmp_out_sa = out_sa.slice(0, 2*out_sa.size()/3);
@@ -257,14 +283,14 @@ namespace sacabench::dc3 {
                 util::span<sa_index> tmp_out_sa = tmp_tmp_out_sa;
             
                 
-                std::cout << "vor der Rekursion" << std::endl;
+                //std::cout << "vor der Rekursion" << std::endl;
                 
                 //run the algorithm recursivly if the names are not unique
                 if(recursion){
                     construct_sa_dc3<size_t, size_t>(sa_12, alphabet_size, tmp_out_sa);              
                 }
                 
-                std::cout << "nach der Rekursion" << std::endl;
+                //std::cout << "nach der Rekursion" << std::endl;
                 
                 
                 //empty isa_12 which should be filled correctly with method determine_isa
@@ -281,10 +307,10 @@ namespace sacabench::dc3 {
                     determine_isa(sa_12, isa_12);
                 }
                 
-                std::cout << "isa: " << std::endl;
+                /*std::cout << "isa: " << std::endl;
                 for(size_t i = 0; i < isa_12.size(); i++){
                     std::cout << isa_12[i] << std::endl;
-                }
+                }*/
                 
                 //positions i mod 3 = 0 of text
                 auto t_0 = sacabench::util::make_container<C>(text.size()/3);
@@ -301,24 +327,49 @@ namespace sacabench::dc3 {
                 //fill sa_0 by inducing with characters at i mod 3 = 0 and ranks of triplets 
                 //beginning in positions i mod 3 != 0
                 sacabench::util::induce_sa_dc<C>(t_0, isa_12, sa_0);
-                for(size_t i = 0; i < sa_0.size(); i++){
+                /*for(size_t i = 0; i < sa_0.size(); i++){
                     std::cout << t_0[i] << "  :  " << sa_0[i] << std::endl;
-                }
+                }*/
                 
                 
                 //merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
-                sacabench::util::merge_sa_dc(text, sa_0, tmp_out_sa,
+                if(recursion){
+                    sacabench::util::merge_sa_dc<sacabench::util::container<size_t>, bool>(text, sa_0, tmp_out_sa,
+                        isa_12, out_sa, comp_recursion, get_substring_recursion);
+                }else{
+                    sacabench::util::merge_sa_dc<sacabench::util::string_span, bool>(text, sa_0, tmp_out_sa,
                         isa_12, out_sa, comp, get_substring);
+                }
+                
+                auto input_string = sacabench::util::container<size_t> { 12,9,3,6,0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+                
             }
-            template<typename T, typename C>            
+            template<typename C, typename T>            
             static const sacabench::util::string_span get_substring(const T& t, const C* ptr,
-                    size_t n) {
+                    size_t n, size_t index) {
                 return sacabench::util::span(ptr, n);
             }
 
             // implementation of comp method
             template<typename T>
             static bool comp(const T& a, const T& b) {
+                return a < b;
+            }
+            
+            template<typename C, typename T>            
+            static const sacabench::util::container<size_t> get_substring_recursion(const T& t, const C* ptr,
+                    size_t n, size_t index) {
+                auto subcontainer = sacabench::util::make_container<size_t>(n+1);
+                for(size_t i = 0; i < n+1; i++){
+                    subcontainer[i] = t[index + i];
+                }
+                return subcontainer;
+            }
+
+            // implementation of comp method
+            template<typename T>
+            static bool comp_recursion(const T& a, const T& b) {
                 return a < b;
             }
     }; // class dc3
