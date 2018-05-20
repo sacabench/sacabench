@@ -124,7 +124,7 @@ namespace sacabench::dc3 {
                 modified_text.push_back(' ');
                 modified_text.push_back(' ');
                 
-                construct_sa_dc3<size_t, sacabench::util::character>(modified_text, alphabet_size, out_sa);
+                construct_sa_dc3<size_t, sacabench::util::character>(modified_text, alphabet_size, out_sa, false);
             }
             
             
@@ -251,7 +251,7 @@ namespace sacabench::dc3 {
         template<typename sa_index, typename C, typename S>
         static void construct_sa_dc3(S text,
                                      size_t alphabet_size,
-                                     util::span<sa_index> out_sa) {
+                                     util::span<sa_index> out_sa, bool rec) {
                 
                 
                 //empty container which will contain indices of triplet 
@@ -287,7 +287,7 @@ namespace sacabench::dc3 {
                 
                 //run the algorithm recursivly if the names are not unique
                 if(recursion){
-                    construct_sa_dc3<size_t, size_t>(sa_12, alphabet_size, tmp_out_sa);              
+                    construct_sa_dc3<size_t, size_t>(sa_12, alphabet_size, tmp_out_sa, true);              
                 }
                 
                 //std::cout << "nach der Rekursion" << std::endl;
@@ -299,7 +299,7 @@ namespace sacabench::dc3 {
                 //auto isa_12 = sacabench::util::span<size_t>(tmp_out_sa.size());
                 
                 //if in recursion use temporary sa. Otherwise sa_12
-                if(recursion){
+                if(rec){
                     isa_12 = sacabench::util::make_container<size_t>(tmp_out_sa.size());
                     determine_isa(tmp_out_sa, isa_12);
                 }else{
@@ -333,32 +333,29 @@ namespace sacabench::dc3 {
                 
                 
                 //merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
-                if(recursion){
-                    sacabench::util::merge_sa_dc<sacabench::util::container<size_t>, bool>(text, sa_0, tmp_out_sa,
+                if(rec){
+                    sacabench::util::merge_sa_dc(text, sa_0, tmp_out_sa,
                         isa_12, out_sa, comp_recursion, get_substring_recursion);
                 }else{
-                    sacabench::util::merge_sa_dc<sacabench::util::string_span, bool>(text, sa_0, tmp_out_sa,
+                    sacabench::util::merge_sa_dc(text, sa_0, tmp_out_sa,
                         isa_12, out_sa, comp, get_substring);
                 }
                 
-                auto input_string = sacabench::util::container<size_t> { 12,9,3,6,0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
                 
-            }
-            template<typename C, typename T>            
-            static const sacabench::util::string_span get_substring(const T& t, const C* ptr,
+            }            
+            static const sacabench::util::string_span get_substring(const sacabench::util::container<sacabench::util::character>& t, const sacabench::util::character* ptr,
                     size_t n, size_t index) {
                 return sacabench::util::span(ptr, n);
             }
 
             // implementation of comp method
-            template<typename T>
-            static bool comp(const T& a, const T& b) {
+            
+            static bool comp(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
                 return a < b;
             }
-            
-            template<typename C, typename T>            
-            static const sacabench::util::container<size_t> get_substring_recursion(const T& t, const C* ptr,
+                       
+            static const sacabench::util::container<size_t> get_substring_recursion(const sacabench::util::container<size_t>& t, const size_t* ptr,
                     size_t n, size_t index) {
                 auto subcontainer = sacabench::util::make_container<size_t>(n+1);
                 for(size_t i = 0; i < n+1; i++){
@@ -368,8 +365,8 @@ namespace sacabench::dc3 {
             }
 
             // implementation of comp method
-            template<typename T>
-            static bool comp_recursion(const T& a, const T& b) {
+            
+            static bool comp_recursion(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
                 return a < b;
             }
     }; // class dc3
