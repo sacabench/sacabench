@@ -38,7 +38,7 @@ namespace test {
             auto fast_result = sa_check(output_span, text);
             if (fast_result != sa_check_result::ok) {
                 auto slow_result = sa_check_naive(output_span, text);
-                ASSERT_EQ(fast_result, slow_result) << "BUG IN SA CHECKER DETECTED!";
+                ASSERT_EQ(bool(fast_result), bool(slow_result)) << "BUG IN SA CHECKER DETECTED!";
                 ASSERT_EQ(fast_result, sa_check_result::ok);
             }
         };
