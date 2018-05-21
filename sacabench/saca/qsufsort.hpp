@@ -19,8 +19,8 @@ namespace sacabench::qsufsort {
         compare_first_character(const util::string_span &_input_text):
             input_text(_input_text) {}
         template<typename sa_index>        
-        int operator ()(const sa_index &a,const sa_index &b) {
-            return input_text[a]-input_text[b];
+        bool operator ()(const sa_index &a,const sa_index &b) const {
+            return ((input_text[a]-input_text[b])<0);
         }
         const util::string_span &input_text;
 
@@ -34,21 +34,20 @@ namespace sacabench::qsufsort {
             
             
         template<typename sa_index>        
-        int operator ()(const sa_index &a,const sa_index &b) {
+        //Warum const?
+        bool operator ()(const sa_index &a,const sa_index &b) const {
             bool a_out_of_bound= a+h>=out_sa.size();
             bool b_out_of_bound= b+h>=out_sa.size();
-
-            
             if(a_out_of_bound&&b_out_of_bound) {
-                return 1;
+                return false;
             }
             else if(a_out_of_bound) {
-                return -1;
+                return true;
             }
             else if(b_out_of_bound) {
-                return 1;
+                return false;
             }
-            return V[a+h]-V[b+h];
+            return (ssize_t(V[a+h]-V[b+h]))<0;
         }     
         util::span<size_t> &out_sa;
         //by making const ref, results propagate in same step!
@@ -59,7 +58,6 @@ namespace sacabench::qsufsort {
     
     class qsufsort {
         public:         
-            
             template<typename sa_index>
             static void construct_sa(util::string_span text,
                                      size_t & alphabet_size,
@@ -79,10 +77,9 @@ namespace sacabench::qsufsort {
                 
                 size_t h = 0;
                 bool is_sorted= false;
-                auto cmp = compare_first_character(text);                
+                auto compare_first_char_function = compare_first_character(text);                
                 //Sort according to first character
-                util::sort::ternary_quicksort::ternary_quicksort(out_sa,cmp);
-                
+                util::sort::ternary_quicksort::ternary_quicksort(out_sa,compare_first_char_function);
                 //Init V and L
                 calculate_additional_arrays(text,out_sa,V,L,h);  
                 ++h;
@@ -95,7 +92,7 @@ namespace sacabench::qsufsort {
                     auto compare_function= compare_ranks(out_sa,V,h);
                     
                     for(size_t counter =0;counter<out_sa.size();) {                      
-                        
+
                         //Sorted Group
                         if(L[counter]<0) {
                             //Skip sorted group
@@ -105,19 +102,16 @@ namespace sacabench::qsufsort {
                         else {
                             //sort unsorted group
                             util::sort::ternary_quicksort::ternary_quicksort(out_sa.slice(counter,counter+L[counter]),compare_function);
-                            update_group_ranks(out_sa,V,L,h,compare_function,counter,counter+L[counter]);
+                            update_group_ranks(out_sa,V,compare_function,counter,counter+L[counter]);
                             counter+=L[counter];
-                            
                         }
 
                     }
-
                     update_L(out_sa,V,L);
+                    h=h*2;
                     is_sorted= (-L[0]==n);
                     
                 }
-
-                //print_that(out_sa);
             }
         private:
             template<typename sa_index>
@@ -179,15 +173,19 @@ namespace sacabench::qsufsort {
                 }
             }
             template<typename sa_index, typename key_func>
-            static void update_group_ranks(util::span<sa_index>& out_sa, util::container<size_t> &V,util::container<ssize_t> &L, size_t h,key_func& cmp, sa_index start, sa_index end) {
+            static void update_group_ranks(util::span<sa_index>& out_sa, util::container<size_t> &V,key_func& cmp, sa_index start, sa_index end) {
+                
+                
+                const auto less = cmp;
+                const auto equal = util::as_equal(cmp);
                 
                 auto group_number= V[out_sa[end-1]];
                 size_t to_decrease=1;
-                for(size_t index = end-2;index>=start&index<end;--index) {
-                    if(cmp(out_sa[index],out_sa[index+1])==0) {
+                for(size_t index = end-2;index>=start&&index<end;--index) {
+                    if(equal(out_sa[index],out_sa[index+1])) {
                         ++to_decrease;
                     }
-                    else if(cmp(out_sa[index],out_sa[index+1])<0) {
+                    else if(less(out_sa[index],out_sa[index+1])) {
                     
                         group_number-=to_decrease;
                         to_decrease=1;
