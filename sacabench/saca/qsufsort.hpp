@@ -14,6 +14,8 @@
 
 namespace sacabench::qsufsort {
     
+    
+    //Compare function for inital sorting
     struct compare_first_character{
     public:
         compare_first_character(const util::string_span &_input_text):
@@ -29,15 +31,15 @@ namespace sacabench::qsufsort {
     struct compare_ranks{
     public:
         template<typename sa_index>        
-        compare_ranks(util::span<sa_index> &_sa,util::container<size_t>  &_V, size_t &_h):
-            out_sa(_sa),V(_V), h(_h) {}
+        compare_ranks(util::container<sa_index>  &_V, size_t &_h):
+            V(_V), h(_h) {}
             
             
         template<typename sa_index>        
         //Warum const?
         bool operator ()(const sa_index &a,const sa_index &b) const {
-            bool a_out_of_bound= a+h>=out_sa.size();
-            bool b_out_of_bound= b+h>=out_sa.size();
+            bool a_out_of_bound= a+h>=V.size();
+            bool b_out_of_bound= b+h>=V.size();
             if(a_out_of_bound&&b_out_of_bound) {
                 return false;
             }
@@ -47,10 +49,9 @@ namespace sacabench::qsufsort {
             else if(b_out_of_bound) {
                 return false;
             }
-            return (ssize_t(V[a+h]-V[b+h]))<0;
+            
+            return (V[a+h]<V[b+h]);
         }     
-        util::span<size_t> &out_sa;
-        //by making const ref, results propagate in same step!
         const util::container<size_t> V;
         const size_t h;
 
@@ -84,12 +85,8 @@ namespace sacabench::qsufsort {
                 calculate_additional_arrays(text,out_sa,V,L,h);  
                 ++h;
                 while(!is_sorted) {
-                    //Update V und L
-                    //Sort unsorted groups
-                    //double h
-                    
-                    //warum kein span für V?
-                    auto compare_function= compare_ranks(out_sa,V,h);
+
+                    auto compare_function= compare_ranks(V,h);
                     
                     for(size_t counter =0;counter<out_sa.size();) {                      
 
