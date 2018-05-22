@@ -67,28 +67,37 @@ namespace sacabench::qsufsort {
                 
                 size_t n = text.size();
                 
+                //catch trivial cases
                 if(n<2) return;
                 
+                //init additional arrays
                 auto V = util::make_container<size_t>(n);
                 auto L = util::make_container<ssize_t>(n);
                 
+                //init out_sa (necessary?)
                 for(size_t i=0;i<n;++i){
                     out_sa[i]=i;
                 }
-                
+                //init h (checked prefix length)
                 size_t h = 0;
+                //for are more readible while condition
                 bool is_sorted= false;
+                //comparing function for inital sort according to first character
                 auto compare_first_char_function = compare_first_character(text);                
                 //Sort according to first character
                 util::sort::ternary_quicksort::ternary_quicksort(out_sa,compare_first_char_function);
-                //Init V and L
-                calculate_additional_arrays(text,out_sa,V,L,h);  
+                //Inital calculation of V and L
+                init_additional_arrays(text,out_sa,V,L,h);  
+                //since we sorted accoring to first letter, increment h
                 ++h;
                 while(!is_sorted) {
 
+                    //comparing function, which compares the (i+h)-th ranks 
                     auto compare_function= compare_ranks(V,h);
                     
-                    for(size_t counter =0;counter<out_sa.size();) {                      
+                    size_t counter = 0;
+                    //jump through array with group sizes
+                    while(counter<out_sa.size()) {                      
 
                         //Sorted Group
                         if(L[counter]<0) {
@@ -99,29 +108,38 @@ namespace sacabench::qsufsort {
                         else {
                             //sort unsorted group
                             util::sort::ternary_quicksort::ternary_quicksort(out_sa.slice(counter,counter+L[counter]),compare_function);
+                            //update ranks within group
                             update_group_ranks(out_sa,V,compare_function,counter,counter+L[counter]);
+                            //jump over updates group
                             counter+=L[counter];
                         }
 
                     }
+                    //finally update group sizes
                     update_L(out_sa,V,L);
+                    //prefix doubling
                     h=h*2;
-                    is_sorted= (-L[0]==n);
+                    
+                    //size_t for supressing warning
+                    is_sorted= (size_t(-L[0])==n);
                     
                 }
-            }
+            }//construct_sa
         private:
             template<typename sa_index>
-            static void calculate_additional_arrays(util::string_span text,util::span<sa_index> out_sa, util::container<size_t> &V,util::container<ssize_t> &L, size_t h) {
+            static void init_additional_arrays(util::string_span text,util::span<sa_index> out_sa, util::container<size_t> &V,util::container<ssize_t> &L, size_t h) {
                 size_t n= out_sa.size();
                 //TODO Remove if use sentinal
                 size_t unsorted_counter=0;
                 size_t sorted_counter = 0;
                 bool sorted_group_started=false;
                 size_t dif=0;
+                //rank of last element in out_sa is always n-1
                 V[out_sa[n-1]]=n-1;
                 for(size_t i=n-2;i<n;--i) {
-                     if(text[out_sa[i+1+h]]==text[out_sa[i+h]]) {
+                    //Calculate V
+                    //if same letter-> same group
+                    if(text[out_sa[i+1+h]]==text[out_sa[i+h]]) {
                      
                          V[out_sa[i]]=V[out_sa[i+1]];
                     }
@@ -130,24 +148,20 @@ namespace sacabench::qsufsort {
                         V[out_sa[i]]=i;
                     }
                     
+                    //Calculate L
                     
-                    //Calculate L                    
+                    //difference of ranks of adjacent suffixes
                     dif=V[out_sa[i+1]]-V[out_sa[i]];
                     
                     //count for last position..
-                    if(dif==0) {
-                        ++unsorted_counter;
-                    }
-                    else
-                    {
-                        unsorted_counter=0;
-                    }
+                    unsorted_counter= (dif==0)?unsorted_counter+1:0;
                     
-                    
+                    //in sorted group
                     if(dif==1) {
                         ++sorted_counter;
                         sorted_group_started=true;
                     }
+                    //when unsorted group begins
                     else
                     {
                         if(sorted_group_started) {
@@ -175,18 +189,21 @@ namespace sacabench::qsufsort {
                 
                 const auto less = cmp;
                 const auto equal = util::as_equal(cmp);
-                
+                //save highest group number of giver group
                 auto group_number= V[out_sa[end-1]];
+                //for counting elements, which are still equal
                 size_t to_decrease=1;
                 for(size_t index = end-2;index>=start&&index<end;--index) {
+                    //if equal, increase counter
                     if(equal(out_sa[index],out_sa[index+1])) {
                         ++to_decrease;
                     }
                     else if(less(out_sa[index],out_sa[index+1])) {
-                    
+                        //if actually less, decrease by number of seen equal elements right behind 
                         group_number-=to_decrease;
                         to_decrease=1;
                     }
+                    //set group number
                     V[out_sa[index]]=group_number;
                 }
             }
@@ -196,6 +213,7 @@ namespace sacabench::qsufsort {
             //To be removed with improvements
             template<typename sa_index>
             static void update_L(util::span<sa_index>& out_sa, util::container<size_t> &V,util::container<ssize_t> &L) {
+                
                 size_t n = out_sa.size();
                 
                 size_t unsorted_counter=0;
@@ -204,25 +222,18 @@ namespace sacabench::qsufsort {
                 size_t dif=0;
                 for(size_t i = n-2;i<n;--i) {
                     
-                                        //Calculate L                    
+                    //Calculate L                    
                     dif=V[out_sa[i+1]]-V[out_sa[i]];
                     
                     //count for last position..
-                    if(dif==0) {
-                        ++unsorted_counter;
-                    }
-                    else
-                    {
-                        unsorted_counter=0;
-                    }
-                    
-                    
+                    unsorted_counter= (dif==0)?unsorted_counter+1:0;
+                                        
                     if(dif==1) {
                         ++sorted_counter;
                         sorted_group_started=true;
-                        
+                        /*
                         //not neccessary, just for testing
-                        L[i+1]=0;
+                        L[i+1]=0;*/
                     }
                     else
                     {
