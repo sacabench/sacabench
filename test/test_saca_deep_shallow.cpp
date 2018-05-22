@@ -8,7 +8,7 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <saca/deep_shallow.hpp>
+#include <saca/deep_shallow/saca.hpp>
 
 using namespace sacabench;
 using ds = sacabench::deep_shallow::saca;
