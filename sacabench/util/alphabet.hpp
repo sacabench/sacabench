@@ -62,6 +62,17 @@ namespace sacabench::util {
         }
     }
 
+    /**\brief Transforms a text such that it uses the effective alphabet
+     * \param input Input text that is going to be transformed
+     *
+     * This method takes the input text and replaces its symbols by consecutive
+     * numbers in the `character` range, holding onto the relative ordering.
+     */
+    alphabet apply_effective_alphabet(string& input) {
+        const alphabet input_alphabet(input);
+        apply_effective_alphabet(input, input_alphabet);
+        return input_alphabet;
+    }
 }
 
 /******************************************************************************/
