@@ -11,14 +11,15 @@
 #include <util/sort/bucketsort.hpp>
 
 TEST(Bucketsort, function_call) {
-    sacabench::util::string input = {'c', 'a', 'a', 'b', 'a', 'c', 'c',
-            'a', 'a', 'b', 'a', 'c', 'a', 'a'};
+    sacabench::util::string input =
+        sacabench::util::make_string("caabaccaabacaa");
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
     sacabench::util::apply_effective_alphabet(input, a);
 
-    sacabench::util::container<uint8_t> sa =
-        sacabench::util::make_container<uint8_t>(input.size());
-    sacabench::util::sort::bucketsort_presort(input, a.size, 2, sa);
+    auto sa = sacabench::util::make_container<uint8_t>(input.size());
+    sacabench::util::span<uint8_t> sa_span = sa;
+    sacabench::util::sort::bucketsort_presort(sacabench::util::span(input),
+            a.size, 2, sa_span);
 
     std::cout << "Suffix Array: ";
     for (auto const& c : sa)
