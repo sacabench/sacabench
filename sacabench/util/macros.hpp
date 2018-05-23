@@ -33,6 +33,9 @@ namespace sacabench::util {
 #define SB_UNLIKELY(c) c
 #endif
 
+/// Prints current file and line number
+#define TRACE() std::cerr << "TRACE @" << __FILE__ << ":" << __LINE__ << "\n";
+
 //! \}
 
 } // namespace util
