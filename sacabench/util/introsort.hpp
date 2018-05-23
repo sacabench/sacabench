@@ -53,7 +53,7 @@ namespace sacabench::util {
             else {
                 --depth_limit;
                 // Compute pivot element using median of three
-                size_t pivot = sort::ternary_quicksort::median_of_three
+                auto pivot = sort::ternary_quicksort::median_of_three
                         (data, compare_fun);
 
                 // Partition data with ternary_quicksort::partition
