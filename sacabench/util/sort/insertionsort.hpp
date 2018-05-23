@@ -5,8 +5,8 @@
  ******************************************************************************/
 
 #pragma once
-#include "span.hpp"
-#include "compare.hpp"
+#include "util/span.hpp"
+#include "util/compare.hpp"
 
 namespace sacabench::util::sort {
 

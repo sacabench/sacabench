@@ -6,7 +6,7 @@
 #pragma once
 
 #include <cmath>
-#include "span.hpp"
+#include "util/span.hpp"
 #include "heapsort.hpp"
 #include "insertionsort.hpp"
 #include "ternary_quicksort.hpp"

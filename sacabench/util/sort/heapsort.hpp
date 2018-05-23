@@ -7,8 +7,8 @@
 #pragma once
 
 #include <cmath>
-#include "span.hpp"
-#include "compare.hpp"
+#include "util/span.hpp"
+#include "util/compare.hpp"
 
 namespace sacabench::util::sort {
 
