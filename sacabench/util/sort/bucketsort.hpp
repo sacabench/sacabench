@@ -27,7 +27,7 @@ namespace sacabench::util::sort {
      *  suffixes which are equal to a given offset.
      * \param input Input text (of length n) whose suffixes are to be sorted.
      *  The input text has to use an effective alphabet with characters
-     *  {1, ..., m}. 
+     *  {1, ..., m}.
      * \param alphabet_size The size of the alphabet which is used by the input
      *  text.
      * \param depth The offset which is used to match suffixes into buckets.
@@ -40,9 +40,9 @@ namespace sacabench::util::sort {
      * not necessarily sorted.
      */
     template <typename index_type>
-        void bucketsort_presort(const string_span& input,
-                const std::size_t alphabet_size, const std::size_t depth,
-                span<index_type>& sa) {
+        void bucketsort_presort(const string_span input,
+                const size_t alphabet_size, const size_t depth,
+                const span<index_type> sa) {
             DCHECK_EQ(input.size(), sa.size());
             DCHECK_LE(depth, sa.size());
 
