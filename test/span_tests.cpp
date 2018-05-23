@@ -28,7 +28,6 @@ void test_const_abstract_span(T const& m) {
 template < typename T >
 void test_abstract_span(T const& m) {
     test_const_abstract_span(m);
-    m.fill();
 }
 
 void test_string_span() {

@@ -117,17 +117,18 @@ namespace sacabench::util::sort {
     /// This is the recursiv helper function for the function bucket sort.
     /// Do not use this function directly, instead use
     /// void bucket_sort(container<string>& strings, size_t maxDepth, container<string>& result).
-    void bucket_sort_recursiv(container<string>& strings, size_t currentDepth, size_t maxDepth, container<string>& result) {
+    void bucket_sort_recursiv(span<string const> const strings, size_t currentDepth, size_t maxDepth, span<string> result) {
+        DCHECK_EQ(strings.size(), result.size());
 
         // check end of recursion
         if (currentDepth == maxDepth) {
-            for (string currentString : strings) {
-                result.push_back(currentString);
+            for (size_t i = 0; i < strings.size(); i++) {
+                result[i] = strings[i];
             }
             return;
         }
         if (strings.size() == 1) {
-            result.push_back(strings[0]);
+            result[0] = strings[0];
             return;
         }
         if (strings.size() == 0) {
@@ -135,15 +136,25 @@ namespace sacabench::util::sort {
         }
 
         // build new buckets
-        container<container<string>> newBuckets = make_container<container<string>>(256);
-        for (string currentString : strings) {
-            char currentChar = currentString.at(currentDepth);
+        // TODO: Don't keep alphabet size hardcoded to 256 here
+        container<std::vector<string>> newBuckets = make_container<std::vector<string>>(256);
+        for (string const& currentString : strings) {
+            util::character currentChar = currentString.at(currentDepth);
             newBuckets[currentChar].push_back(currentString);
         }
 
         // new recursion
-        for (container<string> bucket : newBuckets) {
-            bucket_sort_recursiv(bucket, currentDepth + 1, maxDepth, result);
+        for (std::vector<string>& bucket : newBuckets) {
+            // Split the current result slice like this:
+            // [              result              ]
+            // =>
+            // [ result_for_this_bucket ][ result ]
+            // |-     bucket.size()    -|
+
+            auto result_for_this_bucket = result.slice(0, bucket.size());
+            result = result.slice(bucket.size());
+
+            bucket_sort_recursiv(bucket, currentDepth + 1, maxDepth, result_for_this_bucket);
         }
     }
 
@@ -156,7 +167,8 @@ namespace sacabench::util::sort {
      * The result contains all buckets in sorted ascending order.
      * The strings within each bucket are not necessarily sorted.
      */
-    void bucket_sort(container<string>& strings, size_t maxDepth, container<string>& result) {
+    void bucket_sort(span<string const> const strings, size_t maxDepth, span<string> result) {
+        DCHECK_EQ(strings.size(), result.size());
         bucket_sort_recursiv(strings, 0, maxDepth, result);
     }
 }
