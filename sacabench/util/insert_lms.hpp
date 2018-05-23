@@ -18,7 +18,7 @@ namespace sacabench::util {
 
     void initialise_lms_checker_onfly(string_span t_0, string_span alph) {
 
-        initialize_type_extraction_onfly(t_0, alph, true);
+        initialize_type_extraction_rtl_onfly(t_0);
         current_type = get_next_type_onfly();
     }
 
