@@ -15,7 +15,7 @@ using namespace sacabench;
 using ds = sacabench::deep_shallow::saca;
 
 TEST(deep_shallow, simple) {
-    auto input = "bacca"_s;
+    util::string input = util::make_string("bacca");
     auto sa = util::make_container<size_t>(input.size());
     for(size_t i = 0; i < input.size(); ++i) {
         sa[i] = i;
