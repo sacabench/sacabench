@@ -15,23 +15,23 @@ template <typename suffix_index_type>
 class blind_node {
 public:
     blind_node(suffix_index_type _content) : content(_content) {
-        children = make_container<>(0);
+        children = util::make_container<suffix_index_type>(0);
     }
 
 private:
     const suffix_index_type content;
-    std::container<blind_node*> children;
+    util::container<blind_node*> children;
 };
 
 template <typename suffix_index_type>
 class blind_trie {
 public:
-    blind_trie() {}
+    inline blind_trie() {}
 
-    void insert(const suffix_index_type val) {
+    inline void insert(const suffix_index_type val) {
         if (root.has_value()) {
             // Insert recursively.
-            root.insert(val);
+            root->insert(val);
         } else {
             // Insert new root node.
             blind_node node(val);
@@ -39,16 +39,16 @@ public:
         }
     }
 
-    suffix_index_type next(size_t index) {}
+    inline suffix_index_type next(size_t index) {}
 
 private:
-    std::optional<blind_node> root;
+    std::optional<blind_node<suffix_index_type>> root;
 };
 
 template <typename suffix_index_type>
-void blind_sort(span<suffix_index_type> array) {
-    // Empty blind trie
-    blind_trie bt;
+inline void blind_sort(const span<suffix_index_type> array) {
+    // Create empty blind trie
+    blind_trie<suffix_index_type> bt;
 
     // Insert all suffixes
     for (suffix_index_type elem : array) {

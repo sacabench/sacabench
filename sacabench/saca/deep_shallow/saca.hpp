@@ -7,7 +7,6 @@
 #pragma once
 
 #include <util/sa_check.hpp>
-#include <util/sort/bucketsort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -16,9 +15,11 @@
 namespace sacabench::deep_shallow {
 class saca {
 public:
+    /// \brief Use Deep Shallow Sorting to construct the suffix array.
     template <typename sa_index_type>
-    static void construct_sa(util::string_span text, size_t alphabet_size,
-                             span<sa_index_type> sa) {
+    inline static void construct_sa(util::string_span text,
+                                    size_t alphabet_size,
+                                    span<sa_index_type> sa) {
         saca_run<sa_index_type> r(text, alphabet_size, sa);
         DCHECK_MSG(util::sa_check(sa, text),
                    "Das Suffixarray, welches von Deep-Shallow berechnet wurde, "

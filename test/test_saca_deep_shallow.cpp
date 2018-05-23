@@ -5,6 +5,7 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
+#include <util/alphabet.hpp>
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -14,9 +15,14 @@ using namespace sacabench;
 using ds = sacabench::deep_shallow::saca;
 
 TEST(deep_shallow, simple) {
-    auto input = "hallo"_s;
+    auto input = "bacca"_s;
     auto sa = util::make_container<size_t>(input.size());
+    for(size_t i = 0; i < input.size(); ++i) {
+        sa[i] = i;
+    }
 
-    ds::construct_sa<size_t>(input, 0, sa);
+    util::apply_effective_alphabet(input, util::alphabet(input));
+
+    ds::construct_sa<size_t>(input, 3, sa);
     ASSERT_TRUE(true);
 }
