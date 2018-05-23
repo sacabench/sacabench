@@ -11,6 +11,9 @@
 
 namespace sacabench::deep_shallow {
 
+template <typename T>
+using span = util::span<T>;
+
 template <typename suffix_index_type>
 class blind_node {
 public:

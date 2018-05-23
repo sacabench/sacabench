@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <util/bucket_size.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/span.hpp>
@@ -17,7 +16,9 @@
 
 namespace sacabench::deep_shallow {
 
-using u_char = sacabench::util::character;
+template <typename T>
+using span = util::span<T>;
+using u_char = util::character;
 
 /// \brief We use blind sort on sets which are smaller than this threshold.
 constexpr auto BLIND_SORT_THRESHOLD = 100;
@@ -41,7 +42,10 @@ private:
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
         this->bd = bucket_data_container<sa_index_type>(alphabet_size);
-        const auto bucket_bounds = util::get_bucket_sizes(input_text);
+        const util::container<util::sort::bucket> bucket_bounds =
+            util::sort::bucketsort_presort(input_text, alphabet_size, 2,
+                                           suffix_array);
+        bd.set_bucket_bounds(bucket_bounds);
     }
 
     /// \brief Checks, if all buckets have been sorted.
@@ -105,9 +109,18 @@ private:
             const auto alpha = unsorted_bucket.first;
             const auto beta = unsorted_bucket.second;
 
+            // Mark small buckets as sorted.
+            if (bd.size_of_bucket(alpha, beta) < 2) {
+                bd.mark_bucket_sorted(alpha, beta);
+                continue;
+            }
+
             // Get bucket bounds.
             auto bucket_start = bd.start_of_bucket(alpha, beta);
             auto bucket_end = bd.end_of_bucket(alpha, beta);
+
+            ASSERT_LT(bucket_start, bucket_end);
+
             const span<sa_index_type> bucket =
                 suffix_array.slice(bucket_start, bucket_end);
 

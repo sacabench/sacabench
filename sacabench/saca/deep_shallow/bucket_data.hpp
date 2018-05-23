@@ -12,6 +12,8 @@
 
 namespace sacabench::deep_shallow {
 
+template <typename T>
+using span = util::span<T>;
 using u_char = util::character;
 
 /// \brief Data on a single bucket. Contains the starting position in the suffix
@@ -53,17 +55,12 @@ public:
         DCHECK_LT(b, alphabet_size);
     }
 
-    inline void set_bucket_start(const u_char a,
-                                 const size_t starting_position) const {
-        bounds[a * alphabet_size].starting_position = starting_position;
-    }
-
-    /// \brief Assumes, that starting position is relative to the starting
-    ///        position of the super-bucket.
-    inline void set_subbucket_start(const u_char a, const u_char b,
-                                    const size_t starting_position) const {
-        bounds[a * alphabet_size + b].starting_position =
-            starting_position + bounds[a * alphabet_size];
+    inline void
+    set_bucket_bounds(const util::container<util::sort::bucket> bucket_bounds) {
+        for (size_t i = 0; i < bucket_bounds.size(); ++i) {
+            std::cout << bucket_bounds[i].position << std::endl;
+            bounds[i].starting_position = bucket_bounds[i].position;
+        }
     }
 
     inline bool is_bucket_sorted(const u_char a, const u_char b) const {
@@ -76,20 +73,22 @@ public:
         bounds[a * alphabet_size + b].is_sorted = true;
     }
 
-    inline sa_index_type start_of_bucket(const u_char a,
-                                         const u_char b) const {
+    inline sa_index_type start_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
         return bounds[a * alphabet_size + b].starting_position;
     }
 
-    inline sa_index_type end_of_bucket(const u_char a,
-                                       const u_char b) const {
+    inline sa_index_type end_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        return bounds[a * alphabet_size + b + 1].starting_position;
+        if (b == alphabet_size - 1) {
+            return bounds.size();
+        } else {
+            const size_t next_index = a * alphabet_size + b + 1;
+            return bounds[next_index].starting_position;
+        }
     }
 
-    inline sa_index_type size_of_bucket(const u_char a,
-                                        const u_char b) const {
+    inline sa_index_type size_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
         return end_of_bucket(a, b) - start_of_bucket(a, b);
     }
