@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include "util/span.hpp"
+#include "util/bits.hpp"
 #include "heapsort.hpp"
 #include "insertionsort.hpp"
 #include "ternary_quicksort.hpp"
@@ -94,7 +95,7 @@ namespace sacabench::util::sort {
             (span<T> data, F compare_fun = F()) {
         // Max. number of allowed iterations: 2*log(size)
         // due to empirically good results
-        size_t max_iterations = 2 * floor(log(data.size()));
+        size_t max_iterations = 2 * floor_log2(data.size());
         introsort_internal(data, max_iterations, compare_fun);
 
         // Call insertion sort at the end - finally sorts the intervals divided by
