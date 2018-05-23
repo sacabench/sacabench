@@ -23,6 +23,8 @@ namespace sacabench::nzSufSort {
                 // Suppress Warnings
                 (void) alphabet_size; 
                 
+                // TODO: Sentinel am Ende einfügen (lassen)
+                // empty string
                 if (text.size() == 0) { return; }
                                          
                 std::cout << "Running nzSufSort" << std::endl;
@@ -40,85 +42,89 @@ namespace sacabench::nzSufSort {
                     if (s_type) { count_s_type_pos++; }
                 }
                 
-                std::cout << "Running nzSufSort" << std::endl;
                 //TODO
                 DCHECK_MSG(count_s_type_pos <= text.size()/2, 
                     "There are more S-Type-Positions than L-Type-Positions");
                 
                 // calculate position arrays of s-type-positions
-                size_t q = count_s_type_pos/3 + (count_s_type_pos % 3 != 0);
-                util::span<sa_index> p_0 = out_sa.slice(0, q);
-                util::span<sa_index> p_12 = out_sa.slice(q+1, count_s_type_pos);
-                util::span<sa_index> u = out_sa.slice(count_s_type_pos+1, count_s_type_pos+q);
-                util::span<sa_index> v = out_sa.slice(count_s_type_pos+q+1, count_s_type_pos+2*q);
-                util::span<sa_index> w = out_sa.slice(count_s_type_pos+2*q+1, count_s_type_pos+3*q);
+                size_t mod_0 = count_s_type_pos/3 + (count_s_type_pos % 3 > 0);
+                size_t mod_1 = count_s_type_pos/3 + (count_s_type_pos % 3 > 1);
+                size_t mod_2 = count_s_type_pos/3;
+                util::span<sa_index> p_0 = out_sa.slice(0, mod_0);
+                util::span<sa_index> p_12 = out_sa.slice(mod_0, count_s_type_pos);
+                util::span<sa_index> u = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
+                util::span<sa_index> v = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1);
+                util::span<sa_index> w = out_sa.slice(count_s_type_pos+mod_0+mod_1, count_s_type_pos+mod_0+mod_1+mod_2);
                 std::cout << "Running nzSufSort" << std::endl;
-                calculate_position_arrays(text, p_0, p_12, u, v, w);
+                calculate_position_arrays(text, p_0, p_12, u, v, w, count_s_type_pos);
                 
+                //check for correct position arrays
                 std::cout << "p_0" << std::endl;
                 for (size_t i = 0; i < p_0.size(); i++) {
                     std::cout << i << ": " << p_0[i] << std::endl;
                 }
-                
                 std::cout << "p_12" << std::endl;
                 for (size_t i = 0; i < p_12.size(); i++) {
                     std::cout << i << ": " << p_12[i] << std::endl;
                 }
+                
+                //TODO sort p_0 and p_12 with radix sort
+                struct Comp {
+                    Comp(util::string_span& text) { this->text = text; }
+                    bool comp () (size_t i, size_t j) { 
+                        util::string_span t_1 = retrieve_s_string(text, i, 3);
+                        util::string_span t_2 = retrieve_s_string(text, j, 3);
+                        return t_1 < t_2;
+                    }
+
+                    util::string_span text;
+                };
+                std::sort(p_0.begin(), p_0.end(), Comp(text));
+                std::sort(p_12.begin(), p_12.end(), Comp(text));
             }
           
         private:
             template<typename T, typename sa_index>
             static void calculate_position_arrays(const T& text, 
                     const util::span<sa_index>& p_0, const util::span<sa_index>& p_12, 
-                    const util::span<sa_index>& u, const util::span<sa_index>& v, 
-                    const util::span<sa_index>& w) {
-                u[0] = text.size()-1;     
-                     
-                size_t count_u = 1;
-                size_t count_v = 0;
-                size_t count_w = 0;
-                size_t mod = 1;
+                    const util::span<sa_index>& mod_0, const util::span<sa_index>& mod_1, 
+                    const util::span<sa_index>& mod_2, size_t count_s_type_pos) {
+                // 
+                size_t mod = (count_s_type_pos-1) % 3;  
+                size_t count_mod_0 = 0;
+                size_t count_mod_1 = 0;
+                size_t count_mod_2 = 0;  
+
+                // execute logic for sentinel
+                if (mod == 0) { mod_0[count_mod_0++] = text.size()-1; }
+                else if (mod == 1) { mod_1[count_mod_1++] = text.size()-1; }
+                else { mod_2[count_mod_2++] = text.size()-1; }   
+                mod = (mod+1) % 3;
                 bool s_type = true;
-                for (size_t i = text.size()-2; i >= 0; i--) {
-                    if (text[i] > text[i+1]) { s_type = false; }
-                    else if (text[i] < text[i+1]) { s_type = true; }
+                
+                // save s-type-positions in the correct arrays
+                for (size_t i = text.size()-1; i > 0; i--) {
+                    if (text[i-1] > text[i]) { s_type = false; }
+                    else if (text[i-1] < text[i]) { s_type = true; }
                     
                     if (s_type) {
-                        if (mod == 0) { u[count_u++] = i; }
-                        else if (mod == 1) { v[count_v++] = i; }
-                        else { w[count_w++] = i; }
+                        if (mod == 0) { mod_0[count_mod_0++] = i-1; }
+                        else if (mod == 1) { mod_1[count_mod_1++] = i-1; }
+                        else { mod_2[count_mod_2++] = i-1; }
                         mod = (mod+1) % 3;
                     }
                 }
                 
-                util::span<sa_index> mod_0;
-                util::span<sa_index> mod_1;
-                util::span<sa_index> mod_2;
-                // when last position was added it was mod == 2
-                if (mod == 0) {
-                    mod_0 = w.slice(0, count_w-1);
-                    mod_1 = u.slice(0, count_u-1);
-                    mod_2 = v.slice(0, count_v-1);
-                }
-                else if (mod == 1) {
-                    mod_0 = u.slice(0, count_u-1);
-                    mod_1 = v.slice(0, count_v-1);
-                    mod_2 = w.slice(0, count_w-1);
-                }
-                else {
-                    mod_0 = v.slice(0, count_v-1);
-                    mod_1 = w.slice(0, count_w-1);
-                    mod_2 = u.slice(0, count_u-1);
-                }
-                
+                // arrays must be reverted, because we started at the last index
+                // TODO: since we know the memory sizes, we can save the positions directly at the right index
                 revert(mod_0);
                 revert(mod_1);
                 revert(mod_2);
                 
+                //copy positions in p_0 and p_12
                 for (size_t i = 0; i < p_0.size(); i++) {
                     p_0[i] = mod_0[i];
                 }
-                
                 size_t count_p_12 = 0;
                 for (size_t i = 0; i < mod_1.size(); i++) {
                     p_12[count_p_12++] = mod_1[i];
@@ -128,9 +134,21 @@ namespace sacabench::nzSufSort {
                 }
             }
             
+            template<typename T, typename C>
+            static util::span<const C> retrieve_s_string(T& text, size_t s_pos, size_t count) {
+                //TODO: Check for "out of bounds"
+                //TODO: Concatenate count s_stringss
+                if (text[s_pos] == text[s_pos+1]) {
+                    return span<const C>(&text[s_pos], 2);
+                }
+                else {
+                    //TODO
+                }
+            }
+            
             template<typename A>
             static void revert(const A& a) {
-                for (size_t i = 0; i <= a.size()/2; i++) {
+                for (size_t i = 0; i < a.size()/2; i++) {
                     auto tmp = a[i];
                     a[i] = a[a.size()-1-i];
                     a[a.size()-1-i] = tmp;
