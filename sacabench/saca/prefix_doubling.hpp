@@ -177,7 +177,7 @@ struct prefix_doubling_impl {
             size_t const k_length = 1ull << k;
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(util::span(S));
+            sorting_algorithm::sort(S.slice());
 
             // Rename the S tuples into P
             bool only_unique = name(S, P);
@@ -194,7 +194,7 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                util::span(P), util::compare_key([k](auto value) {
+                P.slice(), util::compare_key([k](auto value) {
                     size_t const i = value.second;
                     auto const anti_k = util::bits_of<size_t> - k;
                     return (i << anti_k) | (i >> k);
@@ -271,8 +271,8 @@ struct prefix_doubling_impl {
 
         inline auto extend_u_by(size_t size) {
             auto r =
-                util::span(m_u).slice(m_u_span.size(), m_u_span.size() + size);
-            m_u_span = util::span(m_u).slice(0, m_u_span.size() + size);
+                m_u.slice(m_u_span.size(), m_u_span.size() + size);
+            m_u_span = m_u.slice(0, m_u_span.size() + size);
             return r;
         }
 
@@ -280,21 +280,21 @@ struct prefix_doubling_impl {
         inline void reset_s() { m_s_span = util::span<names_tuple>(); }
 
         inline void resize_u(size_t size) {
-            m_u_span = util::span(m_u).slice(0, size);
+            m_u_span = m_u.slice(0, size);
         }
 
         inline void append_f(name_tuple v) {
-            m_f_span = util::span(m_f).slice(0, m_f_span.size() + 1);
+            m_f_span = m_f.slice(0, m_f_span.size() + 1);
             m_f_span.back() = v;
         }
 
         inline void append_p(name_tuple v) {
-            m_p_span = util::span(m_p).slice(0, m_p_span.size() + 1);
+            m_p_span = m_p.slice(0, m_p_span.size() + 1);
             m_p_span.back() = v;
         }
 
         inline void append_s(names_tuple v) {
-            m_s_span = util::span(m_s).slice(0, m_s_span.size() + 1);
+            m_s_span = m_s.slice(0, m_s_span.size() + 1);
             m_s_span.back() = v;
         }
     };
