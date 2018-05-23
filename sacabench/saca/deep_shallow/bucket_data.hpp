@@ -8,6 +8,7 @@
 
 #include <util/container.hpp>
 #include <util/string.hpp>
+#include <util/uint_types.hpp>
 
 namespace sacabench::deep_shallow {
 
@@ -20,6 +21,8 @@ struct bucket_information {
     sa_index_type starting_position;
     bool is_sorted;
 };
+
+static_assert(sizeof(bucket_information<util::uint40>) <= sizeof(uint64_t));
 
 /// \brief A class which contains for every character combination the bucket
 ///        start and end positions.
@@ -35,46 +38,60 @@ private:
 public:
     inline bucket_data_container() : bucket_data_container(0) {}
 
-    inline bucket_data_container(size_t _alphabet_size)
+    inline bucket_data_container(const size_t _alphabet_size)
         : alphabet_size(_alphabet_size + 1) {
         const auto n = alphabet_size * alphabet_size;
 
-        // Check if `n` overflowed.
-        DCHECK_GE(n, _alphabet_size);
+        // Check if `n` overflowed
+        DCHECK_GE(n, alphabet_size);
 
         bounds = util::make_container<bucket_information<sa_index_type>>(n);
     }
 
-    inline void check_bounds(const u_char alpha, const u_char beta) const {
-        const size_t a = alpha;
-        const size_t b = beta;
+    inline void check_bounds(const u_char a, const u_char b) const {
         DCHECK_LT(a, alphabet_size);
         DCHECK_LT(b, alphabet_size);
     }
 
-    inline sa_index_type start_of_bucket(u_char alpha, u_char beta) const {
-        check_bounds(alpha, beta);
-        return bounds[alpha * alphabet_size + beta].starting_position;
+    inline void set_bucket_start(const u_char a,
+                                 const size_t starting_position) const {
+        bounds[a * alphabet_size].starting_position = starting_position;
     }
 
-    inline sa_index_type end_of_bucket(u_char alpha, u_char beta) const {
-        check_bounds(alpha, beta);
-        return bounds[alpha * alphabet_size + beta + 1].starting_position;
+    /// \brief Assumes, that starting position is relative to the starting
+    ///        position of the super-bucket.
+    inline void set_subbucket_start(const u_char a, const u_char b,
+                                    const size_t starting_position) const {
+        bounds[a * alphabet_size + b].starting_position =
+            starting_position + bounds[a * alphabet_size];
     }
 
-    inline sa_index_type size_of_bucket(u_char alpha, u_char beta) const {
-        check_bounds(alpha, beta);
-        return end_of_bucket(alpha, beta) - start_of_bucket(alpha, beta);
+    inline bool is_bucket_sorted(const u_char a, const u_char b) const {
+        check_bounds(a, b);
+        return bounds[a * alphabet_size + b].is_sorted;
     }
 
-    inline bool is_bucket_sorted(u_char alpha, u_char beta) const {
-        check_bounds(alpha, beta);
-        return bounds[alpha * alphabet_size + beta].is_sorted;
+    inline void mark_bucket_sorted(const u_char a, const u_char b) {
+        check_bounds(a, b);
+        bounds[a * alphabet_size + b].is_sorted = true;
     }
 
-    inline void mark_bucket_sorted(u_char alpha, u_char beta) {
-        check_bounds(alpha, beta);
-        bounds[alpha * alphabet_size + beta].is_sorted = true;
+    inline sa_index_type start_of_bucket(const u_char a,
+                                         const u_char b) const {
+        check_bounds(a, b);
+        return bounds[a * alphabet_size + b].starting_position;
+    }
+
+    inline sa_index_type end_of_bucket(const u_char a,
+                                       const u_char b) const {
+        check_bounds(a, b);
+        return bounds[a * alphabet_size + b + 1].starting_position;
+    }
+
+    inline sa_index_type size_of_bucket(const u_char a,
+                                        const u_char b) const {
+        check_bounds(a, b);
+        return end_of_bucket(a, b) - start_of_bucket(a, b);
     }
 };
 } // namespace sacabench::deep_shallow

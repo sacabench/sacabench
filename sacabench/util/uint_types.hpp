@@ -22,7 +22,7 @@
 #include <limits>
 #include <ostream>
 
-namespace util {
+namespace sacabench::util {
 
 /*!
  * Construct an 40-bit or 48-bit unsigned integer stored in five or six bytes.
@@ -261,9 +261,9 @@ namespace std {
 
 //! template class providing some numeric_limits fields for UIntPair types.
 template <typename HighType>
-class numeric_limits<util::UIntPair<HighType>> {
+class numeric_limits<sacabench::util::UIntPair<HighType>> {
 public:
-    using UIntPair = util::UIntPair<HighType>;
+    using UIntPair = sacabench::util::UIntPair<HighType>;
 
     //! yes we have information about UIntPair
     static const bool is_specialized = true;

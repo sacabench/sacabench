@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <util/bucket_size.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/span.hpp>
@@ -36,23 +37,23 @@ private:
     span<sa_index_type> suffix_array;
     bucket_data_container<sa_index_type> bd;
 
+    /// \brief Sorts the suffix arrays in suffix_array by the first two
+    ///        characters. Then saves the bucket bounds to `bd`.
+    inline void bucket_sort() {
+        this->bd = bucket_data_container<sa_index_type>(alphabet_size);
+        const auto bucket_bounds = util::get_bucket_sizes(input_text);
+    }
+
     /// \brief Checks, if all buckets have been sorted.
     inline bool are_there_unsorted_buckets() {
-        for (u_char i = 0; i <= alphabet_size; ++i) {
-            for (u_char j = 0; j <= alphabet_size; ++j) {
-                if (!bd.is_bucket_sorted(i, j)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return get_smallest_unsorted_bucket().has_value();
     }
 
     /// \brief Returns either a character combination, for which the bucket has
     ///        has not yet been sorted, or std::nullopt.
     inline std::optional<std::pair<u_char, u_char>>
     get_smallest_unsorted_bucket() {
-        for (u_char i = 0; i <= alphabet_size; ++i) {
+        for (u_char i = 1; i <= alphabet_size; ++i) {
             for (u_char j = 0; j <= alphabet_size; ++j) {
                 if (!bd.is_bucket_sorted(i, j)) {
                     return std::optional(std::make_pair(i, j));
@@ -98,7 +99,6 @@ private:
 
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
-        // Sort all buckets.
         while (are_there_unsorted_buckets()) {
             // Find the smallest unsorted bucket.
             const auto unsorted_bucket = get_smallest_unsorted_bucket().value();
@@ -120,15 +120,16 @@ private:
 public:
     inline saca_run(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
-        : input_text(text), alphabet_size(_alphabet_size) {
+        : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
+          bd() {
+
         // Fill sa with unsorted suffix array.
         for (size_t i = 0; i < sa.size(); ++i) {
             sa[i] = i;
         }
 
         // Use bucket sort to sort sa by the first two characters.
-        // Then save the bucket bounds to a bucket_bounds object with name bb.
-        bd = bucket_data_container<sa_index_type>(_alphabet_size);
+        bucket_sort();
 
         // Sort all buckets iteratively.
         sort_all_buckets();

@@ -5,9 +5,9 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
-#include "../sacabench/util/uint_types.hpp"
+#include <util/uint_types.hpp>
 
 TEST(uint40, simple_test) {
-    using util::uint40;
+    using sacabench::util::uint40;
     uint40 a = 0;
 }
