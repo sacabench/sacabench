@@ -38,6 +38,8 @@ set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG")
 # Add custom cmake extensions
 include(cmakemodules/git_submodule_subdirectories.cmake)
 
+set(BUILD_GMOCK OFF CACHE BOOL "")
+set(BUILD_GTEST ON CACHE BOOL "")
 git_submodule_subdirectory(external/gtest)
 add_subdirectory(sacabench)
 add_subdirectory(test)

@@ -7,8 +7,11 @@
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
 //#include "saca/deep_shallow.hpp"
+#include "saca/bucket_pointer_refinement.hpp"
 
 #include "util/saca.hpp"
+
+namespace sacabench::saca {
 
 using saca_example1 = sacabench::example1::example1;
 SACA_REGISTER("Example1", "Description of Example1", saca_example1)
@@ -19,5 +22,12 @@ SACA_REGISTER("Example2", "Description of Example2", saca_example2)
 // fixme?
 //using deep_shallow = sacabench::deep_shallow::saca;
 //SACA_REGISTER("DeepShallow", "Deep Shallow SACA by Manzini and Ferragina", deep_shallow)
+
+using saca_bucket_pointer_refinement =
+    sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
+SACA_REGISTER("Bucket-Pointer Refinement",
+        "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
+        saca_bucket_pointer_refinement)
+}
 
 /******************************************************************************/

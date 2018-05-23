@@ -19,7 +19,7 @@ void std_sort(container<T>& data, Compare comp) {
 }
 
 template <typename T, typename Compare>
-void std_sort(span<T>& data, Compare comp) {
+void std_sort(span<T> data, Compare comp) {
     std::sort(std::begin(data), std::end(data), comp);
 }
 

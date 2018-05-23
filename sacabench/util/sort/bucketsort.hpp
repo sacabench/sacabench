@@ -17,11 +17,10 @@ namespace sacabench::util::sort {
      * position of the leftmost index inside the bucket. The rightmost index
      * can be derived by `position + count - 1`.
      */
-    template <typename index_type>
-        struct bucket {
-            std::size_t count = 0;
-            index_type position = 0;
-        };
+    struct bucket {
+        std::size_t count = 0;
+        std::size_t position = 0;
+    };
 
     /**\brief Divides the suffix array into buckets with each bucket containing
      *  suffixes which are equal to a given offset.
@@ -38,10 +37,13 @@ namespace sacabench::util::sort {
      * suffix array. After a call of the function, the suffix array contains all
      * buckets in sorted ascending order. The suffixes within each bucket are
      * not necessarily sorted.
+     *
+     * \return Size and starting position for each bucket in the suffix array.
      */
     template <typename index_type>
-        void bucketsort_presort(const string& input, const std::size_t alphabet_size,
-                const std::size_t depth, container<index_type>& sa) {
+        container<bucket> bucketsort_presort(const string_span& input,
+                const std::size_t alphabet_size, const std::size_t depth,
+                span<index_type>& sa) {
             DCHECK_EQ(input.size(), sa.size());
             DCHECK_LE(depth, sa.size());
 
@@ -49,8 +51,7 @@ namespace sacabench::util::sort {
             // the real alphabet includes $, so it has one more character
             const std::size_t real_alphabet_size = alphabet_size + 1;
             const std::size_t bucket_count = pow(real_alphabet_size, depth);
-            container<bucket<index_type>> buckets =
-                make_container<bucket<index_type>>(bucket_count);
+            auto buckets = make_container<bucket>(bucket_count);
 
             // calculate code for an (imaginary) 0-th suffix
             std::size_t initial_code = 0;
@@ -96,7 +97,7 @@ namespace sacabench::util::sort {
                 code %= code_modulo;
                 code *= real_alphabet_size;
                 code += input[index + depth - 1];
-                bucket<index_type>& current_bucket = buckets[code];
+                bucket& current_bucket = buckets[code];
                 sa[current_bucket.position] = index;
                 ++current_bucket.position;
             }
@@ -107,10 +108,17 @@ namespace sacabench::util::sort {
                 // induce code for nth suffix from (n-1)th suffix
                 code %= code_modulo;
                 code *= real_alphabet_size;
-                bucket<index_type>& current_bucket = buckets[code];
+                bucket& current_bucket = buckets[code];
                 sa[current_bucket.position] = index;
                 ++current_bucket.position;
             }
+
+            // determine leftmost index of each bucket
+            for (auto& bucket : buckets) {
+                bucket.position -= bucket.count;
+            }
+
+            return buckets;
         }
 
     /// This is the recursiv helper function for the function bucket sort.
