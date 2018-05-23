@@ -9,15 +9,14 @@
 #include "span.hpp"
 #include "heapsort.hpp"
 #include "insertionsort.hpp"
-#include "sort/ternary_quicksort.hpp"
+#include "ternary_quicksort.hpp"
 
-//TODO: Add quicksort to base
 /** \file introsort.hpp
  * \brief Implements the introspective sort sorting method. (see Introspective
  * Sorting and Selection Algorithms, David R. Musser)
  */
 
-namespace sacabench::util {
+namespace sacabench::util::sort {
 
     // Change threshold to empirically relevant value (e.g. 8 or 15)
     // Value of 2 for testing

@@ -8,7 +8,7 @@
 #include "span.hpp"
 #include "compare.hpp"
 
-namespace sacabench::util{
+namespace sacabench::util::sort {
 
   template<typename T, typename F = std::less<T>> void insertion_sort(span<T> A, F compare_fun = F()){
       //Adapter for "a > b"

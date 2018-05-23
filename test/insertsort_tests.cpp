@@ -7,7 +7,7 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
-#include <util/insertionsort.hpp>
+#include <util/sort/insertionsort.hpp>
 #include <util/container.hpp>
 
 using namespace sacabench::util;

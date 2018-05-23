@@ -10,7 +10,7 @@
 #include "span.hpp"
 #include "compare.hpp"
 
-namespace sacabench::util {
+namespace sacabench::util::sort {
 
     /**
      * \file heapsort.hpp
