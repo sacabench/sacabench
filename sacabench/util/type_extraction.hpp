@@ -24,8 +24,6 @@ namespace sacabench::util {
 
     /**\Initialise the inplace L-S-TypeExtraction which you can call with "get_next_type_onfly"
     * \param t_0 input text
-    * \param alph alphabet
-    * \param from_right whether you want to iterate the text from right or from left
     */
     void initialize_type_extraction_rtl_onfly(string_span t_0) {
 
@@ -53,6 +51,7 @@ namespace sacabench::util {
         return last_type_global;
     }
 
+    /** Returns a type b (L=1, S=0) and a number n so that the next n characters have type b */
     std::tuple<bool, size_t> get_type_ltr_dynamic(string_span t_0, size_t index)
     {
         size_t same_char_amount = 0;
@@ -68,13 +67,17 @@ namespace sacabench::util {
         }
 
         bool const right_before_sentinel = (index+same_char_amount-1 == t_0.size() - 1);
-        character next_different_char = t_0_global[index + same_char_amount];
+        character next_different_char = t_0[index + same_char_amount];
 
         return std::make_tuple((right_before_sentinel ||
             current_char >  next_different_char), same_char_amount);
     }
 
-
+    /**\Returns the type (L=1, S=0) of the character on the given index
+    * \param t_0 input text
+    * \param index index of the character
+    * \param right_type type of the character on the right of the current index
+    */
     bool get_type_rtl_dynamic(string_span t_0, size_t index, bool right_type)
     {
         // sentinel is never included in actual string t_0!!
@@ -82,8 +85,8 @@ namespace sacabench::util {
         bool const right_before_sentinel = (index == t_0.size()-1);
 
         return (right_before_sentinel ||		                                    // Symbol is not sentinel
-            (t_0[index] > t_0_global[index + 1] || 	                        // Symbol is larger than following Symbol OR
-            (t_0_global[index] == t_0_global[index + 1] && right_type)));	// Symbol is equal to following Symbol
+            (t_0[index] > t_0[index + 1] || 	                        // Symbol is larger than following Symbol OR
+            (t_0[index] == t_0[index + 1] && right_type)));	// Symbol is equal to following Symbol
 
     }
 
