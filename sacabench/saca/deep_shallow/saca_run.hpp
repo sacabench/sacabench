@@ -7,6 +7,7 @@
 #pragma once
 
 #include <util/sort/bucketsort.hpp>
+#include <util/sort/ternary_quicksort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -102,7 +103,10 @@ private:
     inline void blind_sort(const span<sa_index_type> bucket) {}
 
     /// \brief Use ternary quicksort to sort the bucket.
-    inline void simple_sort(const span<sa_index_type> bucket) {}
+    inline void simple_sort(const span<sa_index_type> bucket) {
+        // FIXME: Use introsort/ternary quicksort instead of multikey-quicksort.
+        util::sort::multikey_quicksort::multikey_quicksort(bucket, input_text);
+    }
 
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
@@ -153,7 +157,7 @@ public:
 
         // Catch corner cases, where input is smaller than bucket-prefix-size.
         if(text.size() < 3) {
-            // Use MKQS.
+            // Use Multikey-Quicksort.
             shallow_sort(sa);
         } else {
             // Use bucket sort to sort `sa` by the first two characters.
