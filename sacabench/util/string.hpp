@@ -54,6 +54,8 @@ constexpr character SENTINEL = 0;
 
 /// Custom literal operator for creating a `string_span`.
 ///
+/// This mainly exists for writing tests and debug code.
+///
 /// Example:
 /// ```
 /// string_span s = "hello"_s;
