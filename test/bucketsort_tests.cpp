@@ -45,16 +45,16 @@ TEST(Bucketsort, bucket_sizes){
 TEST(Bucketsort, recursiv_bucket_sort_test) {
     using namespace sacabench::util;
 
-    string firstString = {'m', 'm', 'm'};
-    string secondString = {'a', 'b', 'c'};
-    string thirdString = {'x', 'y', 'z', 'z'};
-    string fourthString = {'m', 'b', 'm'};
-    string fifthString = {'a', 'm', 'a'};
-    string sixthString = {'m', 'b', 'a'};
-    string seventhString = {'a', 'b', 'e'};
-    string eightString = {'x', 'y', 'z', 'a'};
+    string firstString = "mmm"_s;
+    string secondString = "abc"_s;
+    string thirdString = "xyzz"_s;
+    string fourthString = "mbm"_s;
+    string fifthString = "ama"_s;
+    string sixthString = "mba"_s;
+    string seventhString = "abe"_s;
+    string eightString = "xyza"_s;
 
-    container<string> input = container<string> {
+    container<string> input {
         firstString,
         secondString,
         thirdString,
