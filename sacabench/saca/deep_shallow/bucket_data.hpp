@@ -24,7 +24,11 @@ struct bucket_information {
     bool is_sorted;
 };
 
+// Assert, that the free bits in a 64 bit type, that are not used by the
+// suffix index type (32, 40, 48 bit) are used to store the boolean `is_sorted`.
+static_assert(sizeof(bucket_information<uint32_t>) <= sizeof(uint64_t));
 static_assert(sizeof(bucket_information<util::uint40>) <= sizeof(uint64_t));
+static_assert(sizeof(bucket_information<util::uint48>) <= sizeof(uint64_t));
 
 /// \brief A class which contains for every character combination the bucket
 ///        start and end positions.
@@ -36,6 +40,8 @@ private:
     // information.
     util::container<bucket_information<sa_index_type>> bounds;
     sa_index_type end_of_last_bucket;
+
+    // This is the real alphabet size, containing the SENTINEL symbol.
     size_t real_alphabet_size;
 
 public:
@@ -56,15 +62,15 @@ public:
         DCHECK_LT(b, real_alphabet_size);
     }
 
-    inline void
-    set_bucket_bounds(const util::container<util::sort::bucket>& bucket_bounds) {
+    inline void set_bucket_bounds(
+        const util::container<util::sort::bucket>& bucket_bounds) {
         DCHECK_EQ(bucket_bounds.size(), bounds.size());
 
         for (size_t i = 0; i < bucket_bounds.size(); ++i) {
             bounds[i].starting_position = bucket_bounds[i].position;
         }
         end_of_last_bucket = bucket_bounds[bucket_bounds.size() - 1].position +
-            bucket_bounds[bucket_bounds.size() - 1].count;
+                             bucket_bounds[bucket_bounds.size() - 1].count;
     }
 
     inline bool is_bucket_sorted(const u_char a, const u_char b) const {

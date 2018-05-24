@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <util/sa_check.hpp>
+//#include <util/sa_check.hpp> // FIXME: uncomment, if DCHECK is used.
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -27,8 +27,8 @@ public:
 
         // auto result = util::sa_check(sa, text);
         // DCHECK_MSG(result,
-        //            "Das Suffixarray, welches von Deep-Shallow berechnet wurde, "
-        //            "war nicht korrekt: " << result);
+        //            "Das Suffixarray, welches von Deep-Shallow berechnet
+        //            wurde, " "war nicht korrekt: " << result);
     }
 };
 } // namespace sacabench::deep_shallow

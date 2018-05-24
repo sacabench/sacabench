@@ -7,8 +7,8 @@
 #pragma once
 
 #include <util/sort/bucketsort.hpp>
-#include <util/sort/ternary_quicksort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
+#include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -22,6 +22,7 @@ using span = util::span<T>;
 using u_char = util::character;
 
 /// \brief We use blind sort on sets which are smaller than this threshold.
+///        This has a direct effect on the memory footprint of the algorithm.
 constexpr auto BLIND_SORT_THRESHOLD = 100;
 
 /// \brief To speed up sorting, we store meta data for every one of the
@@ -42,12 +43,15 @@ private:
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
-        this->bd = bucket_data_container<sa_index_type>(alphabet_size);
 
-        const util::container<util::sort::bucket> bucket_bounds =
-            util::sort::bucketsort_presort(input_text, alphabet_size, 2,
-                                           suffix_array);
+        // Create bucket_data_container object with the right size.
+        bd = bucket_data_container<sa_index_type>(alphabet_size);
 
+        // Use bucket sort to sort the suffix array by the first two characters.
+        const auto bucket_bounds = util::sort::bucketsort_presort(
+            input_text, alphabet_size, 2, suffix_array);
+
+        // Store the bucket bounds in bd.
         bd.set_bucket_bounds(bucket_bounds);
     }
 
@@ -60,21 +64,24 @@ private:
     ///        has not yet been sorted, or std::nullopt.
     inline std::optional<std::pair<u_char, u_char>>
     get_smallest_unsorted_bucket() {
+        // FIXME: this just tries every possible character combination, until
+        //        one is not sorted.
         for (u_char i = 0; i <= alphabet_size; ++i) {
             for (u_char j = 0; j <= alphabet_size; ++j) {
-                // std::cout << "is bucket " << (size_t)i << ", " << (size_t)j << " sorted?" << std::endl;
                 if (!bd.is_bucket_sorted(i, j)) {
                     return std::optional(std::make_pair(i, j));
                 }
             }
         }
+
+        // There are no unsorted buckets.
         return std::nullopt;
     }
 
     /// \brief Use Multikey-Quicksort to sort the bucket.
     inline void shallow_sort(const span<sa_index_type> bucket) {
         // We use multikey quicksort for now.
-        // FIXME: Abort at depth L and continue with deep_sort();
+        // FIXME: Abort at depth L and continue with deep_sort(bucket, L);
         util::sort::multikey_quicksort::multikey_quicksort(bucket, input_text);
     }
 
@@ -85,7 +92,7 @@ private:
     inline void deep_sort(const span<sa_index_type> bucket,
                           const size_t common_prefix_length) {
         // Try induced sorting. This call returns false, if no ANCHOR and
-        // OFFSET are suitable.
+        // OFFSET are suitable. We then use blind-/quicksort.
         bool induce_sorted_succeeded = try_induced_sort(bucket);
 
         if (!induce_sorted_succeeded) {
@@ -100,11 +107,17 @@ private:
     }
 
     /// \brief Use Blind Sorting to sort the bucket.
-    inline void blind_sort(const span<sa_index_type> bucket) {}
+    inline void blind_sort(const span<sa_index_type> bucket) {
+        // Construct a blind trie from `bucket`.
+        blind_trie bt(input_text, bucket);
+
+        // Traverse the trie in-order and copy the suffixes back to `bucket`.
+        std::copy(bt, bucket);
+    }
 
     /// \brief Use ternary quicksort to sort the bucket.
     inline void simple_sort(const span<sa_index_type> bucket) {
-        // FIXME: Use introsort/ternary quicksort instead of multikey-quicksort.
+        // TODO: Use introsort/ternary quicksort instead of multikey-quicksort.
         util::sort::multikey_quicksort::multikey_quicksort(bucket, input_text);
     }
 
@@ -120,7 +133,8 @@ private:
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {
-                //std::cout << "Sorting bucket B_{" << (size_t)alpha << ", " << (size_t)beta << "}..." << std::endl;
+                // std::cout << "Sorting bucket B_{" << (size_t)alpha << ", " <<
+                // (size_t)beta << "}..." << std::endl;
 
                 // Get bucket bounds.
                 auto bucket_start = bd.start_of_bucket(alpha, beta);
@@ -128,7 +142,8 @@ private:
 
                 ASSERT_LT(bucket_start, bucket_end);
 
-                // std::cout << "Sorting [" << bucket_start << ", " << bucket_end << ") with MKQS." << std::endl;
+                // std::cout << "Sorting [" << bucket_start << ", " <<
+                // bucket_end << ") with MKQS." << std::endl;
 
                 // Get slice of suffix array, which contains the elements of the
                 // bucket.
@@ -156,7 +171,7 @@ public:
         }
 
         // Catch corner cases, where input is smaller than bucket-prefix-size.
-        if(text.size() < 3) {
+        if (text.size() < 3) {
             // Use Multikey-Quicksort.
             shallow_sort(sa);
         } else {

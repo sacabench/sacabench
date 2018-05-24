@@ -11,56 +11,55 @@
 
 namespace sacabench::deep_shallow {
 
-template <typename T>
-using span = util::span<T>;
-
+// Forward-declare the `node` class.
 template <typename suffix_index_type>
-class blind_node {
+struct node;
+
+/// \brief Represents an edge in the blind trie. An edge is marked by a label
+///        and points to a node.
+template <typename suffix_index_type>
+struct edge {
+    const util::character edge_label;
+    node<suffix_index_type>* child;
+};
+
+/// \brief Represents a single node in the blind trie. Contains a list of
+///        children, in sorted order. Each edge is marked with a character.
+template <typename suffix_index_type>
+class node {
 public:
-    blind_node(suffix_index_type _content) : content(_content) {
+    inline node(suffix_index_type _content) : content(_content) {
         children = util::make_container<suffix_index_type>(0);
     }
 
 private:
     const suffix_index_type content;
-    util::container<blind_node*> children;
+    util::container<edge<suffix_index_type>> children;
 };
 
+template <typename suffix_index_type>
+class iterator;
+
+/// \brief Represents an entire blind trie. Contains its data in extra-space.
+///        Use an iterator to traverse the trie in-order.
 template <typename suffix_index_type>
 class blind_trie {
 public:
-    inline blind_trie() {}
+    inline blind_trie(const util::span<suffix_index_type> bucket) {}
 
-    inline void insert(const suffix_index_type val) {
-        if (root.has_value()) {
-            // Insert recursively.
-            root->insert(val);
-        } else {
-            // Insert new root node.
-            blind_node node(val);
-            root = node;
-        }
+    inline iterator<suffix_index_type> begin() const {
+        iterator<suffix_index_type> it;
+        return it;
     }
 
-    inline suffix_index_type next(size_t index) {}
+    inline iterator<suffix_index_type> end() const {
+        iterator<suffix_index_type> it;
+        return it;
+    }
 
 private:
-    std::optional<blind_node<suffix_index_type>> root;
+    inline void insert(const suffix_index_type suffix) {}
+
+    std::optional<node<suffix_index_type>> root;
 };
-
-template <typename suffix_index_type>
-inline void blind_sort(const span<suffix_index_type> array) {
-    // Create empty blind trie
-    blind_trie<suffix_index_type> bt;
-
-    // Insert all suffixes
-    for (suffix_index_type elem : array) {
-        bt.insert(elem);
-    }
-
-    // Traverse the blind trie, writing the sorted elements to `array`
-    for (suffix_index_type i = 0; i < array.size(); ++i) {
-        array[i] = bt.next(i);
-    }
-}
 } // namespace sacabench::deep_shallow
