@@ -42,9 +42,11 @@ private:
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
         this->bd = bucket_data_container<sa_index_type>(alphabet_size);
+
         const util::container<util::sort::bucket> bucket_bounds =
             util::sort::bucketsort_presort(input_text, alphabet_size, 2,
                                            suffix_array);
+
         bd.set_bucket_bounds(bucket_bounds);
     }
 
@@ -57,8 +59,9 @@ private:
     ///        has not yet been sorted, or std::nullopt.
     inline std::optional<std::pair<u_char, u_char>>
     get_smallest_unsorted_bucket() {
-        for (u_char i = 1; i <= alphabet_size; ++i) {
+        for (u_char i = 0; i <= alphabet_size; ++i) {
             for (u_char j = 0; j <= alphabet_size; ++j) {
+                // std::cout << "is bucket " << (size_t)i << ", " << (size_t)j << " sorted?" << std::endl;
                 if (!bd.is_bucket_sorted(i, j)) {
                     return std::optional(std::make_pair(i, j));
                 }
@@ -109,23 +112,30 @@ private:
             const auto alpha = unsorted_bucket.first;
             const auto beta = unsorted_bucket.second;
 
-            // Mark small buckets as sorted.
             if (bd.size_of_bucket(alpha, beta) < 2) {
-                bd.mark_bucket_sorted(alpha, beta);
-                continue;
+                // Buckets with a size of 0 or 1 are already sorted.
+                // Do nothing.
+            } else {
+                //std::cout << "Sorting bucket B_{" << (size_t)alpha << ", " << (size_t)beta << "}..." << std::endl;
+
+                // Get bucket bounds.
+                auto bucket_start = bd.start_of_bucket(alpha, beta);
+                auto bucket_end = bd.end_of_bucket(alpha, beta);
+
+                ASSERT_LT(bucket_start, bucket_end);
+
+                // std::cout << "Sorting [" << bucket_start << ", " << bucket_end << ") with MKQS." << std::endl;
+
+                // Get slice of suffix array, which contains the elements of the
+                // bucket.
+                const span<sa_index_type> bucket =
+                    suffix_array.slice(bucket_start, bucket_end);
+
+                // Shallow sort it.
+                shallow_sort(bucket);
             }
 
-            // Get bucket bounds.
-            auto bucket_start = bd.start_of_bucket(alpha, beta);
-            auto bucket_end = bd.end_of_bucket(alpha, beta);
-
-            ASSERT_LT(bucket_start, bucket_end);
-
-            const span<sa_index_type> bucket =
-                suffix_array.slice(bucket_start, bucket_end);
-
-            // Shallow sort it.
-            shallow_sort(bucket);
+            // Mark this bucket as sorted.
             bd.mark_bucket_sorted(alpha, beta);
         }
     }
@@ -141,14 +151,17 @@ public:
             sa[i] = i;
         }
 
-        // Use bucket sort to sort sa by the first two characters.
-        bucket_sort();
+        // Catch corner cases, where input is smaller than bucket-prefix-size.
+        if(text.size() < 3) {
+            // Use MKQS.
+            shallow_sort(sa);
+        } else {
+            // Use bucket sort to sort `sa` by the first two characters.
+            bucket_sort();
 
-        // Sort all buckets iteratively.
-        sort_all_buckets();
-
-        // FIXME: just use multikey quicksort, lol.
-        util::sort::multikey_quicksort::multikey_quicksort(sa, text);
+            // Sort all buckets iteratively.
+            sort_all_buckets();
+        }
     }
 };
 } // namespace sacabench::deep_shallow

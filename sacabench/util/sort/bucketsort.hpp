@@ -26,7 +26,7 @@ namespace sacabench::util::sort {
      *  suffixes which are equal to a given offset.
      * \param input Input text (of length n) whose suffixes are to be sorted.
      *  The input text has to use an effective alphabet with characters
-     *  {1, ..., m}. 
+     *  {1, ..., m}.
      * \param alphabet_size The size of the alphabet which is used by the input
      *  text.
      * \param depth The offset which is used to match suffixes into buckets.

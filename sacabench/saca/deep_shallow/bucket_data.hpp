@@ -35,55 +35,59 @@ private:
     // It contains for every `alpha` a continous sequence of entries of bucket
     // information.
     util::container<bucket_information<sa_index_type>> bounds;
-    size_t alphabet_size;
+    sa_index_type end_of_last_bucket;
+    size_t real_alphabet_size;
 
 public:
     inline bucket_data_container() : bucket_data_container(0) {}
 
-    inline bucket_data_container(const size_t _alphabet_size)
-        : alphabet_size(_alphabet_size + 1) {
-        const auto n = alphabet_size * alphabet_size;
+    inline bucket_data_container(const size_t alphabet_size)
+        : real_alphabet_size(alphabet_size + 1) {
+        const auto n = real_alphabet_size * real_alphabet_size;
 
         // Check if `n` overflowed
-        DCHECK_GE(n, alphabet_size);
+        DCHECK_GE(n, real_alphabet_size);
 
         bounds = util::make_container<bucket_information<sa_index_type>>(n);
     }
 
     inline void check_bounds(const u_char a, const u_char b) const {
-        DCHECK_LT(a, alphabet_size);
-        DCHECK_LT(b, alphabet_size);
+        DCHECK_LT(a, real_alphabet_size);
+        DCHECK_LT(b, real_alphabet_size);
     }
 
     inline void
-    set_bucket_bounds(const util::container<util::sort::bucket> bucket_bounds) {
+    set_bucket_bounds(const util::container<util::sort::bucket>& bucket_bounds) {
+        DCHECK_EQ(bucket_bounds.size(), bounds.size());
+
         for (size_t i = 0; i < bucket_bounds.size(); ++i) {
-            std::cout << bucket_bounds[i].position << std::endl;
             bounds[i].starting_position = bucket_bounds[i].position;
         }
+        end_of_last_bucket = bucket_bounds[bucket_bounds.size() - 1].position +
+            bucket_bounds[bucket_bounds.size() - 1].count;
     }
 
     inline bool is_bucket_sorted(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        return bounds[a * alphabet_size + b].is_sorted;
+        return bounds[a * real_alphabet_size + b].is_sorted;
     }
 
     inline void mark_bucket_sorted(const u_char a, const u_char b) {
         check_bounds(a, b);
-        bounds[a * alphabet_size + b].is_sorted = true;
+        bounds[a * real_alphabet_size + b].is_sorted = true;
     }
 
     inline sa_index_type start_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        return bounds[a * alphabet_size + b].starting_position;
+        return bounds[a * real_alphabet_size + b].starting_position;
     }
 
     inline sa_index_type end_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        if (b == alphabet_size - 1) {
-            return bounds.size();
+        if (a == b && b == real_alphabet_size - 1) {
+            return end_of_last_bucket;
         } else {
-            const size_t next_index = a * alphabet_size + b + 1;
+            const size_t next_index = a * real_alphabet_size + b + 1;
             return bounds[next_index].starting_position;
         }
     }

@@ -20,10 +20,15 @@ public:
     inline static void construct_sa(util::string_span text,
                                     size_t alphabet_size,
                                     span<sa_index_type> sa) {
+
+        // Construct an object of type `saca_run`, which contains the algorithm.
+        // This will construct the suffix array in `sa` using deep-shallow.
         saca_run<sa_index_type> r(text, alphabet_size, sa);
-        DCHECK_MSG(util::sa_check(sa, text),
-                   "Das Suffixarray, welches von Deep-Shallow berechnet wurde, "
-                   "war nicht korrekt.");
+
+        // auto result = util::sa_check(sa, text);
+        // DCHECK_MSG(result,
+        //            "Das Suffixarray, welches von Deep-Shallow berechnet wurde, "
+        //            "war nicht korrekt: " << result);
     }
 };
 } // namespace sacabench::deep_shallow
