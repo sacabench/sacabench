@@ -67,8 +67,12 @@ namespace sacabench::util {
                 
                 const bool less_than = comp(t_0, t_12);
                 const bool eq = !comp(t_0, t_12) && !comp(t_12, t_0);
-                const bool lesser_suf = isa_12[(2*(sa_0[i]+t_0.size()))/3] 
-                    < isa_12[2*((sa_12[j]+t_12.size()))/3];
+                std::cout << "vor der Rekursion" << std::endl;
+                std::cout << "vor der Rekursion" << std::endl;
+                const bool lesser_suf = !((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size()) &&
+                    ((2*(sa_0[i]+t_0.size()))/3 >= isa_12.size() ||
+                    isa_12[(2*(sa_0[i]+t_0.size()))/3] 
+                    < isa_12[2*((sa_12[j]+t_12.size()))/3]);
                 if (less_than || (eq && lesser_suf)) { 
                     sa[counter] = sa_0[i++];
                 }
