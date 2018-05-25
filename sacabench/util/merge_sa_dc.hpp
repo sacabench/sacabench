@@ -11,8 +11,8 @@
 
 #pragma once
 namespace sacabench::util {
-    template<typename C, typename Compare, typename Substring, typename S, 
-            typename S0, typename T, typename I>
+    template<typename C, typename T, typename Compare, typename Substring, typename S, 
+            typename SA, typename S0, typename I>
     //template T for input string
     //template C for input characters
     //template I for ISA
@@ -37,9 +37,10 @@ namespace sacabench::util {
     * contains the lexicographical ranks of positions i mod 3 != 0.
     * This method works correct because of the difference cover idea.
     */
-    static void merge_sa_dc(const T& t, const S0& sa_0, const S& sa_12, const I& isa_12, S& sa, Compare comp, 
+    static void merge_sa_dc(const T& t, const S0& sa_0, const SA& sa_12, const I& isa_12, S& sa, Compare comp, 
             const Substring get_substring) {
 
+        std::cout << "sa_0 groesse: " << sa_0.size() << " sa_12 groesse: " << sa_12.size() << " sa groesse: " << sa.size() << std::endl;
         DCHECK_MSG(sa.size() == t.size(), 
                 "sa must be initialised and must have the same length as t.");
         DCHECK_MSG(sa.size() == (sa_0.size() + sa_12.size()), 

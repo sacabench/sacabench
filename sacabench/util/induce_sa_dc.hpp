@@ -42,7 +42,7 @@ namespace sacabench::util {
         } */
         
         for (size_t i = 0; i < sa_0.size(); i++) {
-            sa_0_to_be_sorted[i] = (std::tuple<C, size_t, size_t>(t_0[i], isa_12[i], i));
+            sa_0_to_be_sorted[i] = (std::tuple<C, size_t, size_t>(t_0[i], isa_12[i], 3 * i));
             //std::cout << t_0[i] << " " << isa_12[i] << std::endl;
         }  
     
