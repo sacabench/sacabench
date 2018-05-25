@@ -6,6 +6,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
+#include <util/alphabet.hpp>
 #include <util/sa_check.hpp>
 
 namespace test {
@@ -23,17 +24,19 @@ namespace test {
     void saca_corner_cases() {
         using namespace sacabench::util;
 
-        auto test = [](string_span text, size_t alphabet_size = 256) {
+        auto test = [](string_span text) {
             if (text.size() > 40) {
                 std::cout << "Test SACA on '" << text.slice(0, 40) << "[...]'\n";
             } else {
                 std::cout << "Test SACA on '" << text << "'\n";
             }
 
+            auto copy = make_string(text);
+            auto alphabet = apply_effective_alphabet(copy);
             auto output = make_container<sa_index_type>(text.size());
             span<sa_index_type> output_span = output;
 
-            Algorithm::construct_sa(text, alphabet_size, output_span);
+            Algorithm::construct_sa(copy, alphabet.size, output_span);
 
             auto fast_result = sa_check(output_span, text);
             if (fast_result != sa_check_result::ok) {
