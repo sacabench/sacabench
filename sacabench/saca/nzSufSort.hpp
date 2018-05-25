@@ -7,6 +7,7 @@
 #pragma once
 
 #include <iostream>
+#include <functional>
 
 #include <util/string.hpp>
 #include <util/container.hpp>
@@ -24,6 +25,13 @@ namespace sacabench::nzSufSort {
                 (void) alphabet_size; 
                 
                 // TODO: Sentinel am Ende einfügen (lassen)
+                const util::character SENTINEL = 0;
+                auto cont_text = util::make_container<util::character>(text.size()+1);
+                for (size_t i = 0; i < text.size(); i++) {
+                    cont_text[i] = text[i];
+                }
+                cont_text[text.size()] = SENTINEL;
+                text = cont_text;
                 // empty string
                 if (text.size() == 0) { return; }
                                          
@@ -69,18 +77,19 @@ namespace sacabench::nzSufSort {
                 }
                 
                 //TODO sort p_0 and p_12 with radix sort
-                struct Comp {
+                /*struct Comp {
                     Comp(util::string_span& text) { this->text = text; }
-                    bool comp () (size_t i, size_t j) { 
-                        util::string_span t_1 = retrieve_s_string(text, i, 3);
-                        util::string_span t_2 = retrieve_s_string(text, j, 3);
+                    bool comp(size_t i, size_t j) { 
+                        util::string_span t_1 = retrieve_s_string<util::character>(text, i, 3);
+                        util::string_span t_2 = retrieve_s_string<util::character>(text, j, 3);
                         return t_1 < t_2;
                     }
 
                     util::string_span text;
-                };
-                std::sort(p_0.begin(), p_0.end(), Comp(text));
-                std::sort(p_12.begin(), p_12.end(), Comp(text));
+                };*/
+                auto comp_bind = std::bind(comp, text, std::placeholders::_1, std::placeholders::_2);
+                std::sort(p_0.begin(), p_0.end(), comp_bind);
+                std::sort(p_12.begin(), p_12.end(), comp_bind);
             }
           
         private:
@@ -134,16 +143,23 @@ namespace sacabench::nzSufSort {
                 }
             }
             
-            template<typename T, typename C>
+            template<typename C, typename T>
             static util::span<const C> retrieve_s_string(T& text, size_t s_pos, size_t count) {
                 //TODO: Check for "out of bounds"
                 //TODO: Concatenate count s_stringss
                 if (text[s_pos] == text[s_pos+1]) {
-                    return span<const C>(&text[s_pos], 2);
+                    return util::span<const C>(&text[s_pos], 2);
                 }
                 else {
                     //TODO
                 }
+            }
+            
+            template<typename T>
+            static bool comp(T& text, size_t i, size_t j) {
+                util::string_span t_1 = retrieve_s_string<util::character>(text, i, 3);
+                util::string_span t_2 = retrieve_s_string<util::character>(text, j, 3);
+                return t_1 < t_2;
             }
             
             template<typename A>
