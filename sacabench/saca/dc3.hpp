@@ -336,11 +336,25 @@ namespace sacabench::dc3 {
                 
                 //if in recursion use temporary sa. Otherwise t_12
                 if(recursion){
+                    
                     isa_12 = sacabench::util::make_container<size_t>(sa_12.size());
                     determine_isa(sa_12, isa_12);
                     
+                    std::cout << "sa_12:    ";
+                    for(size_t i = 0; i < sa_12.size() ; i++){
+                            std::cout << sa_12[i] << " ";
+                    }
+                    std::cout << std::endl;
+                    std::cout << "isa_12:    ";
+                    for(size_t i = 0; i < isa_12.size() ; i++){
+                            std::cout << isa_12[i] << " ";
+                    }
+                    std::cout << std::endl;
                     //index of the first value which represents the positions i mod 3 = 2
-                    size_t end_of_mod_eq_1 = triplets_12.size()/2 + (triplets_12.size()/2 % 2 == 0);
+                    size_t end_of_mod_eq_1 = triplets_12.size()/2; // + ((triplets_12.size()/2) % 2 == 0);
+                    if(triplets_12.size() % 2 != 0){
+                        end_of_mod_eq_1++;
+                    }
                     
                     //correct the order of sa_12 with result of recursion
                     for(size_t i = 0; i < triplets_12.size(); i++){
@@ -350,6 +364,15 @@ namespace sacabench::dc3 {
                             triplets_12[isa_12[i]-1] = 3 * (i-end_of_mod_eq_1) + 2;
                         }
                     }
+                    
+                    //Anfang Debug-Informationen------------------------------------------------------------------------
+                    std::cout << "korrigierte triplets:    ";
+                    for(size_t i = 0; i < triplets_12.size() ; i++){
+                            std::cout << triplets_12[i] << " ";
+                    }
+                    std::cout << std::endl;
+                    //Ende Debug-Informationen------------------------------------------------------------------------
+                    
                     //convert isa_12 to the correct format for merge_sa_dc.
                     auto merge_isa_12_to_be_sorted = sacabench::util::make_container<std::tuple<size_t, size_t>>(triplets_12.size());
                     for(size_t i = 0; i < merge_isa_12.size(); i++){
@@ -381,7 +404,6 @@ namespace sacabench::dc3 {
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 
-                
                 //empty sa_0 which should be filled correctly with method induce_sa_dc
                 auto sa_0 = sacabench::util::make_container<size_t>(t_0.size());
                 
@@ -410,8 +432,14 @@ namespace sacabench::dc3 {
                 std::cout << std::endl;
                 
                 std::cout << "isa_12:   ";
-                for(size_t i = 0; i < merge_isa_12.size(); i++){
-                    std::cout << merge_isa_12[i] << " ";
+                if(rec){
+                    for(size_t i = 0; i < isa_12.size() ; i++){
+                        std::cout << isa_12[i] << " ";
+                    }
+                }else{
+                    for(size_t i = 0; i < merge_isa_12.size(); i++){
+                        std::cout << merge_isa_12[i] << " ";
+                    }
                 }
                 std::cout << std::endl;
                 //Ende Debug-Informationen------------------------------------------------------------------------

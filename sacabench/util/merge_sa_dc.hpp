@@ -40,7 +40,8 @@ namespace sacabench::util {
     static void merge_sa_dc(const T& t, const S0& sa_0, const SA& sa_12, const I& isa_12, S& sa, Compare comp, 
             const Substring get_substring) {
 
-        std::cout << "sa_0 groesse: " << sa_0.size() << " sa_12 groesse: " << sa_12.size() << " sa groesse: " << sa.size() << std::endl;
+        std::cout << std::endl << "Hier wird merge_sa_dc aufgerufen:" << std::endl;
+        
         DCHECK_MSG(sa.size() == t.size(), 
                 "sa must be initialised and must have the same length as t.");
         DCHECK_MSG(sa.size() == (sa_0.size() + sa_12.size()), 
@@ -67,13 +68,22 @@ namespace sacabench::util {
                 
                 const bool less_than = comp(t_0, t_12);
                 const bool eq = !comp(t_0, t_12) && !comp(t_12, t_0);
-                std::cout << "vor der Rekursion" << std::endl;
-                std::cout << "vor der Rekursion" << std::endl;
                 const bool lesser_suf = !((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size()) &&
                     ((2*(sa_0[i]+t_0.size()))/3 >= isa_12.size() ||
                     isa_12[(2*(sa_0[i]+t_0.size()))/3] 
                     < isa_12[2*((sa_12[j]+t_12.size()))/3]);
-                if (less_than || (eq && lesser_suf)) { 
+                    
+                if(t[0] == 2 && t[1] == 2 && t[2] == 1){
+                    
+                    std::cout << "betrachtet: sa_0[i++]: " << sa_0[i] << "  und sa_12[j++]: " << sa_12[j] << std::endl;
+                    std::cout << "less_than: " << less_than << std::endl;
+                    std::cout << "eq: " << eq << std::endl;
+                    std::cout << "lesser_suf: " << lesser_suf << std::endl;
+                    std::cout << "!((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size()): " << (!((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size())) << std::endl;
+                    std::cout << "(2*(sa_0[i]+t_0.size()))/3 >= isa_12.size(): " << ((2*(sa_0[i]+t_0.size()))/3 >= isa_12.size()) << std::endl;
+                    std::cout << "isa_12[(2*(sa_0[i]+t_0.size()))/3] < isa_12[2*((sa_12[j]+t_12.size()))/3]: " << (isa_12[(2*(sa_0[i]+t_0.size()))/3] < isa_12[2*((sa_12[j]+t_12.size()))/3]) << std::endl;     
+                    std::cout << "isa_12[(2*(sa_0[i]+t_0.size()))/3]: " << isa_12[(2*(sa_0[i]+t_0.size()))/3] << " < " << isa_12[2*((sa_12[j]+t_12.size()))/3] << " : isa_12[2*((sa_12[j]+t_12.size()))/3]" << std::endl; 
+                }if (less_than || (eq && lesser_suf)) { 
                     sa[counter] = sa_0[i++];
                 }
                 else { sa[counter] = sa_12[j++]; }
