@@ -15,6 +15,22 @@ TEST(gsaca, test_corner_cases) {
     //test::saca_corner_cases<gsaca>();
 }
 
+// succeeds with reference prev pointer calculation
+// succeeds with paper prev pointer calculation
+TEST(gsaca, test_input_0) {
+    sacabench::util::string_span text = "banane\0"_s;
+    sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
+    sacabench::util::span<size_t> out_sa = sacabench::util::span<size_t>(place);
+    int expected_result[7] = {6, 1, 3, 0, 5, 2, 4};
+
+    gsaca::construct_sa(text, 0, out_sa);
+    for (int index = 0; index < 7; index++) {
+        ASSERT_EQ(out_sa[index], expected_result[index]);
+    }
+}
+
+// succeeds with reference prev pointer calculation
+// runtime_error with paper prev pointer calculation
 TEST(gsaca, test_input_1) {
     sacabench::util::string_span text = "graindraining\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
@@ -27,6 +43,8 @@ TEST(gsaca, test_input_1) {
     }
 }
 
+// succeeds with reference prev pointer calculation
+// succeeds with paper prev pointer calculation
 TEST(gsaca, test_input_2) {
     sacabench::util::string_span text = "hello world\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
@@ -39,6 +57,8 @@ TEST(gsaca, test_input_2) {
     }
 }
 
+// succeeds with reference prev pointer calculation
+// fails with paper prev pointer calculation
 TEST(gsaca, test_input_3) {
     sacabench::util::string_span text = "caabaccaabacaa\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
@@ -51,6 +71,8 @@ TEST(gsaca, test_input_3) {
     }
 }
 
+// succeeds with reference prev pointer calculation
+// succeeds with paper prev pointer calculation
 TEST(gsaca, test_input_4) {
     sacabench::util::string_span text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
@@ -70,6 +92,8 @@ TEST(gsaca, test_input_4) {
     }
 }
 
+// succeeds with reference prev pointer calculation
+// runtime_error with paper prev pointer calculation
 TEST(gsaca, test_input_5) {
     sacabench::util::string_span text = "asdfasctjkcbweasbebvtiwetwcnbwbbqnqxernqzezwuqwezuetqcrnzxbneqebwcbqwicbqcbtnqweqxcbwuexcbzqwezcqbwecqbwdassdasdfzdfgfsdfsdgfducezctzqwebctuiqwiiqcbnzcebzqc\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
@@ -94,7 +118,7 @@ TEST(gsaca, test_input_5) {
     };
 
     gsaca::construct_sa(text, 0, out_sa);
-    for (int index = 0; index < 58; index++) {
+    for (int index = 0; index < 157; index++) {
         ASSERT_EQ(out_sa[index], expected_result[index]);
     }
 }
