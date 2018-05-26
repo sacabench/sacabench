@@ -116,15 +116,21 @@ namespace sacabench::dc3 {
             static void construct_sa(util::string_span text,
                                      size_t alphabet_size,
                                      util::span<sa_index> out_sa) {
-                auto modified_text = sacabench::util::make_container<sacabench::util::character>(text.size());
-                
-                for(size_t i = 0; i < text.size() ; i++){
-                    modified_text[i] = text[i];
+                if(text.size()==0){
+                    
+                }else if(text.size()==1){
+                    out_sa[0] = 0;
+                }else{
+                    auto modified_text = sacabench::util::make_container<sacabench::util::character>(text.size());
+                    
+                    for(size_t i = 0; i < text.size() ; i++){
+                        modified_text[i] = text[i];
+                    }
+                    modified_text.push_back(' ');
+                    modified_text.push_back(' ');
+                    
+                    construct_sa_dc3<size_t, false, sacabench::util::character>(modified_text, alphabet_size, out_sa);
                 }
-                modified_text.push_back(' ');
-                modified_text.push_back(' ');
-                
-                construct_sa_dc3<size_t, false, sacabench::util::character>(modified_text, alphabet_size, out_sa);
             }
             
             
