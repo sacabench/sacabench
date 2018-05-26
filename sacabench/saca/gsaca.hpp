@@ -11,16 +11,18 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-#define GLINK gsaca_values::PREV                //alias
 #define GENDLINK gsaca_values::ISA              //alias
 
 namespace sacabench::gsaca {
 
     class gsaca {
     private:
+
+    public:
         struct gsaca_values {
-            size_t *ISA = 0;
-            size_t *PREV = 0;
+            size_t ISA[1000] = {0};
+            int PREV[1000] = {-1};
+            size_t GLINK[1000] = {0};
             size_t GSIZE[1000] = {0};
             size_t group_start = 0;
             size_t group_end = 0;
@@ -32,10 +34,10 @@ namespace sacabench::gsaca {
         };
 
         template<typename sa_index>
-        static gsaca_values build_initial_structures(sacabench::util::string_span text,
-                                                     sacabench::util::span<sa_index> out_sa,
-                                                     gsaca_values values,
-                                                     size_t number_of_chars) {
+        inline static gsaca_values build_initial_structures(sacabench::util::string_span text,
+                                                            sacabench::util::span<sa_index> out_sa,
+                                                            gsaca_values values,
+                                                            size_t number_of_chars) {
 
             size_t chars_count[ UCHAR_MAX + 1 ] = {0};
             size_t chars_cumulative[ UCHAR_MAX + 1 ] = {0};
@@ -55,7 +57,8 @@ namespace sacabench::gsaca {
                     cumulative_count += chars_count[index];
                 }
             }
-            for (size_t index = number_of_chars - 1; index < number_of_chars; --index) { //set up values.ISA, GLINK and SA
+            for (size_t index = number_of_chars - 1; index < number_of_chars; --index) {
+                //set up values.ISA, GLINK and SA
                 unsigned char current_char = text[index];
                 values.group_start = chars_cumulative[current_char];
                 values.sr = values.group_start + --chars_count[current_char];
@@ -67,9 +70,9 @@ namespace sacabench::gsaca {
         }
 
         template<typename sa_index>
-        static gsaca_values compute_prev_pointer(sacabench::util::span<sa_index> out_sa,
-                                                 gsaca_values values,
-                                                 size_t number_of_chars) {
+        inline static gsaca_values compute_prev_pointer(sacabench::util::span<sa_index> out_sa,
+                                                        gsaca_values values,
+                                                        size_t number_of_chars) {
 
             for (size_t index = values.group_end; index >= values.group_start; --index) {
                 values.suffix = out_sa[index]; //use prev - pointers from already used groups
@@ -86,23 +89,57 @@ namespace sacabench::gsaca {
             return values;
         }
 
+        /**
+         * This is the alternative way to calculate prev pointer from the paper.
+         * It uses the helper function compute_prev_pointer(size_t current_index, gsaca_values values).
+         * It failes for some test cases.
+         */
         template<typename sa_index>
-        static void reorder_suffixes(sacabench::util::span<sa_index> out_sa,
-                                     gsaca_values values,
-                                     size_t number_of_chars) {
+        inline static gsaca_values calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa, gsaca_values values) {
 
-            // TOOD
+            for (size_t index = values.group_start; index <= values.group_end; index++) {
+
+                size_t selected_index = out_sa[index];
+
+                std::vector<size_t> list_of_remaining_indices;
+                while (values.PREV[selected_index] == -1) {
+                    size_t prev = compute_prev_pointer(selected_index, values);
+                    if (prev == 0 || values.ISA[prev] < values.group_start) {
+                        values.PREV[selected_index] = prev;
+                    } else {
+                        list_of_remaining_indices.push_back(selected_index);
+                        selected_index = prev;
+                    }
+                }
+                for (size_t remaining_index : list_of_remaining_indices) {
+                    values.PREV[remaining_index] = values.PREV[selected_index];
+                }
+            }
+
+            return values;
+        }
+
+        inline static size_t compute_prev_pointer(size_t current_index, gsaca_values values) {
+            size_t previous_index = current_index - 1;
+            while (previous_index > 0) {
+                if (values.ISA[previous_index] <= values.group_end) {
+                    return previous_index;
+                }
+                previous_index = values.PREV[previous_index];
+            }
+            return 0;
         }
 
         template<typename sa_index>
-        static gsaca_values rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
-                                               gsaca_values values,
-                                               size_t number_of_splitted_groups) {
+        inline static gsaca_values rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
+                                                      gsaca_values values,
+                                                      size_t number_of_splitted_groups) {
 
             while (number_of_splitted_groups--) {
                 values.group_end = values.group_start + values.GSIZE[values.group_start];
                 //decrement group count of previous group suffixes, and move them to back
                 for (size_t index = values.group_end - 1; index >= values.group_start; --index) {
+                    // calucalte last suffix of current group
                     values.previous = out_sa[index];
                     values.sr = values.GLINK[values.previous];
                     values.sr += --values.GSIZE[values.sr];
@@ -133,9 +170,9 @@ namespace sacabench::gsaca {
         }
 
         template<typename sa_index>
-        static gsaca_values sort_suffixes(sacabench::util::span<sa_index> out_sa,
-                                          gsaca_values values,
-                                          size_t number_of_chars) {
+        inline static gsaca_values sort_suffixes(sacabench::util::span<sa_index> out_sa,
+                                                 gsaca_values values,
+                                                 size_t number_of_chars) {
 
             out_sa[0] = number_of_chars - 1;
             for (size_t index = 0; index < number_of_chars; index++) {
@@ -155,11 +192,10 @@ namespace sacabench::gsaca {
             return values;
         }
 
-    public:
         template<typename sa_index>
-        static void construct_sa(sacabench::util::string_span text,
-                                 size_t alphabet_size,
-                                 sacabench::util::span<sa_index> out_sa) {
+        inline static void construct_sa(sacabench::util::string_span text,
+                                        size_t alphabet_size,
+                                        sacabench::util::span<sa_index> out_sa) {
 
             gsaca_values values = gsaca_values();
 
@@ -170,8 +206,7 @@ namespace sacabench::gsaca {
             size_t number_of_chars = text.size();
 
             //set up needed structures
-            values.ISA = (size_t *) malloc( number_of_chars * sizeof(size_t) );
-            values.PREV = (size_t *) malloc( number_of_chars * sizeof(size_t) );
+            std::fill_n(values.PREV, 1000, -1);
 
             //// PHASE 1: pre-sort suffixes ////
             //build initial group structure
@@ -188,7 +223,14 @@ namespace sacabench::gsaca {
 
                 //compute prev - pointers and mark suffixes of own group that
                 //have a prev-pointer of own group pointing to them
+
+                //There are two possible implementations for calculating the prev pointers.
+                //The first one is the reference implementation von Uwe Baier.
+                //The second one is the implementation from the paper. It fails for some examples.
+                //Choose one by selecting it here.
+
                 values = compute_prev_pointer(out_sa, values, number_of_chars);
+                //values = calculate_all_prev_pointer(out_sa, values);
 
                 //set GENDLINK of all suffixes for phase 2 and move unmarked suffixes to the front of the actual group
                 size_t group_size = 0;
@@ -204,6 +246,7 @@ namespace sacabench::gsaca {
                 values.group_end = values.group_start + group_size; //exclusive bound by now
 
                 size_t number_of_splitted_groups = 0;
+
                 do {
                     size_t index = values.group_end - 1;
                     values.sr = values.group_end;
@@ -239,9 +282,6 @@ namespace sacabench::gsaca {
 
             //// PHASE 2: sort suffixes finally ////
             values = sort_suffixes(out_sa, values, number_of_chars);
-
-            free(values.ISA);
-            free(values.PREV);
         }
     }; // class gsaca
 } // namespace sacabench::gsaca
