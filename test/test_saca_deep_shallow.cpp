@@ -108,9 +108,17 @@ TEST(blind_trie, follow_edges) {
 
     bt.print_trie();
 
-    // Follow the edges for "nana".
-    auto result = bt.follow_edges(2);
-    print_result(result);
+    {
+        // Follow the edges for "nana".
+        auto result = bt.follow_edges(2);
+        print_result(result);
+    }
+
+    {
+        // Follow the edges for "anana".
+        auto result = bt.follow_edges(1);
+        print_result(result);
+    }
 }
 
 TEST(deep_shallow, blind_sort) {
