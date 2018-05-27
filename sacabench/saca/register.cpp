@@ -7,6 +7,7 @@
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
 #include "saca/bucket_pointer_refinement.hpp"
+#include "saca/prefix_doubling.hpp"
 
 #include "util/saca.hpp"
 
@@ -23,6 +24,15 @@ using saca_bucket_pointer_refinement =
 SACA_REGISTER("Bucket-Pointer Refinement",
         "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
         saca_bucket_pointer_refinement)
-}
+
+using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling;
+SACA_REGISTER("Prefix Doubling", "TODO", saca_prefix_doubling)
+
+using saca_prefix_doubling_discarding =
+    sacabench::prefix_doubling::prefix_doubling_discarding;
+SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
+              saca_prefix_doubling_discarding)
+
+} // namespace sacabench::saca
 
 /******************************************************************************/

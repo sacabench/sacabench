@@ -197,8 +197,8 @@ class bucket_pointer_refinement {
              * right_bounds[i] = true: suffix i and i+1 are in different buckets
              * TODO: Find a more memory efficient solution
              */
-            util::container<bool> right_bounds =
-                util::make_container<bool>(bucket.size());
+            util::container<uint8_t> right_bounds =
+                util::make_container<uint8_t>(bucket.size());
             std::fill(right_bounds.begin(), right_bounds.end(), false);
 
             // sequentially scan the sa from right to left and calculate prefix

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <util/span.hpp>
+#include <util/compare.hpp>
 
 namespace sacabench::util::sort::ternary_quicksort {
 
@@ -15,12 +16,12 @@ constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
 
 template <typename content, typename key_func_type>
 content min(key_func_type cmp, const content& a, const content& b) {
-    return (cmp(a, b) < 0 ? a : b);
+    return (cmp(a, b) ? a : b);
 }
 
 template <typename content, typename key_func_type>
 content max(key_func_type cmp, const content& a, const content& b) {
-    return (cmp(a, b) < 0 ? b : a);
+    return (cmp(a, b) ? b : a);
 }
 
 /**\brief Returns pseudo-median according to three values
@@ -31,10 +32,10 @@ content max(key_func_type cmp, const content& a, const content& b) {
  * which chooses the median of the first, middle and last element of the array
  */
 template <typename content, typename key_func_type>
-size_t median_of_three(span<content> array, key_func_type cmp) {
-    size_t first = array[0];
-    size_t middle = array[(array.size() - 1) / 2];
-    size_t last = array[array.size() - 1];
+content median_of_three(span<content> array, key_func_type cmp) {
+    const content& first = array[0];
+    const content& middle = array[(array.size() - 1) / 2];
+    const content& last = array[array.size() - 1];
 
     return max(cmp, min(cmp, first, middle),
                min(cmp, max(cmp, first, middle), last));
@@ -51,11 +52,12 @@ template <typename content, typename key_func_type>
 content median_of_nine(span<content> array, key_func_type cmp) {
     size_t n = array.size() - 1;
     size_t step = (n / 8);
-    size_t lower = median_of_three(array.slice(0, 2 * step), cmp);
-    size_t middle =
+    const content lower =
+        median_of_three(array.slice(0, 2 * step), cmp);
+    const content middle =
         median_of_three(array.slice((n / 2) - step, (n / 2) + step), cmp);
-    size_t upper = median_of_three(array.slice(n - 2 * step, n), cmp);
-
+    const content upper =
+        median_of_three(array.slice(n - 2 * step, n), cmp);
     return max(cmp, min(cmp, lower, middle),
                min(cmp, max(cmp, lower, middle), upper));
 }
@@ -73,21 +75,26 @@ content median_of_nine(span<content> array, key_func_type cmp) {
  */
 template <typename content, typename key_func_type>
 std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
-                                    size_t pivot_element) {
+                                    const content& pivot_element) {
+    const auto less = cmp;
+    const auto equal = util::as_equal(cmp);
+    const auto greater = util::as_greater(cmp);
+
     // Init values, which keep track of the partition position
     size_t left = 0;
     size_t mid = 0;
     size_t right = 0;
     for (size_t i = 0; i < array.size(); ++i) {
         // Count Elements in less-Partition
-        if (cmp(array[i], pivot_element) < 0) {
+        if (less(array[i], pivot_element)) {
             ++mid;
         }
         // Count Elements in equal partition
-        else if (cmp(array[i], pivot_element) == 0) {
+        else if (equal(array[i], pivot_element)) {
             ++right;
         }
     }
+
     // Add #elements smaller than pivot to get correct start position
     // for greater-partition counter
     right = right + mid;
@@ -98,13 +105,19 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
 
     // Loop, which builds the less-partition
     while (left < i) {
+        DCHECK_LT(left, array.size());
+
         // If current element is the pivot_element, swap it into equal-partition
-        if (cmp(array[left], pivot_element) == 0) {
+        if (equal(array[left], pivot_element)) {
+            DCHECK_MSG(left < array.size(), "left < array.size() failed while building the less-partition. pivot=" << pivot_element << ", left=" << left << ", array_size=" << array.size());
+            DCHECK_MSG(mid < array.size(), "mid < array.size() failed while building the less-partition. pivot=" << pivot_element << ", mid=" << mid << ", array_size=" << array.size());
             std::swap(array[left], array[mid]);
             ++mid;
         }
         // else if the element belongs in the greater-partition, swap it there
-        else if (cmp(array[left], pivot_element) > 0) {
+        else if (greater(array[left], pivot_element)) {
+            DCHECK_LT(left, array.size());
+            DCHECK_LT(right, array.size());
             std::swap(array[left], array[right]);
             ++right;
         }
@@ -113,10 +126,13 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
             ++left;
         }
     }
+
     // Loop, which builds the equal partition
     while (mid < j) {
         // if current element is bigger than the pivot_element, swap it
-        if (cmp(array[mid], pivot_element) > 0) {
+        if (greater(array[mid], pivot_element)) {
+            DCHECK_MSG(right < array.size(), "right < array.size() failed while building the equal-partition. right=" << right << ", array_size=" << array.size());
+            DCHECK_MSG(mid < array.size(), "mid < array.size() failed while building the equal-partition. mid=" << mid << ", array_size=" << array.size());
             std::swap(array[mid], array[right]);
             ++right;
         }
@@ -153,7 +169,7 @@ void ternary_quicksort(span<content> array, key_func_type cmp) {
     }
 
     if (n == 2) {
-        if (cmp(array[0], array[1]) > 0) {
+        if (cmp(array[1], array[0])) {
             std::swap(array[0], array[1]);
         }
         return;
@@ -162,7 +178,7 @@ void ternary_quicksort(span<content> array, key_func_type cmp) {
     // constexpr size_t MEDIAN_OF_THREE_THRESHOLD = 7;
 
     // Choose pivot according to array size
-    content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
+    const content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
                         ? median_of_nine(array, cmp)
                         : median_of_three(array, cmp);
     auto result = partition(array, cmp, pivot);

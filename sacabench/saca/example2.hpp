@@ -28,7 +28,7 @@ namespace sacabench::example2 {
                 (void) alphabet_size;
                 (void) out_sa;
 
-                std::vector<std::size_t> data = { 39, 3192, 29, 1923, 29, 0, 19238, 2, 4 };
+                util::container<std::size_t> data = { 39, 3192, 29, 1923, 29, 0, 19238, 2, 4 };
                 sacabench::util::sort::std_sort(data, [](const std::size_t a, const std::size_t b) {
                         return a < b;
                         });
