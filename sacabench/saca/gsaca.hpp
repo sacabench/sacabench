@@ -70,6 +70,8 @@ namespace sacabench::gsaca {
                 out_sa[group_end] = index;
             }
 
+            // Return the changed values.
+            // TODO: Use a pointer to gsaca_values to reduce needed memory.
             return values;
         }
 
@@ -81,19 +83,31 @@ namespace sacabench::gsaca {
                                                         gsaca_values values,
                                                         size_t number_of_chars) {
 
+            // Calculate prev pointer for all elements of current group in descending order.
             for (size_t index = values.group_end; index >= values.group_start; --index) {
-                size_t current_suffix = out_sa[index]; //use prev - pointers from already used groups
-                size_t previous_element;
-                for (previous_element = current_suffix - 1; previous_element < number_of_chars; previous_element = values.PREV[previous_element]) {
+
+                // Calculate current suffix and predecessor of it.
+                size_t current_suffix = out_sa[index];
+                size_t previous_element = current_suffix - 1;
+
+                // Loop through all indices up to the one of the last character.
+                while(previous_element < number_of_chars) {
+
+                    // End if the current group is left.
                     if (values.ISA[previous_element] <= values.group_end) {
-                        if (values.ISA[previous_element] >= values.group_start) {
-                            values.GSIZE[values.ISA[previous_element]] = 1; //mark values.ISA[previous_element]
-                        }
                         break;
                     }
+
+                    // Check the next predecessor.
+                    previous_element = values.PREV[previous_element];
                 }
+
+                // Save the calculated previous element.
                 values.PREV[current_suffix] = previous_element;
             }
+
+            // Return the changed values.
+            // TODO: Use a pointer to gsaca_values to reduce needed memory.
             return values;
         }
 
@@ -127,6 +141,8 @@ namespace sacabench::gsaca {
                 }
             }
 
+            // Return the changed values.
+            // TODO: Use a pointer to gsaca_values to reduce needed memory.
             return values;
         }
 
@@ -191,6 +207,9 @@ namespace sacabench::gsaca {
 
                 values.group_start = values.group_end;
             }
+
+            // Return the changed values.
+            // TODO: Use a pointer to gsaca_values to reduce needed memory.
             return values;
         }
 
@@ -244,21 +263,18 @@ namespace sacabench::gsaca {
                                         size_t alphabet_size,
                                         sacabench::util::span<sa_index> out_sa) {
 
-            gsaca_values values = gsaca_values();
-
+            // Check if text is not empty.
             if (text.size() == 0) {
                 return;
             }
 
+            // Setup needed values and build initial group structure.
+            gsaca_values values = gsaca_values();
             size_t number_of_chars = text.size();
-
-            //set up needed structures
             std::fill_n(values.PREV, 1000, -1);
-
-            //// PHASE 1: pre-sort suffixes ////
-            //build initial group structure
             values = build_initial_structures(text, out_sa, values, number_of_chars);
 
+            //// PHASE 1 ////
             //process groups from highest to lowest
             size_t group_start_temp = 0;
             size_t group_end_temp = 0;
@@ -329,7 +345,7 @@ namespace sacabench::gsaca {
                 out_sa[group_end_temp] = group_start_temp; //counter where to place next entry
             }
 
-            //// PHASE 2: sort suffixes finally ////
+            //// PHASE 2 ////
             sort_suffixes(out_sa, values, number_of_chars);
         }
     }; // class gsaca
