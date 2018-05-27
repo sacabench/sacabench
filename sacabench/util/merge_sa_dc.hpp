@@ -39,8 +39,6 @@ namespace sacabench::util {
     */
     static void merge_sa_dc(const T& t, const S0& sa_0, const SA& sa_12, const I& isa_12, S& sa, Compare comp, 
             const Substring get_substring) {
-
-        std::cout << std::endl << "Hier wird merge_sa_dc aufgerufen:" << std::endl;
         
         DCHECK_MSG(sa.size() == t.size(), 
                 "sa must be initialised and must have the same length as t.");

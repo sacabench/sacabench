@@ -17,6 +17,8 @@
 #include <string>
 #include <math.h>
 
+#define OUTPUT false
+
 namespace sacabench::dc3 {
     
     /**\brief Identify order of chars starting in position i mod 3 = 0 with difference cover
@@ -260,6 +262,7 @@ namespace sacabench::dc3 {
                                      size_t alphabet_size,
                                      util::span<sa_index> out_sa) {
                 //Anfang Debug-Informationen------------------------------------------------------------------------
+                if(OUTPUT){
                 if(rec){
                     std::cout << std::endl <<"Wir befinden uns in der Rekursion" << std::endl;
                 }else{
@@ -271,6 +274,7 @@ namespace sacabench::dc3 {
                     std::cout << text[i];
                 }
                 std::cout << std::endl;
+                }
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 
@@ -286,11 +290,13 @@ namespace sacabench::dc3 {
                 auto t_12 = sacabench::util::make_container<size_t>(2*(text.size()-2)/3);
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
+                if(OUTPUT){
                 std::cout << "triplets:    ";
                 for(size_t i = 0; i < triplets_12.size() ; i++){
                         std::cout << triplets_12[i] << " ";
                 }
                 std::cout << std::endl;
+                }
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 
@@ -301,17 +307,21 @@ namespace sacabench::dc3 {
                 determine_leq(text, triplets_12, t_12, recursion);
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
+                if(OUTPUT){
                 std::cout << "t_12:    ";
                 for(size_t i = 0; i < t_12.size() ; i++){
                         std::cout << t_12[i] << " ";
                 }
                 std::cout << std::endl;
+                }
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 util::span<sa_index> sa_12 =  util::span(&out_sa[0], t_12.size());
             
                 //Anfang Debug-Informationen------------------------------------------------------------------------
+                if(OUTPUT){
                 std::cout << "vor der Rekursion" << std::endl;
+                }
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 //run the algorithm recursivly if the names are not unique
@@ -331,7 +341,9 @@ namespace sacabench::dc3 {
                 }
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
-                std::cout << "nach der Rekursion" << std::endl;
+                if(OUTPUT){
+                    std::cout << "nach der Rekursion" << std::endl;
+                }
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 //empty isa_12 which should be filled correctly with method determine_isa
@@ -346,6 +358,7 @@ namespace sacabench::dc3 {
                     isa_12 = sacabench::util::make_container<size_t>(sa_12.size());
                     determine_isa(sa_12, isa_12);
                     
+                    if(OUTPUT){
                     std::cout << "sa_12:    ";
                     for(size_t i = 0; i < sa_12.size() ; i++){
                             std::cout << sa_12[i] << " ";
@@ -356,6 +369,7 @@ namespace sacabench::dc3 {
                             std::cout << isa_12[i] << " ";
                     }
                     std::cout << std::endl;
+                    }
                     //index of the first value which represents the positions i mod 3 = 2
                     size_t end_of_mod_eq_1 = triplets_12.size()/2; // + ((triplets_12.size()/2) % 2 == 0);
                     if(triplets_12.size() % 2 != 0){
@@ -372,11 +386,13 @@ namespace sacabench::dc3 {
                     }
                     
                     //Anfang Debug-Informationen------------------------------------------------------------------------
-                    std::cout << "korrigierte triplets:    ";
-                    for(size_t i = 0; i < triplets_12.size() ; i++){
-                            std::cout << triplets_12[i] << " ";
+                    if(OUTPUT){
+                        std::cout << "korrigierte triplets:    ";
+                        for(size_t i = 0; i < triplets_12.size() ; i++){
+                                std::cout << triplets_12[i] << " ";
+                        }
+                        std::cout << std::endl;
                     }
-                    std::cout << std::endl;
                     //Ende Debug-Informationen------------------------------------------------------------------------
                     
                     //convert isa_12 to the correct format for merge_sa_dc.
@@ -391,6 +407,19 @@ namespace sacabench::dc3 {
                 }else{
                     isa_12 = t_12;
                     determine_isa(isa_12, sa_12);
+
+                    //convert isa_12 to the correct format for merge_sa_dc.
+                    size_t counter = 0;
+                    size_t half = isa_12.size()/2 + (((isa_12.size()% 2)!=0));
+                    
+                    for(size_t i = 0; i<isa_12.size()/2;i++){
+                        merge_isa_12[counter++] = isa_12[i];
+                        merge_isa_12[counter++] = isa_12[half + i];
+                        
+                    }
+                    if(isa_12.size() % 2 != 0){
+                        merge_isa_12[counter] = isa_12[isa_12.size()/2];
+                    }
                 }
                 
                 //characters of positions i mod 3 = 0 of text
@@ -402,11 +431,13 @@ namespace sacabench::dc3 {
                 }
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
-                std::cout << "t_0:    ";
-                for(size_t i = 0; i < t_0.size() ; i++){
-                        std::cout << t_0[i] << " ";
+                if(OUTPUT){
+                    std::cout << "t_0:    ";
+                    for(size_t i = 0; i < t_0.size() ; i++){
+                            std::cout << t_0[i] << " ";
+                    }
+                    std::cout << std::endl;
                 }
-                std::cout << std::endl;
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 
@@ -419,6 +450,7 @@ namespace sacabench::dc3 {
                 
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
+                if(OUTPUT){
                 std::cout << "text:   ";
                 for(size_t i = 0; i < text.size()-2; i++){
                     std::cout << text[i] << " ";
@@ -438,33 +470,32 @@ namespace sacabench::dc3 {
                 std::cout << std::endl;
                 
                 std::cout << "isa_12:   ";
-                if(rec){
-                    for(size_t i = 0; i < isa_12.size() ; i++){
-                        std::cout << isa_12[i] << " ";
-                    }
-                }else{
+                
                     for(size_t i = 0; i < merge_isa_12.size(); i++){
                         std::cout << merge_isa_12[i] << " ";
                     }
-                }
+                
                 std::cout << std::endl;
+                }
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
                 //merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
                 if constexpr(rec){ 
                     sacabench::util::merge_sa_dc<const size_t>(sacabench::util::span(&text[0], text.size()-2), sa_0, triplets_12,
-                        isa_12, out_sa, comp_recursion, get_substring_recursion);
+                        merge_isa_12, out_sa, comp_recursion, get_substring_recursion);
                 }else{
                     sacabench::util::merge_sa_dc<const sacabench::util::character>(sacabench::util::span(&text[0], text.size()-2), sa_0, triplets_12,
                         merge_isa_12, out_sa, comp, get_substring);
                 }
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
+                if(OUTPUT){
                 std::cout << "sa:   ";
                 for(size_t i = 0; i < out_sa.size(); i++){
                     std::cout << out_sa[i] << " ";
                 }
                 std::cout << std::endl << std::endl;
+                }
                 //Ende Debug-Informationen------------------------------------------------------------------------
             }         
             
