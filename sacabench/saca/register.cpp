@@ -26,6 +26,10 @@ using saca_prefix_doubling_discarding =
 SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
               saca_prefix_doubling_discarding)
 
+using saca_dc7 = sacabench::dc7::dc7;
+SACA_REGISTER("DC7", "Description of DC7 TODO", saca_dc7)
+
+
 } // namespace sacabench::saca
 
 /******************************************************************************/
