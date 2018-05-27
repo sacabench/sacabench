@@ -11,8 +11,6 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-#define GENDLINK gsaca_values::ISA              //alias
-
 namespace sacabench::gsaca {
 
     class gsaca {
@@ -26,8 +24,6 @@ namespace sacabench::gsaca {
             size_t GSIZE[1000] = {0};
             size_t group_start = 0;
             size_t group_end = 0;
-            size_t suffix = 0;
-            size_t sr = 0;
             size_t gstarttmp = 0;
             size_t gendtmp = 0;
         };
@@ -60,10 +56,10 @@ namespace sacabench::gsaca {
                 //set up values.ISA, GLINK and SA
                 unsigned char current_char = text[index];
                 values.group_start = chars_cumulative[current_char];
-                values.sr = values.group_start + --chars_count[current_char];
+                size_t group_end = values.group_start + --chars_count[current_char];
                 values.GLINK[index] = values.group_start;
-                values.ISA[index] = values.sr;
-                out_sa[values.sr] = index;
+                values.ISA[index] = group_end;
+                out_sa[group_end] = index;
             }
             return values;
         }
@@ -74,9 +70,9 @@ namespace sacabench::gsaca {
                                                         size_t number_of_chars) {
 
             for (size_t index = values.group_end; index >= values.group_start; --index) {
-                values.suffix = out_sa[index]; //use prev - pointers from already used groups
+                size_t current_suffix = out_sa[index]; //use prev - pointers from already used groups
                 size_t previous_element;
-                for (previous_element = values.suffix - 1; previous_element < number_of_chars; previous_element = values.PREV[previous_element]) {
+                for (previous_element = current_suffix - 1; previous_element < number_of_chars; previous_element = values.PREV[previous_element]) {
                     if (values.ISA[previous_element] <= values.group_end) {
                         if (values.ISA[previous_element] >= values.group_start) {
                             values.GSIZE[values.ISA[previous_element]] = 1; //mark values.ISA[previous_element]
@@ -84,7 +80,7 @@ namespace sacabench::gsaca {
                         break;
                     }
                 }
-                values.PREV[values.suffix] = previous_element;
+                values.PREV[current_suffix] = previous_element;
             }
             return values;
         }
@@ -93,6 +89,9 @@ namespace sacabench::gsaca {
          * This is the alternative way to calculate prev pointer from the paper.
          * It uses the helper function compute_prev_pointer(size_t current_index, gsaca_values values).
          * Currently it does not work the correct way for all test cases.
+         *
+         * For more information see page 32ff of master thesis
+         * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
          */
         template<typename sa_index>
         inline static gsaca_values calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa, gsaca_values values) {
@@ -131,11 +130,11 @@ namespace sacabench::gsaca {
         }
 
         /**
-        * This function implements the end of phase 1 of the algorithm.
-        *
-        * For more information see page 36 of master thesis
-        * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
-        */
+         * This function implements the end of phase 1 of the algorithm.
+         *
+         * For more information see page 36 of master thesis
+         * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
+         */
         template<typename sa_index>
         inline static gsaca_values rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
                                                       gsaca_values values,
@@ -151,31 +150,31 @@ namespace sacabench::gsaca {
 
                     // calucalte last suffix of current group
                     size_t previous_element = out_sa[index];
-                    values.sr = values.GLINK[previous_element];
-                    values.sr += --values.GSIZE[values.sr];
+                    size_t start_index = values.GLINK[previous_element];
+                    start_index += --values.GSIZE[start_index];
 
                     //move previous to back by exchanging it with last suffix s of group
-                    values.suffix = out_sa[values.sr];
+                    size_t current_suffix = out_sa[start_index];
                     size_t tmp = values.ISA[previous_element];
-                    out_sa[tmp] = values.suffix;
-                    values.ISA[values.suffix] = tmp;
-                    out_sa[values.sr] = previous_element;
-                    values.ISA[previous_element] = values.sr;
+                    out_sa[tmp] = current_suffix;
+                    values.ISA[current_suffix] = tmp;
+                    out_sa[start_index] = previous_element;
+                    values.ISA[previous_element] = start_index;
                 }
 
                 //set new GLINK for moved suffixes
                 for (size_t index = values.group_start; index < values.group_end; ++index) {
                     size_t previous_element = out_sa[index];
-                    values.sr = values.GLINK[previous_element];
-                    values.sr += values.GSIZE[values.sr];
-                    values.GLINK[previous_element] = values.sr;
+                    size_t start_index = values.GLINK[previous_element];
+                    start_index += values.GSIZE[start_index];
+                    values.GLINK[previous_element] = start_index;
                 }
 
                 //set up GSIZE for newly created groups
                 for (size_t index = values.group_start; index < values.group_end; ++index) {
                     size_t previous_element = out_sa[index];
-                    values.sr = values.GLINK[previous_element];
-                    values.GSIZE[values.sr]++;
+                    size_t start_index = values.GLINK[previous_element];
+                    values.GSIZE[start_index]++;
                 }
 
                 values.group_start = values.group_end;
@@ -184,11 +183,11 @@ namespace sacabench::gsaca {
         }
 
         /**
-        * This function implements phase 2 of the algorithm.
-        *
-        * For more information see page 38 of master thesis
-        * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
-        */
+         * This function implements phase 2 of the algorithm.
+         *
+         * For more information see page 38 of master thesis
+         * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
+         */
         template<typename sa_index>
         inline static void sort_suffixes(sacabench::util::span<sa_index> out_sa,
                                          gsaca_values values,
@@ -268,13 +267,13 @@ namespace sacabench::gsaca {
                 values = compute_prev_pointer(out_sa, values, number_of_chars);
                 //values = calculate_all_prev_pointer(out_sa, values);
 
-                //set GENDLINK of all suffixes for phase 2 and move unmarked suffixes to the front of the actual group
+                //set ISA of all suffixes for phase 2 and move unmarked suffixes to the front of the actual group
                 size_t group_size = 0;
                 for (size_t index = values.group_start; index <= values.group_end; ++index) {
-                    values.suffix = out_sa[index];
-                    values.GENDLINK[values.suffix] = values.group_end;
+                    size_t current_suffix = out_sa[index];
+                    values.ISA[current_suffix] = values.group_end;
                     if (values.GSIZE[index] == 0) { //index is not marked
-                        out_sa[values.group_start+(group_size++)] = values.suffix;
+                        out_sa[values.group_start+(group_size++)] = current_suffix;
                     }
                 }
 
@@ -285,16 +284,16 @@ namespace sacabench::gsaca {
 
                 do {
                     size_t index = values.group_end - 1;
-                    values.sr = values.group_end;
+                    size_t saved_group_end = values.group_end;
                     while (index >= values.group_start) {
-                        values.suffix = out_sa[index];
-                        size_t previous_element = values.PREV[values.suffix];
+                        size_t current_suffix = out_sa[index];
+                        size_t previous_element = values.PREV[current_suffix];
                         if (previous_element < number_of_chars) {
                             if (values.ISA[previous_element] < values.gstarttmp) { //p is in a lex. smaller group
                                 out_sa[index--] = out_sa[--values.group_end];
                                 out_sa[values.group_end] = previous_element; //push prev to back
                             } else { //p is in same group
-                                values.PREV[values.suffix] = values.PREV[previous_element];
+                                values.PREV[current_suffix] = values.PREV[previous_element];
                                 values.PREV[previous_element] = number_of_chars; //clear prev pointer, is not used in phase 2
                                 --index;
                             }
@@ -303,8 +302,8 @@ namespace sacabench::gsaca {
                         }
                     }
                     //write number of suffixes written to end on stack using GSIZE
-                    if (values.group_end < values.sr) {
-                        values.GSIZE[values.group_end] = values.sr - values.group_end;
+                    if (values.group_end < saved_group_end) {
+                        values.GSIZE[values.group_end] = saved_group_end - values.group_end;
                         ++number_of_splitted_groups; //also, count number of splitted groups
                     }
                 } while (values.group_start < values.group_end);
