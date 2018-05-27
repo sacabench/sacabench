@@ -69,28 +69,11 @@ namespace sacabench::util {
                 // check if t_0 is smaller or equal to t_12
                 const bool less_than = comp(t_0, t_12);
                 const bool eq = !comp(t_0, t_12) && !comp(t_12, t_0);
-                // look up correct indices in isa
-                const size_t start_index_mod_2 = isa_12.size()/2 + (isa_12.size()%2 != 0);
-                size_t pos_leq_t_0;
-                size_t pos_leq_t_12;
-                if ((sa_0[i]+t_0.size()) % 3 == 1) {
-                    pos_leq_t_0 = (sa_0[i]+t_0.size())/3;
-                }
-                else {
-                    pos_leq_t_0 = start_index_mod_2+(sa_0[i]+t_0.size())/3;
-                }
-                if ((sa_12[j]+t_12.size()) % 3 == 1) {
-                    pos_leq_t_12 = (sa_12[j]+t_12.size())/3;
-                }
-                else {
-                    pos_leq_t_12 = start_index_mod_2+(sa_12[j]+t_12.size())/3;
-                }
-                // check if suffix at positions pos_leq_t_0 is smaller than at position pos_leq_t_12
-                const bool lesser_suf = 
-                    !(pos_leq_t_12 >= isa_12.size()) &&            // if index to compare for t_12 is out of bounds of isa then sa_0[i] is never lexicographically smaller
-                                                                    // than sa_12[j]
-                    (pos_leq_t_0 >= isa_12.size() ||               // if index to compare for t_0 is out of bounds of isa then sa_0[i] is lexicographically smaller
-                    isa_12[pos_leq_t_0] < isa_12[pos_leq_t_12]);
+                const bool lesser_suf = !((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size()) &&  // if index to compare for t_12 is out of bounds of isa then sa_0[i] is never lexicographically smaller
+                                                                                             // than sa_12[j]
+                    ((2*(sa_0[i]+t_0.size()))/3 >= isa_12.size() ||                          // if index to compare for t_0 is out of bounds of isa then sa_0[i] is lexicographically smaller
+                    isa_12[(2*(sa_0[i]+t_0.size()))/3] 
+                    < isa_12[2*((sa_12[j]+t_12.size()))/3]);
                     
                 if (less_than || (eq && lesser_suf)) { 
                     sa[counter] = sa_0[i++];
