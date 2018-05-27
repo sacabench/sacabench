@@ -169,27 +169,49 @@ namespace sacabench::gsaca {
             return values;
         }
 
+        /**
+        * This function implements phase 2 of the algorithm.
+        *
+        * For more information see page 38 of master thesis
+        * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
+        */
         template<typename sa_index>
-        inline static gsaca_values sort_suffixes(sacabench::util::span<sa_index> out_sa,
-                                                 gsaca_values values,
-                                                 size_t number_of_chars) {
+        inline static void sort_suffixes(sacabench::util::span<sa_index> out_sa,
+                                         gsaca_values values,
+                                         size_t number_of_chars) {
 
+            // Save sentinel as first entry in SA.
             out_sa[0] = number_of_chars - 1;
+
+            // Calculate the other values in SA.
             for (size_t index = 0; index < number_of_chars; index++) {
-                values.suffix = out_sa[index] - 1;
-                while (values.suffix < number_of_chars) {
-                    values.sr = values.GENDLINK[values.suffix];
-                    if (values.sr == number_of_chars) { //suffix already placed to SA, stop
+
+                // Get predeseccor char of the char at current index.
+                size_t index_of_predecessor_char = out_sa[index] - 1;
+                while (index_of_predecessor_char < number_of_chars) {
+
+                    // Calcualte suffix_rank as the number of suffixes in lower groups.
+                    size_t suffix_rank = values.ISA[index_of_predecessor_char];
+
+                    // Use a specific value to mark already calculated values.
+                    size_t already_calculated_marker = 0;
+                    if (suffix_rank == already_calculated_marker) {
+                        // The suffix at the current index is already calculated.
                         break;
                     }
-                    values.sr = out_sa[values.sr]++; //get position where to write s
-                    out_sa[values.sr] = values.suffix;
-                    //mark that suffix is placed in SA already
-                    values.GENDLINK[values.suffix] = number_of_chars;
-                    values.suffix = values.PREV[values.suffix]; //process next suffix
+
+                    // Get position of start of current group.
+                    size_t start_of_group = out_sa[suffix_rank]++;
+                    // Move suffix at front of its group.
+                    out_sa[start_of_group] = index_of_predecessor_char;
+
+                    // Mark that suffix is placed in SA already with the previously defined marker value.
+                    values.ISA[index_of_predecessor_char] = already_calculated_marker;
+
+                    // Get the next index to be proecessed.
+                    index_of_predecessor_char = values.PREV[index_of_predecessor_char];
                 }
             }
-            return values;
         }
 
         template<typename sa_index>
@@ -281,7 +303,7 @@ namespace sacabench::gsaca {
             }
 
             //// PHASE 2: sort suffixes finally ////
-            values = sort_suffixes(out_sa, values, number_of_chars);
+            sort_suffixes(out_sa, values, number_of_chars);
         }
     }; // class gsaca
 } // namespace sacabench::gsaca
