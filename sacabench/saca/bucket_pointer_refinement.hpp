@@ -12,6 +12,8 @@
 #include <util/span.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/std_sort.hpp>
+#include <util/sort/ternary_quicksort.hpp>
+#include <util/compare.hpp>
 
 namespace sacabench::bucket_pointer_refinement {
 
@@ -180,10 +182,7 @@ class bucket_pointer_refinement {
 
             // sort the given bucket by using sort_key for each suffix
             // TODO: use ternary quicksort
-            util::sort::std_sort(bucket,
-                [&sort_key](const auto& lhs, const auto& rhs) {
-                    return sort_key(lhs) < sort_key(rhs);
-                });
+            util::sort::std_sort(bucket, util::compare_key(sort_key));
 
             /* As a consequence of sorting, bucket pointers might have changed.
              * We have to update the bucket pointers for further use.
