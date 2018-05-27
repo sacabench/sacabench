@@ -66,24 +66,33 @@ namespace sacabench::util {
                     t_12 = get_substring(t, &t[sa_12[j]], 2, sa_12[j]); 
                 }
                 
+                // check if t_0 is smaller or equal to t_12
                 const bool less_than = comp(t_0, t_12);
                 const bool eq = !comp(t_0, t_12) && !comp(t_12, t_0);
-                const bool lesser_suf = !((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size()) &&
-                    ((2*(sa_0[i]+t_0.size()))/3 >= isa_12.size() ||
-                    isa_12[(2*(sa_0[i]+t_0.size()))/3] 
-                    < isa_12[2*((sa_12[j]+t_12.size()))/3]);
+                // look up correct indices in isa
+                const size_t start_index_mod_2 = isa_12.size()/2 + (isa_12.size()%2 != 0);
+                size_t pos_leq_t_0;
+                size_t pos_leq_t_12;
+                if ((sa_0[i]+t_0.size()) % 3 == 1) {
+                    pos_leq_t_0 = (sa_0[i]+t_0.size())/3;
+                }
+                else {
+                    pos_leq_t_0 = start_index_mod_2+(sa_0[i]+t_0.size())/3;
+                }
+                if ((sa_12[j]+t_12.size()) % 3 == 1) {
+                    pos_leq_t_12 = (sa_12[j]+t_12.size())/3;
+                }
+                else {
+                    pos_leq_t_12 = start_index_mod_2+(sa_12[j]+t_12.size())/3;
+                }
+                // check if suffix at positions pos_leq_t_0 is smaller than at position pos_leq_t_12
+                const bool lesser_suf = 
+                    !(pos_leq_t_12 >= isa_12.size()) &&            // if index to compare for t_12 is out of bounds of isa then sa_0[i] is never lexicographically smaller
+                                                                    // than sa_12[j]
+                    (pos_leq_t_0 >= isa_12.size() ||               // if index to compare for t_0 is out of bounds of isa then sa_0[i] is lexicographically smaller
+                    isa_12[pos_leq_t_0] < isa_12[pos_leq_t_12]);
                     
-                if(t[0] == 2 && t[1] == 2 && t[2] == 1){
-                    
-                    std::cout << "betrachtet: sa_0[i++]: " << sa_0[i] << "  und sa_12[j++]: " << sa_12[j] << std::endl;
-                    std::cout << "less_than: " << less_than << std::endl;
-                    std::cout << "eq: " << eq << std::endl;
-                    std::cout << "lesser_suf: " << lesser_suf << std::endl;
-                    std::cout << "!((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size()): " << (!((2*(sa_12[j]+t_12.size()))/3 >= isa_12.size())) << std::endl;
-                    std::cout << "(2*(sa_0[i]+t_0.size()))/3 >= isa_12.size(): " << ((2*(sa_0[i]+t_0.size()))/3 >= isa_12.size()) << std::endl;
-                    std::cout << "isa_12[(2*(sa_0[i]+t_0.size()))/3] < isa_12[2*((sa_12[j]+t_12.size()))/3]: " << (isa_12[(2*(sa_0[i]+t_0.size()))/3] < isa_12[2*((sa_12[j]+t_12.size()))/3]) << std::endl;     
-                    std::cout << "isa_12[(2*(sa_0[i]+t_0.size()))/3]: " << isa_12[(2*(sa_0[i]+t_0.size()))/3] << " < " << isa_12[2*((sa_12[j]+t_12.size()))/3] << " : isa_12[2*((sa_12[j]+t_12.size()))/3]" << std::endl; 
-                }if (less_than || (eq && lesser_suf)) { 
+                if (less_than || (eq && lesser_suf)) { 
                     sa[counter] = sa_0[i++];
                 }
                 else { sa[counter] = sa_12[j++]; }
