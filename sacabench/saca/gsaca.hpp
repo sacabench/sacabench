@@ -27,7 +27,6 @@ namespace sacabench::gsaca {
             size_t group_start = 0;
             size_t group_end = 0;
             size_t suffix = 0;
-            size_t previous = 0;
             size_t sr = 0;
             size_t gstarttmp = 0;
             size_t gendtmp = 0;
@@ -76,15 +75,16 @@ namespace sacabench::gsaca {
 
             for (size_t index = values.group_end; index >= values.group_start; --index) {
                 values.suffix = out_sa[index]; //use prev - pointers from already used groups
-                for (values.previous = values.suffix - 1; values.previous < number_of_chars; values.previous = values.PREV[values.previous]) {
-                    if (values.ISA[values.previous] <= values.group_end) {
-                        if (values.ISA[values.previous] >= values.group_start) {
-                            values.GSIZE[values.ISA[values.previous]] = 1; //mark values.ISA[values.previous]
+                size_t previous_element;
+                for (previous_element = values.suffix - 1; previous_element < number_of_chars; previous_element = values.PREV[previous_element]) {
+                    if (values.ISA[previous_element] <= values.group_end) {
+                        if (values.ISA[previous_element] >= values.group_start) {
+                            values.GSIZE[values.ISA[previous_element]] = 1; //mark values.ISA[previous_element]
                         }
                         break;
                     }
                 }
-                values.PREV[values.suffix] = values.previous;
+                values.PREV[values.suffix] = previous_element;
             }
             return values;
         }
@@ -92,7 +92,7 @@ namespace sacabench::gsaca {
         /**
          * This is the alternative way to calculate prev pointer from the paper.
          * It uses the helper function compute_prev_pointer(size_t current_index, gsaca_values values).
-         * It failes for some test cases.
+         * Currently it does not work the correct way for all test cases.
          */
         template<typename sa_index>
         inline static gsaca_values calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa, gsaca_values values) {
@@ -130,40 +130,54 @@ namespace sacabench::gsaca {
             return 0;
         }
 
+        /**
+        * This function implements the end of phase 1 of the algorithm.
+        *
+        * For more information see page 36 of master thesis
+        * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
+        */
         template<typename sa_index>
         inline static gsaca_values rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
                                                       gsaca_values values,
                                                       size_t number_of_splitted_groups) {
 
-            while (number_of_splitted_groups--) {
+            // Process each element of the splitted groups in descending order.
+            for (size_t index = number_of_splitted_groups; index > 0; index --) {
+
                 values.group_end = values.group_start + values.GSIZE[values.group_start];
+
                 //decrement group count of previous group suffixes, and move them to back
                 for (size_t index = values.group_end - 1; index >= values.group_start; --index) {
+
                     // calucalte last suffix of current group
-                    values.previous = out_sa[index];
-                    values.sr = values.GLINK[values.previous];
+                    size_t previous_element = out_sa[index];
+                    values.sr = values.GLINK[previous_element];
                     values.sr += --values.GSIZE[values.sr];
+
                     //move previous to back by exchanging it with last suffix s of group
                     values.suffix = out_sa[values.sr];
-                    size_t tmp = values.ISA[values.previous];
+                    size_t tmp = values.ISA[previous_element];
                     out_sa[tmp] = values.suffix;
                     values.ISA[values.suffix] = tmp;
-                    out_sa[values.sr] = values.previous;
-                    values.ISA[values.previous] = values.sr;
+                    out_sa[values.sr] = previous_element;
+                    values.ISA[previous_element] = values.sr;
                 }
+
                 //set new GLINK for moved suffixes
                 for (size_t index = values.group_start; index < values.group_end; ++index) {
-                    values.previous = out_sa[index];
-                    values.sr = values.GLINK[values.previous];
+                    size_t previous_element = out_sa[index];
+                    values.sr = values.GLINK[previous_element];
                     values.sr += values.GSIZE[values.sr];
-                    values.GLINK[values.previous] = values.sr;
+                    values.GLINK[previous_element] = values.sr;
                 }
+
                 //set up GSIZE for newly created groups
                 for (size_t index = values.group_start; index < values.group_end; ++index) {
-                    values.previous = out_sa[index];
-                    values.sr = values.GLINK[values.previous];
+                    size_t previous_element = out_sa[index];
+                    values.sr = values.GLINK[previous_element];
                     values.GSIZE[values.sr]++;
                 }
+
                 values.group_start = values.group_end;
             }
             return values;
@@ -274,14 +288,14 @@ namespace sacabench::gsaca {
                     values.sr = values.group_end;
                     while (index >= values.group_start) {
                         values.suffix = out_sa[index];
-                        values.previous = values.PREV[values.suffix];
-                        if (values.previous < number_of_chars) {
-                            if (values.ISA[values.previous] < values.gstarttmp) { //p is in a lex. smaller group
+                        size_t previous_element = values.PREV[values.suffix];
+                        if (previous_element < number_of_chars) {
+                            if (values.ISA[previous_element] < values.gstarttmp) { //p is in a lex. smaller group
                                 out_sa[index--] = out_sa[--values.group_end];
-                                out_sa[values.group_end] = values.previous; //push prev to back
+                                out_sa[values.group_end] = previous_element; //push prev to back
                             } else { //p is in same group
-                                values.PREV[values.suffix] = values.PREV[values.previous];
-                                values.PREV[values.previous] = number_of_chars; //clear prev pointer, is not used in phase 2
+                                values.PREV[values.suffix] = values.PREV[previous_element];
+                                values.PREV[previous_element] = number_of_chars; //clear prev pointer, is not used in phase 2
                                 --index;
                             }
                         } else { //prev points to nothing
