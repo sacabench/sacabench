@@ -106,6 +106,7 @@ namespace test {
         test("abcabca"_s);
 
         test("abbbbbbbbbbcbbbbbbbbbb"_s);
+        test("abbbcbbb"_s);
 
         test("0	100009425	0.1661:0.1661	#businessfor"_s);
     }
