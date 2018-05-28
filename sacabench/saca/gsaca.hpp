@@ -157,6 +157,77 @@ namespace sacabench::gsaca {
             return 0;
         }
 
+        template<typename sa_index>
+        inline static gsaca_values update_group_structure(sacabench::util::span<sa_index> out_sa,
+                                                          gsaca_values values) {
+
+            size_t group_size = 0;
+
+            // Loop over all indices of current group.
+            for (size_t index = values.group_start; index <= values.group_end; ++index) {
+
+                // Prepare ISA for all suffixes for phase 2.
+                size_t current_suffix = out_sa[index];
+                values.ISA[current_suffix] = values.group_end;
+
+                // Check if the current index is marked as the start of the current group.
+                size_t group_start_marker = 0;
+                if (values.GSIZE[index] == group_start_marker) {
+
+                    // Move marked first suffixes to end of current group.
+                    size_t new_index = values.group_start + group_size;
+                    out_sa[new_index] = current_suffix;
+
+                    // Increase current group size by 1.
+                    group_size += 1;
+                }
+            }
+
+            // Order suffixes by the number of suffixes of same group are jumped by them.
+            values.group_end = values.group_start + group_size;
+
+            // Return the changed values.
+            // TODO: Use a pointer to gsaca_values to reduce needed memory.
+            return values;
+        }
+
+
+        template<typename sa_index>
+        inline static gsaca_values reorder_suffixes(sacabench::util::span<sa_index> out_sa,
+                                                    gsaca_values values,
+                                                    size_t* number_of_splitted_groups,
+                                                    size_t number_of_chars,
+                                                    size_t group_start_temp) {
+
+            do {
+                size_t index = values.group_end - 1;
+                size_t saved_group_end = values.group_end;
+                while (index >= values.group_start) {
+                    size_t current_suffix = out_sa[index];
+                    size_t previous_element = values.PREV[current_suffix];
+                    if (previous_element < number_of_chars) {
+                        if (values.ISA[previous_element] < group_start_temp) { //p is in a lex. smaller group
+                            out_sa[index--] = out_sa[--values.group_end];
+                            out_sa[values.group_end] = previous_element; //push prev to back
+                        } else { //p is in same group
+                            values.PREV[current_suffix] = values.PREV[previous_element];
+                            values.PREV[previous_element] = number_of_chars; //clear prev pointer, is not used in phase 2
+                            --index;
+                        }
+                    } else { //prev points to nothing
+                        out_sa[index] = out_sa[values.group_start++]; //remove entry
+                    }
+                }
+                //write number of suffixes written to end on stack using GSIZE
+                if (values.group_end < saved_group_end) {
+                    values.GSIZE[values.group_end] = saved_group_end - values.group_end;
+                    ++*number_of_splitted_groups; //also, count number of splitted groups
+                }
+            } while (values.group_start < values.group_end);
+
+            return values;
+        }
+
         /**
          * This function implements the end of phase 1 of the algorithm.
          *
@@ -275,74 +346,39 @@ namespace sacabench::gsaca {
             values = build_initial_structures(text, out_sa, values, number_of_chars);
 
             //// PHASE 1 ////
-            //process groups from highest to lowest
+
+            // Process groups in descending order. A group is defined through its start and end.
             size_t group_start_temp = 0;
             size_t group_end_temp = 0;
             for (values.group_end = number_of_chars - 1; values.group_end > 0; values.group_end = group_start_temp - 1) {
-                values.group_start = values.GLINK[ out_sa[values.group_end] ];
+
+                // Calculate start of current group.
+                size_t last_index_of_group = out_sa[values.group_end];
+                values.group_start = values.GLINK[last_index_of_group];
+
+                // Save borders of current group temporarily to use them later again.
                 group_start_temp = values.group_start;
                 group_end_temp = values.group_end;
 
-                //clear GSIZE group size for marking
-                values.GSIZE[values.group_start] = 0;
+                // Mark index of start of current group in GSIZE to check it later on.
+                size_t group_start_marker = 0;
+                values.GSIZE[values.group_start] = group_start_marker;
 
-                //compute prev - pointers and mark suffixes of own group that
-                //have a prev-pointer of own group pointing to them
-
-                //There are two possible implementations for calculating the prev pointers.
-                //The first one is the reference implementation von Uwe Baier.
-                //The second one is the implementation from the paper. It fails for some examples.
-                //Choose one by selecting it here.
-
+                // Compute the prev pointer of the indices of current group.
                 values = compute_prev_pointer(out_sa, values, number_of_chars);
-                //values = calculate_all_prev_pointer(out_sa, values);
 
-                //set ISA of all suffixes for phase 2 and move unmarked suffixes to the front of the actual group
-                size_t group_size = 0;
-                for (size_t index = values.group_start; index <= values.group_end; ++index) {
-                    size_t current_suffix = out_sa[index];
-                    values.ISA[current_suffix] = values.group_end;
-                    if (values.GSIZE[index] == 0) { //index is not marked
-                        out_sa[values.group_start+(group_size++)] = current_suffix;
-                    }
-                }
+                // Prepares ISA for phase 2 and updates group structure.
+                values = update_group_structure(out_sa, values);
 
-                //order the suffixes according on how much suffixes of same group are jumped by them
-                values.group_end = values.group_start + group_size; //exclusive bound by now
-
+                // Reorders the groups.
                 size_t number_of_splitted_groups = 0;
+                values = reorder_suffixes(out_sa, values, &number_of_splitted_groups, number_of_chars, group_start_temp);
 
-                do {
-                    size_t index = values.group_end - 1;
-                    size_t saved_group_end = values.group_end;
-                    while (index >= values.group_start) {
-                        size_t current_suffix = out_sa[index];
-                        size_t previous_element = values.PREV[current_suffix];
-                        if (previous_element < number_of_chars) {
-                            if (values.ISA[previous_element] < group_start_temp) { //p is in a lex. smaller group
-                                out_sa[index--] = out_sa[--values.group_end];
-                                out_sa[values.group_end] = previous_element; //push prev to back
-                            } else { //p is in same group
-                                values.PREV[current_suffix] = values.PREV[previous_element];
-                                values.PREV[previous_element] = number_of_chars; //clear prev pointer, is not used in phase 2
-                                --index;
-                            }
-                        } else { //prev points to nothing
-                            out_sa[index] = out_sa[values.group_start++]; //remove entry
-                        }
-                    }
-                    //write number of suffixes written to end on stack using GSIZE
-                    if (values.group_end < saved_group_end) {
-                        values.GSIZE[values.group_end] = saved_group_end - values.group_end;
-                        ++number_of_splitted_groups; //also, count number of splitted groups
-                    }
-                } while (values.group_start < values.group_end);
-
-                //rearrange previous suffixes stored in other groups
+                // Rearranges previous suffixes stored in other groups.
                 values = rearrange_suffixes(out_sa, values, number_of_splitted_groups);
 
-                //prepare current group for phase 2
-                out_sa[group_end_temp] = group_start_temp; //counter where to place next entry
+                // Prepare current group for phase 2. Sets counter to mark place for next entry.
+                out_sa[group_end_temp] = group_start_temp;
             }
 
             //// PHASE 2 ////
