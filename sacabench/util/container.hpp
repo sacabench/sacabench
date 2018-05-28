@@ -21,6 +21,8 @@ private:
     std::vector<element_type> m_allocation;
 
     inline static void copy_check(span<element_type const> other) {
+        constexpr bool make_error = false;
+
         (void)other;
 #ifdef DEBUG
         if (!other.empty()) {
@@ -45,13 +47,21 @@ private:
             });
 
             if (triggered) {
-                DCHECK_MSG(
-                    false,
-                    "Copy of non-empty container or string in function\n`"
-                        << ss.str()
-                        << "`"
-                           "\nIf the copy was intentional, "
-                           "consider using `.make_copy()` instead.");
+                if (make_error) {
+                    DCHECK_MSG(
+                        false,
+                        "Copy of non-empty container or string in function\n`"
+                            << ss.str()
+                            << "`"
+                               "\nIf the copy was intentional, "
+                               "consider using `.make_copy()` instead.");
+                } else {
+                    std::cerr << "WARNING: Copy of non-empty container or "
+                                 "string in function `"
+                              << ss.str()
+                              << "`"
+                                 "\n";
+                }
             }
         }
 #endif
