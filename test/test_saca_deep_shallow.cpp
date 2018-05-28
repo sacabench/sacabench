@@ -121,17 +121,17 @@ TEST(blind_trie, follow_edges) {
     }
 }
 
-TEST(deep_shallow, blind_sort) {
-    util::string input = util::make_string("banabanabas");
-    util::apply_effective_alphabet(input);
-
-    auto sa = util::make_container<size_t>(input.size());
-    for(size_t i = 0; i < sa.size(); ++i) {
-        sa[i] = i;
-    }
-
-    sacabench::deep_shallow::blind_trie<size_t>(util::span(input), util::span(sa));
-}
+// TEST(deep_shallow, blind_sort) {
+//     util::string input = util::make_string("banabanabas");
+//     util::apply_effective_alphabet(input);
+//
+//     auto sa = util::make_container<size_t>(input.size());
+//     for(size_t i = 0; i < sa.size(); ++i) {
+//         sa[i] = i;
+//     }
+//
+//     sacabench::deep_shallow::blind_trie<size_t>(util::span(input), util::span(sa));
+// }
 
 TEST(deep_shallow, simple) {
     util::string input = util::make_string("hello");

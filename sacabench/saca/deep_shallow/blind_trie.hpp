@@ -111,9 +111,10 @@ public:
     inline void insert_child(const edge<suffix_index_type> e) {
         children.push_back(e);
         // FIXME: use insertion sort instead.
-        util::sort::std_sort(children, [](const auto& a, const auto& b) {
-            return a.edge_label < b.edge_label;
-        });
+        std::sort(children.begin(), children.end(),
+                  [](const auto& a, const auto& b) {
+                      return a.edge_label < b.edge_label;
+                  });
     }
 
     inline follow_edges_result<suffix_index_type>
@@ -253,19 +254,18 @@ private:
             const auto contained_string = root->follow_edges(text, suffix);
             print_result(contained_string);
 
-            switch(contained_string.type) {
-                case follow_edges_result_type::no_suitable_edge:
-                    {
-                        // suffix_index_type lcp = contained_string.content;
-                        // suffix_index_type random_leaf = root->get_random_leaf(contained_string.content);
-                        // Check, if the LCP is equal
+            switch (contained_string.type) {
+            case follow_edges_result_type::no_suitable_edge: {
+                // suffix_index_type lcp = contained_string.content;
+                // suffix_index_type random_leaf =
+                // root->get_random_leaf(contained_string.content); Check, if
+                // the LCP is equal
 
-                        // if it does, insert a new leaf as a child of the found node.
-                    }
-                    break;
-                default:
-                    std::cout << "could not insert." << std::endl;
-                    break;
+                // if it does, insert a new leaf as a child of the found node.
+            } break;
+            default:
+                std::cout << "could not insert." << std::endl;
+                break;
             }
         }
     }
