@@ -121,7 +121,7 @@ constexpr auto test_strlen = [](size_t strl) {
         std::vector<size_t> array;
 
         // Insert 1000 random numbers.
-        for (int i = 0; i < strl; ++i) {
+        for (size_t i = 0; i < strl; ++i) {
             input.push_back(dist(gen));
             array.push_back(i);
         }
