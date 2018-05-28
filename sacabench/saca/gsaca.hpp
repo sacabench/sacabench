@@ -199,32 +199,69 @@ namespace sacabench::gsaca {
                                                     size_t number_of_chars,
                                                     size_t group_start_temp) {
 
-            do {
+            // The value of group_end is decremented in some cases and in other cases group_start is incremented,
+            // so at some point group_start will no longer be less than group_end.
+            while (values.group_start < values.group_end) {
+
                 size_t index = values.group_end - 1;
                 size_t saved_group_end = values.group_end;
+
+                // The value of index is decremented in some cases, so at some point index will be smaller than group_start.
                 while (index >= values.group_start) {
+
+                    // Check if the current suffix has a valid prev pointer to another index.
                     size_t current_suffix = out_sa[index];
                     size_t previous_element = values.PREV[current_suffix];
-                    if (previous_element < number_of_chars) {
-                        if (values.ISA[previous_element] < group_start_temp) { //p is in a lex. smaller group
-                            out_sa[index--] = out_sa[--values.group_end];
-                            out_sa[values.group_end] = previous_element; //push prev to back
-                        } else { //p is in same group
+                    if (previous_element != -1) {
+                        // Case 1: There exists a valid prev pointer.
+
+                        // Check if the previous element is in the same or a smaller group.
+                        if (values.ISA[previous_element] < group_start_temp) {
+                            // Case 1.1: The previous_element is in a lex. smaller group.
+
+                            // Move the element at which the prev pointer of the current index points to to the end of the group.
+                            values.group_end--;
+                            out_sa[index] = out_sa[values.group_end];
+                            out_sa[values.group_end] = previous_element;
+
+                        } else {
+                            // Case 1.2: The previous_element is in the same or a lex. greater group.
+
+                            // The prev pointer of the current suffix is changed to the same as the previous element has.
                             values.PREV[current_suffix] = values.PREV[previous_element];
-                            values.PREV[previous_element] = number_of_chars; //clear prev pointer, is not used in phase 2
-                            --index;
+
+                            // Mark the prev pointer so it is no longer be checked in the previous comperation.
+                            values.PREV[previous_element] = -1;
                         }
-                    } else { //prev points to nothing
-                        out_sa[index] = out_sa[values.group_start++]; //remove entry
+
+                        // Decrement index for next iteration of while loop.
+                        index--;
+
+                    } else {
+                        // Case 2: There is no valid prev pointer.
+
+                        // Remove entry.
+                        out_sa[index] = out_sa[values.group_start];
+
+                        // Increment the group start for next iteration of while loop.
+                        values.group_start++;
                     }
                 }
-                //write number of suffixes written to end on stack using GSIZE
-                if (values.group_end < saved_group_end) {
-                    values.GSIZE[values.group_end] = saved_group_end - values.group_end;
-                    ++*number_of_splitted_groups; //also, count number of splitted groups
-                }
-            } while (values.group_start < values.group_end);
 
+                // Check if suffixes were moved to the end of their group.
+                if (values.group_end < saved_group_end) {
+
+                    // Save the number of suffixes moved to the end of their group in GSIZE.
+                    size_t number_of_suffixes_moved_to_end = saved_group_end - values.group_end;
+                    values.GSIZE[values.group_end] = number_of_suffixes_moved_to_end;
+
+                    // Increment number_of_splitted_groups to count them.
+                    ++*number_of_splitted_groups;
+                }
+            }
+
+            // Return the changed values.
+            // TODO: Use a pointer to gsaca_values to reduce needed memory.
             return values;
         }
 
