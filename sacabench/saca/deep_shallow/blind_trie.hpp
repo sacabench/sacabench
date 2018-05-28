@@ -131,10 +131,10 @@ public:
         return r;
     }
 
-    inline suffix_index_type get_random_leaf() {
-        DCHECK_GT(children.size(), 0);
-        return children[0].child->get_random_leaf();
-    }
+    // inline suffix_index_type get_random_leaf() {
+    //     DCHECK_GT(children.size(), 0);
+    //     return children[0].child->get_random_leaf();
+    // }
 
 private:
     suffix_index_type lcp;
@@ -164,13 +164,13 @@ public:
         }
     }
 
-    inline suffix_index_type get_random_leaf() {
-        if(is_leaf) {
-            return node_ref.as_leaf.content;
-        } else {
-            return node_ref.as_inner_node.get_random_leaf();
-        }
-    }
+    // inline suffix_index_type get_random_leaf() {
+    //     if(is_leaf) {
+    //         return node_ref.as_leaf.content;
+    //     } else {
+    //         return node_ref.as_inner_node.get_random_leaf();
+    //     }
+    // }
 
     inline void print_node(size_t depth) {
         if (is_leaf) {
@@ -256,8 +256,8 @@ private:
             switch(contained_string.type) {
                 case follow_edges_result_type::no_suitable_edge:
                     {
-                        suffix_index_type lcp = contained_string.content;
-                        suffix_index_type random_leaf = root->get_random_leaf(contained_string.content);
+                        // suffix_index_type lcp = contained_string.content;
+                        // suffix_index_type random_leaf = root->get_random_leaf(contained_string.content);
                         // Check, if the LCP is equal
 
                         // if it does, insert a new leaf as a child of the found node.

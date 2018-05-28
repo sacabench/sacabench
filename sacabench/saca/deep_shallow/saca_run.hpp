@@ -90,7 +90,7 @@ private:
     /// \param common_prefix_length The number of characters every string in
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
-                          const size_t common_prefix_length) {
+                          const size_t /*common_prefix_length*/) {
         // Try induced sorting. This call returns false, if no ANCHOR and
         // OFFSET are suitable. We then use blind-/quicksort.
         bool induce_sorted_succeeded = try_induced_sort(bucket);
@@ -107,7 +107,7 @@ private:
     }
 
     /// \brief Use Blind Sorting to sort the bucket.
-    inline void blind_sort(const span<sa_index_type> bucket) {
+    inline void blind_sort(const span<sa_index_type> /*bucket*/) {
         // // Construct a blind trie from `bucket`.
         // blind_trie bt(input_text, bucket);
         //
