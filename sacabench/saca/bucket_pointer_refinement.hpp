@@ -12,6 +12,8 @@
 #include <util/span.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/std_sort.hpp>
+#include <util/sort/ternary_quicksort.hpp>
+#include <util/compare.hpp>
 
 namespace sacabench::bucket_pointer_refinement {
 
@@ -179,11 +181,9 @@ class bucket_pointer_refinement {
             };
 
             // sort the given bucket by using sort_key for each suffix
-            // TODO: use ternary quicksort
-            util::sort::std_sort(bucket,
-                [&sort_key](const auto& lhs, const auto& rhs) {
-                    return sort_key(lhs) < sort_key(rhs);
-                });
+            // TODO: use compare_key wrapper
+            util::sort::ternary_quicksort::ternary_quicksort(bucket,
+                util::compare_key(sort_key));
 
             /* As a consequence of sorting, bucket pointers might have changed.
              * We have to update the bucket pointers for further use.
@@ -198,8 +198,8 @@ class bucket_pointer_refinement {
              * right_bounds[i] = true: suffix i and i+1 are in different buckets
              * TODO: Find a more memory efficient solution
              */
-            util::container<bool> right_bounds =
-                util::make_container<bool>(bucket.size());
+            util::container<uint8_t> right_bounds =
+                util::make_container<uint8_t>(bucket.size());
             std::fill(right_bounds.begin(), right_bounds.end(), false);
 
             // sequentially scan the sa from right to left and calculate prefix
