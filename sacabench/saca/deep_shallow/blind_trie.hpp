@@ -99,7 +99,7 @@ public:
 
         for (const auto& edge : children) {
             print_spaces(depth);
-            if (edge.edge_label != '\0') {
+            if (edge.edge_label != util::SENTINEL) {
                 std::cout << "|- " << edge.edge_label << " " << std::endl;
             } else {
                 std::cout << "|- <$> " << std::endl;
@@ -181,7 +181,13 @@ public:
         }
     }
 
-    ~node() {}
+    ~node() {
+        if(is_leaf) {
+            node_ref.as_leaf.~leaf();
+        } else {
+            node_ref.as_inner_node.~inner_node();
+        }
+    }
 
 private:
     // If this is true, the `node_ref` is a `leaf`. If not, a `inner_node`.
@@ -247,6 +253,8 @@ private:
     inline void insert(const suffix_index_type suffix) {
         if (root == nullptr) {
             leaf l(text.size() - suffix, suffix);
+
+            // FIXME: use std::unique_ptr instead of new/delete.
             root = new node(l);
         } else {
             // Since we don't store entire suffixes in the inner nodes, we don't

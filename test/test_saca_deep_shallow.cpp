@@ -62,7 +62,7 @@ TEST(blind_trie, display_trie_banana_3) {
     blind_node node_ana(ana);
 
     inner_ana.insert_child(edge<size_t>((u_char)'a', &node_anana));
-    inner_ana.insert_child(edge<size_t>((u_char)'\0', &node_ana));
+    inner_ana.insert_child(edge<size_t>(util::SENTINEL, &node_ana));
 
     blind_node node_inner_ana(inner_ana);
 
