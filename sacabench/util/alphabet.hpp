@@ -13,6 +13,7 @@ namespace sacabench::util {
 
     struct alphabet {
         std::size_t size;
+        std::size_t real_size;
         std::array<character,
                    std::numeric_limits<character>::max() + 1> effective;
 
@@ -43,7 +44,10 @@ namespace sacabench::util {
 
             // The number of effective characters equals the effective value of
             // the greatest character.
-            size = effective[effective.size() - 1];
+            size = effective[effective.size()-1];
+
+            // The real size also includes the sentinel
+            real_size = effective[effective.size()-1] + 1;
         }
     };
 
