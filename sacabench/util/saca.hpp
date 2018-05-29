@@ -21,6 +21,8 @@ container<sa_index_t> prepare_and_construct_sa(size_t text_size,
                                                text_init_function init) {
     auto output = make_container<sa_index_t>(text_size);
 
+    size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
+
     auto text = string(text_size); // < TODO: Extra null bytes
     // TODO: Check that no inner nulls
 

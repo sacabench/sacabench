@@ -21,6 +21,8 @@ namespace sacabench::bucket_pointer_refinement {
 
 class bucket_pointer_refinement {
     public:
+        static constexpr size_t EXTRA_SENTINELS = 0;
+
         /**\brief Performs a simplified version of the bucket pointer refinement
          * algorithm described by Klaus-Bernd Schürmann and Jens Stoye in "An
          * incomplex algorithm for fast suffix array construction"

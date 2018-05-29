@@ -500,6 +500,8 @@ struct prefix_doubling_impl {
 };
 
 struct prefix_doubling {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet_info const& /*alphabet_size*/,
@@ -509,6 +511,8 @@ struct prefix_doubling {
 }; // struct prefix_doubling
 
 struct prefix_doubling_discarding {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet_info const& /*alphabet_size*/,
