@@ -8,10 +8,12 @@
 #pragma once
 
 #include <cinttypes>
+#include <functional>
+
+#include <util/assertions.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/assertions.hpp>
 
 namespace sacabench::util::sort::multikey_quicksort {
 // Create a function with compares at one character depth.
@@ -68,20 +70,24 @@ generate_multikey_key_function(const string_span input_text) {
 }
 
 // Our internal sort function.
-template <typename index_type>
+template <typename index_type, typename recursion_function =
+                                   std::function<void(span<index_type> array)>>
 void multikey_quicksort_internal(
     span<index_type> array,
-    compare_one_character_at_depth<index_type>& key_func) {
+    compare_one_character_at_depth<index_type>& key_func,
+    const std::optional<size_t> abort_at_depth = std::nullopt,
+    recursion_function fn = [](auto) {}) {
     // If the set size is only one element, we don't need to sort.
     if (array.size() < 2) {
         return;
     }
-    
+
     // FIXME: Choose a simple pivot element.
     const index_type pivot_element = array[0];
 
     // Swap elements using ternary quicksort partitioning.
-    auto bounds = sort::ternary_quicksort::partition(array, key_func, pivot_element);
+    auto bounds =
+        sort::ternary_quicksort::partition(array, key_func, pivot_element);
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
     // bounds[0] .. bounds[1] is equal to the pivot_element
@@ -96,7 +102,11 @@ void multikey_quicksort_internal(
 
     // Sort the equal partition by the next character.
     ++key_func.depth;
-    multikey_quicksort_internal(equal, key_func);
+    if (abort_at_depth.has_value() && key_func.depth >= abort_at_depth) {
+        fn(equal);
+    } else {
+        multikey_quicksort_internal(equal, key_func);
+    }
     --key_func.depth;
 }
 
@@ -109,5 +119,17 @@ void multikey_quicksort(span<index_type> array, const string_span input_text) {
 
     // Call internal function.
     multikey_quicksort_internal(array, key_func);
+}
+
+// Sort the suffix indices in array by comparing one character in
+// input_text. Abort at depth max_depth and call deep_sort instead.
+template <typename index_type, typename recursion_function>
+void multikey_quicksort(span<index_type> array, const string_span input_text,
+                        const size_t max_depth, recursion_function fn) {
+    // Generate key function which compares only the character at position 0.
+    auto key_func = generate_multikey_key_function<index_type>(input_text);
+
+    // Call internal function.
+    multikey_quicksort_internal(array, key_func, max_depth, fn);
 }
 } // namespace sacabench::util::sort::multikey_quicksort
