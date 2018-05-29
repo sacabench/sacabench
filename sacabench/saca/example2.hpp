@@ -14,6 +14,7 @@
 #include <util/string.hpp>
 #include <util/container.hpp>
 #include <util/span.hpp>
+#include <util/alphabet.hpp>
 
 namespace sacabench::example2 {
 
@@ -21,11 +22,11 @@ namespace sacabench::example2 {
         public:
             template<typename sa_index>
             static void construct_sa(util::string_span text,
-                                     size_t alphabet_size,
+                                     util::alphabet_info const& alphabet,
                                      util::span<sa_index> out_sa) {
                 // Suppress unused variable warnings:
                 (void) text;
-                (void) alphabet_size;
+                (void) alphabet;
                 (void) out_sa;
 
                 util::container<std::size_t> data = { 39, 3192, 29, 1923, 29, 0, 19238, 2, 4 };

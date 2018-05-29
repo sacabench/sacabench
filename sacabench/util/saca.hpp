@@ -6,13 +6,37 @@
 
 #pragma once
 
-#include "container.hpp"
-#include "span.hpp"
-#include "string.hpp"
 #include <string>
 #include <vector>
 
+#include "alphabet.hpp"
+#include "container.hpp"
+#include "span.hpp"
+#include "string.hpp"
+
 namespace sacabench::util {
+
+template <typename Algorithm, typename sa_index_t, typename text_init_function>
+container<sa_index_t> prepare_and_construct_sa(size_t text_size,
+                                               text_init_function init) {
+    auto output = make_container<sa_index_t>(text_size);
+
+    auto text = string(text_size); // < TODO: Extra null bytes
+    // TODO: Check that no inner nulls
+
+    init(text.slice());
+
+    auto alph = apply_effective_alphabet(text);
+    auto const alph_info = alphabet_info(alph.real_size - 1, true);
+
+    {
+        span<sa_index_t> out_sa = output;
+        string_span readonly_text = text;
+        Algorithm::construct_sa(readonly_text, alph_info, out_sa);
+    }
+
+    return output;
+}
 
 class saca;
 
@@ -51,8 +75,7 @@ public:
     }
 
     virtual void run_example() const = 0;
-    virtual void construct_sa(string_span test_input, size_t alphabet_size,
-                              span<size_t> output) const = 0;
+    virtual void construct_sa(string_span test_input) const = 0;
 
     std::string const& name() const { return name_; }
     std::string const& description() const { return description_; }
@@ -68,18 +91,24 @@ public:
     concrete_saca(const std::string& name, const std::string& description)
         : saca(name, description) {}
 
-    virtual void construct_sa(string_span test_input, size_t alphabet_size,
-                              span<size_t> output) const override {
-        Algorithm::construct_sa(test_input, alphabet_size, output);
+    virtual void construct_sa(string_span test_input) const override {
+        prepare_and_construct_sa<Algorithm, size_t>(
+            test_input.size(), [&](auto s) {
+                for (size_t i = 0; i < s.size(); i++) {
+                    s[i] = test_input[i];
+                }
+            });
     }
     virtual void run_example() const override {
         using sa_index_t = uint32_t;
         string_span test_input = "hello world"_s;
-        size_t alphabet_size = 256;
-        auto output = make_container<sa_index_t>(test_input.size());
-        span<sa_index_t> output_span = output;
 
-        Algorithm::construct_sa(test_input, alphabet_size, output_span);
+        prepare_and_construct_sa<Algorithm, sa_index_t>(
+            test_input.size(), [&](auto s) {
+                for (size_t i = 0; i < s.size(); i++) {
+                    s[i] = test_input[i];
+                }
+            });
     }
 }; // class concrete_saca
 

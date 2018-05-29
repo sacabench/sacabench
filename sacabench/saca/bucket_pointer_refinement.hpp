@@ -7,7 +7,9 @@
 #pragma once
 
 #include <math.h>
+
 #include <util/string.hpp>
+#include <util/alphabet.hpp>
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/sort/bucketsort.hpp>
@@ -25,7 +27,9 @@ class bucket_pointer_refinement {
          */
         template<typename sa_index>
         static void construct_sa(util::string_span input,
-                size_t alphabet_size, util::span<sa_index> sa) {
+                util::alphabet_info const& alphabet, util::span<sa_index> sa) {
+            size_t alphabet_size = alphabet.size_without_sentinel();
+
             size_t const n = input.size();
             if (n == 0) { // there's nothing to do
                 return;

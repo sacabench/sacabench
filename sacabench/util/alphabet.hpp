@@ -26,7 +26,7 @@ namespace sacabench::util {
          * distinct characters in the input text. If the text relies on all
          * characters (0...max_char), the resulting map will be invalid.
          */
-        alphabet(const string& input)
+        inline alphabet(const string& input)
         {
             // Find all existing characters (mark with 1)
             std::fill(effective.begin(), effective.end(), 0);
@@ -59,7 +59,7 @@ namespace sacabench::util {
      * the specified mapping in the given effective alphabet. Note that the
      * transformation relies on the correctness of the alphabet map.
      */
-    void apply_effective_alphabet(string& input, const alphabet& alphabet_map) {
+    inline void apply_effective_alphabet(string& input, const alphabet& alphabet_map) {
         // Map the characters using the new effective alphabet
         for (character& c : input) {
             c = alphabet_map.effective[c];
@@ -72,11 +72,37 @@ namespace sacabench::util {
      * This method takes the input text and replaces its symbols by consecutive
      * numbers in the `character` range, holding onto the relative ordering.
      */
-    alphabet apply_effective_alphabet(string& input) {
+    inline alphabet apply_effective_alphabet(string& input) {
         const alphabet input_alphabet(input);
         apply_effective_alphabet(input, input_alphabet);
         return input_alphabet;
     }
+
+
+    // TODO: Merge this with `alphabet`?
+    class alphabet_info {
+        size_t m_max_character = util::SENTINEL;
+        bool m_is_effective;
+    public:
+        inline alphabet_info(size_t max_char, bool is_effective):
+            m_max_character(max_char), m_is_effective(is_effective) {}
+
+        inline size_t size_with_sentinel() const {
+            return m_max_character + 1;
+        }
+
+        inline size_t size_without_sentinel() const {
+            return m_max_character;
+        }
+
+        inline size_t max_character_value() const {
+            return m_max_character;
+        }
+
+        inline bool is_effective() const {
+            return m_is_effective;
+        }
+    };
 }
 
 /******************************************************************************/
