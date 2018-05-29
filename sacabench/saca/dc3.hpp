@@ -128,8 +128,8 @@ namespace sacabench::dc3 {
                     for(size_t i = 0; i < text.size() ; i++){
                         modified_text[i] = text[i];
                     }
-                    modified_text.push_back(' ');
-                    modified_text.push_back(' ');
+                    modified_text.push_back('\0');
+                    modified_text.push_back('\0');
                     
                     construct_sa_dc3<size_t, false, sacabench::util::character>(modified_text, alphabet_size, out_sa);
                 }
@@ -146,7 +146,7 @@ namespace sacabench::dc3 {
             DCHECK_MSG(triplets_12.size() == 2*(INPUT_STRING.size()-2)/3, "triplets_12 must have the length (2*INPUT_STRING.size()/3)");
             
             
-            const unsigned char SMALLEST_CHAR = ' ';
+            const unsigned char SMALLEST_CHAR = '\0';
             //Container to store all tuples with the same length as triplets_12
             //Tuples contains three chararcters (triplet) and the start position i mod 3 != 0 
             auto triplets_12_to_be_sorted = sacabench::util::make_container<std::tuple<C, C, C, size_t>>(2*(INPUT_STRING.size()-2)/3);
@@ -196,7 +196,7 @@ namespace sacabench::dc3 {
             
             DCHECK_MSG(triplets_12.size() == t_12.size(), "triplets_12 must have the same length as t_12");
             
-            size_t leq_name = 0;
+            size_t leq_name = 1;
 
             
             for(size_t i = 0; i < triplets_12.size(); i++) {
@@ -248,6 +248,17 @@ namespace sacabench::dc3 {
         
         template<typename S, typename I>
         static void determine_isa(const S& t_12, I& isa_12){
+            
+            DCHECK_MSG(isa_12.size() == t_12.size(), "isa_12 must have the same length as t_12");
+            
+            for(size_t i = 0; i < t_12.size(); i++) {
+                isa_12[t_12[i]-1] = i+1;
+            }
+            
+        }
+        
+        template<typename S, typename I>
+        static void determine_sa(const S& t_12, I& isa_12){
             
             DCHECK_MSG(isa_12.size() == t_12.size(), "isa_12 must have the same length as t_12");
             
@@ -310,7 +321,7 @@ namespace sacabench::dc3 {
                 if(OUTPUT){
                 std::cout << "t_12:    ";
                 for(size_t i = 0; i < t_12.size() ; i++){
-                        std::cout << t_12[i] << " ";
+                        std::cout << t_12[i]-1 << " ";
                 }
                 std::cout << std::endl;
                 }
@@ -331,7 +342,7 @@ namespace sacabench::dc3 {
                     auto modified_text = sacabench::util::make_container<size_t>(t_12.size()+2);
 
                     for(size_t i = 0; i < t_12.size() ; i++){
-                        modified_text[i] = t_12[i];
+                        modified_text[i] = t_12[i]-1;
                     }
                     modified_text[modified_text.size()-2] = 0;
                     modified_text[modified_text.size()-1] = 0;
@@ -356,7 +367,7 @@ namespace sacabench::dc3 {
                 if(recursion){
                     
                     isa_12 = sacabench::util::make_container<size_t>(sa_12.size());
-                    determine_isa(sa_12, isa_12);
+                    determine_sa(sa_12, isa_12);
                     
                     if(OUTPUT){
                     std::cout << "sa_12:    ";
@@ -413,13 +424,23 @@ namespace sacabench::dc3 {
                     size_t half = isa_12.size()/2 + (((isa_12.size()% 2)!=0));
                     
                     for(size_t i = 0; i<isa_12.size()/2;i++){
-                        merge_isa_12[counter++] = isa_12[i];
-                        merge_isa_12[counter++] = isa_12[half + i];
+                        merge_isa_12[counter++] = isa_12[i]-1;
+                        merge_isa_12[counter++] = isa_12[half + i]-1;
                         
                     }
                     if(isa_12.size() % 2 != 0){
-                        merge_isa_12[counter] = isa_12[isa_12.size()/2];
+                        merge_isa_12[counter] = isa_12[isa_12.size()/2]-1;
                     }
+                    
+                    //Anfang Debug-Informationen------------------------------------------------------------------------
+                    if(OUTPUT){
+                        std::cout << "isa_12:    ";
+                        for(size_t i = 0; i < isa_12.size() ; i++){
+                                std::cout << isa_12[i]-1 << " ";
+                        }
+                        std::cout << std::endl;
+                    }
+                //Ende Debug-Informationen------------------------------------------------------------------------
                 }
                 
                 //characters of positions i mod 3 = 0 of text
@@ -446,7 +467,12 @@ namespace sacabench::dc3 {
                 
                 //fill sa_0 by inducing with characters at i mod 3 = 0 and ranks of triplets 
                 //beginning in positions i mod 3 != 0
-                sacabench::util::induce_sa_dc<C>(t_0, isa_12, sa_0);
+                if(recursion){
+                    sacabench::util::induce_sa_dc<C>(t_0, isa_12, sa_0);
+                }else{
+                    sacabench::util::induce_sa_dc<C>(t_0, isa_12, sa_0);
+                }
+                
                 
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
