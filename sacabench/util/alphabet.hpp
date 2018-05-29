@@ -26,7 +26,7 @@ namespace sacabench::util {
          * distinct characters in the input text. If the text relies on all
          * characters (0...max_char), the resulting map will be invalid.
          */
-        inline alphabet(const string& input)
+        inline alphabet(string_span input)
         {
             // Find all existing characters (mark with 1)
             std::fill(effective.begin(), effective.end(), 0);
@@ -59,7 +59,7 @@ namespace sacabench::util {
      * the specified mapping in the given effective alphabet. Note that the
      * transformation relies on the correctness of the alphabet map.
      */
-    inline void apply_effective_alphabet(string& input, const alphabet& alphabet_map) {
+    inline void apply_effective_alphabet(span<character> input, const alphabet& alphabet_map) {
         // Map the characters using the new effective alphabet
         for (character& c : input) {
             c = alphabet_map.effective[c];
@@ -72,7 +72,7 @@ namespace sacabench::util {
      * This method takes the input text and replaces its symbols by consecutive
      * numbers in the `character` range, holding onto the relative ordering.
      */
-    inline alphabet apply_effective_alphabet(string& input) {
+    inline alphabet apply_effective_alphabet(span<character> input) {
         const alphabet input_alphabet(input);
         apply_effective_alphabet(input, input_alphabet);
         return input_alphabet;

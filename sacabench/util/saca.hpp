@@ -23,18 +23,28 @@ container<sa_index_t> prepare_and_construct_sa(size_t text_size,
 
     size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
 
-    auto text = string(text_size); // < TODO: Extra null bytes
-    // TODO: Check that no inner nulls
+    auto text_with_sentinels = string(text_size + extra_sentinels);
+    auto text = text_with_sentinels.slice(0, text_size);
 
-    init(text.slice());
+    init(text);
+
+    /* TODO: Uncommend and write test-for if IF_DEBUG is merged
+    IF_DEBUG({
+        for (size_t i = 0; i < text.size(); i++) {
+            DCHECK_MSG(text[i] != 0, "Input byte " << i << " has value 0, which
+    is reserved for the terminating sentinel!")
+        }
+    })
+    */
 
     auto alph = apply_effective_alphabet(text);
     auto const alph_info = alphabet_info(alph.real_size - 1, true);
 
     {
         span<sa_index_t> out_sa = output;
-        string_span readonly_text = text;
-        Algorithm::construct_sa(readonly_text, alph_info, out_sa);
+        string_span readonly_text_with_sentinels = text_with_sentinels;
+        Algorithm::construct_sa(readonly_text_with_sentinels, alph_info,
+                                out_sa);
     }
 
     return output;
