@@ -10,6 +10,7 @@
 #include <sstream>
 #include <vector>
 
+#include "macros.hpp"
 #include "span.hpp"
 #include "stacktrace.hpp"
 
@@ -24,20 +25,23 @@ private:
         constexpr bool make_error = false;
 
         (void)other;
-#ifdef DEBUG
-        if (!other.empty()) {
-            std::stringstream ss;
+        IF_DEBUG({
+            if (!other.empty()) {
+                std::stringstream ss;
 
-            bool possible_trigger = false;
-            bool triggered = false;
-            backtrace::Backtrace(1, true, [&](auto r) {
-                if (possible_trigger) {
-                    possible_trigger = false;
+                bool possible_trigger = false;
+                bool triggered = false;
+                backtrace::Backtrace(1, true, [&](auto r) {
+                    if (possible_trigger) {
+                        possible_trigger = false;
 
-                    triggered = r.function_namespace.starts_with("sacabench");
-                    if (triggered) {
-                        ss.str("");
-                        ss << r.function_namespace << "::" << r.function_name;
+                        triggered =
+                            r.function_namespace.starts_with("sacabench");
+                        if (triggered) {
+                            ss.str("");
+                            ss << r.function_namespace
+                               << "::" << r.function_name;
+                        }
                     }
                 }
                 if (r.function_namespace.starts_with(
@@ -50,25 +54,26 @@ private:
                 }
             });
 
-            if (triggered) {
-                if (make_error) {
-                    DCHECK_MSG(
-                        false,
-                        "Copy of non-empty container or string in function\n`"
-                            << ss.str()
-                            << "`"
-                               "\nIf the copy was intentional, "
-                               "consider using `.make_copy()` instead.");
-                } else {
-                    std::cerr << "WARNING: Copy of non-empty container or "
-                                 "string in function `"
-                              << ss.str()
-                              << "`"
-                                 "\n";
+                if (triggered) {
+                    if (make_error) {
+                        DCHECK_MSG(
+                            false,
+                            "Copy of non-empty container or string in "
+                            "function\n`"
+                                << ss.str()
+                                << "`"
+                                   "\nIf the copy was intentional, "
+                                   "consider using `.make_copy()` instead.");
+                    } else {
+                        std::cerr << "WARNING: Copy of non-empty container or "
+                                     "string in function `"
+                                  << ss.str()
+                                  << "`"
+                                     "\n";
+                    }
                 }
             }
-        }
-#endif
+        })
     }
 
 public:
