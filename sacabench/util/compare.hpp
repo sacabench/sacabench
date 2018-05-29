@@ -95,7 +95,7 @@ namespace sacabench::util {
             m_key(key), m_cmp(cmp) {}
 
         template<typename element_type>
-        bool operator()(element_type const& lhs, element_type const& rhs) {
+        bool operator()(element_type const& lhs, element_type const& rhs) const {
             return m_cmp(m_key(lhs), m_key(rhs));
         }
     private:

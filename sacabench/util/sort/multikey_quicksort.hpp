@@ -11,40 +11,45 @@
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/assertions.hpp>
 
 namespace sacabench::util::sort::multikey_quicksort {
 // Create a function with compares at one character depth.
 template <typename index_type>
 struct compare_one_character_at_depth {
 public:
-    compare_one_character_at_depth(const string_span& _input_text)
+    compare_one_character_at_depth(const string_span _input_text)
         : depth(0), input_text(_input_text) {}
 
     // The depth at which we compare.
     index_type depth;
 
-    // 0 if equal, < 0 if the first is smaller, > 0 if the first is larger.
-    // Overwrites -> operator for quicksort
-    int operator()(const index_type& a, const index_type& b) const {
-        if (this->depth + a >= this->input_text.size() &&
-            this->depth + b >= this->input_text.size()) {
-            // Both strings have equal length.
-            return 0;
-        }
+    // This returns true, if a < b.
+    bool operator()(const index_type& a, const index_type& b) const {
+        const bool a_is_too_short = depth + a >= input_text.size();
+        const bool b_is_too_short = depth + b >= input_text.size();
 
-        if (this->depth + a >= this->input_text.size()) {
+        if (a_is_too_short) {
+            if (b_is_too_short) {
+                // but if both are over the edge, one cannot be smaller.
+                return false;
+            }
+
             // b should be larger
-            return -1;
+            return true;
         }
 
-        if (this->depth + b >= this->input_text.size()) {
+        if (b_is_too_short) {
             // a should be larger
-            return 1;
+            return false;
         }
 
-        size_t at_a = this->input_text[depth + a];
-        size_t at_b = this->input_text[depth + b];
-        int diff = at_a - at_b;
+        DCHECK_LT(depth + a, input_text.size());
+        DCHECK_LT(depth + b, input_text.size());
+
+        const character at_a = this->input_text[depth + a];
+        const character at_b = this->input_text[depth + b];
+        const bool diff = at_a < at_b;
 
         return diff;
     }
@@ -71,14 +76,12 @@ void multikey_quicksort_internal(
     if (array.size() < 2) {
         return;
     }
-
+    
     // FIXME: Choose a simple pivot element.
-    const index_type& pivot_element = array[0];
+    const index_type pivot_element = array[0];
 
     // Swap elements using ternary quicksort partitioning.
-    // Casts key_func into type std::function<int(index_type, index_type)>
-    auto bounds =
-        sort::ternary_quicksort::partition(array, key_func, pivot_element);
+    auto bounds = sort::ternary_quicksort::partition(array, key_func, pivot_element);
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
     // bounds[0] .. bounds[1] is equal to the pivot_element

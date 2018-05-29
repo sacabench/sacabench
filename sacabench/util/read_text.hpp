@@ -19,7 +19,7 @@ namespace sacabench::util {
      */
     string read_text (std::string filepath) {
 
-        string text;
+        std::vector<character> text;
         std::string line;
         std::ifstream filestream(filepath.c_str());
 
@@ -41,7 +41,9 @@ namespace sacabench::util {
             std::copy(line.begin(), line.end(), std::back_inserter(text));
         }
 
-        return text;
+        // TODO: Instead of making a copy here, replace implementation above
+        // with something that directly writes into a `util::string`.
+        return make_string(span(text));
     }
 }
 
