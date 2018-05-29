@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -19,7 +20,8 @@ namespace sacabench::util {
 template <typename element_type>
 class container {
 private:
-    std::vector<element_type> m_allocation;
+    std::unique_ptr<element_type[]> m_allocation;
+    size_t m_size = 0;
 
     inline static void copy_check(span<element_type const> other) {
         constexpr bool make_error = false;
@@ -81,14 +83,21 @@ public:
     static constexpr size_t npos = -1ll;
 
     /// Create a container of size 0.
-    inline container() : m_allocation() {}
+    inline container() {}
 
     /// Create a container with a given length.
     ///
     /// Each element is default-constructed.
     inline explicit container(size_t size) {
-        m_allocation.reserve(size);
-        m_allocation.resize(size);
+        if (size != 0ull) {
+            DCHECK_MSG(size < (1ull << 48),
+                       "The size passed to container() was larger than "
+                       "possible. This likely happened through a underflow "
+                       "when calculating a size `< 0`.")
+
+            m_size = size;
+            m_allocation = std::make_unique<element_type[]>(size);
+        }
     }
 
     /// Create a container from a initializer list.
@@ -108,13 +117,9 @@ public:
         std::copy(span.begin(), span.end(), begin());
     }
 
-    inline container(container const& other) {
-        copy_check(other);
-        m_allocation = other.m_allocation;
-    }
+    inline container(container const& other) { *this = other.as_span(); }
     inline container& operator=(container const& other) {
-        copy_check(other);
-        m_allocation = other.m_allocation;
+        *this = other.as_span();
         return *this;
     }
     inline container(container&& other) = default;
@@ -123,14 +128,21 @@ public:
     // Capacity
 
     /// Pointer to the beginning of the container.
-    inline element_type* data() noexcept { return m_allocation.data(); }
+    inline element_type* data() {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_allocation.get();
+    }
     /// Const pointer to the beginning of the container.
-    inline element_type const* data() const noexcept {
-        return m_allocation.data();
+    inline element_type const* data() const {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_allocation.get();
     }
 
     /// Size of the container, in elements.
-    inline size_t size() const noexcept { return m_allocation.size(); }
+    inline size_t size() const {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_size;
+    }
 
     /// Convert to a span.
     inline operator span<element_type>() {
