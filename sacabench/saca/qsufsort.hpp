@@ -167,7 +167,7 @@ public:
             is_sorted = ((out_sa[0] & remove_negative_mask) == n);
         }
         // transform isa to sa
-        util::isa2sa_simple_scan(util::span(isa), out_sa);
+        util::isa2sa_simple_scan(util::span<sa_index>(isa), out_sa);
     } // construct_sa
 
 private:

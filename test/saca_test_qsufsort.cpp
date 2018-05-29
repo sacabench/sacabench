@@ -18,24 +18,26 @@ using namespace sacabench::qsufsort;
 TEST(qsufsort, init_sorting)
 {
     const string_span test_span = "HONGKONG$"_s;
-    auto test_set = std::vector<size_t>(test_span.size());//.fill(0);
-    qsufsort::construct_sa(test_span,span(test_set));
+    auto test_set = std::vector<size_t>(test_span.size());
+    size_t alphabet_size = 255;
+    qsufsort::construct_sa(test_span,alphabet_size,span(test_set));
 }*/
 /*
 TEST(qsufsort, paper_example)
 {
     const string_span test_span = "TOBEORNOTTOBE$"_s;
-    auto test_set = std::vector<size_t>(test_span.size());//.fill(0);
-    qsufsort::construct_sa(test_span,span(test_set));
+    auto test_set = std::vector<size_t>(test_span.size());
+    size_t alphabet_size = 255;
+    qsufsort::construct_sa(test_span,alphabet_size,span(test_set));
 }
 */
-/*
+ /*
 TEST(qsufsort, example)
 {
     const string_span test_span = "caabaccaabacaa$"_s;
     auto test_set = std::vector<size_t>(test_span.size());//.fill(0);
-    size_t abritary = 255;
-    qsufsort::construct_sa(test_span,abritary,span(test_set));
+    size_t alphabet_size = 255;
+    qsufsort::construct_sa(test_span,alphabet_size,span(test_set));
 }*/
 
 TEST(qsufsort, saca_test) {
