@@ -13,7 +13,6 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-// TODO More checks
 
 namespace sacabench::qsufsort {
 
@@ -48,14 +47,13 @@ public:
         } else if (b_out_of_bound) {
             return false;
         }
-
         return (V[a + h] < V[b + h]);
     }
     const util::container<sa_index>& V;
-    const size_t h;
+    const size_t& h;
 };
 
-// for naive case, V is not a reference, so changes doesnt effect the comapring
+// for naive case, V is not a reference, so changes doesnt effect the comparing
 // function inside one iteration
 template <typename sa_index>
 struct compare_ranks_naive {
@@ -74,7 +72,6 @@ public:
         } else if (b_out_of_bound) {
             return false;
         }
-
         return (V[a + h] < V[b + h]);
     }
     const util::container<sa_index> V;
@@ -93,7 +90,7 @@ public:
         }
         std::cout << std::endl;
     }
-
+    // for trouble shooting
     template <typename T, typename S>
     static void print_isa(T& arr, S& out) {
         std::cout << "V: ";
@@ -103,12 +100,15 @@ public:
         }
         std::cout << std::endl;
     }
+    
+    
     template <typename sa_index>
     static void construct_sa(util::string_span text, size_t& alphabet_size,
                              util::span<sa_index> out_sa) {
 
         size_t n = text.size();
-
+        //check if n is too big
+        DCHECK_MSG(bool(n|negative_mask),"String is too long");
         // catch trivial cases
         if (n < 2)
             return;
@@ -132,11 +132,11 @@ public:
         init_isa(text, out_sa, isa, h);
         // since we sorted accoring to first letter, increment h
         ++h;
-
+        // comparing function, which compares the (i+h)-th ranks
+        auto compare_function = compare_ranks<sa_index>(isa, h);
+        
         while (!is_sorted) {
-            // comparing function, which compares the (i+h)-th ranks
-            auto compare_function = compare_ranks<sa_index>(isa, h);
-
+            
             size_t counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
@@ -154,7 +154,6 @@ public:
                     sort_and_update_group(out_sa, isa, compare_function,
                                           sa_index(counter),
                                           isa[out_sa[counter]]);
-                    // update ranks within group
                     // jump over updates group
                     counter = tmp + 1;
                 }
@@ -182,7 +181,7 @@ private:
             if (text[out_sa[i + 1 + h]] == text[out_sa[i + h]]) {
 
                 isa[out_sa[i]] = isa[out_sa[i + 1]];
-            } else {
+            } else { 
                 isa[out_sa[i]] = i;
             }
         }
@@ -290,6 +289,7 @@ private:
                                              util::container<sa_index>& isa,
                                              sa_index start, sa_index end) {
 
+        DCHECK_MSG(start<=end,"Start index is bigger than end index!");
         // in an unsorted group, every elements rank is the highest index, this
         // group occuoies in the SA
         for (size_t index = start; index <= end; ++index) {
@@ -303,6 +303,11 @@ private:
     }
 
 }; // class qsufsort
+
+
+
+
+
 
 // keep naive version for comparison
 class qsufsort_naive {
@@ -369,8 +374,6 @@ public:
             update_L(out_sa, V, L);
             // prefix doubling
             h = h * 2;
-
-            // size_t for supressing warning
             is_sorted = (size_t(-L[0]) == n);
         }
     } // construct_sa
