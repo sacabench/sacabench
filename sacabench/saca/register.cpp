@@ -4,9 +4,9 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
+#include "saca/bucket_pointer_refinement.hpp"
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
-#include "saca/bucket_pointer_refinement.hpp"
 #include "saca/prefix_doubling.hpp"
 #include "saca/qsufsort.hpp"
 
@@ -23,8 +23,8 @@ SACA_REGISTER("Example2", "Description of Example2", saca_example2)
 using saca_bucket_pointer_refinement =
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
 SACA_REGISTER("Bucket-Pointer Refinement",
-        "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
-        saca_bucket_pointer_refinement)
+              "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
+              saca_bucket_pointer_refinement)
 
 using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling;
 SACA_REGISTER("Prefix Doubling", "TODO", saca_prefix_doubling)
@@ -35,12 +35,14 @@ SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
               saca_prefix_doubling_discarding)
 
 using saca_qsufsort_naive =
-    sacabench::qsufsort::saca_qsufsort_naive;
-SACA_REGISTER("Naive qsufsort","Naive Version of N. Larssons and K. SADAKANES qsufsort",saca_qsufsort_naive)
+    sacabench::qsufsort::qsufsort_naive;
+SACA_REGISTER("Naive qsufsort","Naive Version of N. Larssons and K. SADAKANES qsufsort",
+              saca_qsufsort_naive)
 
-using saca_qsufsort =
-    sacabench::qsufsort::saca_qsufsort;
-SACA_REGISTER("qsufsort","Improved Version of N. Larssons and K. SADAKANES qsufsort",saca_qsufsort)
+using saca_qsufsort = sacabench::qsufsort::qsufsort;
+SACA_REGISTER("qsufsort",
+              "Improved Version of N. Larssons and K. SADAKANES qsufsort",
+              saca_qsufsort)
 
 } // namespace sacabench::saca
 

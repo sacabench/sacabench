@@ -32,12 +32,11 @@ public:
     const util::string_span& input_text;
 };
 
+template <typename sa_index>
 struct compare_ranks {
 public:
-    template <typename sa_index>
     compare_ranks(util::container<sa_index>& _V, size_t& _h) : V(_V), h(_h) {}
 
-    template <typename sa_index>
     // Warum const?
     bool operator()(const sa_index& a, const sa_index& b) const {
         bool a_out_of_bound = a + h >= V.size();
@@ -52,19 +51,18 @@ public:
 
         return (V[a + h] < V[b + h]);
     }
-    const util::container<size_t>& V;
+    const util::container<sa_index>& V;
     const size_t h;
 };
 
 // for naive case, V is not a reference, so changes doesnt effect the comapring
 // function inside one iteration
+template <typename sa_index>
 struct compare_ranks_naive {
 public:
-    template <typename sa_index>
     compare_ranks_naive(util::container<sa_index>& _V, size_t& _h)
         : V(_V), h(_h) {}
 
-    template <typename sa_index>
     // Warum const?
     bool operator()(const sa_index& a, const sa_index& b) const {
         bool a_out_of_bound = a + h >= V.size();
@@ -79,7 +77,7 @@ public:
 
         return (V[a + h] < V[b + h]);
     }
-    const util::container<size_t> V;
+    const util::container<sa_index> V;
     const size_t h;
 };
 
@@ -137,7 +135,7 @@ public:
 
         while (!is_sorted) {
             // comparing function, which compares the (i+h)-th ranks
-            auto compare_function = compare_ranks(isa, h);
+            auto compare_function = compare_ranks<sa_index>(isa, h);
 
             size_t counter = 0;
             // jump through array with group sizes
@@ -154,7 +152,8 @@ public:
                     size_t tmp = isa[out_sa[counter]];
                     // sort and update unsorted group
                     sort_and_update_group(out_sa, isa, compare_function,
-                                          counter, isa[out_sa[counter]]);
+                                          sa_index(counter),
+                                          isa[out_sa[counter]]);
                     // update ranks within group
                     // jump over updates group
                     counter = tmp + 1;
@@ -173,7 +172,7 @@ public:
 private:
     template <typename sa_index>
     static void init_isa(util::string_span text, util::span<sa_index> out_sa,
-                         util::container<size_t>& isa, size_t h) {
+                         util::container<sa_index>& isa, size_t h) {
         size_t n = out_sa.size();
         // rank of last element in out_sa is always n-1
         isa[(out_sa[n - 1])] = n - 1;
@@ -193,7 +192,7 @@ private:
 
     template <typename sa_index>
     static void update_group_length(util::span<sa_index>& out_sa,
-                                    util::container<size_t>& isa) {
+                                    util::container<sa_index>& isa) {
         size_t n = out_sa.size();
         size_t unsorted_counter = 0;
         size_t sorted_counter = 0;
@@ -274,13 +273,15 @@ private:
             util::sort::ternary_quicksort::partition(out_sa, cmp, pivot);
         // sorts less partition recursivly
         sort_and_update_group(full_array, isa, cmp, start,
-                              result.first + start - 1);
+                              sa_index(result.first + start - 1));
         // update group ranks of equal partition
-        update_equal_partition_ranks(full_array, isa, result.first + start,
-                                     result.second + start - 1);
+        update_equal_partition_ranks(full_array, isa,
+                                     sa_index(result.first + start),
+                                     sa_index(result.second + start - 1));
         // sorts greater partition recursivly
-        sort_and_update_group(full_array, isa, cmp, result.second + start,
-                              n - 1 + start);
+        sort_and_update_group(full_array, isa, cmp,
+                              sa_index(result.second + start),
+                              sa_index(n - 1 + start));
         return;
     }
 
@@ -317,7 +318,7 @@ public:
             return;
 
         // init additional arrays
-        auto V = util::make_container<size_t>(n);
+        auto V = util::make_container<sa_index>(n);
         auto L = util::make_container<ssize_t>(n);
 
         // init out_sa (necessary?)
@@ -342,7 +343,7 @@ public:
             // comparing function, which compares the (i+h)-th ranks
             auto compare_function = compare_ranks_naive(V, h);
 
-            size_t counter = 0;
+            sa_index counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
 
@@ -359,7 +360,7 @@ public:
                         compare_function);
                     // update ranks within group
                     update_group_ranks(out_sa, V, compare_function, counter,
-                                       counter + L[counter]);
+                                       counter + sa_index(L[counter]));
                     // jump over updates group
                     counter += L[counter];
                 }
@@ -374,11 +375,11 @@ public:
         }
     } // construct_sa
 private:
-    template <typename sa_index>
-    static void init_additional_arrays(util::string_span text,
-                                       util::span<sa_index> out_sa,
-                                       util::container<size_t>& V,
-                                       util::container<ssize_t>& L, size_t h) {
+    template <typename sa_index, typename neg_sa_index>
+    static void
+    init_additional_arrays(util::string_span text, util::span<sa_index> out_sa,
+                           util::container<sa_index>& V,
+                           util::container<neg_sa_index>& L, size_t h) {
         size_t n = out_sa.size();
         // TODO Remove if use sentinal
         size_t unsorted_counter = 0;
@@ -431,7 +432,7 @@ private:
     }
     template <typename sa_index, typename key_func>
     static void update_group_ranks(util::span<sa_index>& out_sa,
-                                   util::container<size_t>& V, key_func& cmp,
+                                   util::container<sa_index>& V, key_func& cmp,
                                    sa_index start, sa_index end) {
 
         const auto less = cmp;
@@ -457,7 +458,7 @@ private:
 
     template <typename sa_index>
     static void update_L(util::span<sa_index>& out_sa,
-                         util::container<size_t>& V,
+                         util::container<sa_index>& V,
                          util::container<ssize_t>& L) {
 
         size_t n = out_sa.size();
