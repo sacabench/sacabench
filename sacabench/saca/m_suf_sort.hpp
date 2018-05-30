@@ -11,6 +11,7 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/bits.hpp>
+#include <util/sort/introsort.hpp>
 
 //#include<iostream>
 #include <vector>
@@ -96,7 +97,7 @@ void assign_rank(sa_index index, sa_index& rank, special_bits<sa_index>& isa, st
 template <typename sa_index>
 struct compare_uChain_elements {
 public:
-    compare_uChain_elements(sa_index l, const string_span text)
+    compare_uChain_elements(sa_index l, const util::string_span text)
         : length(l), input_text(text) {}
 
     const sa_index length;
@@ -128,9 +129,9 @@ public:
         DCHECK_LT(length + a, input_text.size());
         DCHECK_LT(length + b, input_text.size());
 
-        const character at_a = this->input_text[a + length];
-        const character at_b = this->input_text[b + length];
-        const bool is_a_smaller = at_a > at_b;
+        const util::character at_a = this->input_text[a + length];
+        const util::character at_b = this->input_text[b + length];
+        bool is_a_smaller = at_a > at_b;
         if(at_a == at_b) {
             is_a_smaller = a < b;
         }
@@ -138,32 +139,38 @@ public:
     }
 
 private:
-    const string_span input_text;
+    const util::string_span input_text;
+};
+
+template <typename sa_index>
+void test_fun(util::string_span text, util::span<sa_index> new_chain_IDs, sa_index length){
+    compare_uChain_elements comparator(length, text);
+    util::sort::introsort(new_chain_IDs, comparator);
 }
 
-// function that sorts newChainIDs and then re-links new uChains in isa and pushes new uChain tuples on stack
+// function that sorts new_chain_IDs and then re-links new uChains in isa and pushes new uChain tuples on stack
 template <typename sa_index>
 void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
-     std::stack<std::pair<sa_index, sa_index>>& cstack, span<sa_index> newChainIDs, sa_index length){
+     std::stack<std::pair<sa_index, sa_index>>& cstack, util::span<sa_index> new_chain_IDs, sa_index length){
          compare_uChain_elements comparator(length, text);
-         util::sort::introsort(newChainIDs, comparator);
-         // TODO: Test if newChainIDs is sorted properly after this step!
+         util::sort::introsort(new_chain_IDs, comparator);
+         // TODO: Test if new_chain_IDs is sorted properly after this step!
 
          //TODO: Planning what exactly should be done here?!?!
 
          // set initial value to null as it marks the beginning of a u-Chain
-         isa.set_null(newChainIDs[0]);
-         for(sa_index i = 0; i < newChainIDs.size() - 1; i++) {
-             auto current_element = text[newChainIDs[i] + length];
-             auto next_element = text[newChainIDs[i+1] + length];
+         isa.set_null(new_chain_IDs[0]);
+         for(sa_index i = 0; i < new_chain_IDs.size() - 1; i++) {
+             auto current_element = text[new_chain_IDs[i] + length];
+             auto next_element = text[new_chain_IDs[i+1] + length];
              // does this chain continue?
              if(current_element != next_element) {
                  // this element marks the end of a chain, push the new chain on stack!
-                 std::pair<sa_index, sa_index> new_chain (newChainIDs[i], length + 1);
+                 std::pair<sa_index, sa_index> new_chain (new_chain_IDs[i], length + 1);
                  cstack.push(new_chain);
                  // same time, this means next element is beginning of a new chain:
                  // set it to null in isa
-                 isa.set_null(newChainIDs[i+1]);
+                 isa.set_null(new_chain_IDs[i+1]);
              }
          }
 }

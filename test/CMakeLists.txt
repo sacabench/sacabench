@@ -29,8 +29,5 @@ run_test(sa_induce_dc_tests DEPS saca_bench_lib)
 run_test(bucket_pointer_refinement_tests DEPS saca_bench_lib)
 run_test(test_signed_size_type DEPS saca_bench_lib)
 run_test(bits_tests DEPS saca_bench_lib)
-<<<<<<< HEAD
 run_test(m_suf_sort_tests DEPS saca_bench_lib)
-=======
 run_test(prefix_doubling_tests DEPS saca_bench_lib)
->>>>>>> master
