@@ -174,12 +174,14 @@ namespace sacabench::util::sort {
         // check end of recursion
         if (currentDepth == maxDepth) {
             for (size_t i = 0; i < strings.size(); i++) {
-                result[i] = strings[i];
+                // TODO: Is this copy needed?
+                result[i] = strings[i].make_copy();
             }
             return;
         }
         if (strings.size() == 1) {
-            result[0] = strings[0];
+            // TODO: Is this copy needed?
+            result[0] = strings[0].make_copy();
             return;
         }
         if (strings.size() == 0) {
@@ -191,7 +193,8 @@ namespace sacabench::util::sort {
         container<std::vector<string>> newBuckets = make_container<std::vector<string>>(256);
         for (string const& currentString : strings) {
             util::character currentChar = currentString.at(currentDepth);
-            newBuckets[currentChar].push_back(currentString);
+            // TODO: Is this copy needed?
+            newBuckets[currentChar].push_back(currentString.make_copy());
         }
 
         // new recursion

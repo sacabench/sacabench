@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
+ * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -29,11 +30,7 @@ using string_span = span<character const>;
 /// ```
 /// string s = make_string("hello"_s);
 /// ```
-inline string make_string(string_span s) {
-    string r = make_container<character>(s.size());
-    std::copy(s.begin(), s.end(), r.begin());
-    return r;
-}
+inline string make_string(string_span s) { return s; }
 
 /// Creates a `string` from a C-string literal.
 ///
@@ -43,7 +40,7 @@ inline string make_string(string_span s) {
 /// ```
 inline string make_string(char const* cs) {
     string_span s{(character const*)cs, std::strlen(cs)};
-    return make_string(s);
+    return s;
 }
 
 /// Special `character` values that is smaller than all possible
@@ -52,6 +49,8 @@ constexpr character SENTINEL = 0;
 } // namespace sacabench::util
 
 /// Custom literal operator for creating a `string_span`.
+///
+/// This mainly exists for writing tests and debug code.
 ///
 /// Example:
 /// ```
