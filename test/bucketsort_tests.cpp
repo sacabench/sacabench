@@ -27,19 +27,34 @@ TEST(Bucketsort, function_call) {
     std::cout << std::endl;
 }
 
+TEST(Bucketsort, bucket_sizes){
+    sacabench::util::string input =
+        sacabench::util::make_string("blablablub");
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+    size_t depth = 1;
+    auto buckets = sacabench::util::sort::get_buckets(input, a.size, depth);
+    ASSERT_EQ(buckets.at(0).count, (size_t) 0);
+    ASSERT_EQ(buckets.at(1).count, (size_t) 2);
+    ASSERT_EQ(buckets.at(2).count, (size_t) 4);
+    ASSERT_EQ(buckets.at(3).count, (size_t) 3);
+    ASSERT_EQ(buckets.at(4).count, (size_t) 1);
+}
+
+
 TEST(Bucketsort, recursiv_bucket_sort_test) {
     using namespace sacabench::util;
 
-    string firstString = {'m', 'm', 'm'};
-    string secondString = {'a', 'b', 'c'};
-    string thirdString = {'x', 'y', 'z', 'z'};
-    string fourthString = {'m', 'b', 'm'};
-    string fifthString = {'a', 'm', 'a'};
-    string sixthString = {'m', 'b', 'a'};
-    string seventhString = {'a', 'b', 'e'};
-    string eightString = {'x', 'y', 'z', 'a'};
+    string firstString = "mmm"_s;
+    string secondString = "abc"_s;
+    string thirdString = "xyzz"_s;
+    string fourthString = "mbm"_s;
+    string fifthString = "ama"_s;
+    string sixthString = "mba"_s;
+    string seventhString = "abe"_s;
+    string eightString = "xyza"_s;
 
-    container<string> input = container<string> {
+    container<string> input {
         firstString,
         secondString,
         thirdString,
