@@ -24,7 +24,7 @@ public:
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             util::alphabet_info const& alphabet,
+                             util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
         // Suppress unused variable warnings:
         (void)text;
