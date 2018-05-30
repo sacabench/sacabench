@@ -22,16 +22,6 @@ TEST(m_suf_sort, test) {
     //test::saca_corner_cases<m_suf_sort<>>();
 }
 
-TEST(m_suf_sort, test_introsort_u_chain_refinement) {
-    string test_text = util::make_string("aacbcb");
-    container<size_t> new_chain_IDs_ {5,4,3,2,1,0};
-    span<size_t> new_chains = span<size_t>(new_chain_IDs_);
-    size_t length = 0;
-    container<size_t> expected_result {2,4,3,5,0,1};
-    test_fun<size_t>(string_span(test_text), new_chains, length);
-    ASSERT_EQ(new_chains, span<size_t>(expected_result));
-}
-
 TEST(m_suf_sort, test_refine_u_chains) {
     string test_text = util::make_string("aacbcb");
     container<size_t> new_chain_IDs_ {5,4,3,2,1,0};

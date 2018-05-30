@@ -67,33 +67,69 @@ public:
         special_bits isa(out_sa);
 
         // Initialize rank
-        sa_index rank = alphabet_size + 1;
+        sa_index rank = 0;
 
         // initialize chain_stack containing pairs of
         // sa_index head of uChain and sa_index length of uChain elements (offset)
         std::stack<std::pair<sa_index, sa_index>> chain_stack;
-        form_initial_chains(text, alphabet_size, isa, chain_stack);
-/*
+        // !! Warning: this HAS to be changed when only type S suffixes should be on stack !!
+        util::container<sa_index> all_indices_ = util::make_container<sa_index>(text.size());
+        util::span<sa_index> all_indices = util::span<sa_index>(all_indices_);
+        for(sa_index i = 0; i < text.size(); i++) {
+            all_indices[i] = i;
+        }
+        // initial length (offset) for u-chains is 0 (0 common prefix characters)
+        length = 0;
+        // fill chain_stack initially with length 1- u-Chains
+        refine_uChain(text, isa, chain_stack, all_indices, length);
+
         // begin main loop:
         while(chain_stack.size() > 0){
             std::pair<sa_index, size_t> current_chain = chain_stack.pop();
             sa_index chain_index = current_chain.first;
+            sa_index length = current_chain.second;
             // if u-Chain is singleton rank it!
             if(isa.is_END(chain_index)) {
                 assign_rank(chain_index, rank, isa, "uChain");
+                continue;
             }
+
+            else {
+                // else follow the chain and refine it
+                std::vector<sa_index> to_be_refined;
+                std::vector<sa_index> sorting_induced;
+
+                // follow the chain
+                while(true) {
+                    //TODO: Simple sorting by induction implementation
+
+                    // if is not sortable by simple induction
+                    // refine u-Chain with this element
+
+                    //if(!isa.is_rank(chain_index + length)) {
+                        to_be_refined.push_back(chain_index);
+                    //}
+                    //else {
+                        //sorting_induced.push_back(chain_index);
+                    //}
+                    if(isa.is_END(chain_index)) {
+                        break;
+                    }
+                    // update chain index by following the chain links
+                    chain_index = isa.get_link(chain_index);
+                }
+            }
+            //TODO: here sorting and ranking of induced suffixes
+            refine_uChain(text, isa, chain_stack, to_be_refined, length);
         }
-    */
     }
 };
 
 // private:
 template <typename sa_index>
-void assign_rank(sa_index index, sa_index& rank, special_bits<sa_index>& isa, std::string state) {
-    if(state == "uChain") {
+void assign_rank(sa_index index, sa_index& rank, special_bits<sa_index>& isa) {
         isa.set_rank(index, rank);
-        rank--;
-    }
+        rank++;
 }
 // compare function for introsort that sorts first after text symbols at given indices
 // and if both text symbols are the same compares (unique) indices.
@@ -107,27 +143,6 @@ public:
 
     // This returns true, if a < b.
     bool operator()(const sa_index& a, const sa_index& b) const {
-
-        // All of the following should never occur as input_text contains 0 at the end.
-        /*
-        const bool a_is_too_short = length + a >= input_text.size();
-        const bool b_is_too_short = length + b >= input_text.size();
-
-        if (a_is_too_short) {
-            if (b_is_too_short) {
-                // but if both are over the edge, one cannot be smaller.
-                return false;
-            }
-
-            // b should be larger
-            return true;
-        }
-
-        if (b_is_too_short) {
-            // a should be larger
-            return false;
-        }
-        */
 
         DCHECK_LT(length + a, input_text.size());
         DCHECK_LT(length + b, input_text.size());
@@ -144,12 +159,6 @@ public:
 private:
     const util::string_span input_text;
 };
-
-template <typename sa_index>
-void test_fun(util::string_span text, util::span<sa_index> new_chain_IDs, sa_index length){
-    compare_uChain_elements comparator(length, text);
-    util::sort::introsort(new_chain_IDs, comparator);
-}
 
 // function that sorts new_chain_IDs and then re-links new uChains in isa and pushes new uChain tuples on stack
 template <typename sa_index>
