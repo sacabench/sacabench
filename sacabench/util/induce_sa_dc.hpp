@@ -5,11 +5,9 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 #include <tuple>
-#include <vector>
 #include <util/assertions.hpp>
 #include <util/container.hpp>
 #include <algorithm>
-#include <iostream>
 
 #pragma once
 namespace sacabench::util {
@@ -46,15 +44,6 @@ namespace sacabench::util {
             else{
                 sa_0_to_be_sorted[i] = (std::tuple<C, size_t, size_t>(t_0[i], 0, 3 * i));
             }
-        }  
-        
-        if(t_0.size()==3 && t_0[0] == 'a' && t_0[1] == 'a' && t_0[2] == 'a'){
-            std::cout << "hier wird induziert: " << std::endl;
-            for(size_t i = 0; i < t_0.size(); i++){
-                
-                std::cout << std::get<0>(sa_0_to_be_sorted[i]) << std::get<1>(sa_0_to_be_sorted[i]) << std::get<2>(sa_0_to_be_sorted[i]) << std::endl;
-            }
-             
         }
     
         //TODO: sort Tupels with radix_sort
