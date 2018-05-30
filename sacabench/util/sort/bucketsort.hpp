@@ -17,17 +17,16 @@ namespace sacabench::util::sort {
      * position of the leftmost index inside the bucket. The rightmost index
      * can be derived by `position + count - 1`.
      */
-    template <typename index_type>
-        struct bucket {
-            std::size_t count = 0;
-            index_type position = 0;
-        };
+    struct bucket {
+        std::size_t count = 0;
+        std::size_t position = 0;
+    };
 
     /**\brief Divides the suffix array into buckets with each bucket containing
      *  suffixes which are equal to a given offset.
      * \param input Input text (of length n) whose suffixes are to be sorted.
      *  The input text has to use an effective alphabet with characters
-     *  {1, ..., m}. 
+     *  {1, ..., m}.
      * \param alphabet_size The size of the alphabet which is used by the input
      *  text.
      * \param depth The offset which is used to match suffixes into buckets.
@@ -38,9 +37,11 @@ namespace sacabench::util::sort {
      * suffix array. After a call of the function, the suffix array contains all
      * buckets in sorted ascending order. The suffixes within each bucket are
      * not necessarily sorted.
+     *
+     * \return Size and starting position for each bucket in the suffix array.
      */
     template <typename index_type>
-        void bucketsort_presort(const string_span& input,
+        container<bucket> bucketsort_presort(const string_span& input,
                 const std::size_t alphabet_size, const std::size_t depth,
                 span<index_type>& sa) {
             DCHECK_EQ(input.size(), sa.size());
@@ -50,8 +51,7 @@ namespace sacabench::util::sort {
             // the real alphabet includes $, so it has one more character
             const std::size_t real_alphabet_size = alphabet_size + 1;
             const std::size_t bucket_count = pow(real_alphabet_size, depth);
-            container<bucket<index_type>> buckets =
-                make_container<bucket<index_type>>(bucket_count);
+            auto buckets = make_container<bucket>(bucket_count);
 
             // calculate code for an (imaginary) 0-th suffix
             std::size_t initial_code = 0;
@@ -97,7 +97,7 @@ namespace sacabench::util::sort {
                 code %= code_modulo;
                 code *= real_alphabet_size;
                 code += input[index + depth - 1];
-                bucket<index_type>& current_bucket = buckets[code];
+                bucket& current_bucket = buckets[code];
                 sa[current_bucket.position] = index;
                 ++current_bucket.position;
             }
@@ -108,26 +108,34 @@ namespace sacabench::util::sort {
                 // induce code for nth suffix from (n-1)th suffix
                 code %= code_modulo;
                 code *= real_alphabet_size;
-                bucket<index_type>& current_bucket = buckets[code];
+                bucket& current_bucket = buckets[code];
                 sa[current_bucket.position] = index;
                 ++current_bucket.position;
             }
+
+            // determine leftmost index of each bucket
+            for (auto& bucket : buckets) {
+                bucket.position -= bucket.count;
+            }
+
+            return buckets;
         }
 
     /// This is the recursiv helper function for the function bucket sort.
     /// Do not use this function directly, instead use
     /// void bucket_sort(container<string>& strings, size_t maxDepth, container<string>& result).
-    void bucket_sort_recursiv(container<string>& strings, size_t currentDepth, size_t maxDepth, container<string>& result) {
+    void bucket_sort_recursiv(span<string const> const strings, size_t currentDepth, size_t maxDepth, span<string> result) {
+        DCHECK_EQ(strings.size(), result.size());
 
         // check end of recursion
         if (currentDepth == maxDepth) {
-            for (string currentString : strings) {
-                result.push_back(currentString);
+            for (size_t i = 0; i < strings.size(); i++) {
+                result[i] = strings[i];
             }
             return;
         }
         if (strings.size() == 1) {
-            result.push_back(strings[0]);
+            result[0] = strings[0];
             return;
         }
         if (strings.size() == 0) {
@@ -135,15 +143,25 @@ namespace sacabench::util::sort {
         }
 
         // build new buckets
-        container<container<string>> newBuckets = make_container<container<string>>(256);
-        for (string currentString : strings) {
-            char currentChar = currentString.at(currentDepth);
+        // TODO: Don't keep alphabet size hardcoded to 256 here
+        container<std::vector<string>> newBuckets = make_container<std::vector<string>>(256);
+        for (string const& currentString : strings) {
+            util::character currentChar = currentString.at(currentDepth);
             newBuckets[currentChar].push_back(currentString);
         }
 
         // new recursion
-        for (container<string> bucket : newBuckets) {
-            bucket_sort_recursiv(bucket, currentDepth + 1, maxDepth, result);
+        for (std::vector<string>& bucket : newBuckets) {
+            // Split the current result slice like this:
+            // [              result              ]
+            // =>
+            // [ result_for_this_bucket ][ result ]
+            // |-     bucket.size()    -|
+
+            auto result_for_this_bucket = result.slice(0, bucket.size());
+            result = result.slice(bucket.size());
+
+            bucket_sort_recursiv(bucket, currentDepth + 1, maxDepth, result_for_this_bucket);
         }
     }
 
@@ -156,7 +174,8 @@ namespace sacabench::util::sort {
      * The result contains all buckets in sorted ascending order.
      * The strings within each bucket are not necessarily sorted.
      */
-    void bucket_sort(container<string>& strings, size_t maxDepth, container<string>& result) {
+    void bucket_sort(span<string const> const strings, size_t maxDepth, span<string> result) {
+        DCHECK_EQ(strings.size(), result.size());
         bucket_sort_recursiv(strings, 0, maxDepth, result);
     }
 }

@@ -12,9 +12,7 @@
 
 using namespace sacabench::util;
 
-std::function<int(size_t, size_t)> cmp = [](size_t a, size_t b) {
-    return (a - b);
-};
+constexpr auto cmp = std::less<>();
 
 TEST(is_sorted, correctly_sorted_empty) {
     std::vector<size_t> test_case;

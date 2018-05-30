@@ -5,21 +5,22 @@
  ******************************************************************************/
 
 #pragma once
- 
+
 #include <vector>
 #include "util/string.hpp"
-#include <unordered_map> 
+#include <unordered_map>
 
 namespace sacabench::util {
     void radixsort(container<string>* input);
     void radixsort(container<string>* input, size_t index);
 
     void radixsort(container<string>* input) {
+        DCHECK_NE(input->front().size(), 0);
         radixsort(input, input->front().size() - 1);
     }
 
     void radixsort(container<string>* input, size_t index) {
-        std::unordered_map<size_t, container<string>> buckets;
+        std::unordered_map<size_t, std::vector<string>> buckets;
         size_t biggest_char = 0;
 
         // partitioning
@@ -29,10 +30,10 @@ namespace sacabench::util {
         }
 
         // collecting
-        input->clear();
+        size_t input_i = 0;
         for (size_t i = 0; i <= biggest_char; i++) {
             for (string s : buckets[i]) {
-                input->push_back(s);
+                (*input)[input_i++] = s;
             }
         }
 
