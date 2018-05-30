@@ -38,56 +38,56 @@ namespace sacabench::util::sort {
             const std::size_t max_character_code, const std::size_t depth) {
         DCHECK_GE(depth, 1);
 
-        const std::size_t length = input.size();
+            const std::size_t length = input.size();
         const std::size_t real_alphabet_size = max_character_code + 1;
         const std::size_t bucket_count = pow(real_alphabet_size, depth);
 
-        auto buckets = make_container<bucket>(bucket_count);
+            auto buckets = make_container<bucket>(bucket_count);
 
         /*
          * first step: count bucket sizes
          */
 
-        // calculate code for an (imaginary) 0-th suffix
-        std::size_t initial_code = 0;
+            // calculate code for an (imaginary) 0-th suffix
+            std::size_t initial_code = 0;
         for (std::size_t index = 0; index < depth - 1; ++index) {
             initial_code *= (real_alphabet_size);
-            initial_code += input[index];
-        }
+                initial_code += input[index];
+            }
 
-        // calculate modulo for code computation
+            // calculate modulo for code computation
         const std::size_t code_modulo = pow(real_alphabet_size, depth - 1);
 
-        // count occurrences of each possible length-d-substring
-        std::size_t code = initial_code;
+            // count occurrences of each possible length-d-substring
+            std::size_t code = initial_code;
         for (std::size_t index = 0; index < length - depth + 1; ++index) {
-            // induce code for nth suffix from (n-1)th suffix
-            code %= code_modulo;
+                // induce code for nth suffix from (n-1)th suffix
+                code %= code_modulo;
             code *= real_alphabet_size;
-            code += input[index + depth - 1];
-            ++buckets[code].count;
-        }
+                code += input[index + depth - 1];
+                ++buckets[code].count;
+            }
 
-        // same as above, but for substrings containing at least one $
+            // same as above, but for substrings containing at least one $
         for (std::size_t index = length - depth + 1; index < length;
-                ++index) {
-            // induce code for nth suffix from (n-1)th suffix
-            code %= code_modulo;
+                    ++index) {
+                // induce code for nth suffix from (n-1)th suffix
+                code %= code_modulo;
             code *= real_alphabet_size;
-            // the index overlaps input bounds, therefore we assume to add
-            // a 0.
-            ++buckets[code].count;
-        }
+                // the index overlaps input bounds, therefore we assume to add
+                // a 0.
+                ++buckets[code].count;
+            }
 
         /*
          * second step: determine starting positions for buckets
          */
 
-        // calculate positions for all buckets
-        for (size_t index = 1; index < bucket_count; ++index) {
-            buckets[index].position =
-                buckets[index - 1].position + buckets[index-1].count;
-        }
+            // calculate positions for all buckets
+            for (size_t index = 1; index < bucket_count; ++index) {
+                buckets[index].position =
+                    buckets[index - 1].position + buckets[index-1].count;
+            }
 
         return buckets;
     }

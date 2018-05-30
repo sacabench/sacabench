@@ -504,7 +504,7 @@ struct prefix_doubling {
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             util::alphabet_info const& /*alphabet_size*/,
+                             util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
         prefix_doubling_impl<sa_index>::doubling(text, out_sa);
     }
@@ -515,7 +515,7 @@ struct prefix_doubling_discarding {
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             util::alphabet_info const& /*alphabet_size*/,
+                             util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
         prefix_doubling_impl<sa_index>::doubling_discarding(text, out_sa);
     }

@@ -38,13 +38,11 @@ container<sa_index_t> prepare_and_construct_sa(size_t text_size,
     */
 
     auto alph = apply_effective_alphabet(text);
-    auto const alph_info = alphabet_info(alph.real_size - 1, true);
 
     {
         span<sa_index_t> out_sa = output;
         string_span readonly_text_with_sentinels = text_with_sentinels;
-        Algorithm::construct_sa(readonly_text_with_sentinels, alph_info,
-                                out_sa);
+        Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
     }
 
     return output;
