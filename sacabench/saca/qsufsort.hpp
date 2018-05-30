@@ -16,8 +16,8 @@
 
 namespace sacabench::qsufsort {
 
-constexpr size_t negative_mask = size_t(1) << (sizeof(size_t) * 8 - 1);
-constexpr size_t remove_negative_mask = std::numeric_limits<size_t>::max() >> 1;
+constexpr size_t NEGATIVE_MASK = size_t(1) << (sizeof(size_t) * 8 - 1);
+constexpr size_t REMOVE_NEGATIVE_MASK = std::numeric_limits<size_t>::max() >> 1;
 
 // Compare function for inital sorting
 struct compare_first_character {
@@ -85,8 +85,8 @@ public:
     static void print_array(T& arr) {
         std::cout << "SA: ";
         for (size_t i = 0; i < arr.size(); i++) {
-            std::cout << (bool(arr[i] & negative_mask) ? "-" : "")
-                      << ssize_t(arr[i] & remove_negative_mask) << ", ";
+            std::cout << (bool(arr[i] & NEGATIVE_MASK) ? "-" : "")
+                      << ssize_t(arr[i] & REMOVE_NEGATIVE_MASK) << ", ";
         }
         std::cout << std::endl;
     }
@@ -95,7 +95,7 @@ public:
     static void print_isa(T& arr, S& out) {
         std::cout << "V: ";
         for (size_t i = 0; i < arr.size(); i++) {
-            std::cout << (bool(out[i] & negative_mask) ? i : arr[out[i]])
+            std::cout << (bool(out[i] & NEGATIVE_MASK) ? i : arr[out[i]])
                       << ", ";
         }
         std::cout << std::endl;
@@ -108,7 +108,7 @@ public:
 
         size_t n = text.size();
         //check if n is too big
-        DCHECK_MSG(bool(n|negative_mask),"String is too long");
+        DCHECK_MSG(bool(n|NEGATIVE_MASK),"String is too long");
         // catch trivial cases
         if (n < 2)
             return;
@@ -141,9 +141,9 @@ public:
             // jump through array with group sizes
             while (counter < out_sa.size()) {
                 // Sorted Group, check if negative bit is set
-                if (bool(out_sa[counter] & negative_mask)) {
+                if (bool(out_sa[counter] & NEGATIVE_MASK)) {
                     // Skip sorted group
-                    counter += out_sa[counter] & remove_negative_mask;
+                    counter += out_sa[counter] & REMOVE_NEGATIVE_MASK;
                 }
                 // unsorted group
                 else {
@@ -162,7 +162,7 @@ public:
             update_group_length(out_sa, isa);
             // prefix doubling
             h = h * 2;
-            is_sorted = ((out_sa[0] & remove_negative_mask) == n);
+            is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);
         }
         // transform isa to sa
         util::isa2sa_simple_scan(util::span<sa_index>(isa), out_sa);
@@ -202,9 +202,9 @@ private:
 
             // check if number in out_sa is negative
             // if negative the group number is simply the index
-            dif = (bool(out_sa[i + 1] & negative_mask) ? i + 1
+            dif = (bool(out_sa[i + 1] & NEGATIVE_MASK) ? i + 1
                                                        : isa[out_sa[i + 1]]) -
-                  (bool(out_sa[i] & negative_mask) ? i : isa[out_sa[i]]);
+                  (bool(out_sa[i] & NEGATIVE_MASK) ? i : isa[out_sa[i]]);
 
             // count for last position..
             unsorted_counter = (dif == 0) ? unsorted_counter + 1 : 0;
@@ -216,17 +216,17 @@ private:
 
             } else {
                 if (sorted_group_started) {
-                    out_sa[i + 2] = negative_mask | sorted_counter;
+                    out_sa[i + 2] = NEGATIVE_MASK | sorted_counter;
                     sorted_counter = 0;
                     sorted_group_started = false;
                 }
             }
         }
         // easier if use sentinal...
-        dif = (bool(out_sa[1] & negative_mask) ? 1 : isa[out_sa[1]]) -
-              (bool(out_sa[0] & negative_mask) ? 0 : isa[out_sa[0]]);
+        dif = (bool(out_sa[1] & NEGATIVE_MASK) ? 1 : isa[out_sa[1]]) -
+              (bool(out_sa[0] & NEGATIVE_MASK) ? 0 : isa[out_sa[0]]);
         if (dif > 0) {
-            out_sa[0] = negative_mask | (++sorted_counter);
+            out_sa[0] = NEGATIVE_MASK | (++sorted_counter);
         }
         // else, remain the same index
     }
@@ -294,7 +294,7 @@ private:
         // group occuoies in the SA
         for (size_t index = start; index <= end; ++index) {
 
-            if (bool(out_sa[index] & negative_mask)) {
+            if (bool(out_sa[index] & NEGATIVE_MASK)) {
                 isa[index] = end;
             } else {
                 isa[out_sa[index]] = end;
