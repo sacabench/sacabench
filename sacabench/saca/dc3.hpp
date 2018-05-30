@@ -27,7 +27,7 @@ public:
                 sacabench::util::make_container<sacabench::util::character>(
                     text.size() + 3);
 
-            for (size_t i = 0; i < text.size(); i++) {
+            for (size_t i = 0; i < text.size(); ++i) {
                 modified_text[i] = text[i];
             }
             modified_text[modified_text.size() - 3] = '\0';
@@ -60,7 +60,7 @@ private:
         //Sentinals--------------------------------------//
         /*
         const unsigned char SMALLEST_CHAR = '\0';
-        for(size_t i = 1; i < INPUT_STRING.size(); i++) {
+        for(size_t i = 1; i < INPUT_STRING.size(); ++i) {
             if(i % 3 != 0){
                 if((i+2) >= INPUT_STRING.size()){
                     if((i+1) >= INPUT_STRING.size()){
@@ -75,9 +75,9 @@ private:
                 }
             }
         }*/
-        //-----------------------------------------------------------------------------------------------//
+        //----------------------------------------------------------------//
 
-        for (size_t i = 1; i < INPUT_STRING.size() - 2; i++) {
+        for (size_t i = 1; i < INPUT_STRING.size() - 2; ++i) {
             if (i % 3 != 0) {
                 triplets_12_to_be_sorted[counter++] =
                     std::tuple<C, C, C, size_t>(INPUT_STRING[i],
@@ -91,7 +91,7 @@ private:
         std::sort(triplets_12_to_be_sorted.begin(),
                   triplets_12_to_be_sorted.end());
 
-        for (size_t i = 0; i < triplets_12_to_be_sorted.size(); i++) {
+        for (size_t i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
             triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
         }
     }
@@ -105,7 +105,7 @@ private:
 
         size_t leq_name = 1;
 
-        for (size_t i = 0; i < triplets_12.size(); i++) {
+        for (size_t i = 0; i < triplets_12.size(); ++i) {
             // set the lexicographical names at correct positions:
             //[----names at positions i mod 3 = 1----||----names at positions i
             //mod 3 = 2----]
@@ -150,7 +150,7 @@ private:
                 }else
                     leq_name++;
             } */
-            //-----------------------------------------------------------------------------------------------//
+            //-----------------------------------------------//
         }
     }
 
@@ -160,7 +160,7 @@ private:
         DCHECK_MSG(isa_12.size() == t_12.size(),
                    "isa_12 must have the same length as t_12");
 
-        for (size_t i = 0; i < t_12.size(); i++) {
+        for (size_t i = 0; i < t_12.size(); ++i) {
             isa_12[t_12[i] - 1] = i + 1;
         }
     }
@@ -171,13 +171,13 @@ private:
         DCHECK_MSG(isa_12.size() == t_12.size(),
                    "isa_12 must have the same length as t_12");
 
-        for (size_t i = 0; i < t_12.size(); i++) {
+        for (size_t i = 0; i < t_12.size(); ++i) {
             isa_12[t_12[i]] = i + 1;
         }
     }
 
     template <typename sa_index, bool rec, typename C, typename S>
-    static void construct_sa_dc3(S text, size_t alphabet_size,
+    static void construct_sa_dc3(S& text, size_t alphabet_size,
                                  util::span<sa_index> out_sa) {
 
         // empty container which will contain indices of triplet
@@ -209,7 +209,7 @@ private:
             auto modified_text =
                 sacabench::util::make_container<size_t>(t_12.size() + 3);
 
-            for (size_t i = 0; i < t_12.size(); i++) {
+            for (size_t i = 0; i < t_12.size(); ++i) {
                 modified_text[i] = t_12[i];
             }
             modified_text[modified_text.size() - 3] = '\0';
@@ -242,7 +242,7 @@ private:
                 triplets_12.size() / 2 + ((triplets_12.size() % 2) != 0);
 
             // correct the order of sa_12 with result of recursion
-            for (size_t i = 0; i < triplets_12.size(); i++) {
+            for (size_t i = 0; i < triplets_12.size(); ++i) {
                 if (i < end_of_mod_eq_1) {
                     triplets_12[isa_12[i] - 1] = 3 * i + 1;
                 } else {
@@ -254,24 +254,29 @@ private:
             auto merge_isa_12_to_be_sorted =
                 sacabench::util::make_container<std::tuple<size_t, size_t>>(
                     triplets_12.size());
-            for (size_t i = 0; i < merge_isa_12.size(); i++) {
+            for (size_t i = 0; i < merge_isa_12.size(); ++i) {
                 merge_isa_12_to_be_sorted[i] =
                     (std::tuple<size_t, size_t>(triplets_12[i], i));
             }
             std::sort(merge_isa_12_to_be_sorted.begin(),
                       merge_isa_12_to_be_sorted.end());
-            for (size_t i = 0; i < merge_isa_12_to_be_sorted.size(); i++) {
+            for (size_t i = 0; i < merge_isa_12_to_be_sorted.size(); ++i) {
                 merge_isa_12[i] = std::get<1>(merge_isa_12_to_be_sorted[i]);
             }
         } else {
-            isa_12 = t_12;
+            isa_12 = sacabench::util::make_container<size_t>(t_12.size());
+            
+            //copy in loop to suppress warnings. Will be changed in optimization
+            for(size_t i = 0; i < isa_12.size(); ++i){
+                isa_12[i] = t_12[i];
+            }
             determine_isa(isa_12, sa_12);
 
             // convert isa_12 to the correct format for merge_sa_dc.
             size_t counter = 0;
             size_t half = isa_12.size() / 2 + (((isa_12.size() % 2) != 0));
 
-            for (size_t i = 0; i < isa_12.size() / 2; i++) {
+            for (size_t i = 0; i < isa_12.size() / 2; ++i) {
                 merge_isa_12[counter++] = isa_12[i] - 1;
                 merge_isa_12[counter++] = isa_12[half + i] - 1;
             }
@@ -312,7 +317,7 @@ private:
                 triplets_12, merge_isa_12, tmp_out_sa, comp, get_substring);
         }
 
-        for (size_t i = 1; i < tmp_out_sa.size(); i++) {
+        for (size_t i = 1; i < tmp_out_sa.size(); ++i) {
             out_sa[i - 1] = tmp_out_sa[i];
         }
     }
@@ -320,7 +325,7 @@ private:
     // implementation of get_substring method with type of character not in
     // recursion
     static const sacabench::util::span<const sacabench::util::character>
-    get_substring(const sacabench::util::span<sacabench::util::character>& t,
+    get_substring(const sacabench::util::span<sacabench::util::character> t,
                   const sacabench::util::character* ptr, size_t n) {
         // Suppress unused variable warnings:
         (void)t;
@@ -328,14 +333,14 @@ private:
     }
 
     // implementation of comp method
-    static bool comp(const sacabench::util::string_span& a,
-                     const sacabench::util::string_span& b) {
+    static bool comp(const sacabench::util::string_span a,
+                     const sacabench::util::string_span b) {
         return a < b;
     }
 
     // implementation of get_substring method with type size_t in recursion
     static const sacabench::util::span<const size_t>
-    get_substring_recursion(const sacabench::util::span<size_t>& t,
+    get_substring_recursion(const sacabench::util::span<size_t> t,
                             const size_t* ptr, size_t n) {
         // Suppress unused variable warnings:
         (void)t;
@@ -343,8 +348,8 @@ private:
     }
 
     // implementation of comp method
-    static bool comp_recursion(const sacabench::util::span<const size_t>& a,
-                               const sacabench::util::span<const size_t>& b) {
+    static bool comp_recursion(const sacabench::util::span<const size_t> a,
+                               const sacabench::util::span<const size_t> b) {
         return a < b;
     }
 }; // class dc3
