@@ -22,6 +22,18 @@ namespace sacabench::util::sort {
         std::size_t position = 0;
     };
 
+    /**\brief Determines sizes and positions of buckets containing suffixes
+     *  which are equal to a given offset.
+     * \param input Input text (of length n) whose suffixes are to be sorted.
+     *  The input text has to use an effective alphabet with characters
+     *  {1, ..., m}.
+     * \param alphabet_size The size of the alphabet which is used by the input
+     *  text.
+     * \param depth The offset which is used to match suffixes into buckets.
+     *  Suffixes with equal length-depth-prefix are matched to the same bucket.
+     *
+     * \return Size and starting position for each bucket in the suffix array.
+     */
     container<bucket> get_buckets(const string_span input,
             const std::size_t max_character_code, const std::size_t depth) {
         DCHECK_GE(depth, 1);
