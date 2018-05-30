@@ -17,12 +17,15 @@ namespace sacabench::gsaca {
     private:
 
     public:
+
+        /**
+         * This struct encapsulates values, which are shared between the helper functions.
+         */
         struct gsaca_values {
-            // TODO: Use container.
-            size_t ISA[1000] = {0};
-            int PREV[1000] = {-1};
-            size_t GLINK[1000] = {0};
-            size_t GSIZE[1000] = {0};
+            util::container<size_t> ISA;
+            util::container<ssize_t> PREV;
+            util::container<size_t> GLINK;
+            util::container<size_t> GSIZE;
             size_t group_start = 0;
             size_t group_end = 0;
         };
@@ -35,6 +38,14 @@ namespace sacabench::gsaca {
                                                     sacabench::util::span<sa_index> out_sa,
                                                     gsaca_values& values,
                                                     size_t number_of_chars) {
+
+            values.ISA = util::make_container<size_t>(number_of_chars);
+            values.GLINK = util::make_container<size_t>(number_of_chars);
+            values.GSIZE = util::make_container<size_t>(number_of_chars);
+            values.PREV = util::make_container<ssize_t>(number_of_chars);
+            for (size_t index = 0; index < number_of_chars; index++) {
+                values.PREV[index] = -1;
+            }
 
             // Setup helper lists to count occurring chars and to calculate the cumulative count of chars.
             // TODO: Pass alphabeth size on and use it here with a container.
@@ -114,7 +125,8 @@ namespace sacabench::gsaca {
          * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
          */
         template<typename sa_index>
-        inline static void calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa, gsaca_values& values) {
+        inline static void calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa,
+                                                      gsaca_values& values) {
 
             for (size_t index = values.group_start; index <= values.group_end; index++) {
 
@@ -136,7 +148,9 @@ namespace sacabench::gsaca {
             }
         }
 
-        inline static size_t compute_prev_pointer(size_t current_index, gsaca_values& values) {
+        inline static size_t compute_prev_pointer(size_t current_index,
+                                                  gsaca_values& values) {
+
             size_t previous_index = current_index - 1;
             while (previous_index > 0) {
                 if (values.ISA[previous_index] <= values.group_end) {
@@ -357,7 +371,6 @@ namespace sacabench::gsaca {
             // Setup needed values and build initial group structure.
             gsaca_values values = gsaca_values();
             size_t number_of_chars = text.size();
-            std::fill_n(values.PREV, 1000, -1);
             build_initial_structures(text, out_sa, values, number_of_chars);
 
             //// PHASE 1 ////
