@@ -17,7 +17,7 @@
 #include <string>
 #include <math.h>
 
-#define OUTPUT false
+#define OUTPUT true
 
 namespace sacabench::dc3 {
     
@@ -123,13 +123,14 @@ namespace sacabench::dc3 {
                 }else if(text.size()==1){
                     out_sa[0] = 0;
                 }else{
-                    auto modified_text = sacabench::util::make_container<sacabench::util::character>(text.size());
+                    auto modified_text = sacabench::util::make_container<sacabench::util::character>(text.size()+3);
                     
                     for(size_t i = 0; i < text.size() ; i++){
                         modified_text[i] = text[i];
                     }
-                    modified_text.push_back('\0');
-                    modified_text.push_back('\0');
+                    modified_text[modified_text.size()-3] = '\0';
+                    modified_text[modified_text.size()-2] = '\0';
+                    modified_text[modified_text.size()-1] = '\0';
                     
                     construct_sa_dc3<size_t, false, sacabench::util::character>(modified_text, alphabet_size, out_sa);
                 }
@@ -339,13 +340,14 @@ namespace sacabench::dc3 {
                 if(recursion){
                     
                     //add two sentinals to the end of the text
-                    auto modified_text = sacabench::util::make_container<size_t>(t_12.size()+2);
+                    auto modified_text = sacabench::util::make_container<size_t>(t_12.size()+3);
 
                     for(size_t i = 0; i < t_12.size() ; i++){
-                        modified_text[i] = t_12[i]-1;
+                        modified_text[i] = t_12[i];
                     }
-                    modified_text[modified_text.size()-2] = 0;
-                    modified_text[modified_text.size()-1] = 0;
+                    modified_text[modified_text.size()-3] = '\0';
+                    modified_text[modified_text.size()-2] = '\0';
+                    modified_text[modified_text.size()-1] = '\0';
                     
                     //run algorithm recursive
                     construct_sa_dc3<size_t, true, size_t>(modified_text, alphabet_size, sa_12);              
@@ -505,13 +507,19 @@ namespace sacabench::dc3 {
                 }
                 //Ende Debug-Informationen------------------------------------------------------------------------
                 
+                auto tmp_out_sa = sacabench::util::container<size_t>(out_sa.size()+1);
+                
                 //merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
                 if constexpr(rec){ 
                     sacabench::util::merge_sa_dc<const size_t>(sacabench::util::span(&text[0], text.size()-2), sa_0, triplets_12,
-                        merge_isa_12, out_sa, comp_recursion, get_substring_recursion);
+                        merge_isa_12, tmp_out_sa, comp_recursion, get_substring_recursion);
                 }else{
                     sacabench::util::merge_sa_dc<const sacabench::util::character>(sacabench::util::span(&text[0], text.size()-2), sa_0, triplets_12,
-                        merge_isa_12, out_sa, comp, get_substring);
+                        merge_isa_12, tmp_out_sa, comp, get_substring);
+                }
+                
+                for(size_t i = 1; i< tmp_out_sa.size(); i++){
+                    out_sa[i-1] = tmp_out_sa[i];
                 }
                 
                 //Anfang Debug-Informationen------------------------------------------------------------------------
