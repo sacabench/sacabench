@@ -18,6 +18,11 @@ TEST(Container, make_container) {
     ASSERT_EQ(c.size(), 10u);
 }
 
+TEST(Container, make_string) {
+    string c = make_string("hello"_s);
+    ASSERT_EQ(c.size(), 5u);
+}
+
 TEST(Container, make_container_span) {
     std::array<uint8_t, 3> arr{1, 2, 3};
 
@@ -41,4 +46,13 @@ TEST(Container, string_container) {
 
     ASSERT_EQ(v[1], "bar"_s);
     ASSERT_EQ(v[0], "foo"_s);
+}
+
+TEST(Container, span_copy) {
+    using ty = uint8_t;
+
+    auto v = container<ty>(1);
+    span<ty> s = v;
+
+    container<ty> v2 = s;
 }

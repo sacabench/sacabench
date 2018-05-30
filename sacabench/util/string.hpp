@@ -30,11 +30,7 @@ using string_span = span<character const>;
 /// ```
 /// string s = make_string("hello"_s);
 /// ```
-inline string make_string(string_span s) {
-    string r = make_container<character>(s.size());
-    std::copy(s.begin(), s.end(), r.begin());
-    return r;
-}
+inline string make_string(string_span s) { return s; }
 
 /// Creates a `string` from a C-string literal.
 ///
@@ -44,7 +40,7 @@ inline string make_string(string_span s) {
 /// ```
 inline string make_string(char const* cs) {
     string_span s{(character const*)cs, std::strlen(cs)};
-    return make_string(s);
+    return s;
 }
 
 /// Special `character` values that is smaller than all possible

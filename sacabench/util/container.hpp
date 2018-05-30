@@ -41,7 +41,11 @@ private:
                     }
                 }
                 if (r.function_namespace.starts_with(
-                        "sacabench::util::container")) {
+                        "sacabench::util::container") ||
+                    r.function_namespace_and_name.starts_with(
+                        "sacabench::util::make_container") ||
+                    r.function_namespace_and_name.starts_with(
+                        "sacabench::util::make_string")) {
                     possible_trigger = true;
                 }
             });
@@ -90,6 +94,11 @@ public:
 
     /// Create a container by copying from a span.
     inline container(span<element_type const> span) : container(span.size()) {
+        copy_check(span);
+        std::copy(span.begin(), span.end(), begin());
+    }
+    /// Create a container by copying from a span.
+    inline container(span<element_type> span) : container(span.size()) {
         copy_check(span);
         std::copy(span.begin(), span.end(), begin());
     }
@@ -317,9 +326,7 @@ container<element_type> make_container(size_t size) {
  */
 template <typename element_type>
 container<element_type> make_container(span<element_type> s) {
-    container<element_type> r = make_container<element_type>(s.size());
-    std::copy(s.begin(), s.end(), r.begin());
-    return r;
+    return container<element_type>(s);
 }
 } // namespace sacabench::util
 

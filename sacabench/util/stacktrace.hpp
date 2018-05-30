@@ -97,6 +97,7 @@ struct result {
     lspan return_ty;
     lspan function_name;
     lspan function_namespace;
+    lspan function_namespace_and_name;
 };
 
 inline result parse_symbol(lspan name) {
@@ -156,6 +157,7 @@ inline result parse_symbol(lspan name) {
         }
     }
 
+    r.function_namespace_and_name = r.function_name;
     r.function_namespace = r.function_name.slice(0, k);
     r.function_name = r.function_name.slice(k);
     if (r.function_name.starts_with("::")) {
