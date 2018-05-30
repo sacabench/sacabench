@@ -45,16 +45,15 @@ private:
                                << "::" << r.function_name;
                         }
                     }
-                }
-                if (r.function_namespace.starts_with(
-                        "sacabench::util::container") ||
-                    r.function_namespace_and_name.starts_with(
-                        "sacabench::util::make_container") ||
-                    r.function_namespace_and_name.starts_with(
-                        "sacabench::util::make_string")) {
-                    possible_trigger = true;
-                }
-            });
+                    if (r.function_namespace.starts_with(
+                            "sacabench::util::container") ||
+                        r.function_namespace_and_name.starts_with(
+                            "sacabench::util::make_container") ||
+                        r.function_namespace_and_name.starts_with(
+                            "sacabench::util::make_string")) {
+                        possible_trigger = true;
+                    }
+                });
 
                 if (triggered) {
                     if (make_error) {
