@@ -10,8 +10,11 @@
 #include <util/container.hpp>
 
 //implementation of get-substring method
-static const sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
-        int n, size_t index) {
+sacabench::util::string_span get_substring(const sacabench::util::string& t, const sacabench::util::character* ptr,
+        int n) {
+    // Suppress unused variable warnings:
+    (void) t;        
+            
     return sacabench::util::span(ptr, n);
 }
 
@@ -41,6 +44,6 @@ TEST(DC, merge) {
 
     //compare results with expected values
     for (size_t i = 0; i < expected.size(); i++) {
-        //ASSERT_EQ(sa[i], expected[i]);
+        ASSERT_EQ(sa[i], expected[i]);
     }
 }

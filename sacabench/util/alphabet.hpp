@@ -13,6 +13,7 @@ namespace sacabench::util {
 
     struct alphabet {
         std::size_t size;
+        std::size_t real_size;
         std::array<character,
                    std::numeric_limits<character>::max() + 1> effective;
 
@@ -43,7 +44,10 @@ namespace sacabench::util {
 
             // The number of effective characters equals the effective value of
             // the greatest character.
-            size = effective[effective.size() - 1];
+            size = effective[effective.size()-1];
+
+            // The real size also includes the sentinel
+            real_size = effective[effective.size()-1] + 1;
         }
     };
 
@@ -62,6 +66,17 @@ namespace sacabench::util {
         }
     }
 
+    /**\brief Transforms a text such that it uses the effective alphabet
+     * \param input Input text that is going to be transformed
+     *
+     * This method takes the input text and replaces its symbols by consecutive
+     * numbers in the `character` range, holding onto the relative ordering.
+     */
+    alphabet apply_effective_alphabet(string& input) {
+        const alphabet input_alphabet(input);
+        apply_effective_alphabet(input, input_alphabet);
+        return input_alphabet;
+    }
 }
 
 /******************************************************************************/
