@@ -17,8 +17,9 @@ namespace sacabench::gsaca {
     public:
 
         /**
-         * \brief Calculates a suffix array for the given text with the gsaca algorithm
-         * described by Uwe Baier in
+         * \brief Calculates a suffix array for the given text with the gsaca algorithm.
+         *
+         * This algorithm is described by Uwe Baier in
          * "Linear-time Suffix Sorting - A New Approach for Suffix Array Construction"
          * ("http://vesta.informatik.rwth-aachen.de/opus/volltexte/2016/6069/pdf/LIPIcs-CPM-2016-23.pdf").
          *
@@ -40,8 +41,6 @@ namespace sacabench::gsaca {
             gsaca_values values = gsaca_values();
             size_t number_of_chars = text.size();
             build_initial_structures(text, out_sa, values, number_of_chars);
-
-            //// PHASE 1 ////
 
             // Process groups in descending order. A group is defined through its start and end.
             size_t group_start_temp = 0;
@@ -77,7 +76,6 @@ namespace sacabench::gsaca {
                 out_sa[group_end_temp] = group_start_temp;
             }
 
-            //// PHASE 2 ////
             sort_suffixes(out_sa, values, number_of_chars);
         }
 
@@ -85,6 +83,13 @@ namespace sacabench::gsaca {
 
         /**
          * \brief This struct encapsulates values, which are shared between the helper functions.
+         *
+         * ISA is the inverse suffix array.
+         * PREV contains for each index of the suffix array the index at which the prev pointer points to.
+         * GLINK contains for each index of the suffix array the index of the first elment in its group.
+         * GSIZE contains the size of each group at the first index of that group. The rest of the group is filled with 0.
+         * group_start is the start of the group which is currently processed.
+         * group_end is the end of the group which is currently processed.
          */
         struct gsaca_values {
             sacabench::util::container<size_t> ISA;
@@ -101,7 +106,7 @@ namespace sacabench::gsaca {
         template<typename sa_index>
         inline static void build_initial_structures(sacabench::util::string_span text,
                                                     sacabench::util::span<sa_index> out_sa,
-                                                    gsaca_values& values,
+                                                    gsaca_values &values,
                                                     size_t number_of_chars) {
 
             values.ISA = sacabench::util::make_container<size_t>(number_of_chars);
@@ -113,9 +118,8 @@ namespace sacabench::gsaca {
             }
 
             // Setup helper lists to count occurring chars and to calculate the cumulative count of chars.
-            // TODO: Pass alphabeth size on and use it here with a container.
-            size_t chars_count[ UCHAR_MAX + 1 ] = {0};
-            size_t chars_cumulative[ UCHAR_MAX + 1 ] = {0};
+            auto chars_count = sacabench::util::make_container<size_t>(UCHAR_MAX + 1);
+            auto chars_cumulative = sacabench::util::make_container<size_t>(UCHAR_MAX + 1);
 
             // Count occurences of each char in word.
             for (unsigned char current_char : text) {
@@ -154,7 +158,7 @@ namespace sacabench::gsaca {
          */
         template<typename sa_index>
         inline static void compute_prev_pointer(sacabench::util::span<sa_index> out_sa,
-                                                gsaca_values& values,
+                                                gsaca_values &values,
                                                 size_t number_of_chars) {
 
             // Calculate prev pointer for all elements of current group in descending order.
@@ -165,7 +169,7 @@ namespace sacabench::gsaca {
                 size_t previous_element = current_suffix - 1;
 
                 // Loop through all indices up to the one of the last character.
-                while(previous_element < number_of_chars) {
+                while (previous_element < number_of_chars) {
 
                     // End if the current group is left.
                     if (values.ISA[previous_element] <= values.group_end) {
@@ -182,7 +186,8 @@ namespace sacabench::gsaca {
         }
 
         /**
-         * \brief This is the alternative way to calculate prev pointer from the paper.
+         * \brief Alternative way to calculate prev pointer.
+         *
          * It uses the helper function compute_prev_pointer(size_t current_index, gsaca_values values).
          * Currently it does not work the correct way for all test cases.
          * For more information see page 32ff of master thesis
@@ -190,7 +195,7 @@ namespace sacabench::gsaca {
          */
         template<typename sa_index>
         inline static void calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa,
-                                                      gsaca_values& values) {
+                                                      gsaca_values &values) {
 
             for (size_t index = values.group_start; index <= values.group_end; index++) {
 
@@ -212,8 +217,11 @@ namespace sacabench::gsaca {
             }
         }
 
+        /**
+         * \brief Helperfunction to calculate prev pointer with the function calculate_all_prev_pointer.
+         */
         inline static size_t compute_prev_pointer(size_t current_index,
-                                                  gsaca_values& values) {
+                                                  gsaca_values &values) {
 
             size_t previous_index = current_index - 1;
             while (previous_index > 0) {
@@ -227,7 +235,7 @@ namespace sacabench::gsaca {
 
         template<typename sa_index>
         inline static void update_group_structure(sacabench::util::span<sa_index> out_sa,
-                                                  gsaca_values& values) {
+                                                  gsaca_values &values) {
 
             size_t group_size = 0;
 
@@ -258,8 +266,8 @@ namespace sacabench::gsaca {
 
         template<typename sa_index>
         inline static void reorder_suffixes(sacabench::util::span<sa_index> out_sa,
-                                            gsaca_values& values,
-                                            size_t& number_of_splitted_groups,
+                                            gsaca_values &values,
+                                            size_t &number_of_splitted_groups,
                                             size_t number_of_chars,
                                             size_t group_start_temp) {
 
@@ -326,13 +334,15 @@ namespace sacabench::gsaca {
         }
 
         /**
-         * \brief This function implements the end of phase 1 of the algorithm.
+         * \brief Rearranges suffixes into the right groups.
+         *
+         * This function implements the end of phase 1 of the algorithm.
          * For more information see page 36 of master thesis
          * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
          */
         template<typename sa_index>
         inline static void rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
-                                              gsaca_values& values,
+                                              gsaca_values &values,
                                               size_t number_of_splitted_groups) {
 
             // Process each element of the splitted groups in descending order.
@@ -377,13 +387,15 @@ namespace sacabench::gsaca {
         }
 
         /**
-         * \brief This function implements phase 2 of the algorithm.
+         * \brief Calculates the right order of the suffixes in their groups.
+         *
+         * This function implements phase 2 of the algorithm.
          * For more information see page 38 of master thesis
          * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
          */
         template<typename sa_index>
         inline static void sort_suffixes(sacabench::util::span<sa_index> out_sa,
-                                         gsaca_values& values,
+                                         gsaca_values &values,
                                          size_t number_of_chars) {
 
             // Save sentinel as first entry in SA.
@@ -420,4 +432,4 @@ namespace sacabench::gsaca {
             }
         }
     }; // class gsaca
-} // namespace sacabench::gsaca
+}// namespace sacabench::gsaca
