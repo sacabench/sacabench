@@ -22,13 +22,13 @@ constexpr size_t remove_negative_mask = std::numeric_limits<size_t>::max() >> 1;
 // Compare function for inital sorting
 struct compare_first_character {
 public:
-    compare_first_character(const util::string_span& _input_text)
+    compare_first_character(const util::string_span _input_text)
         : input_text(_input_text) {}
     template <typename sa_index>
     bool operator()(const sa_index& a, const sa_index& b) const {
         return ((input_text[a] < input_text[b]));
     }
-    const util::string_span& input_text;
+    const util::string_span input_text;
 };
 
 template <typename sa_index>
@@ -190,7 +190,7 @@ private:
     }
 
     template <typename sa_index>
-    static void update_group_length(util::span<sa_index>& out_sa,
+    static void update_group_length(util::span<sa_index> out_sa,
                                     util::container<sa_index>& isa) {
         size_t n = out_sa.size();
         size_t unsorted_counter = 0;
@@ -232,7 +232,7 @@ private:
     }
 
     template <typename sa_index, typename key_func>
-    static void sort_and_update_group(util::span<sa_index>& full_array,
+    static void sort_and_update_group(util::span<sa_index> full_array,
                                       util::container<sa_index>& isa,
                                       key_func& cmp, sa_index start,
                                       sa_index end) {
@@ -434,7 +434,7 @@ private:
         }
     }
     template <typename sa_index, typename key_func>
-    static void update_group_ranks(util::span<sa_index>& out_sa,
+    static void update_group_ranks(util::span<sa_index> out_sa,
                                    util::container<sa_index>& V, key_func& cmp,
                                    sa_index start, sa_index end) {
 
@@ -460,7 +460,7 @@ private:
     }
 
     template <typename sa_index>
-    static void update_L(util::span<sa_index>& out_sa,
+    static void update_L(util::span<sa_index> out_sa,
                          util::container<sa_index>& V,
                          util::container<ssize_t>& L) {
 
