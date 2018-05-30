@@ -10,4 +10,6 @@
 TEST(uint40, simple_test) {
     using sacabench::util::uint40;
     uint40 a = 0;
+    a += 1;
+    ASSERT_EQ(a, uint40(1));
 }

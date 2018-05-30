@@ -70,7 +70,7 @@ inline std::string Backtrace(int skip = 1) {
 
         Dl_info info;
         if (dladdr(callstack[i], &info) && info.dli_sname) {
-            char* demangled;
+            char* demangled = nullptr;
             int status = -1;
             if (info.dli_sname[0] == '_') {
                 demangled =
