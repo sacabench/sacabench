@@ -334,12 +334,12 @@ namespace sacabench::gsaca {
         }
 
         /**
-         * \brief Rearranges suffixes into the right groups.
-         *
-         * This function implements the end of phase 1 of the algorithm.
-         * For more information see page 36 of master thesis
-         * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
-         */
+        * \brief Rearranges suffixes into the right groups.
+        *
+        * This function implements the end of phase 1 of the algorithm.
+        * For more information see page 36 of master thesis
+        * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
+        */
         template<typename sa_index>
         inline static void rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
                                               gsaca_values &values,
@@ -348,40 +348,55 @@ namespace sacabench::gsaca {
             // Process each element of the splitted groups in descending order.
             for (size_t index = number_of_splitted_groups; index > 0; index--) {
 
+                // Recalculate group_end.
                 values.group_end = values.group_start + values.GSIZE[values.group_start];
 
-                //decrement group count of previous group suffixes, and move them to back
+                // Update GSIZE and move suffix to back by switching it with the last element of current group.
                 for (size_t index = values.group_end - 1; index >= values.group_start; index--) {
 
-                    // calucalte last suffix of current group
-                    size_t previous_element = out_sa[index];
-                    size_t start_index = values.GLINK[previous_element];
-                    start_index += --values.GSIZE[start_index];
+                    // Calculate first suffix of current group.
+                    size_t current_suffix = out_sa[index];
+                    size_t start_index = values.GLINK[current_suffix];
 
-                    //move previous to back by exchanging it with last suffix s of group
-                    size_t current_suffix = out_sa[start_index];
-                    size_t tmp = values.ISA[previous_element];
-                    out_sa[tmp] = current_suffix;
-                    values.ISA[current_suffix] = tmp;
-                    out_sa[start_index] = previous_element;
-                    values.ISA[previous_element] = start_index;
+                    // Decrement size of current group by one.
+                    values.GSIZE[start_index]--;
+
+                    // Calculate end index from start_index and size of the current group.
+                    size_t end_index = start_index + values.GSIZE[start_index];
+
+                    // Move the current_suffix to back by exchanging it with last suffix of its group.
+                    size_t groupstart_suffix = out_sa[end_index];
+                    size_t current_suffix_position = values.ISA[current_suffix];
+                    out_sa[current_suffix_position] = groupstart_suffix;
+                    values.ISA[groupstart_suffix] = current_suffix_position;
+                    out_sa[end_index] = current_suffix;
+                    values.ISA[current_suffix] = end_index;
                 }
 
-                //set new GLINK for moved suffixes
+                // Update GLINK.
                 for (size_t index = values.group_start; index < values.group_end; index++) {
-                    size_t previous_element = out_sa[index];
-                    size_t start_index = values.GLINK[previous_element];
-                    start_index += values.GSIZE[start_index];
-                    values.GLINK[previous_element] = start_index;
+
+                    // Calculate first suffix of current group.
+                    size_t current_suffix = out_sa[index];
+                    size_t start_index = values.GLINK[current_suffix];
+
+                    // Calculate last index of group and set it as the GLINK value of current_suffix.
+                    size_t end_index = start_index + values.GSIZE[start_index];
+                    values.GLINK[current_suffix] = end_index;
                 }
 
-                //set up GSIZE for newly created groups
+                // Update GSIZE.
                 for (size_t index = values.group_start; index < values.group_end; index++) {
-                    size_t previous_element = out_sa[index];
-                    size_t start_index = values.GLINK[previous_element];
+
+                    // Calcualte first suffix of current group.
+                    size_t current_suffix = out_sa[index];
+                    size_t start_index = values.GLINK[current_suffix];
+
+                    // Increase GSIZE of current group.
                     values.GSIZE[start_index]++;
                 }
 
+                // Update group_start for processing the next group.
                 values.group_start = values.group_end;
             }
         }
