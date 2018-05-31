@@ -15,7 +15,7 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-#include "blind/trie.hpp"
+#include "blind/sort.hpp"
 #include "bucket_data.hpp"
 
 namespace sacabench::deep_shallow {
