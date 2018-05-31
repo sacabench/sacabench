@@ -121,7 +121,7 @@ private:
         blind::sort(input_text, bucket);
     }
 
-    inline bool try_induced_sort(const span<sa_index_type> bucket) {
+    inline bool try_induced_sort(const span<sa_index_type> /*bucket*/) {
         // TODO.
         return false;
     }
