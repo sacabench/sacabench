@@ -69,14 +69,19 @@ generate_multikey_key_function(const string_span input_text) {
     return obj;
 }
 
+template <typename index_type>
+struct default_recursion_function {
+    inline void operator()(span<index_type>) {}
+};
+
 // Our internal sort function.
-template <typename index_type, typename recursion_function =
-                                   std::function<void(span<index_type> array)>>
+template <typename index_type,
+          typename recursion_function = default_recursion_function<index_type>>
 inline void multikey_quicksort_internal(
     span<index_type> array,
     compare_one_character_at_depth<index_type>& key_func,
     const std::optional<size_t> abort_at_depth = std::nullopt,
-    recursion_function fn = [](auto) {}) {
+    recursion_function fn = recursion_function()) {
     // If the set size is only one element, we don't need to sort.
     if (array.size() < 2) {
         return;
@@ -113,7 +118,8 @@ inline void multikey_quicksort_internal(
 // Sort the suffix indices in array by comparing one character in
 // input_text.
 template <typename index_type>
-inline void multikey_quicksort(span<index_type> array, const string_span input_text) {
+inline void multikey_quicksort(span<index_type> array,
+                               const string_span input_text) {
     // Generate key function which compares only the character at position 0.
     auto key_func = generate_multikey_key_function<index_type>(input_text);
 
@@ -124,8 +130,9 @@ inline void multikey_quicksort(span<index_type> array, const string_span input_t
 // Sort the suffix indices in array by comparing one character in
 // input_text. Abort at depth max_depth and call deep_sort instead.
 template <typename index_type, typename recursion_function>
-inline void multikey_quicksort(span<index_type> array, const string_span input_text,
-                        const size_t max_depth, recursion_function fn) {
+inline void multikey_quicksort(span<index_type> array,
+                               const string_span input_text,
+                               const size_t max_depth, recursion_function fn) {
     // Generate key function which compares only the character at position 0.
     auto key_func = generate_multikey_key_function<index_type>(input_text);
 
