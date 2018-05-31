@@ -63,7 +63,7 @@ private:
 
 // Create a new key_func to compare two characters at depth 0.
 template <typename index_type>
-compare_one_character_at_depth<index_type>
+inline compare_one_character_at_depth<index_type>
 generate_multikey_key_function(const string_span input_text) {
     compare_one_character_at_depth<index_type> obj(input_text);
     return obj;
@@ -72,7 +72,7 @@ generate_multikey_key_function(const string_span input_text) {
 // Our internal sort function.
 template <typename index_type, typename recursion_function =
                                    std::function<void(span<index_type> array)>>
-void multikey_quicksort_internal(
+inline void multikey_quicksort_internal(
     span<index_type> array,
     compare_one_character_at_depth<index_type>& key_func,
     const std::optional<size_t> abort_at_depth = std::nullopt,
@@ -113,7 +113,7 @@ void multikey_quicksort_internal(
 // Sort the suffix indices in array by comparing one character in
 // input_text.
 template <typename index_type>
-void multikey_quicksort(span<index_type> array, const string_span input_text) {
+inline void multikey_quicksort(span<index_type> array, const string_span input_text) {
     // Generate key function which compares only the character at position 0.
     auto key_func = generate_multikey_key_function<index_type>(input_text);
 
@@ -124,7 +124,7 @@ void multikey_quicksort(span<index_type> array, const string_span input_text) {
 // Sort the suffix indices in array by comparing one character in
 // input_text. Abort at depth max_depth and call deep_sort instead.
 template <typename index_type, typename recursion_function>
-void multikey_quicksort(span<index_type> array, const string_span input_text,
+inline void multikey_quicksort(span<index_type> array, const string_span input_text,
                         const size_t max_depth, recursion_function fn) {
     // Generate key function which compares only the character at position 0.
     auto key_func = generate_multikey_key_function<index_type>(input_text);
