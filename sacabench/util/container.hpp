@@ -1,53 +1,149 @@
 /*******************************************************************************
  * Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
+ * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
 #pragma once
 
-#include "span.hpp"
+#include <memory>
+#include <sstream>
 #include <vector>
+
+#include "macros.hpp"
+#include "span.hpp"
+#include "stacktrace.hpp"
 
 namespace sacabench::util {
 
 template <typename element_type>
-class custom_container {
+class container {
 private:
-    std::vector<element_type> m_allocation;
+    std::unique_ptr<element_type[]> m_allocation;
+    size_t m_size = 0;
+
+    inline static void copy_check(span<element_type const> other) {
+        constexpr bool make_error = false;
+
+        (void)other;
+        IF_DEBUG({
+            if (!other.empty()) {
+                std::stringstream ss;
+
+                bool possible_trigger = false;
+                bool triggered = false;
+                backtrace::Backtrace(1, true, [&](auto r) {
+                    if (possible_trigger) {
+                        possible_trigger = false;
+
+                        triggered =
+                            r.function_namespace.starts_with("sacabench");
+                        if (triggered) {
+                            ss.str("");
+                            ss << r.function_namespace
+                               << "::" << r.function_name;
+                        }
+                    }
+                    if (r.function_namespace.starts_with(
+                            "sacabench::util::container") ||
+                        r.function_namespace_and_name.starts_with(
+                            "sacabench::util::make_container") ||
+                        r.function_namespace_and_name.starts_with(
+                            "sacabench::util::make_string")) {
+                        possible_trigger = true;
+                    }
+                });
+
+                if (triggered) {
+                    if (make_error) {
+                        DCHECK_MSG(
+                            false,
+                            "Copy of non-empty container or string in "
+                            "function\n`"
+                                << ss.str()
+                                << "`"
+                                   "\nIf the copy was intentional, "
+                                   "consider using `.make_copy()` instead.");
+                    } else {
+                        std::cerr << "WARNING: Copy of non-empty container or "
+                                     "string in function `"
+                                  << ss.str()
+                                  << "`"
+                                     "\n";
+                    }
+                }
+            }
+        })
+    }
 
 public:
     /// Special value that means "the end of the slice".
     static constexpr size_t npos = -1ll;
 
     /// Create a container of size 0.
-    inline custom_container() : m_allocation() {}
+    inline container() {}
 
     /// Create a container with a given length.
     ///
     /// Each element is default-constructed.
-    inline explicit custom_container(size_t size) {
-        m_allocation.reserve(size);
-        m_allocation.resize(size);
+    inline explicit container(size_t size) {
+        if (size != 0ull) {
+            DCHECK_MSG(size * sizeof(element_type) < (1ull << 48),
+                       "Trying to create a `container` with a size of "
+                           << size
+                           << ", which is unrealistic large. This likely "
+                              "happened through a underflow "
+                              "when calculating a size `< 0`.")
+
+            m_size = size;
+            m_allocation = std::make_unique<element_type[]>(size);
+        }
     }
 
     /// Create a container from a initializer list.
-    inline custom_container(std::initializer_list<element_type> init)
-        : custom_container(init.size()) {
+    inline container(std::initializer_list<element_type> init)
+        : container(init.size()) {
         std::copy(init.begin(), init.end(), begin());
     }
+
+    /// Create a container by copying from a span.
+    inline container(span<element_type const> span) : container(span.size()) {
+        copy_check(span);
+        std::copy(span.begin(), span.end(), begin());
+    }
+    /// Create a container by copying from a span.
+    inline container(span<element_type> span) : container(span.size()) {
+        copy_check(span);
+        std::copy(span.begin(), span.end(), begin());
+    }
+
+    inline container(container const& other) { *this = other.as_span(); }
+    inline container& operator=(container const& other) {
+        *this = other.as_span();
+        return *this;
+    }
+    inline container(container&& other) = default;
+    inline container& operator=(container&& other) = default;
 
     // Capacity
 
     /// Pointer to the beginning of the container.
-    inline element_type* data() noexcept { return m_allocation.data(); }
+    inline element_type* data() {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_allocation.get();
+    }
     /// Const pointer to the beginning of the container.
-    inline element_type const* data() const noexcept {
-        return m_allocation.data();
+    inline element_type const* data() const {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_allocation.get();
     }
 
     /// Size of the container, in elements.
-    inline size_t size() const noexcept { return m_allocation.size(); }
+    inline size_t size() const {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_size;
+    }
 
     /// Convert to a span.
     inline operator span<element_type>() {
@@ -57,6 +153,16 @@ public:
     /// Convert to a const span.
     inline operator span<element_type const>() const {
         return span<element_type const>(data(), size());
+    }
+
+    /// Explicit copy operation.
+    ///
+    /// This exists instead of the implicit copy constructor
+    /// to catch bugs, and make copies explicit.
+    inline container make_copy() const {
+        container r = container(size());
+        std::copy(begin(), end(), r.begin());
+        return r;
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -130,39 +236,102 @@ public:
         return as_span().slice(from, to);
     }
 
-    inline friend bool operator==(custom_container<element_type> const& lhs,
-                                  custom_container<element_type> const& rhs) {
-        return lhs.as_span() == rhs.as_span();
+    // container OP container
+
+    inline friend bool operator==(container<element_type> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() == rhs.slice();
     }
 
-    inline friend bool operator!=(custom_container<element_type> const& lhs,
-                                  custom_container<element_type> const& rhs) {
-        return lhs.as_span() != rhs.as_span();
+    inline friend bool operator!=(container<element_type> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() != rhs.slice();
     }
 
-    inline friend bool operator<(custom_container<element_type> const& lhs,
-                                 custom_container<element_type> const& rhs) {
-        return lhs.as_span() < rhs.as_span();
+    inline friend bool operator<(container<element_type> const& lhs,
+                                 container<element_type> const& rhs) {
+        return lhs.slice() < rhs.slice();
     }
 
-    inline friend bool operator>(custom_container<element_type> const& lhs,
-                                 custom_container<element_type> const& rhs) {
-        return lhs.as_span() > rhs.as_span();
+    inline friend bool operator>(container<element_type> const& lhs,
+                                 container<element_type> const& rhs) {
+        return lhs.slice() > rhs.slice();
     }
 
-    inline friend bool operator<=(custom_container<element_type> const& lhs,
-                                  custom_container<element_type> const& rhs) {
-        return lhs.as_span() <= rhs.as_span();
+    inline friend bool operator<=(container<element_type> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() <= rhs.slice();
     }
 
-    inline friend bool operator>=(custom_container<element_type> const& lhs,
-                                  custom_container<element_type> const& rhs) {
-        return lhs.as_span() >= rhs.as_span();
+    inline friend bool operator>=(container<element_type> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() >= rhs.slice();
+    }
+
+    // span OP container
+
+    inline friend bool operator==(span<element_type const> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() == rhs.slice();
+    }
+
+    inline friend bool operator!=(span<element_type const> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() != rhs.slice();
+    }
+
+    inline friend bool operator<(span<element_type const> const& lhs,
+                                 container<element_type> const& rhs) {
+        return lhs.slice() < rhs.slice();
+    }
+
+    inline friend bool operator>(span<element_type const> const& lhs,
+                                 container<element_type> const& rhs) {
+        return lhs.slice() > rhs.slice();
+    }
+
+    inline friend bool operator<=(span<element_type const> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() <= rhs.slice();
+    }
+
+    inline friend bool operator>=(span<element_type const> const& lhs,
+                                  container<element_type> const& rhs) {
+        return lhs.slice() >= rhs.slice();
+    }
+
+    // container OP span
+
+    inline friend bool operator==(container<element_type> const& lhs,
+                                  span<element_type const> const& rhs) {
+        return lhs.slice() == rhs.slice();
+    }
+
+    inline friend bool operator!=(container<element_type> const& lhs,
+                                  span<element_type const> const& rhs) {
+        return lhs.slice() != rhs.slice();
+    }
+
+    inline friend bool operator<(container<element_type> const& lhs,
+                                 span<element_type const> const& rhs) {
+        return lhs.slice() < rhs.slice();
+    }
+
+    inline friend bool operator>(container<element_type> const& lhs,
+                                 span<element_type const> const& rhs) {
+        return lhs.slice() > rhs.slice();
+    }
+
+    inline friend bool operator<=(container<element_type> const& lhs,
+                                  span<element_type const> const& rhs) {
+        return lhs.slice() <= rhs.slice();
+    }
+
+    inline friend bool operator>=(container<element_type> const& lhs,
+                                  span<element_type const> const& rhs) {
+        return lhs.slice() >= rhs.slice();
     }
 };
-
-template <typename element_type>
-using container = custom_container<element_type>;
 
 /**\brief Creates a container with space for exactly for `size` elements.
  */
@@ -175,9 +344,7 @@ container<element_type> make_container(size_t size) {
  */
 template <typename element_type>
 container<element_type> make_container(span<element_type> s) {
-    container<element_type> r = make_container<element_type>(s.size());
-    std::copy(s.begin(), s.end(), r.begin());
-    return r;
+    return container<element_type>(s);
 }
 } // namespace sacabench::util
 
