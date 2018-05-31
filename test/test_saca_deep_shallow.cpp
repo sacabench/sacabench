@@ -35,7 +35,7 @@ TEST(deep_shallow, simple) {
 
     auto sa = util::make_container<size_t>(input.size());
 
-    ds::construct_sa<size_t>(input, alphabet.size, sa);
+    ds::construct_sa<size_t>(input, alphabet, sa);
     ASSERT_TRUE(true);
 }
 
