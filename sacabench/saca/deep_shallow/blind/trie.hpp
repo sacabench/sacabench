@@ -270,6 +270,8 @@ public:
     inline void traverse(util::span<suffix_index_type> bucket) const {
         size_t n = m_root.traverse(bucket);
         if (n) {
+            // This if-condition "uses" `n` so that the compiler doesn't warn
+            // about it being unused.
         }
         DCHECK_EQ(n, bucket.size());
     }

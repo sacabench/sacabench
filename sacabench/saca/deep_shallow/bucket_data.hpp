@@ -61,6 +61,8 @@ public:
         DCHECK_LT(a, real_alphabet_size);
         DCHECK_LT(b, real_alphabet_size);
         if (a && b) {
+            // This if-condition "uses" `a` and `b` so that the compiler doesn't
+            // warn about them being unused.
         }
     }
 
