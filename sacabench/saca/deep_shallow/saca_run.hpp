@@ -84,7 +84,9 @@ private:
     inline void shallow_sort(const span<sa_index_type> bucket) {
         // We use multikey quicksort for now.
         // FIXME: Abort at depth L and continue with deep_sort(bucket, L);
-        util::sort::multikey_quicksort::multikey_quicksort(bucket, input_text);
+        util::sort::multikey_quicksort::multikey_quicksort(bucket, input_text, 10, [&](const span<sa_index_type> equal_partition) {
+            deep_sort(equal_partition, 10);
+        });
     }
 
     /// \brief Use Induce Sorting, Blind Sorting and Ternary Quicksort to sort
@@ -93,24 +95,28 @@ private:
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
                           const size_t /*common_prefix_length*/) {
-        // Try induced sorting. This call returns false, if no ANCHOR and
-        // OFFSET are suitable. We then use blind-/quicksort.
-        bool induce_sorted_succeeded = try_induced_sort(bucket);
 
-        if (!induce_sorted_succeeded) {
-            if (bucket.size() < BLIND_SORT_THRESHOLD) {
-                // If the bucket is small enough, we can use blind sorting.
-                blind_sort(bucket);
-            } else {
-                // In this case, we use simple quicksort.
-                simple_sort(bucket);
-            }
-        }
+        std::cout << "using deep sort! :3" << std::endl;
+        blind_sort(bucket);
+
+        // // Try induced sorting. This call returns false, if no ANCHOR and
+        // // OFFSET are suitable. We then use blind-/quicksort.
+        // bool induce_sorted_succeeded = try_induced_sort(bucket);
+        //
+        // if (!induce_sorted_succeeded) {
+        //     if (bucket.size() < BLIND_SORT_THRESHOLD) {
+        //         // If the bucket is small enough, we can use blind sorting.
+        //         blind_sort(bucket);
+        //     } else {
+        //         // In this case, we use simple quicksort.
+        //         simple_sort(bucket);
+        //     }
+        // }
     }
 
     /// \brief Use Blind Sorting to sort the bucket.
-    inline void blind_sort(const span<sa_index_type> /*bucket*/) {
-        // TODO: use blind trie and traverse
+    inline void blind_sort(const span<sa_index_type> bucket) {
+        blind::sort(input_text, bucket);
     }
 
     /// \brief Use ternary quicksort to sort the bucket.
