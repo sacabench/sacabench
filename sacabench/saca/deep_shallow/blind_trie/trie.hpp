@@ -31,7 +31,7 @@ private:
         /// \brief Child pointers.
         std::vector<node> children;
 
-        inline node() : lcp(0), si(0), children() {}
+        inline node() : incoming_char(0), lcp(0), si(0), children() {}
 
         inline static node new_leaf(const util::string_span input_text,
                                     const suffix_index_type _si) {
@@ -52,7 +52,7 @@ private:
 
         inline void add_child(node&& new_child) {
             // TODO: Use insertion sort here.
-            children.push_back(std::move(new_child));
+            children.push_back(new_child);
             std::sort(children.begin(), children.end(),
                       [](const node& a, const node& b) {
                           // Vergleiche: das erste zeichen nach dem LCP von
@@ -71,9 +71,9 @@ private:
 
             if (is_leaf()) {
                 const util::string_span suffix = input_text.slice(si);
-                std::cout << " [ " << lcp << " ] " << suffix << std::endl;
+                std::cout << " [ " << lcp << " ] -> " << si << ": '" << suffix << "'" << std::endl;
             } else {
-                std::cout << " [ " << lcp << " ]:" << std::endl;
+                std::cout << " [ " << lcp << " ]" << std::endl;
                 for (const node& child : children) {
                     print_spaces(depth);
                     std::cout << "'- ";
@@ -106,7 +106,7 @@ private:
             bool does_edge_exist = false;
             node* possible_child;
             for (node& child : children) {
-                if (child.incoming_char == input_text[new_element]) {
+                if (child.incoming_char == input_text[new_element + lcp]) {
                     does_edge_exist = true;
                     possible_child = &child;
                     if (child.can_contain(input_text, new_element)) {
@@ -145,8 +145,8 @@ private:
                     // std::endl;
                     const util::character existing_prefix = existing_suffix[i];
                     const util::character new_prefix = new_suffix[i];
-                    std::cout << existing_prefix << " vs " << new_prefix
-                              << std::endl;
+                    // std::cout << existing_prefix << " vs " << new_prefix
+                    //           << std::endl;
                     if (existing_prefix != new_prefix) {
                         lcp_of_new_node = i;
                         old_edge_label = existing_prefix;
@@ -202,9 +202,14 @@ private:
                 }
 
                 node n = node::new_leaf(input_text, new_element);
+                n.incoming_char = input_text[new_element + lcp];
                 add_child(std::move(n));
                 return;
             }
+        }
+
+        inline size_t traverse(util::span<suffix_index_type> bucket) const {
+            // TODO: traverse children in order and put into bucket
         }
     };
 
@@ -216,7 +221,7 @@ public:
                 const suffix_index_type initial_element)
         : m_input_text(_input_text) {
         m_root = node::new_inner_node(0);
-        m_root.incoming_char = util::character(util::SENTINEL);
+        m_root.incoming_char = util::SENTINEL;
 
         node n = node::new_leaf(m_input_text, initial_element);
         n.incoming_char = m_input_text[initial_element];
