@@ -4,6 +4,8 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
+#pragma once
+
 #include "alphabet.hpp"
 #include "container.hpp"
 #include "string.hpp"
