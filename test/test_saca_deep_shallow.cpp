@@ -28,7 +28,23 @@ using ds = sacabench::deep_shallow::saca;
 //     sacabench::deep_shallow::blind_trie<size_t>(util::span(input), util::span(sa));
 // }
 
-TEST(deep_shallow, print_blind_trie) {
+// TEST(deep_shallow, print_blind_trie) {
+//     using blind_trie = sacabench::deep_shallow::blind_trie::trie<size_t>;
+//
+//     util::string input = util::make_string("nbanana");
+//
+//     blind_trie my_trie(input, 6);
+//     my_trie.insert(5);
+//     my_trie.insert(4);
+//     my_trie.insert(3);
+//     my_trie.insert(2);
+//     my_trie.insert(1);
+//     my_trie.insert(0);
+//
+//     my_trie.print();
+// }
+
+TEST(deep_shallow, blind_trie_traverse) {
     using blind_trie = sacabench::deep_shallow::blind_trie::trie<size_t>;
 
     util::string input = util::make_string("nbanana");
@@ -42,6 +58,11 @@ TEST(deep_shallow, print_blind_trie) {
     my_trie.insert(0);
 
     my_trie.print();
+
+    auto bucket = util::make_container<size_t>(7);
+    my_trie.traverse(bucket);
+
+    std::cout << bucket << std::endl;
 }
 
 TEST(deep_shallow, simple) {

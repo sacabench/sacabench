@@ -110,12 +110,7 @@ private:
 
     /// \brief Use Blind Sorting to sort the bucket.
     inline void blind_sort(const span<sa_index_type> /*bucket*/) {
-        // // Construct a blind trie from `bucket`.
-        // blind_trie bt(input_text, bucket);
-        //
-        // // Traverse the trie in-order and copy the suffixes back to `bucket`.
-        // std::copy(bt, bucket);
-        std::cout << "tried to use blind sort" << std::endl;
+        // TODO: use blind trie and traverse
     }
 
     /// \brief Use ternary quicksort to sort the bucket.

@@ -209,7 +209,19 @@ private:
         }
 
         inline size_t traverse(util::span<suffix_index_type> bucket) const {
-            // TODO: traverse children in order and put into bucket
+            if(is_leaf()) {
+                std::cout << "found leaf: " << si << std::endl;
+                bucket[0] = si;
+                return 1;
+            } else {
+                size_t n_suffixe = 0;
+                for(const node& child: children) {
+                    size_t n_child = child.traverse(bucket);
+                    bucket.slice(n_child);
+                    n_suffixe += n_child;
+                }
+                return n_suffixe;
+            }
         }
     };
 
@@ -232,6 +244,11 @@ public:
 
     inline void insert(const suffix_index_type new_element) {
         m_root.insert(m_input_text, new_element);
+    }
+
+    inline void traverse(util::span<suffix_index_type> bucket) const {
+        size_t n = m_root.traverse(bucket);
+        DCHECK_EQ(n, bucket.size());
     }
 };
 
