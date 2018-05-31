@@ -9,6 +9,7 @@
 #include <optional>
 
 #include <util/sort/bucketsort.hpp>
+#include <util/sort/introsort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
@@ -22,6 +23,10 @@ namespace sacabench::deep_shallow {
 template <typename T>
 using span = util::span<T>;
 using u_char = util::character;
+
+/// \brief Instead of continuing to sort with shallow_sort, we switch to
+///        deep_sort as this depth.
+constexpr auto DEEP_SORT_DEPTH = 50;
 
 /// \brief We use blind sort on sets which are smaller than this threshold.
 ///        This has a direct effect on the memory footprint of the algorithm.
@@ -82,11 +87,12 @@ private:
 
     /// \brief Use Multikey-Quicksort to sort the bucket.
     inline void shallow_sort(const span<sa_index_type> bucket) {
-        // We use multikey quicksort for now.
-        // FIXME: Abort at depth L and continue with deep_sort(bucket, L);
-        util::sort::multikey_quicksort::multikey_quicksort(bucket, input_text, 10, [&](const span<sa_index_type> equal_partition) {
-            deep_sort(equal_partition, 10);
-        });
+        // We use multikey quicksort. Abort at depth DEEP_SORT_DEPTH.
+        util::sort::multikey_quicksort::multikey_quicksort(
+            bucket, input_text, DEEP_SORT_DEPTH,
+            [&](const span<sa_index_type> equal_partition) {
+                deep_sort(equal_partition, DEEP_SORT_DEPTH);
+            });
     }
 
     /// \brief Use Induce Sorting, Blind Sorting and Ternary Quicksort to sort
@@ -95,23 +101,19 @@ private:
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
                           const size_t /*common_prefix_length*/) {
+        // Try induced sorting. This call returns false, if no ANCHOR and
+        // OFFSET are suitable. We then use blind-/quicksort.
+        bool induce_sorted_succeeded = try_induced_sort(bucket);
 
-        std::cout << "using deep sort! :3" << std::endl;
-        blind_sort(bucket);
-
-        // // Try induced sorting. This call returns false, if no ANCHOR and
-        // // OFFSET are suitable. We then use blind-/quicksort.
-        // bool induce_sorted_succeeded = try_induced_sort(bucket);
-        //
-        // if (!induce_sorted_succeeded) {
-        //     if (bucket.size() < BLIND_SORT_THRESHOLD) {
-        //         // If the bucket is small enough, we can use blind sorting.
-        //         blind_sort(bucket);
-        //     } else {
-        //         // In this case, we use simple quicksort.
-        //         simple_sort(bucket);
-        //     }
-        // }
+        if (!induce_sorted_succeeded) {
+            if (bucket.size() < BLIND_SORT_THRESHOLD) {
+                // If the bucket is small enough, we can use blind sorting.
+                blind_sort(bucket);
+            } else {
+                // In this case, we use simple quicksort.
+                simple_sort(bucket);
+            }
+        }
     }
 
     /// \brief Use Blind Sorting to sort the bucket.
@@ -119,10 +121,22 @@ private:
         blind::sort(input_text, bucket);
     }
 
+    inline bool try_induced_sort(const span<sa_index_type> bucket) {
+        // TODO.
+        return false;
+    }
+
     /// \brief Use ternary quicksort to sort the bucket.
-    inline void simple_sort(const span<sa_index_type> bucket) {
-        // TODO: Use introsort/ternary quicksort instead of multikey-quicksort.
-        util::sort::multikey_quicksort::multikey_quicksort(bucket, input_text);
+    inline void simple_sort(span<sa_index_type> bucket) {
+        const auto compare_suffix = [&](const sa_index_type a,
+                                        const sa_index_type b) {
+            DCHECK_LT(a, input_text.size());
+            DCHECK_LT(b, input_text.size());
+            const util::string_span as = input_text.slice(a);
+            const util::string_span bs = input_text.slice(b);
+            return as < bs;
+        };
+        util::sort::introsort(bucket, compare_suffix);
     }
 
     /// \brief Iteratively sort all buckets.
