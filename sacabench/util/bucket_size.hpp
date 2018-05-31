@@ -7,6 +7,7 @@
 #include "alphabet.hpp"
 #include "container.hpp"
 #include "string.hpp"
+#include "alphabet.hpp"
 
 namespace sacabench::util {
 /// \brief Returns a container with bucket sizes in size of the

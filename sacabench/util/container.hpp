@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include <memory>
 #include <sstream>
 #include <vector>
 
+#include "macros.hpp"
 #include "span.hpp"
 #include "stacktrace.hpp"
 
@@ -18,57 +20,61 @@ namespace sacabench::util {
 template <typename element_type>
 class container {
 private:
-    std::vector<element_type> m_allocation;
+    std::unique_ptr<element_type[]> m_allocation;
+    size_t m_size = 0;
 
     inline static void copy_check(span<element_type const> other) {
         constexpr bool make_error = false;
 
         (void)other;
-#ifdef DEBUG
-        if (!other.empty()) {
-            std::stringstream ss;
+        IF_DEBUG({
+            if (!other.empty()) {
+                std::stringstream ss;
 
-            bool possible_trigger = false;
-            bool triggered = false;
-            backtrace::Backtrace(1, true, [&](auto r) {
-                if (possible_trigger) {
-                    possible_trigger = false;
+                bool possible_trigger = false;
+                bool triggered = false;
+                backtrace::Backtrace(1, true, [&](auto r) {
+                    if (possible_trigger) {
+                        possible_trigger = false;
 
-                    triggered = r.function_namespace.starts_with("sacabench");
-                    if (triggered) {
-                        ss.str("");
-                        ss << r.function_namespace << "::" << r.function_name;
+                        triggered =
+                            r.function_namespace.starts_with("sacabench");
+                        if (triggered) {
+                            ss.str("");
+                            ss << r.function_namespace
+                               << "::" << r.function_name;
+                        }
+                    }
+                    if (r.function_namespace.starts_with(
+                            "sacabench::util::container") ||
+                        r.function_namespace_and_name.starts_with(
+                            "sacabench::util::make_container") ||
+                        r.function_namespace_and_name.starts_with(
+                            "sacabench::util::make_string")) {
+                        possible_trigger = true;
+                    }
+                });
+
+                if (triggered) {
+                    if (make_error) {
+                        DCHECK_MSG(
+                            false,
+                            "Copy of non-empty container or string in "
+                            "function\n`"
+                                << ss.str()
+                                << "`"
+                                   "\nIf the copy was intentional, "
+                                   "consider using `.make_copy()` instead.");
+                    } else {
+                        std::cerr << "WARNING: Copy of non-empty container or "
+                                     "string in function `"
+                                  << ss.str()
+                                  << "`"
+                                     "\n";
                     }
                 }
-                if (r.function_namespace.starts_with(
-                        "sacabench::util::container") ||
-                    r.function_namespace_and_name.starts_with(
-                        "sacabench::util::make_container") ||
-                    r.function_namespace_and_name.starts_with(
-                        "sacabench::util::make_string")) {
-                    possible_trigger = true;
-                }
-            });
-
-            if (triggered) {
-                if (make_error) {
-                    DCHECK_MSG(
-                        false,
-                        "Copy of non-empty container or string in function\n`"
-                            << ss.str()
-                            << "`"
-                               "\nIf the copy was intentional, "
-                               "consider using `.make_copy()` instead.");
-                } else {
-                    std::cerr << "WARNING: Copy of non-empty container or "
-                                 "string in function `"
-                              << ss.str()
-                              << "`"
-                                 "\n";
-                }
             }
-        }
-#endif
+        })
     }
 
 public:
@@ -76,14 +82,23 @@ public:
     static constexpr size_t npos = -1ll;
 
     /// Create a container of size 0.
-    inline container() : m_allocation() {}
+    inline container() {}
 
     /// Create a container with a given length.
     ///
     /// Each element is default-constructed.
     inline explicit container(size_t size) {
-        m_allocation.reserve(size);
-        m_allocation.resize(size);
+        if (size != 0ull) {
+            DCHECK_MSG(size * sizeof(element_type) < (1ull << 48),
+                       "Trying to create a `container` with a size of "
+                           << size
+                           << ", which is unrealistic large. This likely "
+                              "happened through a underflow "
+                              "when calculating a size `< 0`.")
+
+            m_size = size;
+            m_allocation = std::make_unique<element_type[]>(size);
+        }
     }
 
     /// Create a container from a initializer list.
@@ -103,13 +118,9 @@ public:
         std::copy(span.begin(), span.end(), begin());
     }
 
-    inline container(container const& other) {
-        copy_check(other);
-        m_allocation = other.m_allocation;
-    }
+    inline container(container const& other) { *this = other.as_span(); }
     inline container& operator=(container const& other) {
-        copy_check(other);
-        m_allocation = other.m_allocation;
+        *this = other.as_span();
         return *this;
     }
     inline container(container&& other) = default;
@@ -118,14 +129,21 @@ public:
     // Capacity
 
     /// Pointer to the beginning of the container.
-    inline element_type* data() noexcept { return m_allocation.data(); }
+    inline element_type* data() {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_allocation.get();
+    }
     /// Const pointer to the beginning of the container.
-    inline element_type const* data() const noexcept {
-        return m_allocation.data();
+    inline element_type const* data() const {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_allocation.get();
     }
 
     /// Size of the container, in elements.
-    inline size_t size() const noexcept { return m_allocation.size(); }
+    inline size_t size() const {
+        DCHECK_EQ((m_size != 0), (m_allocation.get() != nullptr));
+        return m_size;
+    }
 
     /// Convert to a span.
     inline operator span<element_type>() {
