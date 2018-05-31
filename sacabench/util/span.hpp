@@ -35,10 +35,12 @@ public:
 
     /// Create a span from an pointer and a length.
     inline span(T* ptr, size_t size) : m_ptr(ptr), m_size(size) {
-        DCHECK_MSG(size < (1ull << 48),
-                   "The size passed to `span(T*,size)` was larger than "
-                   "possible. This likely happened through a underflow "
-                   "when calculating a size `< 0`.")
+        DCHECK_MSG(size * sizeof(T) < (1ull << 48),
+                   "Trying to create a `span` with a size of "
+                       << size
+                       << ", which is unrealistic large. This likely happened "
+                          "through a underflow "
+                          "when calculating a size `< 0`.")
     }
 
     /// Constructor from a `std::vector`.

@@ -89,10 +89,12 @@ public:
     /// Each element is default-constructed.
     inline explicit container(size_t size) {
         if (size != 0ull) {
-            DCHECK_MSG(size < (1ull << 48),
-                       "The size passed to container() was larger than "
-                       "possible. This likely happened through a underflow "
-                       "when calculating a size `< 0`.")
+            DCHECK_MSG(size * sizeof(element_type) < (1ull << 48),
+                       "Trying to create a `container` with a size of "
+                           << size
+                           << ", which is unrealistic large. This likely "
+                              "happened through a underflow "
+                              "when calculating a size `< 0`.")
 
             m_size = size;
             m_allocation = std::make_unique<element_type[]>(size);
