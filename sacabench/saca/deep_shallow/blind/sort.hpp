@@ -21,7 +21,7 @@ inline void sort(const util::string_span text,
 
     // Sort `bucket` such that the smallest suffixes (greatest index) are
     // inserted first.
-    util::sort::introsort(bucket, std::greater());
+    util::sort::introsort(bucket, std::greater<suffix_index_type>());
 
     // std::cout << bucket << std::endl;
 
