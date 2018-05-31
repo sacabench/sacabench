@@ -14,7 +14,7 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-#include "blind_trie/trie.hpp"
+#include "blind/trie.hpp"
 #include "bucket_data.hpp"
 
 namespace sacabench::deep_shallow {

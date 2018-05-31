@@ -4,10 +4,12 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
+#pragma once
+
 #include <optional>
 #include <util/string.hpp>
 
-namespace sacabench::deep_shallow::blind_trie {
+namespace sacabench::deep_shallow::blind {
 
 inline void print_spaces(const size_t depth) {
     for (size_t i = 0; i < depth; ++i) {
@@ -71,7 +73,8 @@ private:
 
             if (is_leaf()) {
                 const util::string_span suffix = input_text.slice(si);
-                std::cout << " [ " << lcp << " ] -> " << si << ": '" << suffix << "'" << std::endl;
+                std::cout << " [ " << lcp << " ] -> " << si << ": '" << suffix
+                          << "'" << std::endl;
             } else {
                 std::cout << " [ " << lcp << " ]" << std::endl;
                 for (const node& child : children) {
@@ -82,22 +85,26 @@ private:
             }
         }
 
-        inline node& get_any_leaf() {
-            if (children.size() == 0) {
-                return *this;
+        inline suffix_index_type get_any_leaf_si() const {
+            if (is_leaf()) {
+                return si;
             } else {
-                return children[0];
+                return children[0].get_any_leaf_si();
             }
         }
 
         inline bool can_contain(const util::string_span input_text,
-                                const suffix_index_type new_element) {
-            const auto example_suffix = get_any_leaf().si;
-            const util::string_span new_prefix =
-                input_text.slice(new_element, new_element + lcp);
+                                const suffix_index_type new_element) const {
+            const auto example_suffix = get_any_leaf_si();
+            const util::string_span new_prefix = input_text.slice(new_element);
             const util::string_span existing_prefix =
-                input_text.slice(example_suffix, example_suffix + lcp);
-            return new_prefix == existing_prefix;
+                input_text.slice(example_suffix);
+
+            // std::cout << "lcp: " << lcp << std::endl;
+            // std::cout << "new: " << new_prefix << std::endl;
+            // std::cout << "exi: " << existing_prefix << std::endl;
+
+            return new_prefix.slice(0, lcp) == existing_prefix.slice(0, lcp);
         }
 
         inline void insert(const util::string_span input_text,
@@ -106,25 +113,38 @@ private:
             bool does_edge_exist = false;
             node* possible_child;
             for (node& child : children) {
+                // std::cout << "checking edge " << child.incoming_char <<
+                // std::endl;
                 if (child.incoming_char == input_text[new_element + lcp]) {
+                    // std::cout << "match" << std::endl;
                     does_edge_exist = true;
                     possible_child = &child;
                     if (child.can_contain(input_text, new_element)) {
                         // Case 1: There is an edge and the LCP compatible with
                         // the new suffix.
+                        // std::cout << "case 1:" << std::endl;
                         child.insert(input_text, new_element);
                         return;
                     }
+                    break;
                 }
             }
 
+            // std::cout << std::endl;
+
             if (does_edge_exist) {
+                // std::cout << "case 2:" << std::endl;
+                //
+                // this->print(input_text, 0);
+                // std::cout << std::endl;
+                // possible_child->print(input_text, 0);
+
                 // Case 2: There is an edge, but the LCP is not the same
                 // anymore. We need to split the selected child node into two.
 
                 // The common prefix the next node represents.
                 const suffix_index_type existing_suffix_index =
-                    possible_child->get_any_leaf().si;
+                    possible_child->get_any_leaf_si();
                 const util::string_span existing_suffix =
                     input_text.slice(existing_suffix_index);
                 const util::string_span new_suffix =
@@ -164,7 +184,7 @@ private:
                 // - The edge label to the old child (old_edge_label)
 
                 node new_inner = node::new_inner_node(lcp_of_new_node);
-                new_inner.incoming_char = input_text[new_element];
+                new_inner.incoming_char = input_text[new_element + lcp];
 
                 node new_leaf = node::new_leaf(input_text, new_element);
                 new_leaf.incoming_char =
@@ -178,20 +198,17 @@ private:
                     std::remove_if(children.begin(), children.end(),
                                    [&](const node& a) {
                                        return a.incoming_char ==
-                                              input_text[new_element];
+                                              input_text[new_element + lcp];
                                    }),
                     children.end());
 
                 new_inner.add_child(std::move(old_node));
                 new_inner.add_child(std::move(new_leaf));
                 add_child(std::move(new_inner));
-
                 return;
             } else {
-                // Case 3: There is no edge yet for this character. Insert a
-                // leaf below this node.
-
                 if (is_leaf()) {
+                    // std::cout << "case 4:" << std::endl;
                     // Case 4: This node is itself a leaf. We then make this
                     // node an inner node and insert a dummy leaf with no edge
                     // label.
@@ -199,7 +216,12 @@ private:
                     n.incoming_char = util::SENTINEL;
                     add_child(std::move(n));
                     si = 0;
+                } else {
+                    // std::cout << "case 3:" << std::endl;
                 }
+
+                // Case 3: There is no edge yet for this character. Insert a
+                // leaf below this node.
 
                 node n = node::new_leaf(input_text, new_element);
                 n.incoming_char = input_text[new_element + lcp];
@@ -209,15 +231,14 @@ private:
         }
 
         inline size_t traverse(util::span<suffix_index_type> bucket) const {
-            if(is_leaf()) {
-                std::cout << "found leaf: " << si << std::endl;
+            if (is_leaf()) {
                 bucket[0] = si;
                 return 1;
             } else {
                 size_t n_suffixe = 0;
-                for(const node& child: children) {
+                for (const node& child : children) {
                     size_t n_child = child.traverse(bucket);
-                    bucket.slice(n_child);
+                    bucket = bucket.slice(n_child);
                     n_suffixe += n_child;
                 }
                 return n_suffixe;
@@ -252,4 +273,4 @@ public:
     }
 };
 
-} // namespace sacabench::deep_shallow::blind_trie
+} // namespace sacabench::deep_shallow::blind
