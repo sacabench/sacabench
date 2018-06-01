@@ -63,21 +63,24 @@ TEST(ringbuffer, full) {
         rb.push_back(i);
     }
 
+    bool back_exception = false, front_exception = false;
+
     try {
         rb.push_back(40);
     } catch (...) {
-        ASSERT_FALSE(false);
+        back_exception = true;
         return;
     }
 
     try {
         rb.push_front(40);
     } catch (...) {
-        ASSERT_FALSE(false);
+        front_exception = true;
         return;
     }
 
-    ASSERT_FALSE(true);
+    ASSERT_TRUE(back_exception);
+    ASSERT_TRUE(front_exception);
 }
 
 TEST(ringbuffer, random) {
