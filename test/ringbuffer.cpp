@@ -69,14 +69,12 @@ TEST(ringbuffer, full) {
         rb.push_back(40);
     } catch (...) {
         back_exception = true;
-        return;
     }
 
     try {
         rb.push_front(40);
     } catch (...) {
         front_exception = true;
-        return;
     }
 
     ASSERT_TRUE(back_exception);
