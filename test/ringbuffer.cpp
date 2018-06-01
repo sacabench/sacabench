@@ -8,12 +8,13 @@
 #include <random>
 #include <util/container.hpp>
 #include <util/ringbuffer.hpp>
+#include <util/macros.hpp>
 
 using namespace sacabench::util;
 
 TEST(ringbuffer, create) {
     ringbuffer<size_t> rb(16);
-    ASSERT_EQ(rb.size(), 16);
+    ASSERT_EQ(rb.size(), 16u);
 }
 
 TEST(ringbuffer, push) {
@@ -77,8 +78,13 @@ TEST(ringbuffer, full) {
         front_exception = true;
     }
 
-    ASSERT_TRUE(back_exception);
-    ASSERT_TRUE(front_exception);
+    (void) back_exception;
+    (void) front_exception;
+
+    IF_DEBUG({
+        ASSERT_TRUE(back_exception);
+        ASSERT_TRUE(front_exception);
+    });
 }
 
 TEST(ringbuffer, random) {
@@ -96,6 +102,6 @@ TEST(ringbuffer, random) {
                 rb.push_back(i);
             }
         }
-        ASSERT_EQ(rb.size(), 5);
+        ASSERT_EQ(rb.size(), 5u);
     }
 }
