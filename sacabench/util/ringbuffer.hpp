@@ -42,7 +42,7 @@ public:
 
     inline size_t size() const { return memory.size(); }
 
-    inline bool is_full() const { return start == end + 1; }
+    inline bool is_full() const { return start == (end + 1) % size(); }
 
 private:
     util::container<content> memory;
