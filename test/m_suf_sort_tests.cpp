@@ -42,3 +42,20 @@ TEST(m_suf_sort, test_refine_u_chains) {
     ASSERT_EQ(isa.get_span(), isa_expected);
     ASSERT_EQ(chain_stack.size(), 3);
 }
+
+TEST(m_suf_sort, test_ISA_construction_stage1) {
+    string test_text = util::make_string("caabaccaabacaa\0"_s);
+    container<size_t> isa_expected_ {13,4,6,10,8,14,12,3,5,9,7,11,2,1,0};
+    span<size_t> isa_expected = span<size_t>(isa_expected_);
+    // Set sign bit to 1 (as is usual for ISA ranks)
+    for(size_t i = 0; i < isa_expected.size(); i++) {
+        isa_expected[i] = isa_expected[i] | NEG_BIT<size_t>;
+    }
+
+    container<size_t> isa_ = make_container<size_t>(isa_expected.size());
+    span<size_t> isa = span<size_t>(isa_);
+
+    m_suf_sort2::construct_sa<size_t>(test_text, 3, isa);
+
+    ASSERT_EQ(isa, isa_expected);
+}
