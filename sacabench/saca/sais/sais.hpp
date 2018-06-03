@@ -203,6 +203,6 @@ class Sais {
             
             for (size_t i = 1; i < len; i++) { out_sa[i - 1] = SA[i]; } 
         }   
-	};
+    };
 } 
 
