@@ -13,6 +13,13 @@
 
 using namespace sacabench::util;
 
+TEST(ringbuffer, create_empty) {
+    auto memory = make_container<size_t>(0);
+    ringbuffer<size_t> rb(memory);
+    ASSERT_EQ(rb.size(), 0u);
+    ASSERT_EQ(rb.capacity(), 0u);
+}
+
 TEST(ringbuffer, create) {
     auto memory = make_container<size_t>(16);
     ringbuffer<size_t> rb(memory);
