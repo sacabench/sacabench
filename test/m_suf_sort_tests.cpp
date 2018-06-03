@@ -19,7 +19,7 @@ using namespace sacabench::util;
 using namespace sacabench::m_suf_sort;
 
 TEST(m_suf_sort, test) {
-    //test::saca_corner_cases<m_suf_sort<>>();
+    test::saca_corner_cases<m_suf_sort2>();
 }
 
 TEST(m_suf_sort, test_refine_u_chains) {
@@ -43,6 +43,8 @@ TEST(m_suf_sort, test_refine_u_chains) {
     ASSERT_EQ(chain_stack.size(), 3);
 }
 
+/* For this test to run, comment in m_suf_sort2::construct_sa the line with isa to sa conversion!
+
 TEST(m_suf_sort, test_ISA_construction_stage1) {
     string test_text = util::make_string("caabaccaabacaa\0"_s);
     container<size_t> isa_expected_ {13,4,6,10,8,14,12,3,5,9,7,11,2,1,0};
@@ -58,4 +60,18 @@ TEST(m_suf_sort, test_ISA_construction_stage1) {
     m_suf_sort2::construct_sa<size_t>(test_text, 3, isa);
 
     ASSERT_EQ(isa, isa_expected);
+}
+*/
+
+TEST(m_suf_sort, test_SA_construction_stage1) {
+    string test_text = util::make_string("caabaccaabacaa\0"_s);
+    container<size_t> sa_expected_ {14,13,12,7,1,8,2,10,4,9,3,11,6,0,5};
+    span<size_t> sa_expected = span<size_t>(sa_expected_);
+
+    container<size_t> sa_ = make_container<size_t>(sa_expected.size());
+    span<size_t> sa = span<size_t>(sa_);
+
+    m_suf_sort2::construct_sa<size_t>(test_text, 3, sa);
+
+    ASSERT_EQ(sa, sa_expected);
 }

@@ -8,6 +8,8 @@
 #pragma once
 
 #include "container.hpp"
+#include "span.hpp"
+
 
 namespace sacabench::util {
 /**\brief Transforms inverse Suffix Array to Suffix Array
@@ -49,6 +51,51 @@ void isa2sa_inplace(T &isa) {
     }
 }
 
+/*
+TODO:
+template <typename T>
+void isa2sa_inplace(T &isa) {
+
+    for (size_t i = 0; i < isa.size(); i++) {
+        if (isa[i] < 0) {
+            ssize_t start = i;
+            ssize_t suffix = i;
+            auto rank = -isa[i] - 1;
+        do {
+            auto tmp_rank = -isa[rank] - 1;
+            isa[rank] = suffix;
+            suffix = rank;
+            rank = tmp_rank;
+        } while (rank != start);
+        isa[rank] = suffix;
+        }
+    }
+}
+*/
+
+// variant for m_suf_sort
+template <typename T>
+void isa2sa_inplace2(span<T> isa) {
+    static constexpr T END = ((T)(-1)) >> 1;
+    static constexpr T NEG_BIT = ((T)1) << (bits_of<T> - 1);
+
+    for (T i = 0; i < isa.size(); i++) {
+        //if entry is a rank
+        if ((isa[i] & NEG_BIT) > 0) {
+            T start = i;
+            T suffix = i;
+            auto rank = (isa[i] & END);
+
+        do {
+            auto tmp_rank = (isa[rank] & END);
+            isa[rank] = suffix;
+            suffix = rank;
+            rank = tmp_rank;
+        } while (rank != start);
+        isa[rank] = suffix;
+        }
+    }
+}
 
 /**\brief Transforms inverse Suffix Array to Suffix Array with less space
  * than with simple scan but more scans
@@ -145,7 +192,7 @@ void isa2sa_multiscan(T &isa) {
     size_t b_pointer = n_quarter;
     size_t last_q1 = 0;
     size_t remove_tag_mask= std::numeric_limits<size_t>::max()>>3;
-    
+
     // place other elements in ISA according to their tag
     for (size_t index = 0; index < n_quarter + (n / 2); ++index) {
         size_t group = (isa[index] >> shift_size);

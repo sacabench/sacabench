@@ -13,6 +13,7 @@
 #include <util/string.hpp>
 #include <util/bits.hpp>
 #include <util/sort/introsort.hpp>
+#include <util/ISAtoSA.hpp>
 
 //#include<iostream>
 #include <vector>
@@ -45,6 +46,9 @@ public:
         // if rank is set, increase global rank
         global_rank++;
     }
+    sa_index get_rank(sa_index index) {
+        return isa[index] & END<sa_index>;
+    }
     bool is_link(sa_index index) {
         return !is_rank(index);
     }
@@ -73,6 +77,7 @@ public:
     static void construct_sa(util::string_span text, size_t alphabet_size,
                              util::span<sa_index> out_sa) {
         // TODO: Check if sa_index type fits for text.size() and extra bits
+        if(text.size() < 1) return;
 
         // make a special_bits struct out of out_sa for isa
         special_bits isa(out_sa);
@@ -134,7 +139,9 @@ public:
             refine_uChain(text, isa, chain_stack, to_be_refined, length);
         }
 
+
         //TODO: After ISA is fully constructed, convert it to SA
+        util::isa2sa_inplace2<sa_index>(isa.get_span());
 
     }
 };
@@ -147,6 +154,7 @@ template <typename sa_index>
 void assign_rank(sa_index index, special_bits<sa_index>& isa) {
         isa.set_rank(index);
 }
+
 // compare function for introsort that sorts first after text symbols at given indices
 // and if both text symbols are the same compares (unique) indices.
 template <typename sa_index>
@@ -158,8 +166,21 @@ public:
 
     const sa_index length;
 
-    // This returns true, if a < b.
     bool operator()(const sa_index& a, const sa_index& b) const {
+
+        const bool a_is_too_short = length + a >= input_text.size();
+        const bool b_is_too_short = length + b >= input_text.size();
+
+        if (a_is_too_short) {
+            // b should be larger
+            return false;
+        }
+
+        if (b_is_too_short) {
+            // a should be larger
+            return true;
+        }
+
         DCHECK_LT(length + a, input_text.size());
         DCHECK_LT(length + b, input_text.size());
 
@@ -194,15 +215,24 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
          sa_index last_ID = END<sa_index>;
 
          for(sa_index i = 1; i < new_chain_IDs.size(); i++) {
-             const auto current_element = text[new_chain_IDs[i-1] + length];
-             const auto next_element = text[new_chain_IDs[i] + length];
              const sa_index current_ID = new_chain_IDs[i-1];
 
              // no matter what, we first link the last element:
              isa.set_link(current_ID, last_ID);
 
+             // checks for elements out of text:
+             const bool is_next_sentinel = new_chain_IDs[i] + length >= text.size();
+             const bool is_current_sentinel = new_chain_IDs[i-1] + length >= text.size();
+             sa_index next_element = 0;
+             sa_index current_element = 0;
+
+             if(!is_next_sentinel && !is_current_sentinel) {
+                 next_element = text[new_chain_IDs[i] + length];
+                 current_element = text[new_chain_IDs[i-1] + length];
+             }
+
              // does this chain continue?
-             if(current_element != next_element) {
+             if(is_next_sentinel || is_current_sentinel || current_element != next_element) {
 
                  // this element marks the end of a chain, push the new chain on stack
                  std::pair<sa_index, sa_index> new_chain (current_ID, length + 1);
