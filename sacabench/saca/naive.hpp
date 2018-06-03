@@ -30,6 +30,8 @@ struct naive {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
+        DCHECK_EQ(text.size(), out_sa.size());
+
         // Fill SA with all index positions
         for (size_t i = 0; i < out_sa.size(); i++) {
             out_sa[i] = i;
