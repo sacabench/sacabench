@@ -13,7 +13,8 @@ namespace sacabench::util {
 template <typename content>
 class ringbuffer {
 public:
-    inline ringbuffer(util::span<content> _memory) : memory(_memory), front(), back() {}
+    inline ringbuffer(util::span<content> _memory)
+        : memory(_memory), front(), back() {}
 
     inline void push_back(const content e) {
         DCHECK(!is_full());
@@ -27,29 +28,23 @@ public:
         front[0] = std::move(e);
     }
 
-    inline bool is_full() const {
-        return size() >= capacity();
-    }
+    inline bool is_full() const { return size() >= capacity(); }
 
-    inline size_t capacity() const {
-        return memory.size();
-    }
+    inline size_t capacity() const { return memory.size(); }
 
-    inline size_t size() const {
-        return front.size() + back.size();
-    }
+    inline size_t size() const { return front.size() + back.size(); }
 
     inline void print() const {
         std::cout << memory << std::endl;
         std::cout << front << back << std::endl;
     }
 
-    template<typename Fn>
+    template <typename Fn>
     inline void for_each(const Fn fn) const {
-        for(const content& e : front) {
+        for (const content& e : front) {
             fn(e);
         }
-        for(const content& e : back) {
+        for (const content& e : back) {
             fn(e);
         }
     }
@@ -57,7 +52,7 @@ public:
     inline void copy_into(util::span<content> s) const {
         size_t i = 0;
         DCHECK_LE(size(), s.size());
-        for_each([&](const content& e){
+        for_each([&](const content& e) {
             s[i] = e;
             ++i;
         });

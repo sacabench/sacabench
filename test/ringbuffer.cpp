@@ -7,9 +7,9 @@
 #include <gtest/gtest.h>
 #include <random>
 #include <util/container.hpp>
-#include <util/ringbuffer.hpp>
-#include <util/macros.hpp>
 #include <util/is_sorted.hpp>
+#include <util/macros.hpp>
+#include <util/ringbuffer.hpp>
 
 using namespace sacabench::util;
 
@@ -63,9 +63,7 @@ TEST(ringbuffer, push_and_foreach) {
     rb.push_back(7);
 
     auto sorted_memory = std::vector<size_t>();
-    rb.for_each([&](auto e) {
-        sorted_memory.push_back(e);
-    });
+    rb.for_each([&](auto e) { sorted_memory.push_back(e); });
 
     ASSERT_TRUE(is_sorted(span(sorted_memory)));
 }
