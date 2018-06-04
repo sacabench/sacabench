@@ -24,8 +24,6 @@ SACA_REGISTER("Example2", "Description of Example2", saca_example2)
 using saca_gsaca = sacabench::gsaca::gsaca;
 SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca.", saca_gsaca)
 
-}
-
 // fixme?
 //using deep_shallow = sacabench::deep_shallow::saca;
 //SACA_REGISTER("DeepShallow", "Deep Shallow SACA by Manzini and Ferragina", deep_shallow)
