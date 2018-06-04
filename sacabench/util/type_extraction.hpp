@@ -1,10 +1,10 @@
 /*******************************************************************************
- * util/type_extraction.hpp
- *
- * Copyright (C) 2018 Jonas Bode <jonas.bode@tu-dortmund.de>
- *
- * All rights reserved. Published under the BSD-3 license in the LICENSE file.
- ******************************************************************************/
+* util/type_extraction.hpp
+*
+* Copyright (C) 2018 Jonas Bode <jonas.bode@tu-dortmund.de>
+*
+* All rights reserved. Published under the BSD-3 license in the LICENSE file.
+******************************************************************************/
 #include <array>
 #include <tuple>
 #include "string.hpp"
@@ -30,7 +30,7 @@ namespace sacabench::util {
         from_right_global = true;
         t_0_global = t_0;
 
-        current_string_position = from_right_global ? t_0.size()-1 : 0;
+        current_string_position = from_right_global ? t_0.size() - 1 : 0;
         last_type_global = 0;
     }
 
@@ -42,7 +42,7 @@ namespace sacabench::util {
         bool const not_sentinel = (current_string_position != t_0_global.size() - 1);
 
         last_type_global = (not_sentinel &&		                                            // Symbol is not sentinel
-            (t_0_global[current_string_position] > t_0_global[current_string_position+1] || 	                    // Symbol is larger than following Symbol OR
+            (t_0_global[current_string_position] > t_0_global[current_string_position + 1] || 	                    // Symbol is larger than following Symbol OR
             (t_0_global[current_string_position] == t_0_global[current_string_position + 1] && last_type_global)));	// Symbol is equal to following Symbol
 
         string_is_finished == ((current_string_position == 0 && iteration_direction == -1) || (current_string_position == t_0_global.size() - 1 && iteration_direction == 1));
@@ -66,7 +66,7 @@ namespace sacabench::util {
             }
         }
 
-        bool const right_before_sentinel = (index+same_char_amount-1 == t_0.size() - 1);
+        bool const right_before_sentinel = (index + same_char_amount - 1 == t_0.size() - 1);
         character next_different_char = t_0[index + same_char_amount];
 
         return std::make_tuple((right_before_sentinel ||
@@ -82,7 +82,7 @@ namespace sacabench::util {
     {
         // sentinel is never included in actual string t_0!!
 
-        bool const right_before_sentinel = (index == t_0.size()-1);
+        bool const right_before_sentinel = (index == t_0.size() - 1);
 
         return (right_before_sentinel ||		                                    // Symbol is not sentinel
             (t_0[index] > t_0[index + 1] || 	                        // Symbol is larger than following Symbol OR
@@ -120,7 +120,7 @@ namespace sacabench::util {
 
     size_t symbols_left()
     {
-        return string_is_finished? 0 : (from_right_global ? current_string_position + 1 : t_0_global.size() - current_string_position);
+        return string_is_finished ? 0 : (from_right_global ? current_string_position + 1 : t_0_global.size() - current_string_position);
     }
 
 
