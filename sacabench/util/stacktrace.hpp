@@ -30,6 +30,22 @@
 
 #include <string>
 
+#if defined(__linux__)
+
+#include <iomanip>
+#include <iostream>
+
+#include <cxxabi.h>   // for __cxa_demangle
+#include <dlfcn.h>    // for dladdr
+#include <execinfo.h> // for backtrace
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <sstream>
+
+namespace sacabench::backtrace {
+
 #define MYTRACE() std::cerr << "TRACE @" << __FILE__ << ":" << __LINE__ << "\n";
 
 struct lspan {
@@ -83,23 +99,6 @@ struct result {
 struct noop {
     inline bool operator()(result) { return true; }
 };
-
-
-#if defined(__linux__)
-
-#include <iomanip>
-#include <iostream>
-
-#include <cxxabi.h>   // for __cxa_demangle
-#include <dlfcn.h>    // for dladdr
-#include <execinfo.h> // for backtrace
-
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <sstream>
-
-namespace sacabench::backtrace {
 
 inline std::ostream& operator<<(std::ostream& out, lspan span) {
     return out.write(span.ptr, span.size);
@@ -257,6 +256,11 @@ inline std::string Backtrace(int skip = 1, bool nice = true,
 #else
 
 namespace sacabench::backtrace {
+
+
+    struct noop {
+        inline bool operator()() { return true; }
+    };
 
 template <typename callback = noop>
 inline std::string Backtrace(int = 1, bool = true,
