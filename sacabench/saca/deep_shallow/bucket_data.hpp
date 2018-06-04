@@ -60,6 +60,8 @@ public:
     inline void check_bounds(const u_char a, const u_char b) const {
         DCHECK_LT(a, real_alphabet_size);
         DCHECK_LT(b, real_alphabet_size);
+        (void) a;
+        (void) b;
     }
 
     inline void set_bucket_bounds(

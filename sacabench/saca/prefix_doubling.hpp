@@ -462,10 +462,12 @@ struct prefix_doubling_impl {
                     // Get neighboring names from U[j], U[j+1]
                     auto c1c2i1 = get_next(supf.U(), j, k);
 
-                    auto c1 = c1c2i1.first[0];
-                    auto i1 = c1c2i1.second;
-                    DCHECK_EQ(c1, c);
-                    DCHECK_EQ(i1, i);
+                    IF_DEBUG({
+                        auto c1 = c1c2i1.first[0];
+                        auto i1 = c1c2i1.second;
+                        DCHECK_EQ(c1, c);
+                        DCHECK_EQ(i1, i);
+                    })
 
                     supf.append_s(c1c2i1);
                     count += 1;
