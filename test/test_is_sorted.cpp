@@ -43,3 +43,13 @@ TEST(is_sorted, wrongly_sorted_five) {
     std::vector<size_t> test_case = {5, 4, 1, 2, 3};
     ASSERT_FALSE(is_sorted(span(test_case), cmp));
 }
+
+TEST(is_sorted, correctly_sorted_five_default_cmp) {
+    std::vector<size_t> test_case = {1, 2, 3, 4, 5};
+    ASSERT_TRUE(is_sorted(span(test_case)));
+}
+
+TEST(is_sorted, wrongly_sorted_two_default_cmp) {
+    std::vector<size_t> test_case = {1, 0};
+    ASSERT_FALSE(is_sorted(span(test_case)));
+}

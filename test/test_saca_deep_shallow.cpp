@@ -11,6 +11,7 @@
 #include <util/string.hpp>
 #include <saca/deep_shallow/saca.hpp>
 #include "test/saca.hpp"
+#include <util/sa_check.hpp>
 
 using namespace sacabench;
 using u_char = sacabench::util::character;
@@ -36,6 +37,17 @@ TEST(deep_shallow, simple) {
 
     ds::construct_sa<size_t>(input, alphabet.size, sa);
     ASSERT_TRUE(true);
+}
+
+TEST(deep_shallow, with_nullbytes) {
+    util::string input = util::make_string("abc\0abc"_s);
+    auto alphabet = util::apply_effective_alphabet(input);
+
+    auto sa = util::make_container<size_t>(input.size());
+
+    ds::construct_sa<size_t>(input, alphabet.size, sa);
+
+    ASSERT_TRUE(sa_check(util::span<size_t>(sa), util::span<util::character>(input)));
 }
 
 TEST(deep_shallow, corner_cases) {
