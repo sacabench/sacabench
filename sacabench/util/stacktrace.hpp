@@ -30,7 +30,7 @@
 
 #include <string>
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__)
 
 #include <iomanip>
 #include <iostream>
@@ -89,16 +89,20 @@ struct lspan {
     }
 };
 
-inline std::ostream& operator<<(std::ostream& out, lspan span) {
-    return out.write(span.ptr, span.size);
-}
-
 struct result {
     lspan return_ty;
     lspan function_name;
     lspan function_namespace;
     lspan function_namespace_and_name;
 };
+
+struct noop {
+    inline bool operator()(result) { return true; }
+};
+
+inline std::ostream& operator<<(std::ostream& out, lspan span) {
+    return out.write(span.ptr, span.size);
+}
 
 inline result parse_symbol(lspan name) {
     result r;
@@ -166,10 +170,6 @@ inline result parse_symbol(lspan name) {
 
     return r;
 }
-
-struct noop {
-    inline bool operator()(result) { return true; }
-};
 
 // This function produces a stack backtrace with demangled function & method
 // names.
@@ -257,9 +257,13 @@ inline std::string Backtrace(int skip = 1, bool nice = true,
 
 namespace sacabench::backtrace {
 
+struct noop {
+    inline bool operator()() { return true; }
+};
+
 template <typename callback = noop>
-inline std::string Backtrace(int skip = 1, bool nice = true,
-                             callback cb = callback()) {
+inline std::string Backtrace(int = 1, bool = true,
+                             callback = callback()) {
     return "<no backtrace on this platform>";
 }
 
