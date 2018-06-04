@@ -41,3 +41,8 @@ TEST(Alphabet, test_helper_function) {
         ASSERT_EQ(input1[i], input2[i]);
     }
 }
+
+IF_DEBUG(TEST(Alphabet, test_null) {
+    sacabench::util::string input1 = "hello\0world"_s;
+    ASSERT_ANY_THROW(sacabench::util::alphabet{input1});
+})
