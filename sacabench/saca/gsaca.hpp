@@ -109,6 +109,7 @@ namespace sacabench::gsaca {
                                                     gsaca_values &values,
                                                     size_t number_of_chars) {
 
+            // Initalise ISA, GLINK, GSIZE and PREV.
             values.ISA = sacabench::util::make_container<size_t>(number_of_chars);
             values.GLINK = sacabench::util::make_container<size_t>(number_of_chars);
             values.GSIZE = sacabench::util::make_container<size_t>(number_of_chars);
@@ -334,12 +335,12 @@ namespace sacabench::gsaca {
         }
 
         /**
-        * \brief Rearranges suffixes into the right groups.
-        *
-        * This function implements the end of phase 1 of the algorithm.
-        * For more information see page 36 of master thesis
-        * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
-        */
+         * \brief Rearranges suffixes into the right groups.
+         *
+         * This function implements the end of phase 1 of the algorithm.
+         * For more information see page 36 of master thesis
+         * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
+         */
         template<typename sa_index>
         inline static void rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
                                               gsaca_values &values,
