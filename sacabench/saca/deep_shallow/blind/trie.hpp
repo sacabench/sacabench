@@ -273,7 +273,7 @@ public:
 
         // "Use" `n` so that the compiler doesn't warn
         // about it being unused.
-        (void) n;
+        (void)n;
     }
 };
 

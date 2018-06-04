@@ -63,8 +63,8 @@ public:
 
         // "Use" `a` and `b` so that the compiler doesn't warn about them
         // being unused.
-        (void) a;
-        (void) b;
+        (void)a;
+        (void)b;
     }
 
     inline void set_bucket_bounds(

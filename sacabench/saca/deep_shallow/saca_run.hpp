@@ -15,27 +15,16 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
+#include "anchor_data.hpp"
 #include "blind/sort.hpp"
 #include "bucket_data.hpp"
+#include "parameters.hpp"
 
 namespace sacabench::deep_shallow {
 
 template <typename T>
 using span = util::span<T>;
 using u_char = util::character;
-
-/// \brief Instead of continuing to sort with shallow_sort, we switch to
-///        deep_sort as this depth.
-constexpr auto DEEP_SORT_DEPTH = 50;
-
-/// \brief We use blind sort on sets which are smaller than this threshold.
-///        This has a direct effect on the memory footprint of the algorithm.
-constexpr auto BLIND_SORT_THRESHOLD = 100;
-
-/// \brief To speed up sorting, we store meta data for every one of the
-///        `text_length/SEGMENT_LENGTH` segments. Each of the segments has
-///        length `SEGMENT_LENGTH`.
-constexpr auto SEGMENT_LENGTH = 200;
 
 /// \brief Represents a run on a specific input of the Deep Shallow SACA.
 ///        After construction, the suffix array construction is completed.
@@ -46,6 +35,7 @@ private:
     size_t alphabet_size;
     span<sa_index_type> suffix_array;
     bucket_data_container<sa_index_type> bd;
+    anchor_data<sa_index_type> ad;
 
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
@@ -155,8 +145,8 @@ private:
                 // (size_t)beta << "}..." << std::endl;
 
                 // Get bucket bounds.
-                auto bucket_start = bd.start_of_bucket(alpha, beta);
-                auto bucket_end = bd.end_of_bucket(alpha, beta);
+                const auto bucket_start = bd.start_of_bucket(alpha, beta);
+                const auto bucket_end = bd.end_of_bucket(alpha, beta);
 
                 DCHECK_LT(bucket_start, bucket_end);
 
@@ -170,6 +160,10 @@ private:
 
                 // Shallow sort it.
                 shallow_sort(bucket);
+
+                for (sa_index_type i = 0; i < bucket.size(); ++i) {
+                    ad.update_anchor(bucket[i], bucket_start + i);
+                }
             }
 
             // Mark this bucket as sorted.
@@ -181,7 +175,7 @@ public:
     inline saca_run(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
-          bd() {
+          bd(), ad(text.size()) {
 
         // Fill sa with unsorted suffix array.
         for (size_t i = 0; i < sa.size(); ++i) {
