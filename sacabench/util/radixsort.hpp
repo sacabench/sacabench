@@ -24,16 +24,18 @@ namespace sacabench::util {
         size_t biggest_char = 0;
 
         // partitioning
-        for (string s : *input) {
-            buckets[(size_t)s[index]].push_back(s);
+        for (string const& s: *input) {
+            // TODO: Is this s copy needed?
+            buckets[(size_t)s[index]].push_back(s.make_copy());
             if ((size_t)s[index] > biggest_char) { biggest_char = (size_t)s[index]; }
         }
 
         // collecting
         size_t input_i = 0;
         for (size_t i = 0; i <= biggest_char; i++) {
-            for (string s : buckets[i]) {
-                (*input)[input_i++] = s;
+            for (string const& s : buckets[i]) {
+                // TODO: Is this s copy needed?
+                (*input)[input_i++] = s.make_copy();
             }
         }
 

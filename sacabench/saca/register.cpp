@@ -6,8 +6,12 @@
 
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
+<<<<<<< HEAD
 #include "saca/gsaca.hpp"
 //#include "saca/deep_shallow.hpp"
+=======
+#include "saca/deep_shallow/saca.hpp"
+>>>>>>> master
 #include "saca/bucket_pointer_refinement.hpp"
 #include "saca/prefix_doubling.hpp"
 
@@ -21,12 +25,8 @@ SACA_REGISTER("Example1", "Description of Example1", saca_example1)
 using saca_example2 = sacabench::example2::example2;
 SACA_REGISTER("Example2", "Description of Example2", saca_example2)
 
-using saca_gsaca = sacabench::gsaca::gsaca;
-SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca.", saca_gsaca)
-
-// fixme?
-//using deep_shallow = sacabench::deep_shallow::saca;
-//SACA_REGISTER("DeepShallow", "Deep Shallow SACA by Manzini and Ferragina", deep_shallow)
+using deep_shallow = sacabench::deep_shallow::saca;
+SACA_REGISTER("Deep-Shallow", "Deep Shallow SACA by Manzini and Ferragina", deep_shallow)
 
 using saca_bucket_pointer_refinement =
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
@@ -41,6 +41,9 @@ using saca_prefix_doubling_discarding =
     sacabench::prefix_doubling::prefix_doubling_discarding;
 SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
               saca_prefix_doubling_discarding)
+
+using saca_gsaca = sacabench::gsaca::gsaca;
+SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca by Uwe Baier.", saca_gsaca)
 
 } // namespace sacabench::saca
 

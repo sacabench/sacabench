@@ -109,5 +109,8 @@ namespace test {
         test("abbbcbbb"_s);
 
         test("0	100009425	0.1661:0.1661	#businessfor"_s);
+
+        // Actual Hieroglyphs!
+        test("𓉑 𓉀𓊈𓈵𓊉𓉓𓊈𓈰𓊃𓈷𓊃𓈳𓊃𓈸𓊃𓈱𓊉"_s);
     }
 }

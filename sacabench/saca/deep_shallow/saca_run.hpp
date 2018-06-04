@@ -6,13 +6,15 @@
 
 #pragma once
 
+#include <optional>
+
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-#include "blind_trie.hpp"
+#include "blind_trie/trie.hpp"
 #include "bucket_data.hpp"
 
 namespace sacabench::deep_shallow {
@@ -141,7 +143,7 @@ private:
                 auto bucket_start = bd.start_of_bucket(alpha, beta);
                 auto bucket_end = bd.end_of_bucket(alpha, beta);
 
-                ASSERT_LT(bucket_start, bucket_end);
+                DCHECK_LT(bucket_start, bucket_end);
 
                 // std::cout << "Sorting [" << bucket_start << ", " <<
                 // bucket_end << ") with MKQS." << std::endl;

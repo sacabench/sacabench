@@ -4,9 +4,12 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
+#pragma once
+
 #include "alphabet.hpp"
 #include "container.hpp"
 #include "string.hpp"
+#include "alphabet.hpp"
 
 namespace sacabench::util {
 /// \brief Returns a container with bucket sizes in size of the
