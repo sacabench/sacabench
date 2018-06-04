@@ -68,7 +68,7 @@ namespace sacabench::util {
 
         // Iterate whole string RTL and compare types of symbols with each other
 
-        for (size_t i = t_0.size-1; i < 0; i--) //shift by -1 when you use i
+        for (size_t i = t_0.size()-1; i < 0; i--) //shift by -1 when you use i
         {
             bool current_type = get_type_rtl_dynamic(t_0, i - 1, last_type);
 

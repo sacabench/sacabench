@@ -35,18 +35,18 @@ namespace sacabench::saca {
 
         // Initialize bkt so that the pointers point to the S-Buckets (end of buckets)
         util::container<size_t> sizes = sacabench::util::get_bucket_sizes(t);
-        util::container<size_t> bkt = util::container<size_t>(sizes.size);
+        util::container<size_t> bkt = util::container<size_t>(sizes.size());
 
         int current_sum = 0;
 
-        for (size_t i = 0; i < bkt.size; i++)
+        for (size_t i = 0; i < bkt.size(); i++)
         {
             current_sum += sizes[i];
             bkt[i] = current_sum-1;
         }
 
 
-        for (size_t i = t.size; i > 0; i--) // RTL Iteration of SA
+        for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
         {
             if (sa[i - 1] != 0)
             {
@@ -69,18 +69,18 @@ namespace sacabench::saca {
 
         // Initialize bkt so that the pointers point to the L-Buckets (start of buckets)
         sizes = sacabench::util::get_bucket_sizes(t);
-        bkt = util::container<size_t>(sizes.size);
+        bkt = util::container<size_t>(sizes.size());
 
         current_sum = 0;
 
-        for (size_t i = 0; i < bkt.size; i++)
+        for (size_t i = 0; i < bkt.size(); i++)
         {
             bkt[i] = current_sum;
             current_sum += sizes[i];
         }
 
 
-        for (size_t i = 0; i < t.size; i--) // LTR Iteration of SA
+        for (size_t i = 0; i < t.size(); i--) // LTR Iteration of SA
         {
             if (sa[i] != 0 && t[sa[i]-1] >= t[sa[i]]) // check if t[sa[i]-1] is L-Type
             {
@@ -103,18 +103,18 @@ namespace sacabench::saca {
 
         // Initialize bkt so that the pointers point to the S-Buckets (end of buckets)
         sizes = sacabench::util::get_bucket_sizes(t);
-        bkt = util::container<size_t>(sizes.size);
+        bkt = util::container<size_t>(sizes.size());
 
         current_sum = 0;
 
-        for (size_t i = 0; i < bkt.size; i++)
+        for (size_t i = 0; i < bkt.size(); i++)
         {
             current_sum += sizes[i];
             bkt[i] = current_sum - 1;
         }
 
 
-        for (size_t i = t.size; i > 0; i--) // RTL Iteration of SA
+        for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
         {
             if (sa[i - 1] != 0) // TODO: check if t[sa[i-1] + 1] is S-Type
             {
@@ -136,7 +136,7 @@ namespace sacabench::saca {
 
         // Initialize SA so that all items are 0 at the beginning
 
-        for (size_t i = 0; i < t_0.size; i++)
+        for (size_t i = 0; i < t_0.size(); i++)
         {
             sa[i] = 0;
         }
@@ -144,11 +144,11 @@ namespace sacabench::saca {
         // Calculate Bucketlist bkt for bucket-pointers
 
         util::container<size_t> sizes = sacabench::util::get_bucket_sizes(t_0);
-        util::container<size_t> bkt = util::container<size_t>(sizes.size);
+        util::container<size_t> bkt = util::container<size_t>(sizes.size());
 
         int current_sum = 0;
 
-        for (size_t i = 0; i < bkt.size; i++)
+        for (size_t i = 0; i < bkt.size(); i++)
         {
             bkt[i] = current_sum;
             current_sum += sizes[i];
@@ -165,16 +165,16 @@ namespace sacabench::saca {
 
         // Allocate t_1 in the last bits of space of SA
 
-        util::string_span t_1 = sa[sa.size - lms_amount - 1];
+        util::string_span t_1 = sa[sa.size() - lms_amount - 1];
 
         // TODO "Create" t_1 by renaming the sorted LMS Substrings in SA as indices to their own buckets and put them into t_1
 
-        size_t k_1 = util::alphabet(t_1).real_size;
+        size_t k_1;
 
         // if new alphabetsize k_1 != |t_1|, we need to call recursion and calculate SA_1 of t_1
         // else t_1 is already ordered by SA and we can immediately calculate the full SA of t_0
 
-        if (t_1.size != k_1) {
+        if (t_1.size() != k_1) {
 
             calculate_deep_sa(t_1, sa);
 
@@ -186,7 +186,7 @@ namespace sacabench::saca {
 
         size_t sa_pointer = 0;
 
-        for (size_t i = 0; i < t_0.size; i++)
+        for (size_t i = 0; i < t_0.size(); i++)
         {
             if (sa[i] != 0)
             {
