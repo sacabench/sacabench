@@ -31,6 +31,7 @@ public:
         // Find all existing characters (mark with 1)
         std::fill(effective.begin(), effective.end(), 0);
         for (const character c : input) {
+            DCHECK_NE(c, SENTINEL);
             effective[c] = 1;
         }
 
