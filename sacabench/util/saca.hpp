@@ -16,26 +16,45 @@
 
 namespace sacabench::util {
 
+template <typename sa_index_t>
+class uniform_sa_type {
+    size_t m_extra_sentinels;
+    container<sa_index_t> m_sa;
+
+public:
+    inline uniform_sa_type(size_t extra_sentinels, container<sa_index_t>&& sa)
+        : m_extra_sentinels(extra_sentinels), m_sa(std::move(sa)) {}
+
+    inline size_t extra_sentinels() { return m_extra_sentinels; }
+
+    inline span<sa_index_t> sa_without_sentinels() {
+        return m_sa.slice(extra_sentinels());
+    }
+
+    inline span<sa_index_t> sa_with_sentinels() { return m_sa; }
+};
+
 template <typename Algorithm, typename sa_index_t, typename text_init_function>
-container<sa_index_t> prepare_and_construct_sa(size_t text_size,
-                                               text_init_function init) {
-    auto output = make_container<sa_index_t>(text_size);
+uniform_sa_type<sa_index_t> prepare_and_construct_sa(size_t text_size,
+                                                     text_init_function init) {
 
     size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
 
+    auto output = make_container<sa_index_t>(text_size + extra_sentinels);
     auto text_with_sentinels = string(text_size + extra_sentinels);
+
     auto text = text_with_sentinels.slice(0, text_size);
 
     init(text);
 
-    /* TODO: Uncommend and write test-for if IF_DEBUG is merged
     IF_DEBUG({
         for (size_t i = 0; i < text.size(); i++) {
-            DCHECK_MSG(text[i] != 0, "Input byte " << i << " has value 0, which
-    is reserved for the terminating sentinel!")
+            DCHECK_MSG(text[i] != 0, "Input byte "
+                                         << i
+                                         << " has value 0, which is reserved "
+                                            "for the terminating sentinel!");
         }
     })
-    */
 
     auto alph = apply_effective_alphabet(text);
 
@@ -45,7 +64,7 @@ container<sa_index_t> prepare_and_construct_sa(size_t text_size,
         Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
     }
 
-    return output;
+    return uniform_sa_type<sa_index_t>{extra_sentinels, std::move(output)};
 }
 
 class saca;

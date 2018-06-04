@@ -20,7 +20,13 @@ struct Adapter {
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet_size,
                              util::span<sa_index> out_sa) {
-        ASSERT_EQ(out_sa.size() + EXTRA_SENTINELS, text.size());
+        ASSERT_EQ(out_sa.size(), text.size());
+
+        for (size_t i = 0; i < Sentinels; i++) {
+            out_sa[i] = (out_sa.size() - 1) - i;
+        }
+
+        out_sa = out_sa.slice(Sentinels);
 
         text = text.slice(0, text.size() - Sentinels);
         algo::construct_sa(text, alphabet_size, out_sa);

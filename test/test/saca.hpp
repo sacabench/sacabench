@@ -40,9 +40,10 @@ void saca_corner_cases() {
                 }
             });
 
-        auto fast_result = sa_check(output.slice(), text);
+        auto fast_result = sa_check(output.sa_without_sentinels(), text);
         if (fast_result != sa_check_result::ok) {
-            auto slow_result = sa_check_naive(output.slice(), text);
+            auto slow_result =
+                sa_check_naive(output.sa_without_sentinels(), text);
             ASSERT_EQ(bool(fast_result), bool(slow_result))
                 << "BUG IN SA CHECKER DETECTED!";
             ASSERT_EQ(fast_result, sa_check_result::ok);
