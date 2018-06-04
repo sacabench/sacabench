@@ -6,12 +6,8 @@
 
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
-<<<<<<< HEAD
 #include "saca/gsaca.hpp"
-//#include "saca/deep_shallow.hpp"
-=======
 #include "saca/deep_shallow/saca.hpp"
->>>>>>> master
 #include "saca/bucket_pointer_refinement.hpp"
 #include "saca/prefix_doubling.hpp"
 
