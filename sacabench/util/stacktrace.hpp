@@ -84,7 +84,8 @@ struct noop {
     inline bool operator()(result) { return true; }
 };
 
-#ifdef __linux__
+
+#if defined(__linux__)
 
 #include <iomanip>
 #include <iostream>
