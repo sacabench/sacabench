@@ -26,7 +26,7 @@ public:
         : input_text(_input_text) {}
     template <typename sa_index>
     bool operator()(const sa_index& a, const sa_index& b) const {
-        return ((input_text[a] < input_text[b]));
+        return (input_text[a] < input_text[b]);
     }
     const util::string_span input_text;
 };
@@ -36,7 +36,6 @@ struct compare_ranks {
 public:
     compare_ranks(util::container<sa_index>& _V, size_t& _h) : V(_V), h(_h) {}
 
-    // Warum const?
     bool operator()(const sa_index& a, const sa_index& b) const {
         bool a_out_of_bound = a + h >= V.size();
         bool b_out_of_bound = b + h >= V.size();
@@ -61,7 +60,6 @@ public:
     compare_ranks_naive(util::container<sa_index>& _V, size_t& _h)
         : V(_V), h(_h) {}
 
-    // Warum const?
     bool operator()(const sa_index& a, const sa_index& b) const {
         bool a_out_of_bound = a + h >= V.size();
         bool b_out_of_bound = b + h >= V.size();
