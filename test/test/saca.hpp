@@ -27,8 +27,14 @@ void saca_corner_cases() {
     using namespace sacabench::util;
 
     auto test = [](string_span text) {
-        if (text.size() > 40) {
-            std::cout << "Test SACA on '" << text.slice(0, 40) << "[...]'\n";
+        size_t slice_limit = 40;
+
+        if (text.size() > slice_limit) {
+            size_t i = slice_limit;
+            while (i < text.size() && (text[i] >> 6 == 0b10)) {
+                i++;
+            }
+            std::cout << "Test SACA on '" << text.slice(0, i) << "[...]'\n";
         } else {
             std::cout << "Test SACA on '" << text << "'\n";
         }
