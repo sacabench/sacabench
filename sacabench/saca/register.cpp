@@ -5,8 +5,11 @@
  ******************************************************************************/
 
 #include "saca/bucket_pointer_refinement.hpp"
+
+#include "saca/deep_shallow/saca.hpp"
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
+#include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
 #include "saca/qsufsort.hpp"
 
@@ -19,6 +22,10 @@ SACA_REGISTER("Example1", "Description of Example1", saca_example1)
 
 using saca_example2 = sacabench::example2::example2;
 SACA_REGISTER("Example2", "Description of Example2", saca_example2)
+
+using deep_shallow = sacabench::deep_shallow::saca;
+SACA_REGISTER("Deep-Shallow", "Deep Shallow SACA by Manzini and Ferragina",
+              deep_shallow)
 
 using saca_bucket_pointer_refinement =
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
@@ -43,6 +50,9 @@ using saca_qsufsort = sacabench::qsufsort::qsufsort;
 SACA_REGISTER("qsufsort",
               "Improved Version of N. Larssons and K. SADAKANES qsufsort",
               saca_qsufsort)
+using saca_naive = sacabench::naive::naive;
+SACA_REGISTER("Naiv", "Naiver Algorithmus. Sortiert Suffixe direkt.",
+              saca_naive)
 
 } // namespace sacabench::saca
 

@@ -30,5 +30,8 @@ run_test(bucket_pointer_refinement_tests DEPS saca_bench_lib)
 run_test(test_signed_size_type DEPS saca_bench_lib)
 run_test(bits_tests DEPS saca_bench_lib)
 run_test(saca_test_qsufsort DEPS saca_bench_lib)
+run_test(test_saca_deep_shallow DEPS saca_bench_lib)
 run_test(prefix_doubling_tests DEPS saca_bench_lib)
+run_test(ringbuffer DEPS saca_bench_lib)
+run_test(construct_sa_tests DEPS saca_bench_lib)
 
