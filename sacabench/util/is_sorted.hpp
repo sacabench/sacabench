@@ -8,6 +8,7 @@
 
 #include "container.hpp"
 #include "span.hpp"
+#include "string.hpp"
 #include "sort/std_sort.hpp"
 
 namespace sacabench::util {
