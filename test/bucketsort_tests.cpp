@@ -19,7 +19,7 @@ TEST(Bucketsort, function_call) {
     auto sa = sacabench::util::make_container<uint8_t>(input.size());
     sacabench::util::span<uint8_t> sa_span = sa;
     sacabench::util::sort::bucketsort_presort(input,
-            a.size, 2, sa_span);
+            a.size_without_sentinel(), 2, sa_span);
 
     std::cout << "Suffix Array: ";
     for (auto const& c : sa)
@@ -33,7 +33,7 @@ TEST(Bucketsort, bucket_sizes){
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
     sacabench::util::apply_effective_alphabet(input, a);
     size_t depth = 1;
-    auto buckets = sacabench::util::sort::get_buckets(input, a.size, depth);
+    auto buckets = sacabench::util::sort::get_buckets(input, a.max_character_value(), depth);
     ASSERT_EQ(buckets.at(0).count, (size_t) 0);
     ASSERT_EQ(buckets.at(1).count, (size_t) 2);
     ASSERT_EQ(buckets.at(2).count, (size_t) 4);

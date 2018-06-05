@@ -142,15 +142,20 @@ private:
                     print_text(
                         input_text.slice(leftmost_suffix, leftmost_suffix + 2));
 
-                    const auto left_bucket_bound = bd.start_of_bucket(input_text[leftmost_suffix], input_text[leftmost_suffix+1]);
-                    const auto right_bucket_bound = bd.end_of_bucket(input_text[leftmost_suffix], input_text[leftmost_suffix+1]);
+                    const auto left_bucket_bound =
+                        bd.start_of_bucket(input_text[leftmost_suffix],
+                                           input_text[leftmost_suffix + 1]);
+                    const auto right_bucket_bound =
+                        bd.end_of_bucket(input_text[leftmost_suffix],
+                                         input_text[leftmost_suffix + 1]);
 
-                    std::cout << "sortierter Bucket:" <<std::endl;
-                    for(auto i = left_bucket_bound; i < right_bucket_bound; ++i) {
+                    std::cout << "sortierter Bucket:" << std::endl;
+                    for (auto i = left_bucket_bound; i < right_bucket_bound;
+                         ++i) {
                         print_text(input_text.slice(suffix_array[i]));
                     }
 
-                    for(const sa_index_type& sj : bucket) {
+                    for (const sa_index_type& sj : bucket) {
                         std::cout << "Finde ";
                         print_text(input_text.slice(sj + relation));
                     }

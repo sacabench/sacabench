@@ -15,6 +15,12 @@
 #include <util/sa_check.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+<<<<<<< HEAD
+=======
+#include <saca/deep_shallow/saca.hpp>
+#include "test/saca.hpp"
+#include <util/sa_check.hpp>
+>>>>>>> origin/master
 
 using namespace sacabench;
 using u_char = sacabench::util::character;

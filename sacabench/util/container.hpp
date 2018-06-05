@@ -24,10 +24,10 @@ private:
     size_t m_size = 0;
 
     inline static void copy_check(span<element_type const> other) {
-        constexpr bool make_error = false;
-
         (void)other;
         IF_DEBUG({
+            constexpr bool make_error = false;
+
             if (!other.empty()) {
                 std::stringstream ss;
 
