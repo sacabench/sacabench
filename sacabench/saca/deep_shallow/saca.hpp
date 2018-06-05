@@ -6,7 +6,6 @@
 
 #pragma once
 
-//#include <util/sa_check.hpp> // FIXME: uncomment, if DCHECK is used.
 #include <util/alphabet.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -27,11 +26,6 @@ public:
         // Construct an object of type `saca_run`, which contains the algorithm.
         // This will construct the suffix array in `sa` using deep-shallow.
         saca_run<sa_index_type> r(text, alphabet.size_without_sentinel(), sa);
-
-        // auto result = util::sa_check(sa, text);
-        // DCHECK_MSG(result,
-        //            "Das Suffixarray, welches von Deep-Shallow berechnet
-        //            wurde, " "war nicht korrekt: " << result);
     }
 };
 } // namespace sacabench::deep_shallow

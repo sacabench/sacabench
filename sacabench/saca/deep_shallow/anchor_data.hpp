@@ -48,9 +48,6 @@ public:
 
     inline void update_anchor(sa_index_type suffix,
                               sa_index_type position_in_sa) {
-        // std::cout << "Updating " << n_anchor << " to point to " << n_offset
-        //           << std::endl;
-
         // This is the segment the n_anchor belongs to.
         const size_t segment_idx = suffix / SEGMENT_LENGTH;
 

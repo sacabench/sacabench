@@ -146,15 +146,6 @@ private:
                     const auto sorted_bucket =
                         ad.get_position_in_suffixarray(si);
 
-                    // std::cout << "Common Prefix: ";
-                    // print_text(input_text.slice(si, si +
-                    // common_prefix_length));
-                    //
-                    // std::cout << "gefundener Bucket: ";
-                    // print_text(
-                    //     input_text.slice(leftmost_suffix, leftmost_suffix +
-                    //     2));
-
                     // Get the bucket bounds for the already sorted suffix.
                     const auto left_bucket_bound =
                         bd.start_of_bucket(input_text[leftmost_suffix],
@@ -163,20 +154,7 @@ private:
                         bd.end_of_bucket(input_text[leftmost_suffix],
                                          input_text[leftmost_suffix + 1]);
 
-                    // std::cout << "sortierter Bucket:" << std::endl;
-                    // for (auto i = left_bucket_bound; i < right_bucket_bound;
-                    //      ++i) {
-                    //     std::cout << suffix_array[i] << ": ";
-                    //     print_text(input_text.slice(suffix_array[i]));
-                    // }
-                    //
-                    // for (const sa_index_type& sj : bucket) {
-                    //     std::cout << "Finde ";
-                    //     std::cout << (sj + relation) << ": ";
-                    //     print_text(input_text.slice(sj + relation));
-                    // }
-
-                    // TODO: Finde alle Elemente von sj zwischen
+                    // Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
                     // der Suche um sorted_bucket.
 
@@ -188,15 +166,11 @@ private:
                     // This function returns true, if `to_find` is a member of
                     // the bucket to be sorted.
                     const auto contains = [&](const sa_index_type to_find) {
-                        // std::cout << "ist " << to_find << " ein zu suchender
-                        // index? ";
                         for (const sa_index_type& bsi : bucket) {
                             if (to_find == bsi + relation) {
-                                // std::cout << "jo" << std::endl;
                                 return true;
                             }
                         }
-                        // std::cout << "nö" << std::endl;
                         return false;
                     };
 
@@ -208,16 +182,11 @@ private:
                         const size_t left = sorted_bucket - dist;
                         const size_t right = sorted_bucket + dist;
 
-                        // std::cout << dist << ": " << left_bucket_bound << " "
-                        // << left << " " << right << " " << right_bucket_bound
-                        // << std::endl;
-
                         // Check if `left` overflowed.
                         if (sorted_bucket >= dist) {
                             // Check, if `left` is still in the bucket we're
                             // searching.
                             if (left >= left_bucket_bound) {
-                                // std::cout << "checking left" << std::endl;
                                 if (contains(suffix_array[left])) {
                                     rb.push_front(suffix_array[left] -
                                                   relation);
@@ -226,7 +195,6 @@ private:
                         }
 
                         if (right < right_bucket_bound) {
-                            // std::cout << "checking right" << std::endl;
                             if (contains(suffix_array[right])) {
                                 rb.push_back(suffix_array[right] - relation);
                             }
@@ -246,12 +214,6 @@ private:
 
                     // Store contents of the ringbuffer to bucket.
                     rb.copy_into(bucket);
-
-                    // std::cout << "korrekt sortierter Bucket:" << std::endl;
-                    // for (const auto nsi : bucket) {
-                    //     std::cout << nsi << ": ";
-                    //     print_text(input_text.slice(nsi));
-                    // }
 
                     // The bucket has been sorted with induced sorting.
                     return true;
@@ -290,17 +252,11 @@ private:
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {
-                // std::cout << "Sorting bucket B_{" << (size_t)alpha << ", " <<
-                // (size_t)beta << "}..." << std::endl;
-
                 // Get bucket bounds.
                 const auto bucket_start = bd.start_of_bucket(alpha, beta);
                 const auto bucket_end = bd.end_of_bucket(alpha, beta);
 
                 DCHECK_LT(bucket_start, bucket_end);
-
-                // std::cout << "Sorting [" << bucket_start << ", " <<
-                // bucket_end << ") with MKQS." << std::endl;
 
                 // Get slice of suffix array, which contains the elements of the
                 // bucket.

@@ -11,6 +11,7 @@
 
 namespace sacabench::deep_shallow::blind {
 
+/// \brief A helper function, which prints the specified amount of spaces.
 inline void print_spaces(const size_t depth) {
     for (size_t i = 0; i < depth; ++i) {
         std::cout << ' ';
@@ -52,8 +53,11 @@ private:
 
         inline bool is_leaf() const { return children.empty(); }
 
+        /// \brief A dumb method, which adds the given node to the children of
+        ///        this node, while keeping the
+        ///        "sorted-by-edge-label"-invariant.
         inline void add_child(node&& new_child) {
-            // TODO: Use insertion sort here.
+            // FIXME: Use insertion sort here.
             children.push_back(new_child);
             std::sort(children.begin(), children.end(),
                       [](const node& a, const node& b) {
@@ -85,6 +89,8 @@ private:
             }
         }
 
+        /// \brief Returns the suffix index of a random leaf which is a child
+        ///        of this node.
         inline suffix_index_type get_any_leaf_si() const {
             if (is_leaf()) {
                 return si;
@@ -93,6 +99,9 @@ private:
             }
         }
 
+        /// \brief Checks, if this node can contain the new_element.
+        ///        That means, if the LCP is identical to the LCP this node
+        ///        represents.
         inline bool can_contain(const util::string_span input_text,
                                 const suffix_index_type new_element) const {
             const auto example_suffix = get_any_leaf_si();
@@ -100,29 +109,27 @@ private:
             const util::string_span existing_prefix =
                 input_text.slice(example_suffix);
 
-            // std::cout << "lcp: " << lcp << std::endl;
-            // std::cout << "new: " << new_prefix << std::endl;
-            // std::cout << "exi: " << existing_prefix << std::endl;
-
             return new_prefix.slice(0, lcp) == existing_prefix.slice(0, lcp);
         }
 
+        /// \brief This is the main tree construction method. It inserts the
+        ///        new_element either as a child to this node or into a child
+        ///        of this node.
         inline void insert(const util::string_span input_text,
                            const suffix_index_type new_element) {
-            // Try to find out, if a suitable edge exists
+            // Try to find out if a suitable edge exists
             bool does_edge_exist = false;
             node* possible_child;
             for (node& child : children) {
-                // std::cout << "checking edge " << child.incoming_char <<
-                // std::endl;
+
+                // Check if an edge exists with the correct character label.
                 if (child.incoming_char == input_text[new_element + lcp]) {
-                    // std::cout << "match" << std::endl;
                     does_edge_exist = true;
                     possible_child = &child;
                     if (child.can_contain(input_text, new_element)) {
                         // Case 1: There is an edge and the LCP compatible with
                         // the new suffix.
-                        // std::cout << "case 1:" << std::endl;
+
                         child.insert(input_text, new_element);
                         return;
                     }
@@ -130,15 +137,7 @@ private:
                 }
             }
 
-            // std::cout << std::endl;
-
             if (does_edge_exist) {
-                // std::cout << "case 2:" << std::endl;
-                //
-                // this->print(input_text, 0);
-                // std::cout << std::endl;
-                // possible_child->print(input_text, 0);
-
                 // Case 2: There is an edge, but the LCP is not the same
                 // anymore. We need to split the selected child node into two.
 
@@ -150,23 +149,18 @@ private:
                 const util::string_span new_suffix =
                     input_text.slice(new_element);
 
-                // std::cout << "existing suffix starting at this node: " <<
-                // existing_suffix << std::endl; std::cout << "trying to insert
-                // here: " << new_suffix << std::endl;
-
+                // Find attributes of the new nodes.
+                // This is the LCP of new_element and the selected child.
                 suffix_index_type lcp_of_new_node;
-                util::character old_edge_label;
 
-                // std::cout << "starting at lcp = " << lcp << std::endl;
+                // Save the edge label of the selected child.
+                util::character old_edge_label;
 
                 for (suffix_index_type i = lcp;; ++i) {
                     // Compare the prefixes of existing and new suffix.
-                    // std::cout << "comparing at position " << (i) <<
-                    // std::endl;
                     const util::character existing_prefix = existing_suffix[i];
                     const util::character new_prefix = new_suffix[i];
-                    // std::cout << existing_prefix << " vs " << new_prefix
-                    //           << std::endl;
+
                     if (existing_prefix != new_prefix) {
                         lcp_of_new_node = i;
                         old_edge_label = existing_prefix;
@@ -174,14 +168,16 @@ private:
                     }
                 }
 
-                // std::cout << "found new lcp of inner node: " <<
-                // lcp_of_new_node << std::endl;
-
                 // We now have:
                 // - The lcp of the new inner node (lcp_of_new_node)
                 // - The edge label to the new inner node
                 // (input_text[new_element])
                 // - The edge label to the old child (old_edge_label)
+
+                // Create new node structure:
+                // this -> new_inner--> new_leaf
+                //                  `-> old_node--> ...
+                //                              `-> ...
 
                 node new_inner = node::new_inner_node(lcp_of_new_node);
                 new_inner.incoming_char = input_text[new_element + lcp];
@@ -205,19 +201,16 @@ private:
                 new_inner.add_child(std::move(old_node));
                 new_inner.add_child(std::move(new_leaf));
                 add_child(std::move(new_inner));
-                return;
             } else {
                 if (is_leaf()) {
-                    // std::cout << "case 4:" << std::endl;
                     // Case 4: This node is itself a leaf. We then make this
                     // node an inner node and insert a dummy leaf with no edge
                     // label.
+
                     node n = node::new_leaf(input_text, si);
                     n.incoming_char = util::SENTINEL;
                     add_child(std::move(n));
                     si = 0;
-                } else {
-                    // std::cout << "case 3:" << std::endl;
                 }
 
                 // Case 3: There is no edge yet for this character. Insert a
@@ -226,10 +219,11 @@ private:
                 node n = node::new_leaf(input_text, new_element);
                 n.incoming_char = input_text[new_element + lcp];
                 add_child(std::move(n));
-                return;
             }
         }
 
+        /// \brief Traverses the trie in order and saves the indices into the
+        ///        bucket.
         inline size_t traverse(util::span<suffix_index_type> bucket) const {
             if (is_leaf()) {
                 bucket[0] = si;
@@ -250,6 +244,7 @@ private:
     node m_root;
 
 public:
+    /// \brief Construct a blind trie, which contains the initial_element.
     inline trie(const util::string_span _input_text,
                 const suffix_index_type initial_element)
         : m_input_text(_input_text) {
@@ -263,10 +258,13 @@ public:
 
     inline void print() const { m_root.print(m_input_text, 0); }
 
+    /// \brief Insert an element into the correct place of the blind trie.
     inline void insert(const suffix_index_type new_element) {
         m_root.insert(m_input_text, new_element);
     }
 
+    /// \brief Traverse the blind trie in order and copy the suffixes into
+    ///        bucket.
     inline void traverse(util::span<suffix_index_type> bucket) const {
         size_t n = m_root.traverse(bucket);
         DCHECK_EQ(n, bucket.size());
