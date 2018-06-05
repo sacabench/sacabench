@@ -15,12 +15,9 @@
 #include <util/sa_check.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-<<<<<<< HEAD
-=======
 #include <saca/deep_shallow/saca.hpp>
 #include "test/saca.hpp"
 #include <util/sa_check.hpp>
->>>>>>> origin/master
 
 using namespace sacabench;
 using u_char = sacabench::util::character;
@@ -48,9 +45,11 @@ TEST(blind_trie, traverse) {
 }
 
 struct blind_saca {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+
     template <typename sa_index_type>
     inline static void construct_sa(util::string_span text,
-                                    size_t /*alphabet_size*/,
+                                    const util::alphabet& /*alphabet*/,
                                     util::span<sa_index_type> sa) {
         using blind_trie = sacabench::deep_shallow::blind::trie<size_t>;
 
@@ -174,7 +173,7 @@ TEST(deep_shallow, simple) {
 
     auto sa = util::make_container<size_t>(input.size());
 
-    ds::construct_sa<size_t>(input, alphabet.size, sa);
+    ds::construct_sa<size_t>(input, alphabet, sa);
     ASSERT_TRUE(bool(util::sa_check<size_t>(sa, input)));
 }
 
@@ -184,7 +183,7 @@ TEST(deep_shallow, ababababa) {
 
     auto sa = util::make_container<size_t>(input.size());
 
-    ds::construct_sa<size_t>(input, alphabet.size, sa);
+    ds::construct_sa<size_t>(input, alphabet, sa);
     ASSERT_TRUE(bool(util::sa_check<size_t>(sa, input)));
 }
 

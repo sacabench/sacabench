@@ -21,7 +21,7 @@ public:
     /// \brief Use Deep Shallow Sorting to construct the suffix array.
     template <typename sa_index_type>
     inline static void construct_sa(util::string_span text,
-                                    util::alphabet const& alphabet,
+                                    const util::alphabet& alphabet,
                                     span<sa_index_type> sa) {
 
         // Construct an object of type `saca_run`, which contains the algorithm.

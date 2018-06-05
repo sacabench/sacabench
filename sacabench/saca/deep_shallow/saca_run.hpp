@@ -122,16 +122,24 @@ private:
 
     inline bool try_induced_sort(const span<sa_index_type> bucket,
                                  const size_t common_prefix_length) {
-        // FIXME: don't try every suffix index?
+        // Try every suffix index, which is to be sorted
         for (const sa_index_type& si : bucket) {
+
+            // Check, if there is a suitable entry in anchor_data.
             const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
-
             if (leftmost_suffix_opt.has_value()) {
-                const auto leftmost_suffix = leftmost_suffix_opt.value();
 
+                // Test, if the suffix is in the valid range, that means
+                // entry_in_offset \in [leftmost_suffix, leftmost_suffix + common_prefix_length]
+                const auto leftmost_suffix = leftmost_suffix_opt.value();
                 if (si < leftmost_suffix &&
                     leftmost_suffix < si + common_prefix_length) {
+
+                    // This is the position the found bucket starts in si.
                     const auto relation = leftmost_suffix - si;
+
+                    // This is the position of the known sorted suffix in its
+                    // bucket.
                     const auto sorted_bucket =
                         ad.get_position_in_suffixarray(si);
 
@@ -142,6 +150,7 @@ private:
                     print_text(
                         input_text.slice(leftmost_suffix, leftmost_suffix + 2));
 
+                    // Get the bucket bounds for the already sorted suffix.
                     const auto left_bucket_bound =
                         bd.start_of_bucket(input_text[leftmost_suffix],
                                            input_text[leftmost_suffix + 1]);
@@ -159,6 +168,10 @@ private:
                         std::cout << "Finde ";
                         print_text(input_text.slice(sj + relation));
                     }
+
+                    // TODO: Finde alle Elemente von sj zwischen
+                    // left_bucket_bound und right_bucket_bound, beginnend mit
+                    // der Suche um sorted_bucket.
 
                     return false;
                 }
