@@ -125,7 +125,7 @@ TEST(blind_trie, sort) {
         auto input_span = util::span<util::character>(input);
         auto space_span = util::span<size_t>(space);
 
-        sacabench::deep_shallow::blind::sort(input_span, space_span);
+        sacabench::deep_shallow::blind::sort(input_span, space_span, 0);
 
         ASSERT_TRUE(bool(sa_check(space_span, input_span)));
     }
@@ -169,7 +169,7 @@ TEST(deep_shallow, simple) {
     auto sa = util::make_container<size_t>(input.size());
 
     ds::construct_sa<size_t>(input, alphabet.size, sa);
-    ASSERT_TRUE(true);
+    ASSERT_TRUE(bool(util::sa_check<size_t>(sa, input)));
 }
 
 TEST(deep_shallow, ababababa) {
@@ -179,7 +179,7 @@ TEST(deep_shallow, ababababa) {
     auto sa = util::make_container<size_t>(input.size());
 
     ds::construct_sa<size_t>(input, alphabet.size, sa);
-    ASSERT_TRUE(true);
+    ASSERT_TRUE(bool(util::sa_check<size_t>(sa, input)));
 }
 
 TEST(deep_shallow, corner_cases) { test::saca_corner_cases<ds>(); }

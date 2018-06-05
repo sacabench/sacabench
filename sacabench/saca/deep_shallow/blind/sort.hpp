@@ -14,7 +14,8 @@
 namespace sacabench::deep_shallow::blind {
 template <typename suffix_index_type>
 inline void sort(const util::string_span text,
-                 const util::span<suffix_index_type> bucket) {
+                 const util::span<suffix_index_type> bucket,
+             const size_t /*common_prefix_length*/) {
     if (bucket.size() < 2) {
         return;
     }

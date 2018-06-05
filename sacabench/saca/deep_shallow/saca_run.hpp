@@ -22,6 +22,13 @@
 
 namespace sacabench::deep_shallow {
 
+inline void print_text(const util::string_span text) {
+    for (const util::character& c : text) {
+        std::cout << (char)(c + 'a' - 1) << " ";
+    }
+    std::cout << std::endl;
+}
+
 template <typename T>
 using span = util::span<T>;
 using u_char = util::character;
@@ -90,40 +97,83 @@ private:
     /// \param common_prefix_length The number of characters every string in
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
-                          const size_t /*common_prefix_length*/) {
+                          const size_t common_prefix_length) {
         // Try induced sorting. This call returns false, if no ANCHOR and
         // OFFSET are suitable. We then use blind-/quicksort.
-        bool induce_sorted_succeeded = try_induced_sort(bucket);
+        bool induce_sorted_succeeded =
+            try_induced_sort(bucket, common_prefix_length);
 
         if (!induce_sorted_succeeded) {
             if (bucket.size() < BLIND_SORT_THRESHOLD) {
                 // If the bucket is small enough, we can use blind sorting.
-                blind_sort(bucket);
+                blind_sort(bucket, common_prefix_length);
             } else {
                 // In this case, we use simple quicksort.
-                simple_sort(bucket);
+                simple_sort(bucket, common_prefix_length);
             }
         }
     }
 
     /// \brief Use Blind Sorting to sort the bucket.
-    inline void blind_sort(const span<sa_index_type> bucket) {
-        blind::sort(input_text, bucket);
+    inline void blind_sort(const span<sa_index_type> bucket,
+                           const size_t common_prefix_length) {
+        blind::sort(input_text, bucket, common_prefix_length);
     }
 
-    inline bool try_induced_sort(const span<sa_index_type> /*bucket*/) {
-        // TODO.
+    inline bool try_induced_sort(const span<sa_index_type> bucket,
+                                 const size_t common_prefix_length) {
+        // FIXME: don't try every suffix index?
+        for (const sa_index_type& si : bucket) {
+            const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
+
+            if (leftmost_suffix_opt.has_value()) {
+                const auto leftmost_suffix = leftmost_suffix_opt.value();
+
+                if (si < leftmost_suffix &&
+                    leftmost_suffix < si + common_prefix_length) {
+                    const auto relation = leftmost_suffix - si;
+                    const auto sorted_bucket =
+                        ad.get_position_in_suffixarray(si);
+
+                    std::cout << "Common Prefix: ";
+                    print_text(input_text.slice(si, si + common_prefix_length));
+
+                    std::cout << "gefundener Bucket: ";
+                    print_text(
+                        input_text.slice(leftmost_suffix, leftmost_suffix + 2));
+
+                    const auto left_bucket_bound = bd.start_of_bucket(input_text[leftmost_suffix], input_text[leftmost_suffix+1]);
+                    const auto right_bucket_bound = bd.end_of_bucket(input_text[leftmost_suffix], input_text[leftmost_suffix+1]);
+
+                    std::cout << "sortierter Bucket:" <<std::endl;
+                    for(auto i = left_bucket_bound; i < right_bucket_bound; ++i) {
+                        print_text(input_text.slice(suffix_array[i]));
+                    }
+
+                    for(const sa_index_type& sj : bucket) {
+                        std::cout << "Finde ";
+                        print_text(input_text.slice(sj + relation));
+                    }
+
+                    return false;
+                }
+            }
+        }
+
         return false;
     }
 
     /// \brief Use ternary quicksort to sort the bucket.
-    inline void simple_sort(span<sa_index_type> bucket) {
+    inline void simple_sort(span<sa_index_type> bucket,
+                            const size_t common_prefix_length) {
         const auto compare_suffix = [&](const sa_index_type a,
                                         const sa_index_type b) {
-            DCHECK_LT(a, input_text.size());
-            DCHECK_LT(b, input_text.size());
-            const util::string_span as = input_text.slice(a);
-            const util::string_span bs = input_text.slice(b);
+            DCHECK_LT(a + common_prefix_length, input_text.size());
+            DCHECK_LT(b + common_prefix_length, input_text.size());
+            const util::string_span as =
+                input_text.slice(a + common_prefix_length);
+            const util::string_span bs =
+                input_text.slice(b + common_prefix_length);
             return as < bs;
         };
         util::sort::introsort(bucket, compare_suffix);
