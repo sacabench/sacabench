@@ -8,14 +8,14 @@
 
 #include <optional>
 
+#include <util/is_sorted.hpp>
+#include <util/ringbuffer.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/introsort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/ringbuffer.hpp>
-#include <util/is_sorted.hpp>
 
 #include "anchor_data.hpp"
 #include "blind/sort.hpp"
@@ -132,7 +132,8 @@ private:
             if (leftmost_suffix_opt.has_value()) {
 
                 // Test, if the suffix is in the valid range, that means
-                // entry_in_offset \in [leftmost_suffix, leftmost_suffix + common_prefix_length]
+                // entry_in_offset \in [leftmost_suffix, leftmost_suffix +
+                // common_prefix_length]
                 const auto leftmost_suffix = leftmost_suffix_opt.value();
                 if (si < leftmost_suffix &&
                     leftmost_suffix < si + common_prefix_length) {
@@ -146,11 +147,13 @@ private:
                         ad.get_position_in_suffixarray(si);
 
                     // std::cout << "Common Prefix: ";
-                    // print_text(input_text.slice(si, si + common_prefix_length));
+                    // print_text(input_text.slice(si, si +
+                    // common_prefix_length));
                     //
                     // std::cout << "gefundener Bucket: ";
                     // print_text(
-                    //     input_text.slice(leftmost_suffix, leftmost_suffix + 2));
+                    //     input_text.slice(leftmost_suffix, leftmost_suffix +
+                    //     2));
 
                     // Get the bucket bounds for the already sorted suffix.
                     const auto left_bucket_bound =
@@ -185,9 +188,10 @@ private:
                     // This function returns true, if `to_find` is a member of
                     // the bucket to be sorted.
                     const auto contains = [&](const sa_index_type to_find) {
-                        // std::cout << "ist " << to_find << " ein zu suchender index? ";
-                        for(const sa_index_type& bsi : bucket) {
-                            if(to_find == bsi + relation) {
+                        // std::cout << "ist " << to_find << " ein zu suchender
+                        // index? ";
+                        for (const sa_index_type& bsi : bucket) {
+                            if (to_find == bsi + relation) {
                                 // std::cout << "jo" << std::endl;
                                 return true;
                             }
@@ -204,23 +208,26 @@ private:
                         const size_t left = sorted_bucket - dist;
                         const size_t right = sorted_bucket + dist;
 
-                        // std::cout << dist << ": " << left_bucket_bound << " " << left << " " << right << " " << right_bucket_bound << std::endl;
+                        // std::cout << dist << ": " << left_bucket_bound << " "
+                        // << left << " " << right << " " << right_bucket_bound
+                        // << std::endl;
 
                         // Check if `left` overflowed.
-                        if(sorted_bucket >= dist) {
+                        if (sorted_bucket >= dist) {
                             // Check, if `left` is still in the bucket we're
                             // searching.
-                            if(left >= left_bucket_bound) {
+                            if (left >= left_bucket_bound) {
                                 // std::cout << "checking left" << std::endl;
-                                if(contains(suffix_array[left])) {
-                                    rb.push_front(suffix_array[left] - relation);
+                                if (contains(suffix_array[left])) {
+                                    rb.push_front(suffix_array[left] -
+                                                  relation);
                                 }
                             }
                         }
 
-                        if(right < right_bucket_bound) {
+                        if (right < right_bucket_bound) {
                             // std::cout << "checking right" << std::endl;
-                            if(contains(suffix_array[right])) {
+                            if (contains(suffix_array[right])) {
                                 rb.push_back(suffix_array[right] - relation);
                             }
                         }
@@ -232,7 +239,7 @@ private:
 
                     // Look at increasing distance to `sorted_bucket`.
                     size_t i = 0;
-                    while(!rb.is_full()) {
+                    while (!rb.is_full()) {
                         ++i;
                         look_at(i);
                     }

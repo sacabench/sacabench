@@ -15,9 +15,6 @@
 #include <util/sa_check.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <saca/deep_shallow/saca.hpp>
-#include "test/saca.hpp"
-#include <util/sa_check.hpp>
 
 using namespace sacabench;
 using u_char = sacabench::util::character;
@@ -178,7 +175,9 @@ TEST(deep_shallow, simple) {
 }
 
 TEST(deep_shallow, ababababa) {
-    util::string input = util::make_string("abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefg");
+    util::string input = util::make_string(
+        "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefg"
+        "abcdefgabcdefgabcdefgabcdefgabcdefg");
     auto alphabet = util::apply_effective_alphabet(input);
 
     auto sa = util::make_container<size_t>(input.size());
