@@ -7,12 +7,12 @@
 #pragma once
 
 #include <util/ISAtoSA.hpp>
+#include <util/alphabet.hpp>
 #include <util/assertions.hpp>
 #include <util/container.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-
 
 namespace sacabench::qsufsort {
 
@@ -78,6 +78,8 @@ public:
 
 class qsufsort {
 public:
+    static constexpr size_t EXTRA_SENTINELS = 1;
+
     // for trouble shooting
     template <typename T>
     static void print_array(T& arr) {
@@ -98,15 +100,15 @@ public:
         }
         std::cout << std::endl;
     }
-    
-    
+
     template <typename sa_index>
-    static void construct_sa(util::string_span text, size_t& alphabet_size,
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
 
         size_t n = text.size();
-        //check if n is too big
-        DCHECK_MSG(bool(n|NEGATIVE_MASK),"String is too long");
+        // check if n is too big
+        DCHECK_MSG(bool(n | NEGATIVE_MASK), "String is too long");
         // catch trivial cases
         if (n < 2)
             return;
@@ -132,9 +134,9 @@ public:
         ++h;
         // comparing function, which compares the (i+h)-th ranks
         auto compare_function = compare_ranks<sa_index>(isa, h);
-        
+
         while (!is_sorted) {
-            
+
             size_t counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
@@ -179,7 +181,7 @@ private:
             if (text[out_sa[i + 1 + h]] == text[out_sa[i + h]]) {
 
                 isa[out_sa[i]] = isa[out_sa[i + 1]];
-            } else { 
+            } else {
                 isa[out_sa[i]] = i;
             }
         }
@@ -191,7 +193,6 @@ private:
     static void update_group_length(util::span<sa_index> out_sa,
                                     util::container<sa_index>& isa) {
         size_t n = out_sa.size();
-        size_t unsorted_counter = 0;
         size_t sorted_counter = 0;
         bool sorted_group_started = false;
         size_t dif = 0;
@@ -204,29 +205,19 @@ private:
                                                        : isa[out_sa[i + 1]]) -
                   (bool(out_sa[i] & NEGATIVE_MASK) ? i : isa[out_sa[i]]);
 
-            // count for last position..
-            unsorted_counter = (dif == 0) ? unsorted_counter + 1 : 0;
-
             // if difference between neighbours is 1, they are sorted elements
             if (dif == 1) {
                 ++sorted_counter;
                 sorted_group_started = true;
 
-            } else {
-                if (sorted_group_started) {
-                    out_sa[i + 2] = NEGATIVE_MASK | sorted_counter;
-                    sorted_counter = 0;
-                    sorted_group_started = false;
-                }
+            } else if (sorted_group_started) {
+                out_sa[i + 2] = NEGATIVE_MASK | sorted_counter;
+                sorted_counter = 0;
+                sorted_group_started = false;
             }
         }
-        // easier if use sentinal...
-        dif = (bool(out_sa[1] & NEGATIVE_MASK) ? 1 : isa[out_sa[1]]) -
-              (bool(out_sa[0] & NEGATIVE_MASK) ? 0 : isa[out_sa[0]]);
-        if (dif > 0) {
-            out_sa[0] = NEGATIVE_MASK | (++sorted_counter);
-        }
-        // else, remain the same index
+        // sentinel
+        out_sa[0] = NEGATIVE_MASK | (++sorted_counter);
     }
 
     template <typename sa_index, typename key_func>
@@ -287,7 +278,7 @@ private:
                                              util::container<sa_index>& isa,
                                              sa_index start, sa_index end) {
 
-        DCHECK_MSG(start<=end,"Start index is bigger than end index!");
+        DCHECK_MSG(start <= end, "Start index is bigger than end index!");
         // in an unsorted group, every elements rank is the highest index, this
         // group occuoies in the SA
         for (size_t index = start; index <= end; ++index) {
@@ -302,16 +293,14 @@ private:
 
 }; // class qsufsort
 
-
-
-
-
-
 // keep naive version for comparison
 class qsufsort_naive {
 public:
+    static constexpr size_t EXTRA_SENTINELS = 1;
+
     template <typename sa_index>
-    static void construct_sa(util::string_span text, size_t& alphabet_size,
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
 
         size_t n = text.size();

@@ -40,10 +40,12 @@ TEST(qsufsort, example)
     qsufsort::construct_sa(test_span,alphabet_size,span(test_set));
 }
 */
+/*
 TEST(qsufsort_naive, saca_test) {
 
     test::saca_corner_cases<qsufsort_naive>();
-}
+}*/
+
 TEST(qsufsort, saca_test) {
 
     test::saca_corner_cases<qsufsort>();
