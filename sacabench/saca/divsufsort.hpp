@@ -7,40 +7,48 @@
 #pragma once
 
 #include <cmath>
-#include "../util/string.hpp"
-#include "../util/span.hpp"
-#include "../util/alphabet.hpp"
-#include "../util/container.hpp"
-#include "../util/sort/bucketsort.hpp"
-#include "../util/assertions.hpp"
+#include <tuple>
+#include <util/string.hpp>
+#include <util/span.hpp>
+#include <util/alphabet.hpp>
+#include <util/container.hpp>
+#include <util/sort/bucketsort.hpp>
+#include <util/assertions.hpp>
 
 //TODO: Move helper functions to different files/classes/structs
 namespace sacabench::saca::divsufsort {
+    template <typename sa_index>
     struct sa_types {
         enum class s_type { l, s, rms };
 
-        template<typename sa_index>
         static bool is_l_type(sa_index suffix, util::span<bool> suffix_types) {
-            DCHECK_LT(suffix, text.size());
-            return suffix_types[suffix] == 0;
-        }
-
-        template<typename sa_index>
-        static bool is_s_type(sa_index suffix, util::span<bool> suffix_types) {
+            DCHECK_LT(suffix, suffix_types.size());
             return suffix_types[suffix] == 1;
         }
 
-        template<typename sa_index>
+        static bool is_s_type(sa_index suffix, util::span<bool> suffix_types) {
+            DCHECK_LT(suffix, suffix_types.size());
+            return suffix_types[suffix] == 0;
+        }
+
         static bool is_rms_type(sa_index suffix, util::span<bool> suffix_types) {
-            //Index out of bounds
-            if(suffix >= suffix_types.size()) {
+            DCHECK_LT(suffix, suffix_types.size());
+            // Check wether suffix is last index.
+            if(suffix + 1 >= suffix_types.size()) {
                 return 0;
             }
             //Checks wether suffix at position suffix is s type and suffix at
             //pos suffix + 1 is l type (i.e. rms)
-            return suffix_types[suffix] == 1 && suffix_types[suffix + 1] == 0;
+            return suffix_types[suffix] == 0 && suffix_types[suffix + 1] == 1;
         }
     };
+    
+    template <typename sa_index>
+    struct rms_suffixes {
+        const util::string_span text;
+        util::span<sa_index> relative_indices;
+        util::span<sa_index> absolute_indices;
+    }
 
     struct buckets {
         //l_buckets containing buckets for l-suffixes of size of alphabet
@@ -65,21 +73,63 @@ namespace sacabench::saca::divsufsort {
 
             //Compute l/s types for given text
 
-
-
-
         };
-
+        
+        //TODO
+        template<typename sa_index>
+        static void insert_into_buckets(rms_suffixes rms_suf, buckets bkts) {
+            
+        }
+        
         //TODO
         template<typename sa_index>
         static void sort_rms_substrings(const util::string_span text,
                               util::span<sa_index> relative_indices,
                               const util::span<sa_index> absolute_indices) {
-            //Compute RMS-Substrings
+            //Compute RMS-Substrings (tupel with start-/end-position)
+            
+            // Create tupel for last rms-substring: from index of last 
+            // rms-suffix to index of sentinel
+            std::tuple<sa_index, sa_index> substring = 
+            std::make_tuple(absolute_indices[absolute_indices.size()-1], 
+            text.size()-1);
+            util::container<tuple<sa_index, sa_index>> substrings = 
+            make_container(absolute_indices.size());
+            util::span<tuple<sa_index, sa_index>> substrings_span = 
+            util::span(substrings);
+            substrings_span[subtrings_span.end()] = substring;
+            for(std::size_t current_index = 0; current_index < 
+            absolute_indices.size() - 1; ++current_index) {
+                // Create RMS-Substring for rms-suffix from suffix-index of rms 
+                // and starting index of following rms-suffix + 1
+                substring = std::make_tuple(absolute_indices[current_index], 
+                absolute_indices[current_index+1] +1);
+                substrings_span[current_index] = substring;
+            }
 
-            //Sort RMS-Buckets
+            //Sort rms-substrings inside of buckets
         }
+        
 
+        // Temporary function for suffix-types, until RTL-Extraction merged.
+        static void get_types(util::string_span text, util::span<bool> types) {
+            // Check wether given span has same size as text.
+            DCHECK_EQ(text.size(), types.size());
+            // Last index always l-type suffix
+            types[text.size()-1] = 0;
+            
+            for(std::size_t prev_pos = text.size() - 1; prev_pos > 0; 
+            --prev_pos) {
+                if(text[prev_pos - 1] == text[prev_pos]) {
+                    types[prev_pos - 1] = types[prev_pos];
+                } else {
+                    // S == 0, L == 1
+                    types[prev_pos - 1] = (text[prev_pos - 1] < text[prev_pos]) 
+                    ? 0 : 1;
+                }
+            }
+        }
+        
 
         //TODO: Maybe split into count_for_s_type, count_for_rms_type for easier use
         static std::size_t count_for_type_in_bucket(
