@@ -14,6 +14,8 @@
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/ringbuffer.hpp>
+#include <util/is_sorted.hpp>
 
 #include "anchor_data.hpp"
 #include "blind/sort.hpp"
@@ -143,12 +145,12 @@ private:
                     const auto sorted_bucket =
                         ad.get_position_in_suffixarray(si);
 
-                    std::cout << "Common Prefix: ";
-                    print_text(input_text.slice(si, si + common_prefix_length));
-
-                    std::cout << "gefundener Bucket: ";
-                    print_text(
-                        input_text.slice(leftmost_suffix, leftmost_suffix + 2));
+                    // std::cout << "Common Prefix: ";
+                    // print_text(input_text.slice(si, si + common_prefix_length));
+                    //
+                    // std::cout << "gefundener Bucket: ";
+                    // print_text(
+                    //     input_text.slice(leftmost_suffix, leftmost_suffix + 2));
 
                     // Get the bucket bounds for the already sorted suffix.
                     const auto left_bucket_bound =
@@ -158,22 +160,94 @@ private:
                         bd.end_of_bucket(input_text[leftmost_suffix],
                                          input_text[leftmost_suffix + 1]);
 
-                    std::cout << "sortierter Bucket:" << std::endl;
-                    for (auto i = left_bucket_bound; i < right_bucket_bound;
-                         ++i) {
-                        print_text(input_text.slice(suffix_array[i]));
-                    }
-
-                    for (const sa_index_type& sj : bucket) {
-                        std::cout << "Finde ";
-                        print_text(input_text.slice(sj + relation));
-                    }
+                    // std::cout << "sortierter Bucket:" << std::endl;
+                    // for (auto i = left_bucket_bound; i < right_bucket_bound;
+                    //      ++i) {
+                    //     std::cout << suffix_array[i] << ": ";
+                    //     print_text(input_text.slice(suffix_array[i]));
+                    // }
+                    //
+                    // for (const sa_index_type& sj : bucket) {
+                    //     std::cout << "Finde ";
+                    //     std::cout << (sj + relation) << ": ";
+                    //     print_text(input_text.slice(sj + relation));
+                    // }
 
                     // TODO: Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
                     // der Suche um sorted_bucket.
 
-                    return false;
+                    // Allocate memory for ringbuffer, to store found suffixes.
+                    auto rb_memory =
+                        util::make_container<sa_index_type>(bucket.size());
+                    util::ringbuffer<sa_index_type> rb(rb_memory);
+
+                    // This function returns true, if `to_find` is a member of
+                    // the bucket to be sorted.
+                    const auto contains = [&](const sa_index_type to_find) {
+                        // std::cout << "ist " << to_find << " ein zu suchender index? ";
+                        for(const sa_index_type& bsi : bucket) {
+                            if(to_find == bsi + relation) {
+                                // std::cout << "jo" << std::endl;
+                                return true;
+                            }
+                        }
+                        // std::cout << "nö" << std::endl;
+                        return false;
+                    };
+
+                    // This function checks the suffixes at a given distance
+                    // from the pointer into the bucket. If the suffix is one
+                    // we're looking for, then add it to the ringbuffer at the
+                    // correct location.
+                    const auto look_at = [&](const size_t dist) {
+                        const size_t left = sorted_bucket - dist;
+                        const size_t right = sorted_bucket + dist;
+
+                        // std::cout << dist << ": " << left_bucket_bound << " " << left << " " << right << " " << right_bucket_bound << std::endl;
+
+                        // Check if `left` overflowed.
+                        if(sorted_bucket >= dist) {
+                            // Check, if `left` is still in the bucket we're
+                            // searching.
+                            if(left >= left_bucket_bound) {
+                                // std::cout << "checking left" << std::endl;
+                                if(contains(suffix_array[left])) {
+                                    rb.push_front(suffix_array[left] - relation);
+                                }
+                            }
+                        }
+
+                        if(right < right_bucket_bound) {
+                            // std::cout << "checking right" << std::endl;
+                            if(contains(suffix_array[right])) {
+                                rb.push_back(suffix_array[right] - relation);
+                            }
+                        }
+                    };
+
+                    // We already found the first element, because it is stored
+                    // in anchor_data.
+                    rb.push_front(suffix_array[sorted_bucket] - relation);
+
+                    // Look at increasing distance to `sorted_bucket`.
+                    size_t i = 0;
+                    while(!rb.is_full()) {
+                        ++i;
+                        look_at(i);
+                    }
+
+                    // Store contents of the ringbuffer to bucket.
+                    rb.copy_into(bucket);
+
+                    // std::cout << "korrekt sortierter Bucket:" << std::endl;
+                    // for (const auto nsi : bucket) {
+                    //     std::cout << nsi << ": ";
+                    //     print_text(input_text.slice(nsi));
+                    // }
+
+                    // The bucket has been sorted with induced sorting.
+                    return true;
                 }
             }
         }
@@ -228,6 +302,10 @@ private:
 
                 // Shallow sort it.
                 shallow_sort(bucket);
+
+                // Debug check: the bucket is correctly suffix sorted.
+                // FIXME: get rid of the obnoxious debug warning.
+                // DCHECK(is_partially_suffix_sorted(bucket, input_text));
 
                 for (sa_index_type i = 0; i < bucket.size(); ++i) {
                     ad.update_anchor(bucket[i], bucket_start + i);
