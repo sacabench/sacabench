@@ -28,8 +28,8 @@ namespace sacabench::util {
         size_t size = 0;
         size = file.tellg() ; // get the length of the file
 
-        unsigned char* data = 0;
-        data = new unsigned char[size];
+        character* data = 0;
+        data = new character[size];
 
         file.seekg(0, std::ios::beg); // set the pointer to the beginning
         file.read( (char*) data, size );
