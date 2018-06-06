@@ -115,7 +115,6 @@ public:
                 continue;
             }
 
-
             // else follow the chain and refine it
             std::vector<sa_index> to_be_refined_;
             std::vector<pair_si<sa_index>> sorting_induced_;
@@ -143,8 +142,12 @@ public:
 
             util::span<pair_si<sa_index>> sorting_induced = util::span<pair_si<sa_index>>(sorting_induced_);
             util::span<sa_index> to_be_refined = util::span<sa_index>(to_be_refined_);
+
             easy_induced_sort(text, isa, sorting_induced);
-            refine_uChain(text, isa, chain_stack, to_be_refined, length);
+            // only refine uChain if elements are left!
+            if(to_be_refined.size() > 0) {
+                refine_uChain(text, isa, chain_stack, to_be_refined, length);
+            }
         }
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later (try 2 other options)
