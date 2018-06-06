@@ -257,10 +257,9 @@ inline std::string Backtrace(int skip = 1, bool nice = true,
 
 namespace sacabench::backtrace {
 
-
-    struct noop {
-        inline bool operator()() { return true; }
-    };
+struct noop {
+    inline bool operator()() { return true; }
+};
 
 template <typename callback = noop>
 inline std::string Backtrace(int = 1, bool = true,
