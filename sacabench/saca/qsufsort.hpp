@@ -58,7 +58,7 @@ template <typename sa_index>
 struct compare_ranks_naive {
 public:
     compare_ranks_naive(util::container<sa_index>& _V, size_t& _h)
-        : V(_V), h(_h) {}
+        : V(_V.make_copy()), h(_h) {}
 
     bool operator()(const sa_index& a, const sa_index& b) const {
         bool a_out_of_bound = a + h >= V.size();
