@@ -77,6 +77,9 @@ public:
     static void construct_sa(util::string_span text, size_t alphabet_size,
                              util::span<sa_index> out_sa) {
         // TODO: Check if sa_index type fits for text.size() and extra bits
+        // Important: NO extra sentinel added. Catch all text[n] reads!!
+
+        // Just for special test case of string '':
         if(text.size() < 1) return;
 
         // make a special_bits struct out of out_sa for isa
@@ -102,8 +105,8 @@ public:
             chain_stack.pop();
             sa_index chain_index = current_chain.first;
             sa_index length = current_chain.second;
-            // if u-Chain is singleton rank it!
 
+            // if u-Chain is singleton rank it!
             if(isa.is_END(chain_index)) {
                 assign_rank(chain_index, isa);
                 continue;
@@ -223,15 +226,17 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
              // checks for elements out of text:
              const bool is_next_sentinel = new_chain_IDs[i] + length >= text.size();
              const bool is_current_sentinel = new_chain_IDs[i-1] + length >= text.size();
+             // initialize both elements with 0 (=sentinel)
              sa_index next_element = 0;
              sa_index current_element = 0;
-
+             // if both are not sentinel, read true elements from text
              if(!is_next_sentinel && !is_current_sentinel) {
                  next_element = text[new_chain_IDs[i] + length];
                  current_element = text[new_chain_IDs[i-1] + length];
              }
 
              // does this chain continue?
+             // it does, if not one of the elements is sentinel or for distinct elements
              if(is_next_sentinel || is_current_sentinel || current_element != next_element) {
 
                  // this element marks the end of a chain, push the new chain on stack

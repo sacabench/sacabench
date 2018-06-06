@@ -64,8 +64,8 @@ TEST(m_suf_sort, test_ISA_construction_stage1) {
 */
 
 TEST(m_suf_sort, test_SA_construction_stage1) {
-    string test_text = util::make_string("caabaccaabacaa\0"_s);
-    container<size_t> sa_expected_ {14,13,12,7,1,8,2,10,4,9,3,11,6,0,5};
+    string test_text = util::make_string("caabaccaabacaa");
+    container<size_t> sa_expected_ {13,12,7,1,8,2,10,4,9,3,11,6,0,5};
     span<size_t> sa_expected = span<size_t>(sa_expected_);
 
     container<size_t> sa_ = make_container<size_t>(sa_expected.size());
