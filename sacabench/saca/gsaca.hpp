@@ -29,7 +29,7 @@ namespace sacabench::gsaca {
          */
         template<typename sa_index>
         inline static void construct_sa(sacabench::util::string_span text,
-                                        size_t alphabet_size,
+                                        size_t /* alphabet_size */,
                                         sacabench::util::span<sa_index> out_sa) {
 
             // Check if text is not empty.
@@ -67,7 +67,7 @@ namespace sacabench::gsaca {
 
                 // Reorders the groups.
                 size_t number_of_splitted_groups = 0;
-                reorder_suffixes(out_sa, values, number_of_splitted_groups, number_of_chars, group_start_temp);
+                reorder_suffixes(out_sa, values, number_of_splitted_groups, group_start_temp);
 
                 // Rearranges previous suffixes stored in other groups.
                 rearrange_suffixes(out_sa, values, number_of_splitted_groups);
@@ -269,7 +269,6 @@ namespace sacabench::gsaca {
         inline static void reorder_suffixes(sacabench::util::span<sa_index> out_sa,
                                             gsaca_values &values,
                                             size_t &number_of_splitted_groups,
-                                            size_t number_of_chars,
                                             size_t group_start_temp) {
 
             // The value of group_end is decremented in some cases and in other cases group_start is incremented,
@@ -285,7 +284,7 @@ namespace sacabench::gsaca {
                     // Check if the current suffix has a valid prev pointer to another index.
                     size_t current_suffix = out_sa[index];
                     size_t previous_element = values.PREV[current_suffix];
-                    if (previous_element != -1) {
+                    if ( (int)previous_element != -1) {
                         // Case 1: There exists a valid prev pointer.
 
                         // Check if the previous element is in the same or a smaller group.

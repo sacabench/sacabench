@@ -21,7 +21,7 @@ TEST(gsaca, test_input_0) {
     sacabench::util::string_span text = "banane\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
     sacabench::util::span<size_t> out_sa = sacabench::util::span<size_t>(place);
-    int expected_result[7] = {6, 1, 3, 0, 5, 2, 4};
+    size_t expected_result[7] = {6, 1, 3, 0, 5, 2, 4};
 
     gsaca::construct_sa(text, 0, out_sa);
     for (int index = 0; index < 7; index++) {
@@ -35,7 +35,7 @@ TEST(gsaca, test_input_1) {
     sacabench::util::string_span text = "graindraining\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
     sacabench::util::span<size_t> out_sa = sacabench::util::span<size_t>(place);
-    int expected_result[14] = {13, 2, 7, 5, 12, 0, 3, 10, 8, 4, 11, 9, 1, 6};
+    size_t expected_result[14] = {13, 2, 7, 5, 12, 0, 3, 10, 8, 4, 11, 9, 1, 6};
 
     gsaca::construct_sa(text, 0, out_sa);
     for (int index = 0; index < 14; index++) {
@@ -49,7 +49,7 @@ TEST(gsaca, test_input_2) {
     sacabench::util::string_span text = "hello world\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
     sacabench::util::span<size_t> out_sa = sacabench::util::span<size_t>(place);
-    int expected_result[12] = {11, 5, 10, 1, 0, 9, 2, 3, 4, 7, 8, 6};
+    size_t expected_result[12] = {11, 5, 10, 1, 0, 9, 2, 3, 4, 7, 8, 6};
 
     gsaca::construct_sa(text, 0, out_sa);
     for (int index = 0; index < 12; index++) {
@@ -63,7 +63,7 @@ TEST(gsaca, test_input_3) {
     sacabench::util::string_span text = "caabaccaabacaa\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
     sacabench::util::span<size_t> out_sa = sacabench::util::span<size_t>(place);
-    int expected_result[15] = {14, 13, 12, 7, 1, 8, 2, 10, 4, 9, 3, 11, 6, 0, 5};
+    size_t expected_result[15] = {14, 13, 12, 7, 1, 8, 2, 10, 4, 9, 3, 11, 6, 0, 5};
 
     gsaca::construct_sa(text, 0, out_sa);
     for (int index = 0; index < 15; index++) {
@@ -77,7 +77,7 @@ TEST(gsaca, test_input_4) {
     sacabench::util::string_span text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
     sacabench::util::span<size_t> out_sa = sacabench::util::span<size_t>(place);
-    int expected_result[58] = {
+    size_t expected_result[58] = {
         57, 56, 55, 54, 53, 52, 51, 50,
         49, 48, 47, 46, 45, 44, 43, 42, 41, 40,
         39, 38, 37, 36, 35, 34, 33, 32, 31, 30,
@@ -98,7 +98,7 @@ TEST(gsaca, test_input_5) {
     sacabench::util::string_span text = "asdfasctjkcbweasbebvtiwetwcnbwbbqnqxernqzezwuqwezuetqcrnzxbneqebwcbqwicbqcbtnqweqxcbwuexcbzqwezcqbwecqbwdassdasdfzdfgfsdfsdgfducezctzqwebctuiqwiiqcbnzcebzqc\0"_s;
     sacabench::util::container<size_t> place = sacabench::util::make_container<size_t>(text.size());
     sacabench::util::span<size_t> out_sa = sacabench::util::span<size_t>(place);
-    int expected_result[157] = {
+    size_t expected_result[157] = {
         156, 14, 4, 0, 109, 105, 30, 136, 16, 58,
         147, 71, 31, 66, 74, 18, 28, 63, 102, 11,
         97, 83, 152, 89, 155, 146, 70, 65, 73, 10,
