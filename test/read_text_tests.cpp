@@ -16,7 +16,8 @@ TEST(read_text, read_text_without_trailing_newline) {
     // So when running this test with make check in the build directory,
     // we have to go to the prevoius directory (sacabench) and then into the test directory.
     std::string path = "../test/read_text_tests.txt";
-    string input = read_text(path);
+    auto context = build_read_text_context(path);
+    string input = context.read_text();
 
     ASSERT_EQ(input.size(), size_t(27));
     ASSERT_EQ(input[0], 'H');
@@ -53,7 +54,8 @@ TEST(read_text, read_text_with_trailing_newline) {
     using namespace sacabench::util;
 
     std::string path = "../test/read_text_tests_newline_at_end.txt";
-    string input = read_text(path);
+    auto context = build_read_text_context(path);
+    string input = context.read_text();
 
     ASSERT_EQ(input.size(), size_t(28));
     ASSERT_EQ(input[0], 'H');
