@@ -34,7 +34,14 @@ public:
     inline constexpr span() : m_ptr((T*)""), m_size(0) {}
 
     /// Create a span from an pointer and a length.
-    inline constexpr span(T* ptr, size_t size) : m_ptr(ptr), m_size(size) {}
+    inline span(T* ptr, size_t size) : m_ptr(ptr), m_size(size) {
+        DCHECK_MSG(size * sizeof(T) < (1ull << 48),
+                   "Trying to create a `span` with a size of "
+                       << size
+                       << ", which is unrealistic large. This likely happened "
+                          "through a underflow "
+                          "when calculating a size `< 0`.")
+    }
 
     /// Constructor from a `std::vector`.
     inline constexpr span(std::vector<T>& x) : span(x.data(), x.size()) {}

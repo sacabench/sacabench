@@ -1,12 +1,24 @@
-make:
+debug_make:
     script:
         - mkdir build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE=Debug ..
         - make
-make_check:
+debug_make_check:
     script:
         - mkdir build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE=Debug ..
+        - make check
+release_make:
+    script:
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=Release ..
+        - make
+release_make_check:
+    script:
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=Release ..
         - make check

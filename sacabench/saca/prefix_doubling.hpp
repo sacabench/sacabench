@@ -13,6 +13,7 @@
 #include <tuple>
 #include <vector>
 
+#include <util/alphabet.hpp>
 #include <util/bits.hpp>
 #include <util/compare.hpp>
 #include <util/container.hpp>
@@ -270,8 +271,7 @@ struct prefix_doubling_impl {
         inline auto F() { return m_f_span; }
 
         inline auto extend_u_by(size_t size) {
-            auto r =
-                m_u.slice(m_u_span.size(), m_u_span.size() + size);
+            auto r = m_u.slice(m_u_span.size(), m_u_span.size() + size);
             m_u_span = m_u.slice(0, m_u_span.size() + size);
             return r;
         }
@@ -279,9 +279,7 @@ struct prefix_doubling_impl {
         inline void reset_p() { m_p_span = util::span<name_tuple>(); }
         inline void reset_s() { m_s_span = util::span<names_tuple>(); }
 
-        inline void resize_u(size_t size) {
-            m_u_span = m_u.slice(0, size);
-        }
+        inline void resize_u(size_t size) { m_u_span = m_u.slice(0, size); }
 
         inline void append_f(name_tuple v) {
             m_f_span = m_f.slice(0, m_f_span.size() + 1);
@@ -462,10 +460,12 @@ struct prefix_doubling_impl {
                     // Get neighboring names from U[j], U[j+1]
                     auto c1c2i1 = get_next(supf.U(), j, k);
 
-                    auto c1 = c1c2i1.first[0];
-                    auto i1 = c1c2i1.second;
-                    DCHECK_EQ(c1, c);
-                    DCHECK_EQ(i1, i);
+                    IF_DEBUG({
+                        auto c1 = c1c2i1.first[0];
+                        auto i1 = c1c2i1.second;
+                        DCHECK_EQ(c1, c);
+                        DCHECK_EQ(i1, i);
+                    })
 
                     supf.append_s(c1c2i1);
                     count += 1;
@@ -500,16 +500,22 @@ struct prefix_doubling_impl {
 };
 
 struct prefix_doubling {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+
     template <typename sa_index>
-    static void construct_sa(util::string_span text, size_t /*alphabet_size*/,
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
         prefix_doubling_impl<sa_index>::doubling(text, out_sa);
     }
 }; // struct prefix_doubling
 
 struct prefix_doubling_discarding {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+
     template <typename sa_index>
-    static void construct_sa(util::string_span text, size_t /*alphabet_size*/,
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
         prefix_doubling_impl<sa_index>::doubling_discarding(text, out_sa);
     }

@@ -56,8 +56,8 @@ constexpr character SENTINEL = 0;
 /// ```
 /// string_span s = "hello"_s;
 /// ```
-inline constexpr sacabench::util::string_span operator"" _s(char const* ptr,
-                                                            size_t length) {
+inline sacabench::util::string_span operator"" _s(char const* ptr,
+                                                  size_t length) {
     using namespace sacabench::util;
     return string_span((character const*)(ptr), length);
 }

@@ -7,7 +7,9 @@
 #pragma once
 
 #include <math.h>
+
 #include <util/string.hpp>
+#include <util/alphabet.hpp>
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/sort/bucketsort.hpp>
@@ -19,13 +21,17 @@ namespace sacabench::bucket_pointer_refinement {
 
 class bucket_pointer_refinement {
     public:
+        static constexpr size_t EXTRA_SENTINELS = 0;
+
         /**\brief Performs a simplified version of the bucket pointer refinement
          * algorithm described by Klaus-Bernd Schürmann and Jens Stoye in "An
          * incomplex algorithm for fast suffix array construction"
          */
         template<typename sa_index>
         static void construct_sa(util::string_span input,
-                size_t alphabet_size, util::span<sa_index> sa) {
+                util::alphabet const& alphabet, util::span<sa_index> sa) {
+            size_t alphabet_size = alphabet.size_with_sentinel();
+
             size_t const n = input.size();
             if (n == 0) { // there's nothing to do
                 return;
@@ -111,18 +117,17 @@ class bucket_pointer_refinement {
                 size_t depth, size_t start_index) {
             size_t code = 0;
             const size_t stop_index = start_index + depth;
-            const size_t real_alphabet_size = alphabet_size + 1; // incl '$'
 
             while (start_index < stop_index && start_index < input.size()) {
                 // for each symbol of the prefix: extend the code by one symbol
-                code *= real_alphabet_size;
+                code *= alphabet_size;
                 code += input[start_index++];
             }
 
             // TODO: This *might* be useless
             while (start_index < stop_index) {
                 // for out-of-bound indices (sentinel) fill code with zeros
-                code *= real_alphabet_size;
+                code *= alphabet_size;
                 ++start_index;
             }
 

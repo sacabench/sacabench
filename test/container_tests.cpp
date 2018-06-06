@@ -56,3 +56,15 @@ TEST(Container, span_copy) {
 
     container<ty> v2 = s;
 }
+
+TEST(Container, bool_check) {
+    container<bool> c = make_container<bool>(1);
+    c[0] = true;
+}
+
+IF_DEBUG(TEST(Container, overflow_check) {
+    ASSERT_ANY_THROW({
+        container<bool> c = make_container<bool>(-1);
+        c[0] = true;
+    });
+})
