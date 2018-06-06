@@ -13,11 +13,24 @@
 
 namespace sacabench::util {
 
+    /**
+     * This struct contains the size of the text and provides a function to read the text file into a string.
+     */
     struct read_text_context {
+
         std::ifstream file;
-        std::string filepath;
         size_t size = 0;
 
+        read_text_context(std::string filepath) {
+            file.open(filepath, std::ios::in|std::ios::binary);
+            file.seekg(0, std::ios::end); // set the pointer to the end
+            size = file.tellg() ; // get the length of the file
+        }
+
+        /**
+         * \brief Reads content of a txt file into a string.
+         * This function reads the content of a text file at the given path bytewise.
+         */
         string read_text() {
 
             character* data = 0;
@@ -30,22 +43,6 @@ namespace sacabench::util {
             return make_string(result);
         }
     };
-
-    /**
-     * \brief Reads content of a txt file into a string.
-     * This function reads the content of a text file at the given path bytewise.
-     *
-     * \param filepath Path of the file to be read.
-     */
-    read_text_context build_read_text_context (std::string filepath) {
-
-        auto context = read_text_context();
-        context.filepath = filepath;
-        context.file.open(filepath, std::ios::in|std::ios::binary);
-        context.file.seekg(0, std::ios::end); // set the pointer to the end
-        context.size = context.file.tellg() ; // get the length of the file
-        return context;
-    }
 
     /**
      * \brief Reads content of a txt file into a string.
