@@ -5,11 +5,16 @@
  ******************************************************************************/
 
 #include "saca/bucket_pointer_refinement.hpp"
+
 #include "saca/deep_shallow/saca.hpp"
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
+#include "saca/gsaca.hpp"
+#include "saca/deep_shallow/saca.hpp"
+#include "saca/bucket_pointer_refinement.hpp"
 #include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
+#include "saca/qsufsort.hpp"
 
 #include "util/saca.hpp"
 
@@ -39,6 +44,18 @@ using saca_prefix_doubling_discarding =
 SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
               saca_prefix_doubling_discarding)
 
+using saca_gsaca = sacabench::gsaca::gsaca;
+SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca by Uwe Baier.", saca_gsaca)
+
+using saca_qsufsort_naive =
+    sacabench::qsufsort::qsufsort_naive;
+SACA_REGISTER("Naive qsufsort","Naive Version of N. Larssons and K. SADAKANES qsufsort",
+              saca_qsufsort_naive)
+
+using saca_qsufsort = sacabench::qsufsort::qsufsort;
+SACA_REGISTER("qsufsort",
+              "Improved Version of N. Larssons and K. SADAKANES qsufsort",
+              saca_qsufsort)
 using saca_naive = sacabench::naive::naive;
 SACA_REGISTER("Naiv", "Naiver Algorithmus. Sortiert Suffixe direkt.",
               saca_naive)
