@@ -31,18 +31,18 @@ namespace sacabench::gsaca {
          */
         template<typename sa_index>
         inline static void construct_sa(sacabench::util::string_span text_with_sentinels,
-                                        util::alphabet const& /*alphabet*/,
+                                        util::alphabet const& alphabet,
                                         sacabench::util::span<sa_index> out_sa) {
 
-            // Check if text is not empty.
-            if (text_with_sentinels.size() == 0) {
+            // Check if text only contains sentinel.
+            if (text_with_sentinels.size() == 1) {
                 return;
             }
 
             // Setup needed values and build initial group structure.
             gsaca_values values = gsaca_values();
             size_t number_of_chars = text_with_sentinels.size();
-            build_initial_structures(text_with_sentinels, out_sa, values, number_of_chars);
+            build_initial_structures(text_with_sentinels, alphabet, out_sa, values, number_of_chars);
 
             // Process groups in descending order. A group is defined through its start and end.
             size_t group_start_temp = 0;
@@ -107,6 +107,7 @@ namespace sacabench::gsaca {
          */
         template<typename sa_index>
         inline static void build_initial_structures(sacabench::util::string_span text,
+                                                    util::alphabet const& alphabet,
                                                     sacabench::util::span<sa_index> out_sa,
                                                     gsaca_values &values,
                                                     size_t number_of_chars) {
@@ -121,17 +122,17 @@ namespace sacabench::gsaca {
             }
 
             // Setup helper lists to count occurring chars and to calculate the cumulative count of chars.
-            auto chars_count = sacabench::util::make_container<size_t>(UCHAR_MAX + 1);
-            auto chars_cumulative = sacabench::util::make_container<size_t>(UCHAR_MAX + 1);
+            auto chars_count = sacabench::util::make_container<size_t>(alphabet.size_with_sentinel());
+            auto chars_cumulative = sacabench::util::make_container<size_t>(alphabet.size_with_sentinel());
 
             // Count occurences of each char in word.
-            for (unsigned char current_char : text) {
+            for (sacabench::util::character current_char : text) {
                 chars_count[current_char]++;
             }
 
             // Build cumulative counts of all chars and set up GSIZE.
             size_t cumulative_count = 0;
-            for (size_t index = 0; index < (UCHAR_MAX + 1); index++) {
+            for (size_t index = 0; index < alphabet.size_with_sentinel(); index++) {
                 if (chars_count[index] > 0) {
                     // The char at the current index occures in the word.
                     chars_cumulative[index] = cumulative_count;
