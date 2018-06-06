@@ -11,7 +11,7 @@ TEST(Alphabet, construct) {
     sacabench::util::string input = {'c', 'a', 'a', 'b', 'a', 'c', 'c',
             'a', 'a', 'b', 'a', 'c', 'a', 'a'};
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
-    ASSERT_EQ(a.size, std::size_t(3));
+    ASSERT_EQ(a.size_without_sentinel(), std::size_t(3));
 }
 
 TEST(Alphabet, convert) {
@@ -41,3 +41,8 @@ TEST(Alphabet, test_helper_function) {
         ASSERT_EQ(input1[i], input2[i]);
     }
 }
+
+IF_DEBUG(TEST(Alphabet, test_null) {
+    sacabench::util::string input1 = "hello\0world"_s;
+    ASSERT_ANY_THROW(sacabench::util::alphabet{input1});
+})

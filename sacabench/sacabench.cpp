@@ -14,6 +14,7 @@ std::int32_t main(std::int32_t /*argc*/, char const** /*argv*/) {
 
     auto& saca_list = sacabench::util::saca_list::get();
     for (const auto& a : saca_list) {
+        std::cout << "Running " << a->name() << "..." << std::endl;
         a->run_example();
     }
 
