@@ -63,6 +63,7 @@ TEST(m_suf_sort, test_ISA_construction_stage1) {
 }
 */
 
+/*
 TEST(m_suf_sort, test_SA_construction_stage1) {
     string test_text = util::make_string("caabaccaabacaa");
     container<size_t> sa_expected_ {13,12,7,1,8,2,10,4,9,3,11,6,0,5};
@@ -76,3 +77,4 @@ TEST(m_suf_sort, test_SA_construction_stage1) {
 
     ASSERT_EQ(sa, sa_expected);
 }
+*/

@@ -144,8 +144,7 @@ public:
             refine_uChain(text, isa, chain_stack, to_be_refined, length);
         }
 
-
-        //TODO: After ISA is fully constructed, convert it to SA
+        // Here, hard coded isa2sa inplace conversion is used. Optimize later (try 2 other options)
         util::isa2sa_inplace2<sa_index>(isa.get_span());
 
     }
@@ -173,6 +172,9 @@ public:
 
     bool operator()(const sa_index& a, const sa_index& b) const {
 
+        /*
+        SENTINEL IS ADDED, NO NEED FOR THIS ANYMORE, RIGHT?
+
         const bool a_is_too_short = length + a >= input_text.size();
         const bool b_is_too_short = length + b >= input_text.size();
 
@@ -185,7 +187,7 @@ public:
             // a should be larger
             return true;
         }
-
+        */
         DCHECK_LT(length + a, input_text.size());
         DCHECK_LT(length + b, input_text.size());
 
@@ -219,27 +221,18 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
          // last index that is to be linked
          sa_index last_ID = END<sa_index>;
 
+         util::character next_element;
+         util::character current_element = text[new_chain_IDs[0] + length];
+
          for(sa_index i = 1; i < new_chain_IDs.size(); i++) {
              const sa_index current_ID = new_chain_IDs[i-1];
+             next_element = text[new_chain_IDs[i] + length];
 
              // no matter what, we first link the last element:
              isa.set_link(current_ID, last_ID);
 
-             // checks for elements out of text:
-             const bool is_next_sentinel = new_chain_IDs[i] + length >= text.size();
-             const bool is_current_sentinel = new_chain_IDs[i-1] + length >= text.size();
-             // initialize both elements with 0 (=sentinel)
-             sa_index next_element = 0;
-             sa_index current_element = 0;
-             // if both are not sentinel, read true elements from text
-             if(!is_next_sentinel && !is_current_sentinel) {
-                 next_element = text[new_chain_IDs[i] + length];
-                 current_element = text[new_chain_IDs[i-1] + length];
-             }
-
              // does this chain continue?
-             // it does, if not one of the elements is sentinel or for distinct elements
-             if(is_next_sentinel || is_current_sentinel || current_element != next_element) {
+             if(current_element != next_element) {
 
                  // this element marks the end of a chain, push the new chain on stack
                  std::pair<sa_index, sa_index> new_chain (current_ID, length + 1);
@@ -251,6 +244,8 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
              else {
                  last_ID = current_ID;
              }
+             // set "current" to "next" element for next iteration
+             current_element = next_element;
          }
          //last element is automatically beginning of the (lexikographically) smallest chain
          isa.set_link(new_chain_IDs[new_chain_IDs.size() - 1], last_ID);
