@@ -7,6 +7,7 @@
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
 #include "saca/prefix_doubling.hpp"
+#include "saca/dc7.hpp"
 
 #include "util/saca.hpp"
 
