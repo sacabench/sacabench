@@ -8,6 +8,7 @@
 #include <array>
 #include "string.hpp"
 #include "util/type_extraction.hpp"
+#include "util/sort/bucketsort.hpp"
 #include <tuple>
 
 #pragma once
@@ -16,37 +17,44 @@
 namespace sacabench::util {
 
 
-    /* Inserts LMS Substrings LTR into the Suffix-Array (L-Buckets)
-        returns the amount of LMS substrings indices found
+    /*
+        Tries to find entry j in SA after index start  
     */
-    size_t insert_lms_ltr(string_span t_0, container<size_t> sa, span<size_t> bucket_array, span<character> alph) {
+    bool entry_comes_after(container<size_t> sa, size_t start, size_t j)
+    {
+        for (size_t i = start+1; i < sa.size(); i++)
+        {
+            if (sa[i] == j)
+                return true;
+        }
 
-        std::tuple<bool, size_t> last_type = get_type_ltr_dynamic(t_0[0], 0);
+        return false;
+    }
+
+    /* Inserts LMS Substrings LTR into the Suffix-Array (L-Buckets)
+        returns the amount of LMS substrings indices found.
+        Only a size_t is needed for the alphabet because its already made effective
+    */
+    size_t insert_lms_ltr(string_span t_0, container<size_t> sa, container<util::sort::bucket> bucket_array) {
+
+        std::tuple<bool, size_t> last_type = get_type_ltr_dynamic(t_0, 0);
         size_t amount = 0;
 
         // Iterate whole string LTR and compare types of symbols with each other
 
         for (size_t i = std::get<1>(last_type); i < t_0.size(); i++)
         {
-            std::tuple<bool, size_t> current_type = get_type_ltr_dynamic(t_0[0], i);
+            std::tuple<bool, size_t> current_type = get_type_ltr_dynamic(t_0, i);
 
             // Check if last type was L and current one is S, then this one is LMS
 
             if (std::get<0>(last_type) && !std::get<0>(current_type))
             {
-                // Search for the right index of the bucket pointer through the place of the character in the alphabet
+                // The index of the bucket array for the character is already given by the character itself
 
-                for (size_t j = 0; j < alph.size(); j++)
-                {
-                    if (alph[j] == t_0[i])
-                    {
-                        // Insert LMS Index into SA and increase respective Bucket-Array Entry by 1
-
-                        sa[bucket_array[j]] = i;
-                        bucket_array[j]++;
-                        amount++;
-                    }
-                }
+                sa[bucket_array[t_0[i]].position] = i;
+                bucket_array[t_0[i]].position++;
+                amount++;
 
             }
 
@@ -61,7 +69,7 @@ namespace sacabench::util {
     /* Inserts LMS Substrings RTL into the Suffix-Array (S-Buckets)
     returns the amount of LMS substrings indices found
     */
-    size_t insert_lms_rtl(string_span t_0, container<size_t> sa, span<size_t> bucket_array, span<character> alph) {
+    size_t insert_lms_rtl(string_span t_0, container<size_t> sa, container<util::sort::bucket> bucket_array) {
 
         bool last_type = true;
         size_t amount = 0;
@@ -76,20 +84,11 @@ namespace sacabench::util {
 
             if (!last_type && current_type)
             {
-                // Search for the right index of the bucket pointer through the place of the character in the alphabet
+                // The index of the bucket array for the character is already given by the character itself
 
-                for (size_t j = 0; j < alph.size(); j++)
-                {
-                    if (alph[j] == t_0[i-1])
-                    {
-                        // Insert LMS Index of last_type (i, NOT i-1) into SA and decrease respective Bucket-Array Entry by 1
-
-                        sa[bucket_array[j]] = i;
-                        bucket_array[j]--;
-                        amount++;
-                    }
-                }
-
+                sa[bucket_array[t_0[i]].position] = i;
+                bucket_array[t_0[i]].position--;
+                amount++;
             }
 
             last_type = current_type;
@@ -97,6 +96,38 @@ namespace sacabench::util {
 
         return amount;
 
+    }
+
+    /**
+        Call this function to get the sorted LMS-Strings into the SA after you have induced sorted your SA.
+    */
+    size_t extract_sorted_lms(string_span t, container<size_t> sa)
+    {
+        size_t null_counter = 0;
+        size_t amount = 0;
+
+        for (size_t i = 0; i < sa.size(); i++)
+        {
+            if (sa[i] != 0 && sa[i] != t.size() - 1 &&      // edge cases
+                t[sa[i]] < t[sa[i] - 1] &&                  // character before is L-Type
+                    (t[sa[i]] < t[sa[i] + 1] || 
+                        (t[sa[i]] == t[sa[i] + 1] && entry_comes_after(sa, i, sa[i] + 1)))) // character after is bigger or equal but S-Type
+            {
+                size_t lms_entry = sa[i];
+                sa[i] = 0;
+                sa[i - null_counter] = lms_entry;
+                null_counter = 0;
+                amount++;
+
+            }
+            else
+            {
+                null_counter++;
+                sa[i] = 0;
+            }
+        }
+
+        return amount;
     }
 }
 
