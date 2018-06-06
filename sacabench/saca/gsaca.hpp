@@ -16,6 +16,8 @@ namespace sacabench::gsaca {
     class gsaca {
     public:
 
+        static constexpr size_t EXTRA_SENTINELS = 1;
+
         /**
          * \brief Calculates a suffix array for the given text with the gsaca algorithm.
          *
@@ -28,19 +30,19 @@ namespace sacabench::gsaca {
          * \param out_sa Space for the resulting suffix array.
          */
         template<typename sa_index>
-        inline static void construct_sa(sacabench::util::string_span text,
-                                        size_t /* alphabet_size */,
+        inline static void construct_sa(sacabench::util::string_span text_with_sentinels,
+                                        util::alphabet const& /*alphabet*/,
                                         sacabench::util::span<sa_index> out_sa) {
 
             // Check if text is not empty.
-            if (text.size() == 0) {
+            if (text_with_sentinels.size() == 0) {
                 return;
             }
 
             // Setup needed values and build initial group structure.
             gsaca_values values = gsaca_values();
-            size_t number_of_chars = text.size();
-            build_initial_structures(text, out_sa, values, number_of_chars);
+            size_t number_of_chars = text_with_sentinels.size();
+            build_initial_structures(text_with_sentinels, out_sa, values, number_of_chars);
 
             // Process groups in descending order. A group is defined through its start and end.
             size_t group_start_temp = 0;
