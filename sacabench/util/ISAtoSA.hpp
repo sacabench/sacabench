@@ -41,13 +41,13 @@ void isa2sa_inplace(T &isa) {
             ssize_t start = i;
             ssize_t suffix = i;
             auto rank = -isa[i] - 1;
-        do {
-            auto tmp_rank = -isa[rank] - 1;
+            do {
+                auto tmp_rank = -isa[rank] - 1;
+                isa[rank] = suffix;
+                suffix = rank;
+                rank = tmp_rank;
+            } while (rank != start);
             isa[rank] = suffix;
-            suffix = rank;
-            rank = tmp_rank;
-        } while (rank != start);
-        isa[rank] = suffix;
         }
     }
 }

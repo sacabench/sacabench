@@ -150,7 +150,6 @@ public:
     }
 };
 
-// private:
 // TODO: Should later differentiate between different ranking scenarios
 // in case of sorting repetition sequences no REAL rank is set.
 // There is missing a third argument for that.
@@ -213,14 +212,13 @@ template <typename sa_index>
 void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
      pairstack<sa_index>& cstack, util::span<sa_index> new_chain_IDs, sa_index length){
 
-
-
          compare_uChain_elements comparator(length, text);
          util::sort::introsort(new_chain_IDs, comparator);
 
          // last index that is to be linked
          sa_index last_ID = END<sa_index>;
 
+         // declare next and current elements that are to be compared for linking
          util::character next_element;
          util::character current_element = text[new_chain_IDs[0] + length];
 
