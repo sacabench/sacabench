@@ -9,6 +9,7 @@
 
 #include "container.hpp"
 #include "span.hpp"
+#include "bits.hpp"
 
 
 namespace sacabench::util {
