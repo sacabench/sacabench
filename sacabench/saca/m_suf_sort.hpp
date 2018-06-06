@@ -1,6 +1,6 @@
-
 /*******************************************************************************
- * Copyright (C) 2018 Rosa Pink
+ * Copyright (C) 2018 Rosa Pink <rosa.pink@tu-dortmund.de>
+ * Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -48,7 +48,8 @@ public:
         global_rank++;
     }
     sa_index get_rank(sa_index index) {
-        return isa[index] & END<sa_index>;
+        const auto rank = isa[index] & END<sa_index>;
+        return rank;
     }
     bool is_link(sa_index index) {
         return !is_rank(index);
@@ -66,6 +67,21 @@ public:
     //return copy of global_rank if needed
     sa_index get_global_rank(){
         return global_rank;
+    }
+
+    inline void print() const {
+        for(const sa_index i : isa) {
+            if(i == END<sa_index>) {
+                std::cout << "[END]" << ", ";
+            }
+            else {
+                if((i & NEG_BIT<sa_index>) > 0) {
+                    std::cout << "R" << (i & END<sa_index>) << ", ";
+                } else {
+                    std::cout << "L" << (i & END<sa_index>) << ", ";
+                }
+            }
+        }
     }
 
     special_bits(util::span<sa_index> isa_to_be) : isa(isa_to_be), global_rank(0) {}
@@ -103,7 +119,7 @@ public:
         refine_uChain(text, isa, chain_stack, all_indices, length);
 
         // begin main loop:
-        while(chain_stack.size() > 0){
+        while(chain_stack.size() > 0) {
             std::pair<sa_index, sa_index> current_chain = chain_stack.top();
             chain_stack.pop();
             sa_index chain_index = current_chain.first;
@@ -161,7 +177,7 @@ public:
 // There is missing a third argument for that.
 template <typename sa_index>
 void assign_rank(sa_index index, special_bits<sa_index>& isa) {
-        isa.set_rank(index);
+    isa.set_rank(index);
 }
 
 // compare function for introsort that sorts first after text symbols at given indices
@@ -261,18 +277,16 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
          cstack.push(new_chain);
 }
 
-//FIXME: Does not work yet
 //function to sort a set of suffix indices
 template <typename sa_index>
-void easy_induced_sort(util::string_span text, special_bits<sa_index> isa, util::span<pair_si<sa_index>> to_be_ranked) {
+void easy_induced_sort(util::string_span text, special_bits<sa_index>& isa, util::span<pair_si<sa_index>> to_be_ranked) {
     //sort elements after their sortkey:
     compare_sortkey<sa_index> comparator(text);
     util::sort::introsort(to_be_ranked, comparator);
 
     //rank all elements in sorted order:
-    for(sa_index i = 0; i < to_be_ranked.size(); i++) {
-        auto current_index = to_be_ranked[i].first;
-        assign_rank(current_index, isa);
+    for(const auto current_index : to_be_ranked) {
+        assign_rank(current_index.first, isa);
     }
 }
 } // namespace sacabench::m_suf_sort
