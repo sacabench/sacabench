@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
+ * Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -73,6 +74,14 @@ namespace sacabench::util {
 template <typename integer_type>
 bool can_represent_all_values(uint64_t distinct_values) {
     return std::numeric_limits<integer_type>::max() >= (distinct_values - 1);
+}
+
+/// \brief Call this function once at the start of your SACA to check if the
+///        amount of bits your algorithm uses for metadata (tagging, ...) is
+///        usable because the text is short enough.
+template<typename integer_type>
+bool assert_text_length(size_t text_length, size_t reserved_bits) {
+    return (text_length <= ((std::numeric_limits<index_type>::max() >> reserved_bits) + 1))
 }
 
 } // namespace sacabench::util
