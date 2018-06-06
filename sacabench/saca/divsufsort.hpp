@@ -42,7 +42,7 @@ namespace sacabench::saca::divsufsort {
             return suffix_types[suffix] == 0 && suffix_types[suffix + 1] == 1;
         }
     };
-    
+
     template <typename sa_index>
     struct rms_suffixes {
         const util::string_span text;
@@ -74,42 +74,42 @@ namespace sacabench::saca::divsufsort {
             //Compute l/s types for given text
 
         };
-        
+
         //TODO
         template<typename sa_index>
         static void insert_into_buckets(rms_suffixes rms_suf, buckets bkts) {
             
         }
-        
+
         //TODO
         template<typename sa_index>
         static void sort_rms_substrings(const util::string_span text,
                               util::span<sa_index> relative_indices,
                               const util::span<sa_index> absolute_indices) {
             //Compute RMS-Substrings (tupel with start-/end-position)
-            
-            // Create tupel for last rms-substring: from index of last 
+
+            // Create tupel for last rms-substring: from index of last
             // rms-suffix to index of sentinel
-            std::tuple<sa_index, sa_index> substring = 
-            std::make_tuple(absolute_indices[absolute_indices.size()-1], 
+            std::tuple<sa_index, sa_index> substring =
+            std::make_tuple(absolute_indices[absolute_indices.size()-1],
             text.size()-1);
-            util::container<tuple<sa_index, sa_index>> substrings = 
+            util::container<tuple<sa_index, sa_index>> substrings =
             make_container(absolute_indices.size());
-            util::span<tuple<sa_index, sa_index>> substrings_span = 
+            util::span<tuple<sa_index, sa_index>> substrings_span =
             util::span(substrings);
             substrings_span[subtrings_span.end()] = substring;
-            for(std::size_t current_index = 0; current_index < 
+            for(std::size_t current_index = 0; current_index <
             absolute_indices.size() - 1; ++current_index) {
-                // Create RMS-Substring for rms-suffix from suffix-index of rms 
+                // Create RMS-Substring for rms-suffix from suffix-index of rms
                 // and starting index of following rms-suffix + 1
-                substring = std::make_tuple(absolute_indices[current_index], 
+                substring = std::make_tuple(absolute_indices[current_index],
                 absolute_indices[current_index+1] +1);
                 substrings_span[current_index] = substring;
             }
 
             //Sort rms-substrings inside of buckets
         }
-        
+
 
         // Temporary function for suffix-types, until RTL-Extraction merged.
         static void get_types(util::string_span text, util::span<bool> types) {
@@ -117,19 +117,19 @@ namespace sacabench::saca::divsufsort {
             DCHECK_EQ(text.size(), types.size());
             // Last index always l-type suffix
             types[text.size()-1] = 0;
-            
-            for(std::size_t prev_pos = text.size() - 1; prev_pos > 0; 
+
+            for(std::size_t prev_pos = text.size() - 1; prev_pos > 0;
             --prev_pos) {
                 if(text[prev_pos - 1] == text[prev_pos]) {
                     types[prev_pos - 1] = types[prev_pos];
                 } else {
                     // S == 0, L == 1
-                    types[prev_pos - 1] = (text[prev_pos - 1] < text[prev_pos]) 
+                    types[prev_pos - 1] = (text[prev_pos - 1] < text[prev_pos])
                     ? 0 : 1;
                 }
             }
         }
-        
+
 
         //TODO: Maybe split into count_for_s_type, count_for_rms_type for easier use
         static std::size_t count_for_type_in_bucket(
@@ -184,7 +184,7 @@ namespace sacabench::saca::divsufsort {
             // current_rightmost for first + second letter.
             for(std::size_t first_letter = 0, current_leftmost = 0,
                     current_rightmost = 0; first_letter <
-                            alphabet.max_character_value(); ++first_letter) {
+                            alphabet.max_character_value() + 1; ++first_letter) {
                 // Need to adjust index for current l-bucket: only one character
                 // considered, but buckets contain two (for s/rms buckets)
                 current_leftmost = current_rightmost;
@@ -193,7 +193,7 @@ namespace sacabench::saca::divsufsort {
 
                 // Compute relative starting positions for rms-buckets.
                 for(std::size_t second_letter = 0; second_letter <
-                        alphabet.max_character_value(); ++second_letter,
+                        alphabet.max_character_value() + 1; ++second_letter,
                         ++current_rightmost) {
                     std::size_t counted_s =
                             count_for_type_in_bucket(buckets[current_rightmost],
