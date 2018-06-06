@@ -41,6 +41,7 @@ namespace sacabench::saca::divsufsort {
             //pos suffix + 1 is l type (i.e. rms)
             return suffix_types[suffix] == 0 && suffix_types[suffix + 1] == 1;
         }
+
     };
 
     template <typename sa_index>
@@ -51,11 +52,29 @@ namespace sacabench::saca::divsufsort {
     }
 
     struct buckets {
+        size_t alphabet_size;
+
         //l_buckets containing buckets for l-suffixes of size of alphabet
         util::span<std::size_t> l_buckets;
         //s_buckets containing buckets for s- and rms-suffixes of size
         //of alphabet squared
         util::span<std::size_t> s_buckets;
+
+        inline static size_t get_alphabet_size() {
+            return alphabet_size;
+        }
+
+        template <typename sa_index>
+        inline static size_t get_s_bucket_index(character first_letter,
+            character second_letter) {
+            return first_letter * alphabet_size + second_letter;
+        }
+
+        template <typename sa_index>
+        inline static size_t get_rms_bucket_index(character first_letter,
+            character second_letter) {
+                return second_letter * alphabet_size + first_letter;
+            }
     };
 
     class divsufsort {
@@ -77,13 +96,25 @@ namespace sacabench::saca::divsufsort {
 
         //TODO
         template<typename sa_index>
-        inline static void insert_into_buckets(rms_suffixes rms_suf, buckets bkts) {
-            sa_index current_index;
+        inline static void insert_into_buckets(rms_suffixes rms_suf,
+            buckets bkts) {
+            sa_index current_index, relative_index;
             character first_letter, second_letter;
             for(size_t pos = 0; pos < rms_suf.absolute_indices.size(); ++pos) {
+                // Retrieve index and first two characters for current rms-
+                // suffix
                 current_index = rms_suf.absolute_indices[pos];
                 first_letter = rms_suf.text[current_index];
                 second_letter = rms_suf.text[current_index+1];
+                // Retrieve index for current bucket containing the bucket's
+                // border.
+                //TODO: Check wether new bucket borders are correct.
+                bucket_border = bkts.get_rms_bucket_index(first_letter,
+                    second_letter);
+                relative_index = bkts[bucket_border]--;
+                // Set current suffix into correct "bucket" at beginning of sa
+                // (i.e. into relative_indices)
+                rms_suf.relative_indices[relative_index] = current_index;
             }
         }
 
@@ -210,9 +241,9 @@ namespace sacabench::saca::divsufsort {
                                                      suffix_types,
                                                      sa_types::s_type::rms);
                     std::size_t index_s = first_letter *
-                            alphabet.max_character_value() + second_letter;
+                            (alphabet.max_character_value()+1) + second_letter;
                     std::size_t index_rms = second_letter *
-                            alphabet.max_character_value() + first_letter;
+                            (alphabet.max_character_value()+1) + first_letter;
                     sa_buckets.s_buckets[index_s] = counted_s;
                     sa_buckets.s_buckets[index_rms] = counted_rms;
                 }
