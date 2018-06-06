@@ -22,8 +22,8 @@
 
 namespace sacabench::m_suf_sort {
 
-template <typename sa_index> static constexpr sa_index END = ((sa_index)(-1)) >> 1;
-template <typename sa_index> static constexpr sa_index NEG_BIT = ((sa_index)1) << (util::bits_of<sa_index> - 1);
+template <typename sa_index> constexpr sa_index END = ((sa_index)(-1)) >> 1;
+template <typename sa_index> constexpr sa_index NEG_BIT = ((sa_index)1) << (util::bits_of<sa_index> - 1);
 
 template<typename content> using pairstack = std::stack<std::pair<content, content>>;
 
