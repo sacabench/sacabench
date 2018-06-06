@@ -76,8 +76,8 @@ void isa2sa_inplace(T &isa) {
 // variant for m_suf_sort
 template <typename T>
 void isa2sa_inplace2(span<T> isa) {
-    static constexpr T END = ((T)(-1)) >> 1;
-    static constexpr T NEG_BIT = ((T)1) << (bits_of<T> - 1);
+    constexpr T END = ((T)(-1)) >> 1;
+    constexpr T NEG_BIT = ((T)1) << (bits_of<T> - 1);
 
     for (T i = 0; i < isa.size(); i++) {
         //if entry is a rank
