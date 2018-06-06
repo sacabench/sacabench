@@ -15,9 +15,36 @@ namespace sacabench::util {
 
     /**
      * \brief Reads content of a txt file into a string.
+     * This function reads the content of a text file at the given path bytewise.
+     *
      * \param filepath Path of the file to be read.
      */
     string read_text (std::string filepath) {
+
+        std::ifstream file;
+        file.open(filepath, std::ios::in|std::ios::binary|std::ios::ate );
+        file.seekg(0, std::ios::end); // set the pointer to the end
+
+        size_t size = 0;
+        size = file.tellg() ; // get the length of the file
+
+        unsigned char* data = 0;
+        data = new unsigned char[size];
+
+        file.seekg(0, std::ios::beg); // set the pointer to the beginning
+        file.read( (char*) data, size );
+
+        auto result = span(data, size);
+        return make_string(result);
+    }
+
+    /**
+     * \brief Reads content of a txt file into a string.
+     * This function reads the content of a text file at the given path line by line.
+     *
+     * \param filepath Path of the file to be read.
+     */
+    string read_text_old (std::string filepath) {
 
         std::vector<character> text;
         std::string line;
