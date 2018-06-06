@@ -70,8 +70,9 @@ TEST(m_suf_sort, test_SA_construction_stage1) {
 
     container<size_t> sa_ = make_container<size_t>(sa_expected.size());
     span<size_t> sa = span<size_t>(sa_);
+    alphabet alpha = apply_effective_alphabet(test_text);
 
-    m_suf_sort2::construct_sa<size_t>(test_text, 3, sa);
+    m_suf_sort2::construct_sa<size_t>(test_text, alpha, sa);
 
     ASSERT_EQ(sa, sa_expected);
 }

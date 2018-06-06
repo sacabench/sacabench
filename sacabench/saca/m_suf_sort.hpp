@@ -72,12 +72,14 @@ public:
 
 struct m_suf_sort2 {
 public:
+    static constexpr size_t EXTRA_SENTINELS = 1;
 
     template <typename sa_index>
-    static void construct_sa(util::string_span text, size_t alphabet_size,
+    static void construct_sa(util::string_span text, util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
         // TODO: Check if sa_index type fits for text.size() and extra bits
         // Important: NO extra sentinel added. Catch all text[n] reads!!
+        // TODO: Change sentinel handling to exactly 1 extra sentinel.
 
         // Just for special test case of string '':
         if(text.size() < 1) return;
