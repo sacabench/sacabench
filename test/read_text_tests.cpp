@@ -18,7 +18,7 @@ TEST(read_text, read_text_without_trailing_newline) {
     std::string path = "../test/read_text_tests.txt";
     string input = read_text(path);
 
-    ASSERT_EQ(input.size(), 27);
+    ASSERT_EQ(input.size(), size_t(27));
     ASSERT_EQ(input[0], 'H');
     ASSERT_EQ(input[1], 'e');
     ASSERT_EQ(input[2], 'l');
@@ -55,7 +55,7 @@ TEST(read_text, read_text_with_trailing_newline) {
     std::string path = "../test/read_text_tests_newline_at_end.txt";
     string input = read_text(path);
 
-    ASSERT_EQ(input.size(), 28);
+    ASSERT_EQ(input.size(), size_t(28));
     ASSERT_EQ(input[0], 'H');
     ASSERT_EQ(input[1], 'e');
     ASSERT_EQ(input[2], 'l');
