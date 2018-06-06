@@ -8,6 +8,7 @@
 
 #include <climits>
 #include <cstdint>
+#include <cmath>
 
 namespace sacabench::util {
     /// Generic constant equal to the size of a type in bits.
@@ -43,5 +44,11 @@ namespace sacabench::util {
         }
 
         return y;
+    }
+
+    /// Calculates 'floor(log2(x))'. Placeholder for possibly efficient
+    /// implementation.
+    inline uint64_t floor_log2(uint64_t x) {
+        return floor(std::log2(x));
     }
 }

@@ -10,33 +10,38 @@
 #include <iostream>
 #include <vector>
 
-#include <util/sort/std_sort.hpp>
-#include <util/string.hpp>
+#include <util/alphabet.hpp>
 #include <util/container.hpp>
+#include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
+#include <util/string.hpp>
 
 namespace sacabench::example2 {
 
-    class example2 {
-        public:
-            template<typename sa_index>
-            static void construct_sa(util::string_span text,
-                                     size_t alphabet_size,
-                                     util::span<sa_index> out_sa) {
-                // Suppress unused variable warnings:
-                (void) text;
-                (void) alphabet_size;
-                (void) out_sa;
+class example2 {
+public:
+    static constexpr size_t EXTRA_SENTINELS = 0;
 
-                std::vector<std::size_t> data = { 39, 3192, 29, 1923, 29, 0, 19238, 2, 4 };
-                sacabench::util::sort::std_sort(data, [](const std::size_t a, const std::size_t b) {
-                        return a < b;
-                        });
-                std::cout << "Running example2: ";
-                for (const auto d : data) { std::cout << d << " "; };
-                std::cout << std::endl;
-            }
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alphabet,
+                             util::span<sa_index> out_sa) {
+        // Suppress unused variable warnings:
+        (void)text;
+        (void)alphabet;
+        (void)out_sa;
 
-    }; // class example2
+        util::container<std::size_t> data = {39, 3192,  29, 1923, 29,
+                                             0,  19238, 2,  4};
+        sacabench::util::sort::std_sort(
+            data,
+            [](const std::size_t a, const std::size_t b) { return a < b; });
+        for (const auto d : data) {
+            std::cout << d << " ";
+        };
+        std::cout << std::endl;
+    }
+
+}; // class example2
 
 } // namespace sacabench::example2
