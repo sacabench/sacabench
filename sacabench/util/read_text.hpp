@@ -22,7 +22,7 @@ namespace sacabench::util {
     string read_text (std::string filepath) {
 
         std::ifstream file;
-        file.open(filepath, std::ios::in|std::ios::binary|std::ios::ate );
+        file.open(filepath, std::ios::in|std::ios::binary);
         file.seekg(0, std::ios::end); // set the pointer to the end
 
         size_t size = 0;
