@@ -31,9 +31,9 @@ class anchor_data {
 
 public:
     inline anchor_data(const size_t text_length) {
-        const double n_segments =
-            text_length / static_cast<double>(SEGMENT_LENGTH);
-        const size_t int_n_segments = static_cast<size_t>(n_segments) + 1;
+        // This is the number of segments we store. We use integer division
+        // plus one, because we actually need to round up.
+        const size_t int_n_segments = (text_length / SEGMENT_LENGTH) + 1;
 
         relative_positions_in_segments =
             util::make_container<uint16_t>(int_n_segments);
