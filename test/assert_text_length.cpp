@@ -20,3 +20,15 @@ TEST(assert_text_length, simple) {
     ASSERT_TRUE(util::assert_text_length<uint64_t>(text.size(), 2u));
     ASSERT_TRUE(util::assert_text_length<size_t>(text.size(), 2u));
 }
+TEST(assert_text_length, limits) {
+
+    size_t limit_size = std::numeric_limits<size_t>::max();
+    ASSERT_FALSE(util::assert_text_length<size_t>(limit_size,2u));
+    ASSERT_FALSE(util::assert_text_length<size_t>((limit_size>>1),2u));
+    ASSERT_TRUE(util::assert_text_length<size_t>((limit_size>>2),2u));
+    
+    uint8_t limit_8 = std::numeric_limits<uint8_t>::max();
+    ASSERT_FALSE(util::assert_text_length<uint8_t>(limit_8,2u));
+    ASSERT_FALSE(util::assert_text_length<uint8_t>((limit_8>>1),2u));
+    ASSERT_TRUE(util::assert_text_length<uint8_t>((limit_8>>2),2u));
+}
