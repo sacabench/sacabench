@@ -251,5 +251,24 @@ namespace sacabench::saca::divsufsort {
                 current_rightmost++;
             }
         }
+
+        template <typename sa_index>
+        inline static void incude_S_suffixes(util::string_span input,
+                util::span<bool> suffix_types, buckets buckets,
+                util::span<sa_index> sa, const size_t start_position) {
+            constexpr sa_index NEGATIVE_MASK =
+                size_t(1) << (sizeof(sa_index) * 8 - 1);
+
+            // start_position = buckets.s_buckets[buckets.s_buckets.size() - 1];
+            for (size_t position = start_position;
+                    position >= buckets.s_buckets[0]; --position) {
+                if ((sa[position] | NEGATIVE_MASK) > 0) {
+                    continue;
+                } else {
+                    // do stuff
+                    sa[position] &= NEGATIVE_MASK;
+                }
+            }
+        }
     };
 }
