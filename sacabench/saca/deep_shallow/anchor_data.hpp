@@ -21,13 +21,18 @@ class anchor_data {
     static constexpr uint16_t NULLBYTES = -1;
 
     /// \brief Contains for every segment either NULL or the suffix index of the
-    ///        leftmost suffix belonging to an already sorted bucket. The anchor
-    ///        is relative to the segment start.
-    util::container<sa_index_type> position_in_suffixarray;
-
-    /// \brief Contains for the index in `anchor` the position of the suffix in
-    ///        the suffix_array.
+    ///        leftmost suffix belonging to an already sorted bucket. This
+    ///        "offset" is relative to the segment start, and under the
+    ///        assumption that SEGMENT_LENGTH < 2^16, we can store it in a
+    ///        16-bit type.
     util::container<uint16_t> relative_positions_in_segments;
+
+    /// \brief Contains for the index in `relative_positions_in_segments`
+    ///        ("offset") the position of the suffix in its already-sorted
+    ///        bucket (in their paper, this array is called "Anchor".). Because
+    ///        this is an index into the suffix array, it cannot be smaller
+    ///        than `sa_index_type`.
+    util::container<sa_index_type> position_in_suffixarray;
 
 public:
     inline anchor_data(const size_t text_length) {
@@ -48,11 +53,11 @@ public:
 
     inline void update_anchor(sa_index_type suffix,
                               sa_index_type position_in_sa) {
-        // This is the segment the n_anchor belongs to.
+        // This is the segment the suffix belongs to.
         const size_t segment_idx = suffix / SEGMENT_LENGTH;
 
-        // This is the relative index of n_anchor in its segment.
-        const uint16_t relative_anchor = suffix % SEGMENT_LENGTH;
+        // This is the relative index of suffix in its segment.
+        const uint16_t relative = suffix % SEGMENT_LENGTH;
 
         // This is the currently saved anchor for n_anchor's segment.
         const uint16_t leftmost_suffix =
@@ -60,18 +65,18 @@ public:
 
         // If there is no entry yet, or the new anchor is nearer to the left
         // edge of the segment, update it.
-        if (leftmost_suffix == NULLBYTES || relative_anchor < leftmost_suffix) {
-            relative_positions_in_segments[segment_idx] = relative_anchor;
+        if (leftmost_suffix == NULLBYTES || relative < leftmost_suffix) {
+            relative_positions_in_segments[segment_idx] = relative;
             position_in_suffixarray[segment_idx] = position_in_sa;
         }
     }
 
     inline std::optional<uint16_t>
     get_leftmost_relative_position(const sa_index_type suffix) const {
-        // This is the segment the n_anchor belongs to.
+        // This is the segment the suffix belongs to.
         const size_t segment_idx = suffix / SEGMENT_LENGTH;
 
-        // This is the currently saved anchor for n_anchor's segment.
+        // This is the currently saved anchor for suffix's segment.
         const uint16_t leftmost_relative_position =
             relative_positions_in_segments[segment_idx];
 
@@ -85,10 +90,10 @@ public:
 
     inline std::optional<sa_index_type>
     get_leftmost_position(const sa_index_type suffix) const {
-        // This is the segment the n_anchor belongs to.
+        // This is the segment the suffix belongs to.
         const size_t segment_idx = suffix / SEGMENT_LENGTH;
 
-        // This is the currently saved anchor for n_anchor's segment.
+        // This is the currently saved anchor for suffix's segment.
         const uint16_t leftmost_relative_position =
             relative_positions_in_segments[segment_idx];
 
@@ -102,10 +107,10 @@ public:
 
     inline sa_index_type
     get_position_in_suffixarray(const sa_index_type n_anchor) const {
-        // This is the segment the n_anchor belongs to.
+        // This is the segment the suffix belongs to.
         size_t segment_idx = n_anchor / SEGMENT_LENGTH;
 
-        // This is the currently saved offset for n_anchor's segment.
+        // This is the currently saved offset for suffix's segment.
         return position_in_suffixarray[segment_idx];
     }
 };
