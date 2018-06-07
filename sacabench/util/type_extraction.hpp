@@ -45,7 +45,9 @@ namespace sacabench::util {
             (t_0_global[current_string_position] > t_0_global[current_string_position + 1] || 	                    // Symbol is larger than following Symbol OR
             (t_0_global[current_string_position] == t_0_global[current_string_position + 1] && last_type_global)));	// Symbol is equal to following Symbol
 
+#pragma GCC diagnostic ignored "-Wunused-value"
         string_is_finished == ((current_string_position == 0 && iteration_direction == -1) || (current_string_position == t_0_global.size() - 1 && iteration_direction == 1));
+
         current_string_position += iteration_direction;
 
         return last_type_global;
@@ -95,7 +97,7 @@ namespace sacabench::util {
     * \param alph alphabet
     * \param ba boolean array where the result is saved
     */
-    void get_types(string_span t_0, string_span alph, span<bool> ba) {
+    void get_types(string_span t_0, span<bool> ba) {
 
         DCHECK_MSG(t_0.size() == ba.size(), "t_0 must have the same length as the type array ba");
 

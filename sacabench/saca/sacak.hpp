@@ -5,6 +5,8 @@
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
+#pragma once
+
 #include <array>
 #include <tuple>
 #include "../util/string.hpp"
@@ -18,7 +20,6 @@
 #include "../util/alphabet.hpp"
 #include "../util/sort/bucketsort.hpp"
 
-#pragma once
 
 
 namespace sacabench::saca {
