@@ -27,16 +27,14 @@ namespace sacabench::saca::divsufsort {
         }
 
         inline static bool is_s_type(sa_index suffix, util::span<bool> suffix_types) {
-            DCHECK_LT(suffix, suffix_types.size());
-            return suffix_types[suffix] == 0;
+            // Last suffix must be l-type
+            DCHECK_LT(suffix, suffix_types.size() - 1);
+            return suffix_types[suffix] == 0 && suffix_types[suffix+1] == 0;
         }
 
         inline static bool is_rms_type(sa_index suffix, util::span<bool> suffix_types) {
-            DCHECK_LT(suffix, suffix_types.size());
-            // Check wether suffix is last index.
-            if(suffix + 1 >= suffix_types.size()) {
-                return 0;
-            }
+            // Last suffix must be l-type
+            DCHECK_LT(suffix, suffix_types.size() - 1);
             //Checks wether suffix at position suffix is s type and suffix at
             //pos suffix + 1 is l type (i.e. rms)
             return suffix_types[suffix] == 0 && suffix_types[suffix + 1] == 1;
@@ -55,10 +53,10 @@ namespace sacabench::saca::divsufsort {
         size_t alphabet_size;
 
         //l_buckets containing buckets for l-suffixes of size of alphabet
-        util::span<std::size_t> l_buckets;
+        util::container<std::size_t> l_buckets;
         //s_buckets containing buckets for s- and rms-suffixes of size
         //of alphabet squared
-        util::span<std::size_t> s_buckets;
+        util::container<std::size_t> s_buckets;
 
         inline static size_t get_alphabet_size() {
             return alphabet_size;
@@ -84,17 +82,55 @@ namespace sacabench::saca::divsufsort {
         static void construct_sa(util::string_span text,
                                  util::alphabet const& alphabet,
                                  util::span<sa_index> out_sa) {
-            //Compute effective alphabet
-
+            DCHECK_EQ(text.size(), out_sa.size());
             //Create container for l/s types
-            util::container<bool> sa_types = util::make_container(text.size());
-            util::span<bool> span_sa_types = util::span(sa_types);
+            util::container<bool> sa_type_container = util::make_container(
+            text.size());
 
-            //Compute l/s types for given text
-
+            // Compute l/s types for given text; TODO: Replace with version from 
+            // 'extract_types.hpp' after RTL-Insertion was merged.
+            get_types_tmp(text, sa_types_container);
+            sa_index rms_count = extract_rms_suffixes(text, sa_type_container, 
+            out_sa);
+            // Initialize struct rms_suffixes with text, relative positions 
+            // (first rms_count positions in out_sa) and absolute positions 
+            // (last rms_count positions in out_sa) for rms-suffixes
+            rms_suffixes rms_suf = { /*.text=*/ text, /*.relative_indices=*/
+            out_sa.slice(0, rms_count), /*.absolute_indices=*/out_sa.slice(
+            out_sa.size()-rms_count, out_sa.size())};
+            
+            // Initialize buckets: alphabet_size slots for l-buckets,
+            // alphabet_size² for s-buckets
+            buckets bkts = { /*.alphabet_size=*/alphabet.max_character_value(), 
+            /*.l_buckets=*/util::make_container<sa_index>(
+            alphabet.max_character_value()), /*.s_buckets=*/
+            util::make_container<sa_index>(pow(alphabet.max_character_value(),
+            2)) };
+            
+            
         };
+        
+        // TODO: Change in optimization-phase (while computing l/s-types, 
+        // counting bucket sizes)
+        template<typename sa_index>
+        inline static sa_index extract_rms_suffixes(util::string_span text, 
+        util::container<bool>& sa_types_container, 
+        util::span<sa_index> out_sa) {
+            DCHECK_EQ(text.size(), sa_types_container.size());
+            // First (right) index from interval of already found rms-suffixes
+            // [rms_begin, rms_end)
+            sa_index right_border = out_sa.size();
+            // Insert rms-suffixes from right to left
+            for(sa_index current = text.size(); current > 0; --current) {
+                if(sa_types.is_rms_type(current - 1, sa_types_container) {
+                    // Adjust border to new entry (rms-suffix)
+                    out_sa[--right_border];
+                }
+            }
+            // Count of rms-suffixes
+            return text.size() - right_border;
+        }
 
-        //TODO
         template<typename sa_index>
         inline static void insert_into_buckets(rms_suffixes rms_suf,
             buckets bkts) {
@@ -129,11 +165,10 @@ namespace sacabench::saca::divsufsort {
             std::make_tuple(
                 rms_suf.absolute_indices[rms_suf.absolute_indices.size()-1],
                 text.size()-1);
-            util::container<tuple<sa_index, sa_index>> substrings =
+            util::container<tuple<sa_index, sa_index>> substrings_container =
             make_container(rms_suf.absolute_indices.size());
-            util::span<tuple<sa_index, sa_index>> substrings_span =
-            util::span(substrings);
-            substrings_span[subtrings_span.end()] = substring;
+            
+            substrings_container[subtrings_span.end()] = substring;
             for(std::size_t current_index = 0; current_index <
             rms_suf.absolute_indices.size() - 1; ++current_index) {
                 // Create RMS-Substring for rms-suffix from suffix-index of rms
@@ -141,15 +176,17 @@ namespace sacabench::saca::divsufsort {
                 substring = std::make_tuple(
                     rms_suf.absolute_indices[current_index],
                     rms_suf.absolute_indices[current_index+1] +1);
-                substrings_span[current_index] = substring;
+                substrings_container[current_index] = substring;
             }
 
-            //Sort rms-substrings inside of buckets
+            //Sort rms-substrings (suffix-indices) inside of buckets
+            //TODO Adjust introsort
         }
 
 
         // Temporary function for suffix-types, until RTL-Extraction merged.
-        static void get_types_tmp(util::string_span text, util::span<bool> types) {
+        inline static void get_types_tmp(util::string_span text, 
+        util::container<bool>& types) {
             // Check wether given span has same size as text.
             DCHECK_EQ(text.size(), types.size());
             // Last index always l-type suffix
@@ -166,32 +203,40 @@ namespace sacabench::saca::divsufsort {
                 }
             }
         }
-
-
-        //TODO: Maybe split into count_for_s_type, count_for_rms_type for easier use
-        inline static std::size_t count_for_type_in_bucket(
-                util::sort::bucket bucket_to_search,
-                        util::container<bool> suffix_types,
-                sa_types::s_type type_to_check) {
-            std::size_t counted = 0;
-            std::size_t next_bucket = bucket_to_search.position +
-                    bucket_to_search.count;
-            for(std::size_t pos = bucket_to_search.position;
-                    pos < next_bucket; ++pos) {
-                // TODO: Check for l-types probably not needed
-                if(type_to_check == sa_types::s_type::l) {
-                    if(sa_types::is_l_type(pos, suffix_types)) {
-                        counted++;
-                    }
-                } else if(type_to_check == sa_types::s_type::s) {
-                    if(sa_types::is_s_type(pos, suffix_types)) {
-                        counted++;
-                    }
-                } else {
-                    if(sa_types::is_rms_type(pos, suffix_types)) {
-                        counted++;
-                    }
-                }
+        
+        /** \brief Counts the amount of rms-suffixes in a given (two-character)
+            bucket. Needed to compute the initial rms-buckets
+            
+        */
+        template<typename sa_index>
+        inline static sa_index count_for_rms_type_in_bucket(util::sort::bucket 
+        bucket_to_search, util::container<bool>& suffix_types_container) {
+            sa_index counted = 0;
+            sa_index next_bucket = bucket_to_search.position + 
+            bucket_to_search.count;
+            for(sa_index pos = bucket_to_search.position; pos < next_bucket; 
+            ++pos) {
+                if(sa_types::is_rms_type(pos, suffix_types_container) {
+                    ++counted;
+            }
+            return counted;
+        }
+        
+        
+        /** \brief Counts the amount of s-suffixes (not rms) in a given 
+            (two-character) bucket. Needed to compute the initial s-buckets
+            
+        */
+        template<typename sa_index>
+        inline static sa_index count_for_s_type_in_bucket(util::sort::bucket 
+        bucket_to_search, util::container<bool>& suffix_types_container) {
+            sa_index counted = 0;
+            sa_index next_bucket = bucket_to_search.position + 
+            bucket_to_search.count;
+            for(sa_index pos = bucket_to_search.position; pos < next_bucket; 
+            ++pos) {
+                if(sa_types::is_s_type(pos, suffix_types_container) {
+                    ++counted;
             }
             return counted;
         }
@@ -212,7 +257,7 @@ namespace sacabench::saca::divsufsort {
          //TODO: Testing
         inline static void compute_buckets
                 (util::string_span input, util::alphabet alphabet,
-                 util::span<bool> suffix_types, buckets sa_buckets) {
+                 util::container<bool>& suffix_types, buckets sa_buckets) {
             const std::size_t bucket_depth = 2;
             // Use Methods from bucketsort.hpp to compute bucket sizes.
             auto buckets = util::sort::get_buckets(input,
@@ -233,13 +278,11 @@ namespace sacabench::saca::divsufsort {
                         alphabet.max_character_value() + 1; ++second_letter,
                         ++current_rightmost) {
                     std::size_t counted_s =
-                            count_for_type_in_bucket(buckets[current_rightmost],
-                                                     suffix_types,
-                                                     sa_types::s_type::s);
+                            count_for_s_type_in_bucket(buckets[
+                            current_rightmost], suffix_types);
                     std::size_t counted_rms =
-                            count_for_type_in_bucket(buckets[current_rightmost],
-                                                     suffix_types,
-                                                     sa_types::s_type::rms);
+                            count_for_rms_type_in_bucket(buckets[
+                            current_rightmost], suffix_types);
                     std::size_t index_s = first_letter *
                             (alphabet.max_character_value()+1) + second_letter;
                     std::size_t index_rms = second_letter *
