@@ -39,7 +39,7 @@ private:
     // It contains for every `alpha` a continous sequence of entries of bucket
     // information.
     util::container<bucket_information<sa_index_type>> bounds;
-    sa_index_type end_of_last_bucket;
+    sa_index_type end_of_last_bucket = 0;
 
     // This is the real alphabet size, containing the SENTINEL symbol.
     size_t real_alphabet_size;
@@ -60,8 +60,11 @@ public:
     inline void check_bounds(const u_char a, const u_char b) const {
         DCHECK_LT(a, real_alphabet_size);
         DCHECK_LT(b, real_alphabet_size);
-        (void) a;
-        (void) b;
+
+        // "Use" `a` and `b` so that the compiler doesn't warn about them
+        // being unused.
+        (void)a;
+        (void)b;
     }
 
     inline void set_bucket_bounds(

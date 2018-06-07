@@ -163,8 +163,7 @@ TEST(multikey_quicksort, deep_sort_gfedcbaaaa) {
 
     auto deep_sort = [&](span<size_t>) { used_deep_sort = true; };
 
-    sort::multikey_quicksort::multikey_quicksort(span(array), input, 1,
+    sort::multikey_quicksort::multikey_quicksort(span(array), input, 2,
                                                  deep_sort);
-    ASSERT_TRUE(sa_check(span(array), input));
     ASSERT_TRUE(used_deep_sort);
 }
