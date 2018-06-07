@@ -80,16 +80,14 @@ bool can_represent_all_values(uint64_t distinct_values) {
 ///        amount of bits your algorithm uses for metadata (tagging, ...) is
 ///        usable because the text is short enough.
 template<typename integer_type>
-bool assert_text_length(const size_t text_length, const size_t reserved_bits) {
+inline bool assert_text_length(const size_t text_length, const size_t reserved_bits) {
 
     // Actually, max_text_len is one larger than this number.
-    // Therefore, we substract one below.
-    const integer_type max_text_len = (std::numeric_limits<integer_type>::max() >> reserved_bits);
-    
-    // std::cout << (size_t)max_text_len << std::endl;
-
-    if(text_length == 0) { return true; }
-    return text_length - 1 <= max_text_len;
+    // But because size_t is the largest type we know, and the text_length is
+    // at most size_t::max, we can ignore this +1.
+    const integer_type max_text_len =
+        (std::numeric_limits<integer_type>::max() >> reserved_bits);
+    return text_length <= max_text_len;
 }
 
 } // namespace sacabench::util
