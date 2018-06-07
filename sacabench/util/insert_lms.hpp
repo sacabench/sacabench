@@ -20,7 +20,7 @@ namespace sacabench::util {
     /*
         Tries to find entry j in SA after index start  
     */
-    bool entry_comes_after(container<size_t> sa, size_t start, size_t j)
+    bool entry_comes_after(container<size_t> &sa, size_t start, size_t j)
     {
         for (size_t i = start+1; i < sa.size(); i++)
         {
@@ -31,14 +31,14 @@ namespace sacabench::util {
         return false;
     }
 
-    /* Inserts LMS Substrings LTR into the Suffix-Array (L-Buckets)
+    /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating LTR
         returns the amount of LMS substrings indices found.
-        Only a size_t is needed for the alphabet because its already made effective
     */
-    size_t insert_lms_ltr(string_span t_0, container<size_t> sa, container<util::sort::bucket> bucket_array) {
+    size_t insert_lms_ltr(string_span t_0, container<size_t> &sa) {
 
         std::tuple<bool, size_t> last_type = get_type_ltr_dynamic(t_0, 0);
         size_t amount = 0;
+        size_t sa_pointer = 0;
 
         // Iterate whole string LTR and compare types of symbols with each other
 
@@ -52,9 +52,8 @@ namespace sacabench::util {
             {
                 // The index of the bucket array for the character is already given by the character itself
 
-                sa[bucket_array[t_0[i]].position] = i;
-                bucket_array[t_0[i]].position++;
-                amount++;
+                sa[sa_pointer] = i;
+                sa_pointer++;
 
             }
 
@@ -66,13 +65,14 @@ namespace sacabench::util {
 
     }
 
-    /* Inserts LMS Substrings RTL into the Suffix-Array (S-Buckets)
+    /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating RTL
     returns the amount of LMS substrings indices found
     */
-    size_t insert_lms_rtl(string_span t_0, container<size_t> sa, container<util::sort::bucket> bucket_array) {
+    size_t insert_lms_rtl(string_span t_0, container<size_t> &sa) {
 
         bool last_type = true;
         size_t amount = 0;
+        size_t sa_pointer = 0;
 
         // Iterate whole string RTL and compare types of symbols with each other
 
@@ -84,11 +84,8 @@ namespace sacabench::util {
 
             if (!last_type && current_type)
             {
-                // The index of the bucket array for the character is already given by the character itself
-
-                sa[bucket_array[t_0[i]].position] = i;
-                bucket_array[t_0[i]].position--;
-                amount++;
+                sa[sa_pointer] = i-1;
+                sa_pointer++;
             }
 
             last_type = current_type;

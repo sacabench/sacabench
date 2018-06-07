@@ -1,5 +1,4 @@
 ################################################################################
-# CMakeLists.txt
 #
 # Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
 #
@@ -30,7 +29,7 @@ set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
 # The configuration affects things like compiler optimizations
 # and debugging symbols in the binary.
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
+  set(CMAKE_BUILD_TYPE "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
 
@@ -50,6 +49,8 @@ ENDIF()
 
 # Add custom cmake extensions
 include(cmakemodules/git_submodule_subdirectories.cmake)
+
+set(BUILD_GMOCK OFF CACHE BOOL "")
 
 git_submodule_subdirectory(external/gtest)
 add_subdirectory(sacabench)

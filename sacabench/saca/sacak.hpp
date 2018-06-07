@@ -124,7 +124,7 @@ namespace sacabench::saca {
 
         // Calculate Bucketlist bkt for L-bucket-pointers
 
-        size_t max_char = util::alphabet(t_0).real_size;
+        size_t max_char = util::alphabet(t_0).size_without_sentinel();
 
         util::container<util::sort::bucket> bkt = util::sort::get_buckets(t_0, max_char, 1);
 
@@ -134,7 +134,7 @@ namespace sacabench::saca {
         // The alphabet is given to saca-k normalized and effective, so that it's always in the form of {0, ..., n}
         // That means you only need the n to know the whole effective alphabet
 
-        size_t lms_amount = util::insert_lms_rtl(t_0, sa, bkt);
+        size_t lms_amount = util::insert_lms_rtl(t_0, sa);
         induced_sort(t_0, sa, max_char);
 
         // Allocate t_1 in the last bits of space of SA by slicing it

@@ -99,7 +99,7 @@ namespace sacabench::util {
 
         DCHECK_MSG(t_0.size() == ba.size(), "t_0 must have the same length as the type array ba");
 
-        character last_char = (character)0;
+        character last_char = util::SENTINEL;
 
         // For size_t we need to shift everything by -1 (because size_t always is >= 0)
 
