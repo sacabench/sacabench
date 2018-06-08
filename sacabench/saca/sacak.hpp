@@ -22,7 +22,7 @@
 
 namespace sacabench::saca {
 
-    void calculate_deep_sa(util::span<size_t> &t_0, util::container<size_t> &sa) {
+    void calculate_deep_sa(util::span<size_t> &t_0, util::container<size_t> &sa, size_t max_char) {
 
         // TODO: almost the same as the usual method, but without the use of bkt array. Needs negative size_t variables!!
 
@@ -109,7 +109,7 @@ namespace sacabench::saca {
     /*
         Given an efficient string t_0 with one sentinel symbol it calculates the suffix array sa
     */
-    void calculate_sa(util::string &t_0, util::container<size_t> &sa) {
+    void calculate_sa(util::string &t_0, util::container<size_t> &sa, size_t max_char) {
 
         // Initialize SA so that all items are -1 at the beginning
 
@@ -119,9 +119,6 @@ namespace sacabench::saca {
         }
 
         // Calculate Bucketlist bkt for L-bucket-pointers
-
-        // size_t max_char = util::alphabet(t_0).size_without_sentinel();
-        size_t max_char = 3;
 
         util::container<util::sort::bucket> bkt = util::sort::get_buckets(t_0, max_char, 1);
 
@@ -144,7 +141,7 @@ namespace sacabench::saca {
         // TODO: "Create" t_1 by renaming the sorted LMS Substrings in SA as indices to their own buckets and put them into t_1
         // How exactly?!
 
-        size_t k_1;
+        size_t k_1 = 0;
 
         // if new alphabetsize k_1 != |t_1|, we need to call the recursion and calculate SA_1 of t_1
         // else t_1 is already ordered by SA and we can immediately calculate the full SA of t_0
@@ -152,7 +149,7 @@ namespace sacabench::saca {
         if (t_1.size() != k_1) {
 
             util::container<size_t> sa_sliced = util::make_container(sa.slice(0, t_1.size()));
-            calculate_deep_sa(t_1, sa_sliced);
+            calculate_deep_sa(t_1, sa_sliced, max_char);
 
             //TODO(?): remapping the pointers of SA_1 to pointers of SA
 
