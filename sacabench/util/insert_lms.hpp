@@ -70,8 +70,10 @@ namespace sacabench::util {
     size_t insert_lms_rtl(string_span t_0, container<size_t> &sa) {
 
         bool last_type = true;
-        size_t amount = 0;
-        size_t sa_pointer = 0;
+        size_t amount = 1;
+        size_t sa_pointer = 1;
+        
+        sa[0] = t_0.size()-1;
 
         // Iterate whole string RTL and compare types of symbols with each other
 
@@ -83,7 +85,7 @@ namespace sacabench::util {
 
             if (!last_type && current_type)
             {
-                sa[sa_pointer] = i-1;
+                sa[sa_pointer] = i;
                 sa_pointer++;
             }
 

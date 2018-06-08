@@ -92,6 +92,7 @@ namespace sacabench::util {
 
     }
 
+
     /**\Save the L/S-Types of the input text in a given array (boolean: 1 = L, 0 = S)
     * \param t_0 input text
     * \param alph alphabet
