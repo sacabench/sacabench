@@ -1,5 +1,4 @@
 ################################################################################
-#
 # Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -51,7 +50,7 @@ ENDIF()
 include(cmakemodules/git_submodule_subdirectories.cmake)
 
 set(BUILD_GMOCK OFF CACHE BOOL "")
-
+set(BUILD_GTEST ON CACHE BOOL "")
 git_submodule_subdirectory(external/gtest)
 add_subdirectory(sacabench)
 add_subdirectory(test)
