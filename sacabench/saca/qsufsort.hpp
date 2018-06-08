@@ -16,9 +16,6 @@
 
 namespace sacabench::qsufsort {
 
-constexpr size_t NEGATIVE_MASK = size_t(1) << (sizeof(size_t) * 8 - 1);
-constexpr size_t REMOVE_NEGATIVE_MASK = std::numeric_limits<size_t>::max() >> 1;
-
 // Compare function for inital sorting
 struct compare_first_character {
 public:
@@ -76,9 +73,13 @@ public:
     const size_t h;
 };
 
-class qsufsort {
+template <typename sa_index>
+class qsufsort_sub {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 1;
+    constexpr static sa_index NEGATIVE_MASK = sa_index(1)
+                                              << (sizeof(sa_index) * 8 - 1);
+    constexpr static sa_index REMOVE_NEGATIVE_MASK =
+        std::numeric_limits<sa_index>::max() >> 1;
 
     // for trouble shooting
     template <typename T>
@@ -101,7 +102,7 @@ public:
         std::cout << std::endl;
     }
 
-    template <typename sa_index>
+    // template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
@@ -169,7 +170,7 @@ public:
     } // construct_sa
 
 private:
-    template <typename sa_index>
+    // template <typename sa_index>
     static void init_isa(util::string_span text, util::span<sa_index> out_sa,
                          util::container<sa_index>& isa, size_t h) {
         size_t n = out_sa.size();
@@ -189,7 +190,7 @@ private:
         update_group_length(out_sa, isa);
     }
 
-    template <typename sa_index>
+    // template <typename sa_index>
     static void update_group_length(util::span<sa_index> out_sa,
                                     util::container<sa_index>& isa) {
         size_t n = out_sa.size();
@@ -220,7 +221,8 @@ private:
         out_sa[0] = NEGATIVE_MASK | (++sorted_counter);
     }
 
-    template <typename sa_index, typename key_func>
+    // template <typename sa_index, typename key_func>
+    template <typename key_func>
     static void sort_and_update_group(util::span<sa_index> full_array,
                                       util::container<sa_index>& isa,
                                       key_func& cmp, sa_index start,
@@ -273,7 +275,7 @@ private:
         return;
     }
 
-    template <typename sa_index>
+    // template <typename sa_index>
     static void update_equal_partition_ranks(util::span<sa_index> out_sa,
                                              util::container<sa_index>& isa,
                                              sa_index start, sa_index end) {
@@ -289,6 +291,17 @@ private:
                 isa[out_sa[index]] = end;
             }
         }
+    }
+
+}; // class qsufsort_sub
+class qsufsort {
+public:
+    static constexpr size_t EXTRA_SENTINELS = 1;
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alphabet,
+                             util::span<sa_index> out_sa) {
+        qsufsort_sub<sa_index>::construct_sa(text, alphabet, out_sa);
     }
 
 }; // class qsufsort
