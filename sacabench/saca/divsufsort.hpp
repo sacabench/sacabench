@@ -313,19 +313,18 @@ namespace sacabench::saca::divsufsort {
 
                 // induce positions for each suffix in range
                 for (size_t i = interval_start; i >= interval_end; --i) {
-                    if ((sa[position] | NEGATIVE_MASK) == 0) {
+                    if ((sa[i] | NEGATIVE_MASK) == 0) {
                         // entry is not negative -> induce predecessor
 
                         // insert suffix i-1 at rightmost free index of
                         // associated S-bucket
                         size_t destination_bucket =
-                            get_s_bucket_index(input[position-1],
-                                    input[position]);
+                            get_s_bucket_index(input[sa[i]-1], input[sa[i]]);
                         sa[buckets.s_buckets[destination_bucket]--] = i-1;
                     }
 
                     // toggle flag
-                    sa[position] ^= NEGATIVE_MASK;
+                    sa[i] ^= NEGATIVE_MASK;
                 }
             }
         }
