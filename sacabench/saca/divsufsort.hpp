@@ -298,18 +298,34 @@ namespace sacabench::saca::divsufsort {
         template <typename sa_index>
         inline static void incude_S_suffixes(util::string_span input,
                 util::span<bool> suffix_types, buckets buckets,
-                util::span<sa_index> sa, const size_t start_position) {
+                util::span<sa_index> sa, character max_character) {
+            // bit mask: 1000...000
             constexpr sa_index NEGATIVE_MASK =
                 size_t(1) << (sizeof(sa_index) * 8 - 1);
 
-            // start_position = buckets.s_buckets[buckets.s_buckets.size() - 1];
-            for (size_t position = start_position;
-                    position >= buckets.s_buckets[0]; --position) {
-                if ((sa[position] | NEGATIVE_MASK) > 0) {
-                    continue;
-                } else {
-                    // do stuff
-                    sa[position] &= NEGATIVE_MASK;
+            for (character c0 = max_character; c0 > '\1'; --c0) {
+                // c1 = c0 - 1
+                // start at rightmost position of L-bucket of c1
+                size_t interval_start = buckets.l_buckets(c0) - 1;
+                // end at RMS-bucket[c1, c1 + 1]
+                size_t interval_end =
+                    buckets.s_buckets[get_rms_bucket_index(c0 - 1; c0)];
+
+                // induce positions for each suffix in range
+                for (size_t i = interval_start; i >= interval_end; --i) {
+                    if ((sa[position] | NEGATIVE_MASK) == 0) {
+                        // entry is not negative -> induce predecessor
+
+                        // insert suffix i-1 at rightmost free index of
+                        // associated S-bucket
+                        size_t destination_bucket =
+                            get_s_bucket_index(input[position-1],
+                                    input[position]);
+                        sa[buckets.s_buckets[destination_bucket]--] = i-1;
+                    }
+
+                    // toggle flag
+                    sa[position] ^= NEGATIVE_MASK;
                 }
             }
         }
