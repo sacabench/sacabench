@@ -108,7 +108,7 @@ public:
 
         size_t n = text.size();
         // check if n is too big
-        DCHECK_MSG(bool(n | NEGATIVE_MASK), "String is too long");
+        DCHECK(util::assert_text_length<sa_index>(text.size(), 1));
         // catch trivial cases
         if (n < 2)
             return;

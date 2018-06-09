@@ -109,8 +109,10 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
 
         // If current element is the pivot_element, swap it into equal-partition
         if (equal(array[left], pivot_element)) {
+            /*
             DCHECK_MSG(left < array.size(), "left < array.size() failed while building the less-partition. pivot=" << pivot_element << ", left=" << left << ", array_size=" << array.size());
             DCHECK_MSG(mid < array.size(), "mid < array.size() failed while building the less-partition. pivot=" << pivot_element << ", mid=" << mid << ", array_size=" << array.size());
+            */
             std::swap(array[left], array[mid]);
             ++mid;
         }
@@ -131,8 +133,10 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
     while (mid < j) {
         // if current element is bigger than the pivot_element, swap it
         if (greater(array[mid], pivot_element)) {
+            /*
             DCHECK_MSG(right < array.size(), "right < array.size() failed while building the equal-partition. right=" << right << ", array_size=" << array.size());
             DCHECK_MSG(mid < array.size(), "mid < array.size() failed while building the equal-partition. mid=" << mid << ", array_size=" << array.size());
+            */
             std::swap(array[mid], array[right]);
             ++right;
         }

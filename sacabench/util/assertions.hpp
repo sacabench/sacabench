@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
+ * Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -67,12 +68,26 @@ namespace sacabench::util {
 #define DCHECK_LT(x, y) DCHECK_BINARY((x) < (y), x, y)
 /// Check for greater-than or equal (>=)
 #define DCHECK_GE(x, y) DCHECK_BINARY((x) >= (y), x, y)
-/// Check for greater-than (<)
+/// Check for greater-than (>)
 #define DCHECK_GT(x, y) DCHECK_BINARY((x) > (y), x, y)
 
 template <typename integer_type>
 bool can_represent_all_values(uint64_t distinct_values) {
     return std::numeric_limits<integer_type>::max() >= (distinct_values - 1);
+}
+
+/// \brief Call this function once at the start of your SACA to check if the
+///        amount of bits your algorithm uses for metadata (tagging, ...) is
+///        usable because the text is short enough.
+template<typename integer_type>
+inline bool assert_text_length(const size_t text_length, const size_t reserved_bits) {
+
+    // Actually, max_text_len is one larger than this number.
+    // But because size_t is the largest type we know, and the text_length is
+    // at most size_t::max, we can ignore this +1.
+    const integer_type max_text_len =
+        (std::numeric_limits<integer_type>::max() >> reserved_bits);
+    return text_length <= max_text_len;
 }
 
 } // namespace sacabench::util
