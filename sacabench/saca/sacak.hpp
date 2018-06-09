@@ -56,12 +56,9 @@ namespace sacabench::saca {
             }
         }
 
-
-
     // Iterate SA LTR and distribute all the indices into L-Buckets which are lefthand next to already sorted indices
 
         // Initialize bkt so that the pointers point to the L-Buckets (start of buckets)
-
 
         bkt = util::sort::get_buckets(t, max_char, 1);
 
@@ -70,13 +67,11 @@ namespace sacabench::saca {
 
             if (sa[i] != 0 && sa[i] != -1 && t[sa[i]-1] >= t[sa[i]]) // check if t[sa[i]-1] is L-Type
             {
-                size_t c = t[sa[i]-1]; // The character c itself is already his bkt index (-1)
+                size_t c = t[sa[i]-1];
                 sa[bkt[c].position] = sa[i]-1;
                 bkt[c].position++;
             }
         }
-
-
 
     // Iterate SA RTL and distribute all the indices into S-Buckets which are righthand next to already sorted indices
         
@@ -107,7 +102,7 @@ namespace sacabench::saca {
     }
 
     /*
-        Given an efficient string t_0 with one sentinel symbol it calculates the suffix array sa
+        Given an effective string t_0 with one sentinel symbol it calculates the suffix array sa
     */
     void calculate_sa(util::string &t_0, util::container<size_t> &sa, size_t max_char) {
 
@@ -117,12 +112,6 @@ namespace sacabench::saca {
         {
             sa[i] = -1;
         }
-
-        // Calculate Bucketlist bkt for L-bucket-pointers
-
-        util::container<util::sort::bucket> bkt = util::sort::get_buckets(t_0, max_char, 1);
-
-        // Insert and sort LMS substrings into SA
 
         // First get the alphabet container of t_0
         // The alphabet is given to saca-k normalized and effective, so that it's always in the form of {0, ..., n}
@@ -148,8 +137,8 @@ namespace sacabench::saca {
 
         if (t_1.size() != k_1) {
 
-            util::container<size_t> sa_sliced = util::make_container(sa.slice(0, t_1.size()));
-            calculate_deep_sa(t_1, sa_sliced, max_char);
+            //util::container<size_t> sa_sliced = util::make_container(sa.slice(0, t_1.size()));
+            //calculate_deep_sa(t_1, sa_sliced, max_char);
 
             //TODO(?): remapping the pointers of SA_1 to pointers of SA
 

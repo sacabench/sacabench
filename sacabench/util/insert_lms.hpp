@@ -87,6 +87,17 @@ namespace sacabench::util {
             {
                 sa[sa_pointer] = i;
                 sa_pointer++;
+
+                // Now, for keeping the LMS Substrings in order (which is important for induced sort) we shift our current entry left 
+                // as long as the char it represents is smaller than the char of the entry on his left
+
+                size_t j = sa_pointer - 1;
+                while (j > 0 && t_0[sa[j]] < t_0[sa[j - 1]])
+                {
+                    sa[j] = sa[j - 1];
+                    sa[j - 1] = i;
+                    j--;
+                }
             }
 
             last_type = current_type;
@@ -97,31 +108,31 @@ namespace sacabench::util {
     }
 
     /**
-        Call this function to get the sorted LMS-Strings into the SA after you have induced sorted your SA.
+        Call this function to get the sorted LMS-Strings into the beginning of your SA after you have induced sorted your SA.
     */
-    size_t extract_sorted_lms(string_span t, container<size_t> sa)
+    size_t extract_sorted_lms(string_span t, container<size_t> &sa)
     {
         size_t null_counter = 0;
         size_t amount = 0;
 
         for (size_t i = 0; i < sa.size(); i++)
         {
-            if (sa[i] != 0 && sa[i] != t.size() - 1 &&      // edge cases
-                t[sa[i]] < t[sa[i] - 1] &&                  // character before is L-Type
-                    (t[sa[i]] < t[sa[i] + 1] || 
-                        (t[sa[i]] == t[sa[i] + 1] && entry_comes_after(sa, i, sa[i] + 1)))) // character after is bigger or equal but S-Type
+
+            if (sa[i] != 0 && sa[i] != -1 &&
+                t[sa[i]] < t[sa[i] - 1] &&                               // character before is L-Type
+                    (t[sa[i]] == util::SENTINEL || 
+                        (!std::get<0>(get_type_ltr_dynamic(t, sa[i]))))) // character itself is S-Type (inefficient!)
             {
                 size_t lms_entry = sa[i];
-                sa[i] = 0;
+                sa[i] = -1;
                 sa[i - null_counter] = lms_entry;
-                null_counter = 0;
                 amount++;
 
             }
             else
             {
                 null_counter++;
-                sa[i] = 0;
+                sa[i] = -1;
             }
         }
 

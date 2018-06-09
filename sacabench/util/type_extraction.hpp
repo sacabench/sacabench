@@ -56,19 +56,22 @@ namespace sacabench::util {
     /** Returns a type b (L=1, S=0) and a number n so that the next n characters have type b */
     std::tuple<bool, size_t> get_type_ltr_dynamic(string_span t_0, size_t index)
     {
+        if (t_0[index] == util::SENTINEL)
+            return std::make_tuple(false, 1);
+
         size_t same_char_amount = 0;
         character current_char = t_0[index];
 
         for (size_t i = index; i < t_0.size(); i++)
         {
             same_char_amount++;
-            if (i + 1 == t_0.size() || current_char != t_0[i + 1])
+            if (i + 1 >= t_0.size() || current_char != t_0[i + 1])
             {
                 break;
             }
         }
 
-        bool const right_before_sentinel = (index + same_char_amount - 1 == t_0.size() - 1);
+        bool const right_before_sentinel = (index + same_char_amount - 1 == t_0.size() - 2);
         character next_different_char = t_0[index + same_char_amount];
 
         return std::make_tuple((right_before_sentinel ||
