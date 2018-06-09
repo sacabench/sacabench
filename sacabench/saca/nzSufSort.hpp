@@ -193,7 +193,7 @@ namespace sacabench::nzSufSort {
                 std::cout << out_sa << std::endl;
                 
                 /* Determine t_0 and t_12 by looking up the lexicographical ranks 
-                   in out_sa */
+                   in out_sa and save them in l-type-positions of out_sa in reverted order*/
                 size_t mod = (count_s_type_pos+3-1) % 3;  
                 s_type = true;
                 size_t last_l_type = text.size()-1;
@@ -317,7 +317,37 @@ namespace sacabench::nzSufSort {
                     }
                 }    
 
-                std::cout << out_sa << std::endl;                
+                std::cout << out_sa << std::endl;   
+
+                /* move l-type-positions to the end of out_sa */
+                size_t counter = text.size()-1;
+                for (size_t i = text.size()-1; i > 0; i--) {
+                    if (text[i-1] > text[i]) { s_type = false; }
+                    else if (text[i-1] < text[i]) { s_type = true; }
+                    
+                    if (!s_type) { out_sa[counter--] = out_sa[i-1]; }
+                }
+                std::cout << out_sa << std::endl;   
+                
+                /* move t_0, t_1 and t_2 to the begin of out_sa */
+                for (size_t i = text.size()-1; i > text.size()-count_s_type_pos-1; i--) {
+                    out_sa[text.size()-(i+1)] = out_sa[i];
+                }
+                std::cout << out_sa << std::endl; 
+                
+                /* sizes of t_0, t_1 and t_2 */
+                size_t size_t_0 = count_s_type_pos/3 + (count_s_type_pos % 3 > 0);
+                size_t size_t_1 = count_s_type_pos/3 + (count_s_type_pos % 3 > 1);
+                size_t size_t_2 = count_s_type_pos/3;
+                
+                /* revert t_0, t_1 and t_2 */
+                util::span<sa_index> t_0 = out_sa.slice(0, size_t_0);
+                util::span<sa_index> t_1 = out_sa.slice(size_t_0, size_t_0+size_t_1);
+                util::span<sa_index> t_2 = out_sa.slice(size_t_0+size_t_1, size_t_0+size_t_1+size_t_2);
+                revert(t_0);
+                revert(t_1);
+                revert(t_2);
+                std::cout << out_sa << std::endl; 
             }
             
             template<typename C, typename T>
