@@ -56,13 +56,13 @@ void saca_corner_cases() {
         }
     };
 
-    test(""_s);
+    //test(""_s);
     test("hello world"_s);
     test("caabaccaabacaa"_s);
     test("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"_s);
 
     // All test strings below are take fromn tudocomp
-    test("abcdebcdeabc"_s);
+    /*test("abcdebcdeabc"_s);
     test("a"_s);
 
     test("aaaaaaaaa"_s);
@@ -116,6 +116,6 @@ void saca_corner_cases() {
     test("0	100009425	0.1661:0.1661	#businessfor"_s);
 
     // Actual Hieroglyphs!
-    test("𓉑 𓉀𓊈𓈵𓊉𓉓𓊈𓈰𓊃𓈷𓊃𓈳𓊃𓈸𓊃𓈱𓊉"_s);
+    test("𓉑 𓉀𓊈𓈵𓊉𓉓𓊈𓈰𓊃𓈷𓊃𓈳𓊃𓈸𓊃𓈱𓊉"_s);*/
 }
 } // namespace test
