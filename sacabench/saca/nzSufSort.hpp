@@ -14,6 +14,8 @@
 #include <util/span.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/alphabet.hpp>
+#include <util/induce_sa_dc.hpp>
+
 
 namespace sacabench::nzSufSort {
 
@@ -73,10 +75,180 @@ namespace sacabench::nzSufSort {
                 std::cout << "p_0: " << p_0 << std::endl;
                 std::cout << "p_12: " << p_12 << std::endl;
                 
+                //calculate t_0 and t_12 in the begin of out_sa
                 determine_leq<util::character>(text, out_sa, 0, mod_0, mod_0, count_s_type_pos-mod_0, count_s_type_pos);
+                util::span<sa_index> t_0 = out_sa.slice(0, mod_0);
+                util::span<sa_index> t_12 = out_sa.slice(mod_0, count_s_type_pos);
+                
+                //calculate SA(t_12) by calling the lightweight variant of DC3
+                //TODO
+                util::span<sa_index> tmp_out_sa = out_sa.slice(count_s_type_pos+mod_0, 2*count_s_type_pos);
+                naive_sa(t_12, tmp_out_sa);
+                for (size_t i = 0; i < t_12.size(); i++) {
+                    t_12[i] = tmp_out_sa[i];
+                }
+                util::span<sa_index> sa_12 = t_12;
+                
+                std::cout << "sa_12: " << sa_12 << std::endl;
+                
+                //induce SA(t_0)
+                util::span<sa_index> isa_12 = tmp_out_sa;
+                for (size_t i = 0; i < sa_12.size(); i++) {
+                    isa_12[sa_12[i]] = i;
+                }
+                util::induce_sa_dc<size_t>(t_0, isa_12, t_0);
+                util::span<sa_index> sa_0 = t_0;
+                
+                std::cout << "sa_0: " << sa_0 << std::endl;
+                
+                //update SA(t_0) and SA(t_12) with position arrays
+                p_0 = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
+                p_12 = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1+mod_2);
+                util::span<sa_index> p_1 = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1);
+                util::span<sa_index> p_2 = out_sa.slice(count_s_type_pos+mod_0+mod_1, count_s_type_pos+mod_0+mod_1+mod_2);
+                
+                calculate_position_arrays(text, p_0, p_12, p_0, p_1, p_2, count_s_type_pos);
+                
+                for (size_t i = 0; i < sa_0.size(); i++) {
+                    sa_0[i] = p_0[sa_0[i]];
+                }
+                
+                for (size_t i = 0; i < sa_12.size(); i++) {
+                    sa_12[i] = p_12[sa_12[i]];
+                }
+                
+                std::cout << "sa_0: " << sa_0 << std::endl;
+                std::cout << "sa_12: " << sa_12 << std::endl;
+                
+                // copy sa_0 and sa_12 into l-type-positions of out_sa
+                std::cout << "out_sa: " << out_sa << std::endl;
+                size_t h = 0;
+                size_t curr_pos_sa_0 = 0;
+                size_t curr_pos_sa_12 = 0;
+                s_type = true;
+                for (size_t i = text.size()-1; i > 0; i--) {
+                    if (text[i-1] > text[i]) { s_type = false; }
+                    else if (text[i-1] < text[i]) { s_type = true; }
+                    
+                    if (!s_type) { 
+                        if (curr_pos_sa_0 < sa_0.size()) { out_sa[i-1] = sa_0[curr_pos_sa_0++]; }
+                        else if (curr_pos_sa_12 < sa_12.size()) { 
+                            if (curr_pos_sa_12 == 0) { h = i-1; }
+                            out_sa[i-1] = sa_12[curr_pos_sa_12++]; 
+                        }
+                        else { break; }
+                    }
+                }
+                std::cout << "out_sa: " << out_sa << std::endl;
+                
+                // calculate isa_0 and isa_12 into s-type-positions of out_sa
+                size_t rank = 0;
+                s_type = true;
+                for (size_t i = text.size()-1; i > 0; i--) {
+                    if (text[i-1] > text[i]) { s_type = false; }
+                    else if (text[i-1] < text[i]) { s_type = true; }
+                    
+                    if (!s_type) { 
+                        if (i-1 > h) { out_sa[out_sa[i-1]] = rank++; }
+                        if (i-1 <= h) {
+                            if (i-1 == h) { rank = 0; }
+                            out_sa[out_sa[i-1]] = rank++;
+                        }
+                    }
+                }
+                std::cout << "out_sa: " << out_sa << std::endl;
+                
+                // merge sa_0 and sa_12 by calculating positions in merged sa
+                curr_pos_sa_0 = out_sa.size()-1;
+                curr_pos_sa_12 = h+1;
+                size_t pos_in_merged_sa = 0;
+                bool s_type_sa_0 = true;
+                bool s_type_sa_12 = false;
+                // traverse l-type-positions
+                while (curr_pos_sa_0-1 > h && curr_pos_sa_12 > 0) {
+                    // get next index for sa_0
+                    while (s_type_sa_0) { 
+                        curr_pos_sa_0--;
+                        if (text[curr_pos_sa_0-1] > text[curr_pos_sa_0]) { s_type_sa_0 = false; }
+                        else if (text[curr_pos_sa_0-1] < text[curr_pos_sa_0]) { s_type_sa_0 = true; }
+                    }
+                    // get next index for sa_12
+                    while (s_type_sa_12) { 
+                        if (curr_pos_sa_12 == 0) { break; }
+                        curr_pos_sa_12--;
+                        if (text[curr_pos_sa_12-1] > text[curr_pos_sa_12]) { s_type_sa_12 = false; }
+                        else if (text[curr_pos_sa_12-1] < text[curr_pos_sa_12]) { s_type_sa_12 = true; }
+                    }
+                    std::cout << "curr_pos_sa_0: " << curr_pos_sa_0 << ", curr_pos_sa_12: " << curr_pos_sa_12 <<std::endl;
+                    
+                    util::string_span t_0;
+                    util::string_span t_12;
+                    if (out_sa[curr_pos_sa_12-1] % 3 == 1) {
+                        t_0 = retrieve_s_string<util::character>(text, out_sa[curr_pos_sa_0-1], 1);
+                        t_12 = retrieve_s_string<util::character>(text, out_sa[curr_pos_sa_12-1], 1);
+                    }
+                    else {
+                        t_0 = retrieve_s_string<util::character>(text, out_sa[curr_pos_sa_0-1], 2);
+                        t_12 = retrieve_s_string<util::character>(text, out_sa[curr_pos_sa_12-1], 2);
+                    }
+                    
+                    //TODO: shorter strings have higher priority
+                    const bool less_than = t_0 < t_12;
+                    const bool eq = t_0 == t_12;
+                    // NB: This is a closure so that we can evaluate it later, because
+                    // evaluating it if `eq` is not true causes out-of-bounds errors.
+                    auto lesser_suf = [&]() {
+                        return out_sa[out_sa[curr_pos_sa_0-1]+t_0.size()-1] <
+                            out_sa[out_sa[curr_pos_sa_12-1]+t_12.size()-1];
+                    };
+                    if (less_than || (eq && lesser_suf())) {
+                        out_sa[(curr_pos_sa_0--)-1] = pos_in_merged_sa++;
+                    }
+                    else { out_sa[(curr_pos_sa_12--)-1] = pos_in_merged_sa++; }
+                }
+                std::cout << "out_sa: " << out_sa << std::endl;
+                // There are positions in sa_0 left
+                while (curr_pos_sa_0-1 > h) {
+                    // get next index for sa_0
+                    while (s_type_sa_0) { 
+                        curr_pos_sa_0--;
+                        if (text[curr_pos_sa_0-1] > text[curr_pos_sa_0]) { s_type = false; }
+                        else if (text[curr_pos_sa_0-1] < text[curr_pos_sa_0]) { s_type = true; }
+                    }
+                    out_sa[(curr_pos_sa_0--)-1] = pos_in_merged_sa++;
+                }
+                // There are positions in sa_12 left
+                while (curr_pos_sa_12 > 0) {
+                    // get next index for sa_12
+                    while (s_type_sa_12) { 
+                        if (curr_pos_sa_12 == 0) { break; }
+                        curr_pos_sa_12--;
+                        if (text[curr_pos_sa_12-1] > text[curr_pos_sa_12]) { s_type = false; }
+                        else if (text[curr_pos_sa_12-1] < text[curr_pos_sa_12]) { s_type = true; }
+                    }
+                    out_sa[(curr_pos_sa_12--)-1] = pos_in_merged_sa++;
+                }
+                std::cout << "out_sa: " << out_sa << std::endl;
             }
           
         private:
+            //TODO: Naive SACA for testing purposes until the lightweight DC3 is finished
+            template<typename sa_index>
+            static void naive_sa(util::span<sa_index> text,
+                             util::span<sa_index> out_sa) {
+
+                // Fill SA with all index positions
+                for (size_t i = 0; i < out_sa.size(); i++) {
+                    out_sa[i] = i;
+                }
+
+                // Construct a SA by sorting according
+                // to the suffix starting at that index.
+                util::sort::std_sort(
+                    out_sa, util::compare_key([&](size_t i) { return text.slice(i); }));
+            }
+            
+            //TODO: we dont need the arrays mod_0, mod_1 and mod_2 since we can use p_0, p_1 and p_2
             template<typename T, typename sa_index>
             static void calculate_position_arrays(const T& text, 
                     const util::span<sa_index> p_0, const util::span<sa_index> p_12, 
@@ -347,6 +519,7 @@ namespace sacabench::nzSufSort {
                 revert(t_0);
                 revert(t_1);
                 revert(t_2);
+                
                 std::cout << out_sa << std::endl; 
             }
             
