@@ -16,10 +16,11 @@ using namespace sacabench::util;
 
 class sais {
     public:        
+        static constexpr size_t EXTRA_SENTINELS = 1;
         static const size_t L_Type = 0;
         static const size_t S_Type = 1;
 
-        static void compute_types(std::unique_ptr<size_t[]> &t, std::unique_ptr<size_t[]> &p_1, string_span s) {
+        static void compute_types(container<size_t> &t, container<size_t> &p_1, string_span s) {
             t[s.size() - 1] = S_Type;
 
             for (ssize i = s.size() - 2; i >= 0; i--) {
@@ -32,7 +33,7 @@ class sais {
             }
         }
 
-        static void generate_buckets(string_span s, std::unique_ptr<size_t[]> &buckets, size_t K, bool end) {
+        static void generate_buckets(string_span s, container<size_t> &buckets, size_t K, bool end) {
             size_t sum = 0;
 
             for (size_t i = 0; i <= K; i++) { buckets[i] = 0; }
@@ -47,7 +48,7 @@ class sais {
             }
         }
 
-        static void induce_L_Types(string_span s, std::unique_ptr<size_t[]> &buckets, size_t K, bool end, std::unique_ptr<ssize[]> &SA, std::unique_ptr<size_t[]> &t) {
+        static void induce_L_Types(string_span s, container<size_t> &buckets, size_t K, bool end, container<ssize> &SA, container<size_t> &t) {
             generate_buckets(s, buckets, K, end);
             for (size_t i = 0; i < s.size(); i++) {
                 ssize pre_index = SA[i] - 1; // pre index of the ith suffix array position
@@ -58,7 +59,7 @@ class sais {
             }
         }
 
-        static void induce_S_Types(string_span s, std::unique_ptr<size_t[]> &buckets, size_t K, bool end, std::unique_ptr<ssize[]> &SA, std::unique_ptr<size_t[]> &t) {
+        static void induce_S_Types(string_span s, container<size_t> &buckets, size_t K, bool end, container<ssize> &SA, container<size_t> &t) {
             generate_buckets(s, buckets, K, end);
             for (ssize i = s.size() - 1; i >= 0; i--) {
                 ssize pre_index = SA[i] - 1;
@@ -69,10 +70,10 @@ class sais {
             }
         }
 
-        static void run_saca(string_span s, std::unique_ptr<ssize[]> &SA, ssize K) {
-            std::unique_ptr<size_t[]> t(new size_t[s.size()]);
-            std::unique_ptr<size_t[]> p_1(new size_t[s.size()]);
-            std::unique_ptr<size_t[]> buckets(new size_t[K + 1]);
+        static void run_saca(string_span s, container<ssize> &SA, ssize K) {
+            container<size_t> t = make_container<size_t>(s.size());
+            container<size_t> p_1 = make_container<size_t>(s.size());
+            container<size_t> buckets = make_container<size_t>(K + 1);
 
             compute_types(t, p_1, s);
 
@@ -104,11 +105,11 @@ class sais {
             // The given names correspond to the buckets the LMS are sorted ssizeo. To find the names, the strings have to be compared by its type and lexicographical value per char
             ssize name = 0;
             ssize previous_LMS = -1;
-            for (size_t i = 0; i < n1; i++) { // max n/2 iterations
+            for (ssize i = 0; i < n1; i++) { // max n/2 iterations
                 bool diff = false;
                 // compare types and chars
                 ssize current_LMS = SA[i];
-                for (ssize j = 0; j < s.size(); j++) {
+                for (size_t j = 0; j < s.size(); j++) {
                     if (previous_LMS == -1 || s.at(current_LMS + j) != s.at(previous_LMS + j) || t[current_LMS + j] != t[previous_LMS + j]) {
                         diff = true;
                         break;
@@ -135,8 +136,11 @@ class sais {
             }
 
             // if there are more as less names than LMS, we have duplicates and have to recurse
-            string s1 = string(n1);
-            for (size_t i = s.size() - n1; i < s.size(); i++) { s1[i - (s.size() - n1)] = SA[i]; }
+
+            container<character> s1 = make_container<character>(n1);
+            for (size_t i = s.size() - n1; i < s.size(); i++) {
+                s1[i - (s.size() - n1)] = SA[i];
+            }
 
             if (name < n1) {
                 // new string that consists of ssizeegers now, as they represent the names
@@ -156,7 +160,7 @@ class sais {
                     s1[j++] = i;
                 }
             }
-            for (size_t i = 0; i < n1; i++) {
+            for (ssize i = 0; i < n1; i++) {
                 SA[i] = s1[SA[i]];
             }
             for (size_t i = n1; i < s.size(); i++) {
@@ -173,18 +177,11 @@ class sais {
         }
         
 	    template<typename sa_index>
-	    static void construct_sa(util::string_span text, size_t alphabet_size, util::span<sa_index> out_sa) {
-	        
-	        // obsolete once the null-byte is appended by the framework
-            string copy = string(text.size() + 1);
-            for (size_t i = 0; i < text.size(); i++) { copy[i] = (unsigned char)text[i]; }
-            copy[text.size()] = 0;
-   
-            std::unique_ptr<ssize[]> SA(new ssize[copy.size()]);        
-	        
-            run_saca(copy, SA, alphabet_size);
+	    static void construct_sa(util::string_span text, sacabench::util::alphabet alph, util::span<sa_index> out_sa) {
+            container<ssize> SA = make_container<ssize>(text.size());    
+            run_saca(text, SA, alph.max_character_value());
             
-            for (size_t i = 1; i < copy.size(); i++) { out_sa[i - 1] = SA[i]; } 
+            for (size_t i = 0; i < text.size(); i++) { out_sa[i] = SA[i]; } 
         }   
     };
 } 
