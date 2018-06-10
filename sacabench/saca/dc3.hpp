@@ -13,13 +13,15 @@
 #include <util/merge_sa_dc.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/alphabet.hpp>
 
 namespace sacabench::dc3 {
 
 class dc3 {
 public:
+    static constexpr size_t EXTRA_SENTINELS = 0;
     template <typename sa_index>
-    static void construct_sa(util::string_span text, size_t alphabet_size,
+    static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
         if (text.size() != 0) {
             // temporary copy text and add 3 Sentinals until feature is added
@@ -35,7 +37,7 @@ public:
             modified_text[modified_text.size() - 1] = '\0';
 
             construct_sa_dc3<sa_index, false, sacabench::util::character>(
-                modified_text, alphabet_size, out_sa);
+                modified_text, out_sa);
         }
     }
 
@@ -57,7 +59,7 @@ private:
         size_t counter = 0;
 
         //--------------------------------without additional
-        //Sentinals--------------------------------------//
+        // Sentinals--------------------------------------//
         /*
         const unsigned char SMALLEST_CHAR = '\0';
         for(size_t i = 1; i < INPUT_STRING.size(); ++i) {
@@ -108,7 +110,7 @@ private:
         for (size_t i = 0; i < triplets_12.size(); ++i) {
             // set the lexicographical names at correct positions:
             //[----names at positions i mod 3 = 1----||----names at positions i
-            //mod 3 = 2----]
+            // mod 3 = 2----]
             if (triplets_12[i] % 3 == 1) {
                 t_12[triplets_12[i] / 3] = leq_name;
             } else {
@@ -131,7 +133,7 @@ private:
             }
 
             //--------------------------------without additional
-            //Sentinals--------------------------------------//
+            // Sentinals--------------------------------------//
             /*if(i+1 < triplets_12.size()){
 
                 if(triplets_12[i]+3 < INPUT_STRING.size()){
@@ -177,7 +179,7 @@ private:
     }
 
     template <typename sa_index, bool rec, typename C, typename S>
-    static void construct_sa_dc3(S& text, size_t alphabet_size,
+    static void construct_sa_dc3(S& text,
                                  util::span<sa_index> out_sa) {
 
         // empty container which will contain indices of triplet
@@ -218,7 +220,7 @@ private:
 
             // run algorithm recursive
             construct_sa_dc3<sa_index, true, size_t>(modified_text,
-                                                     alphabet_size, sa_12);
+                                                     sa_12);
         }
 
         // empty isa_12 which should be filled correctly with method
@@ -265,11 +267,9 @@ private:
             }
         } else {
             isa_12 = sacabench::util::make_container<size_t>(t_12.size());
-            
-            //copy in loop to suppress warnings. Will be changed in optimization
-            for(size_t i = 0; i < isa_12.size(); ++i){
-                isa_12[i] = t_12[i];
-            }
+
+            // TODO: stop copying the values
+            isa_12 = t_12;
             determine_isa(isa_12, sa_12);
 
             // convert isa_12 to the correct format for merge_sa_dc.
@@ -309,12 +309,12 @@ private:
         if constexpr (rec) {
             sacabench::util::merge_sa_dc<const size_t>(
                 sacabench::util::span(&text[0], text.size() - 2), sa_0,
-                triplets_12, merge_isa_12, tmp_out_sa, comp_recursion,
+                triplets_12, merge_isa_12, tmp_out_sa, std::less<sacabench::util::span<const size_t>>(),
                 get_substring_recursion);
         } else {
             sacabench::util::merge_sa_dc<const sacabench::util::character>(
                 sacabench::util::span(&text[0], text.size() - 2), sa_0,
-                triplets_12, merge_isa_12, tmp_out_sa, comp, get_substring);
+                triplets_12, merge_isa_12, tmp_out_sa, std::less<sacabench::util::string_span>(), get_substring);
         }
 
         for (size_t i = 1; i < tmp_out_sa.size(); ++i) {
@@ -332,12 +332,6 @@ private:
         return sacabench::util::span(ptr, n);
     }
 
-    // implementation of comp method
-    static bool comp(const sacabench::util::string_span a,
-                     const sacabench::util::string_span b) {
-        return a < b;
-    }
-
     // implementation of get_substring method with type size_t in recursion
     static const sacabench::util::span<const size_t>
     get_substring_recursion(const sacabench::util::span<size_t> t,
@@ -345,12 +339,6 @@ private:
         // Suppress unused variable warnings:
         (void)t;
         return sacabench::util::span(ptr, n);
-    }
-
-    // implementation of comp method
-    static bool comp_recursion(const sacabench::util::span<const size_t> a,
-                               const sacabench::util::span<const size_t> b) {
-        return a < b;
     }
 }; // class dc3
 

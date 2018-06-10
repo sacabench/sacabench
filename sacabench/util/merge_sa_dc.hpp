@@ -47,9 +47,8 @@ void merge_sa_dc(const T& t, const S& sa_0, const S& sa_12, const I& isa_12,
 
     size_t i = 0;
     size_t j = 0;
-    size_t counter = 0;
 
-    while (counter < sa.size()) {
+    for(size_t index = 0; index < sa.size(); ++index) {
         if (i < sa_0.size() && j < sa_12.size()) {
             sacabench::util::span<C> t_0;
             sacabench::util::span<C> t_12;
@@ -80,21 +79,19 @@ void merge_sa_dc(const T& t, const S& sa_0, const S& sa_12, const I& isa_12,
                             isa_12[2 * ((sa_12[j] + t_12.size())) / 3]);
             };
             if (less_than || (eq && lesser_suf())) {
-                sa[counter] = sa_0[i++];
+                sa[index] = sa_0[i++];
             } else {
-                sa[counter] = sa_12[j++];
+                sa[index] = sa_12[j++];
             }
         }
 
         else if (i >= sa_0.size()) {
-            sa[counter] = sa_12[j++];
+            sa[index] = sa_12[j++];
         }
 
         else {
-            sa[counter] = sa_0[i++];
+            sa[index] = sa_0[i++];
         }
-
-        ++counter;
     }
 }
 } // namespace sacabench::util

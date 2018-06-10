@@ -12,14 +12,13 @@
 #pragma once
 namespace sacabench::util {
 template<typename C, typename T, typename I, typename S>
-    //template C for input characters
-    //template T for input string
-    //template I for ISA
-    //template S for SA
-
     /**\brief Identify order of chars starting in position i mod 3 = 0 with difference cover
+    * \tparam T Type of input string
+    * \tparam C Type of input characters
+    * \tparam I Type of inverse Suffix Array
+    * \tparam S Type of Suffix Array
     * \param t_0 input text t_0 with chars beginning in i mod 3 = 0 of input text
-    * \param isa_12 calculated ISA for triplets beginning in i mod 3 != 0
+    * \param isa_12 ISA for triplets beginning in i mod 3 != 0
     * \param sa_0 memory block for resulting SA for positions beginning in i mod 3 = 0
     *
     * This method identifies the order of the characters in input_string in positions i mod 3 = 0
@@ -34,10 +33,11 @@ template<typename C, typename T, typename I, typename S>
                "isa_12 must have at least the same length as t_0");
 
     // Container to store all tuples with the same length as sa_0
-    // Tuples contains a char and a rank
+    // Tuples contains a char, a rank and the position
     auto sa_0_to_be_sorted =
         make_container<std::tuple<C, size_t, size_t>>(sa_0.size());
 
+    //index of first rank for triplets beginning in i mod 3 = 2
     size_t start_pos_mod_2 = isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
 
     for (size_t i = 0; i < sa_0.size(); i++) {
