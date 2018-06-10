@@ -36,6 +36,15 @@ namespace sacabench::util {
 /// Prints current file and line number
 #define TRACE() std::cerr << "TRACE @" << __FILE__ << ":" << __LINE__ << "\n";
 
+// code compiled only in debug build (set build type to Debug)
+#ifdef DEBUG
+    /// `x` is compiled only in debug builds.
+    #define IF_DEBUG(x) x
+#else
+    /// `x` is compiled only in debug builds.
+    #define IF_DEBUG(x)
+#endif
+
 //! \}
 
 } // namespace util
