@@ -26,9 +26,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include <string>
 
-#ifdef __linux__
+#if defined(__linux__)
 
 #include <iomanip>
 #include <iostream>
@@ -44,10 +46,136 @@
 
 namespace sacabench::backtrace {
 
+#define MYTRACE() std::cerr << "TRACE @" << __FILE__ << ":" << __LINE__ << "\n";
+
+struct lspan {
+    static constexpr size_t npos = ~0ull;
+
+    char const* ptr;
+    size_t size;
+
+    inline lspan(char const* _ptr, size_t _size) : ptr(_ptr), size(_size) {}
+    inline lspan(char const* _ptr) : lspan(_ptr, strlen(_ptr)) {}
+    inline lspan() : lspan("") {}
+
+    inline auto begin() const { return ptr; }
+    inline auto end() const { return ptr + size; }
+    inline lspan slice(size_t from = 0, size_t to = npos) {
+        if (to == npos) {
+            to = size;
+        }
+        if (from > size) {
+            MYTRACE();
+            abort();
+        }
+        if (to > size) {
+            MYTRACE();
+            abort();
+        }
+        if (from > to) {
+            MYTRACE();
+            abort();
+        }
+        return lspan{ptr + from, to - from};
+    }
+    inline bool starts_with(lspan other) {
+        if (other.size > size)
+            return false;
+        for (size_t i = 0; i < other.size; i++) {
+            if (ptr[i] != other.ptr[i])
+                return false;
+        }
+        return true;
+    }
+};
+
+struct result {
+    lspan return_ty;
+    lspan function_name;
+    lspan function_namespace;
+    lspan function_namespace_and_name;
+};
+
+struct noop {
+    inline bool operator()(result) { return true; }
+};
+
+inline std::ostream& operator<<(std::ostream& out, lspan span) {
+    return out.write(span.ptr, span.size);
+}
+
+inline result parse_symbol(lspan name) {
+    result r;
+
+    int nesting = 0;
+
+    size_t i;
+    for (i = 0; i < name.size; i++) {
+        auto n = name.slice(i);
+
+        auto kw = [&](lspan m) {
+            if (n.starts_with(m)) {
+                i += (m.size - 1);
+                return true;
+            }
+            return false;
+        };
+
+        if (kw("operator<<=") || kw("operator<=>") || kw("operator<<") ||
+            kw("operator<=") || kw("operator<") || kw("operator>>=") ||
+            kw("operator>>") || kw("operator>=") || kw("operator>") ||
+            kw("operator->*") || kw("operator->")) {
+            continue;
+        } else if (n.starts_with("<") || n.starts_with("(")) {
+            nesting++;
+        } else if (n.starts_with(">") || n.starts_with(")")) {
+            nesting--;
+        } else if (n.starts_with(" ") && nesting == 0) {
+            if (n.starts_with(" const")) {
+                continue;
+            }
+            break;
+        }
+    }
+
+    if (i < name.size) {
+        r.return_ty = name.slice(0, i);
+        r.function_name = name.slice(i + 1);
+    } else {
+        r.return_ty = "void";
+        r.function_name = name;
+    }
+
+    size_t j;
+    size_t k = 0;
+    nesting = 0;
+    for (j = 0; j < r.function_name.size; j++) {
+        auto n = r.function_name.slice(j);
+
+        if (n.starts_with("<") || n.starts_with("(")) {
+            nesting++;
+        } else if (n.starts_with(">") || n.starts_with(")")) {
+            nesting--;
+        } else if (n.starts_with("::") && nesting == 0) {
+            k = j;
+        }
+    }
+
+    r.function_namespace_and_name = r.function_name;
+    r.function_namespace = r.function_name.slice(0, k);
+    r.function_name = r.function_name.slice(k);
+    if (r.function_name.starts_with("::")) {
+        r.function_name = r.function_name.slice(2);
+    }
+
+    return r;
+}
+
 // This function produces a stack backtrace with demangled function & method
 // names.
-inline std::string Backtrace(int skip = 1) {
-    bool nice = true;
+template <typename callback = noop>
+inline std::string Backtrace(int skip = 1, bool nice = true,
+                             callback cb = callback()) {
     int offset = 0;
     if (nice) {
         offset = skip;
@@ -70,7 +198,7 @@ inline std::string Backtrace(int skip = 1) {
 
         Dl_info info;
         if (dladdr(callstack[i], &info) && info.dli_sname) {
-            char* demangled;
+            char* demangled = nullptr;
             int status = -1;
             if (info.dli_sname[0] == '_') {
                 demangled =
@@ -82,6 +210,16 @@ inline std::string Backtrace(int skip = 1) {
                      : info.dli_sname == 0 ? symbols[i] : info.dli_sname);
 
             trace_buf << name;
+
+            auto p = parse_symbol(name);
+            cb(p);
+
+            /*
+            trace_buf << "\n";
+            trace_buf << "namespace: " << p.function_namespace << "\n";
+            trace_buf << "function:  " << p.function_name << "\n";
+            trace_buf << "retty:     " << p.return_ty << "\n";
+            */
 
             if (!nice) {
                 trace_buf << " + ";
@@ -98,7 +236,7 @@ inline std::string Backtrace(int skip = 1) {
 
             std::free(demangled);
 
-            if (marker_found) {
+            if (nice && marker_found) {
                 trace_buf << "\n";
                 break;
             }
@@ -118,9 +256,17 @@ inline std::string Backtrace(int skip = 1) {
 #else
 
 namespace sacabench::backtrace {
-inline std::string Backtrace(int skip = 1) {
+
+struct noop {
+    inline bool operator()() { return true; }
+};
+
+template <typename callback = noop>
+inline std::string Backtrace(int = 1, bool = true,
+                             callback = callback()) {
     return "<no backtrace on this platform>";
 }
+
 } // namespace sacabench::backtrace
 
 #endif

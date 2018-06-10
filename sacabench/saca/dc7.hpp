@@ -8,6 +8,7 @@
 
 #include <queue>
 #include <tuple>
+#include <util/alphabet.hpp>
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -16,8 +17,9 @@ namespace sacabench::dc7 {
 
 class dc7 {
 public:
+    static constexpr size_t EXTRA_SENTINELS = 0;
     template <typename sa_index>
-    static void construct_sa(util::string_span text, size_t alphabet_size,
+    static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
         if (text.size() == 0) {
@@ -37,7 +39,7 @@ public:
             }
 
             construct_sa_dc7<sa_index, false, sacabench::util::character>(
-                modified_text, alphabet_size, out_sa);
+                modified_text, out_sa);
         }
     }
 
@@ -46,11 +48,6 @@ private:
     static void determine_tuples(const T& INPUT_STRING, S& tuples_124) {
 
         size_t n = INPUT_STRING.size() - 6;
-        // DCHECK_MSG(tuples_124.size() ==3 * (n) / 7 + 1 - (((n % 7) == 0)) -
-        // (((n % 7) == 1))),
-        //           "tuples_124 must have the length
-        //           (3*INPUT_STRING.size()/7)");
-
         // Container to store all tuples with the same length as tuples_124
         // Tuples contains six chararcters and the start position
         // i mod 3 = 1 || 2 || 4
@@ -139,9 +136,18 @@ private:
         }
     }
 
-    template <typename sa_index, bool rec, typename C, typename S>
-    static void construct_sa_dc7(S text, size_t alphabet_size,
-                                 util::span<sa_index> out_sa) {
+    template <typename sa_index, bool rec, typename C, typename T>
+    /**\brief Construct SA with difference cover
+     * \tparam sa_index Type of index of SA
+     * \tparam rec identifies, if this method is in a recursion.
+     * \tparam C Type of input characters
+     * \tparam T Type of input Text
+     * 
+     * This method constructs the suffix array by using the method
+     * "difference cover". The difference cover is {1,2,4}.
+     */
+    static void
+    construct_sa_dc7(T text, util::span<sa_index> out_sa) {
 
         const size_t n = text.size() - 6;
 
@@ -173,7 +179,6 @@ private:
 
         util::span<sa_index> sa_124 = util::span(&out_sa[0], t_124.size());
 
-
         // run the algorithm recursivly if the names are not unique
         if (recursion) {
 
@@ -190,8 +195,7 @@ private:
             }
 
             // run algorithm recursive
-            construct_sa_dc7<sa_index, true, size_t>(modified_text,
-                                                     alphabet_size, sa_124);
+            construct_sa_dc7<sa_index, true, size_t>(modified_text, sa_124);
         }
 
         // empty isa_124 which should be filled correctly with method
@@ -222,11 +226,8 @@ private:
         } else {
             isa_124 = sacabench::util::make_container<size_t>(t_124.size());
 
-            // copy in loop to suppress warnings. Will be changed in
-            // optimization
-            for (size_t i = 0; i < isa_124.size(); ++i) {
-                isa_124[i] = t_124[i];
-            }
+            // TODO: Stop copying this container
+            isa_124 = t_124;
             determine_isa(isa_124, sa_124);
         }
 
@@ -243,7 +244,8 @@ private:
         auto t_6 = sacabench::util::make_container<size_t>(
             (n - 6) / 7 + (((n - 6) % 7) != 0));
 
-        // fill container with characters at specific positions i mod 7 = 0 || 3 || 5 || 6
+        // fill container with characters at specific positions i mod 7 = 0 || 3
+        // || 5 || 6
         size_t counter = 0;
         for (size_t i = 0; i < n; i += 7) {
             t_0[counter++] = i;
@@ -278,12 +280,11 @@ private:
         // fill sa_3 by inducing with characters at i mod 7 = 3 and ranks of
         // tupels beginning in positions i mod 7 = 2
         // start_pos: position, of ranks i mod 7 = 2 of t_124
-        // TODO: maybe use inverse suffix array?
-        // size_t start_pos = t_124.size() / 3 + ((t_124.size() % 3) != 0) + 1;
         induce_sa_dc<C>(text, t_3, isa_124, sa_3, start_of_pos_2 + 1);
+
         // fill sa_5 by inducing with characters at i mod 7 = 5 and ranks of
         // tupels beginning in positions i mod 7 = 4
-        // start_pos += t_3.size() / 3 + ((t_3.size() % 3) == 2);
+        // start_pos: position, of ranks i mod 7 = 4 of t_124
         induce_sa_dc<C>(text, t_5, isa_124, sa_5, start_of_pos_4 + 1);
 
         // fill sa_6 by inducing with characters at i mod 7 = 6 and ranks of
@@ -297,7 +298,7 @@ private:
         determine_sa(sa_6, isa_6);
         induce_sa_dc<C>(text, t_0, isa_6, sa_0, start_pos);
 
-
+        // rename to correct positions of input text
         for (size_t i = 0; i < sa_0.size(); i++) {
             sa_0[i] = sa_0[i] * 7 + 0;
         }

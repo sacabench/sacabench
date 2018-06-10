@@ -1,12 +1,26 @@
-make:
+debug_make:
     script:
         - mkdir build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE=Debug ..
         - make
-make_check:
+        - "./sacabench/sacabench"
+debug_make_check:
     script:
         - mkdir build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE=Debug ..
+        - make check
+release_make:
+    script:
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=Release ..
+        - make
+        - "./sacabench/sacabench"
+release_make_check:
+    script:
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=Release ..
         - make check
