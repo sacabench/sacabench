@@ -8,6 +8,6 @@
 #include "test/saca.hpp"
 #include <saca/sais/sais.hpp>
 
-TEST(Sais, construct_sa) {
-	test::saca_corner_cases<sacabench::saca::sais::Sais>();
+TEST(sais, construct_sa) {
+	test::saca_corner_cases<sacabench::saca::sais::sais>();
 }
