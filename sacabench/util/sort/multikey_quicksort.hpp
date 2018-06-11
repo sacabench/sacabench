@@ -88,7 +88,10 @@ inline void multikey_quicksort_internal(
     }
 
     // FIXME: Choose a simple pivot element.
-    const index_type pivot_element = array[0];
+    const index_type pivot_element =
+        (array.size() >= 9)
+            ? sort::ternary_quicksort::median_of_nine(array, key_func)
+            : array[0];
 
     // Swap elements using ternary quicksort partitioning.
     auto bounds =
@@ -102,15 +105,15 @@ inline void multikey_quicksort_internal(
     auto greater = array.slice(bounds.second);
 
     // Recursively sort the lesser and greater partitions by the same depth.
-    multikey_quicksort_internal(lesser, key_func);
-    multikey_quicksort_internal(greater, key_func);
+    multikey_quicksort_internal(lesser, key_func, abort_at_depth, fn);
+    multikey_quicksort_internal(greater, key_func, abort_at_depth, fn);
 
     // Sort the equal partition by the next character.
     ++key_func.depth;
     if (abort_at_depth.has_value() && key_func.depth >= abort_at_depth) {
         fn(equal);
     } else {
-        multikey_quicksort_internal(equal, key_func);
+        multikey_quicksort_internal(equal, key_func, abort_at_depth, fn);
     }
     --key_func.depth;
 }
