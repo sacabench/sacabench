@@ -29,17 +29,17 @@ void saca_corner_cases() {
     auto test = [](string_span text) {
         size_t slice_limit = 40;
 
+        std::cout << "Test SACA on ";
         if (text.size() > slice_limit) {
             size_t i = slice_limit;
             while (i < text.size() && (text[i] >> 6 == 0b10)) {
                 i++;
             }
-            std::cout << "Test SACA on '" << text.slice(0, i) << "[...]'";
+            std::cout << "'" << text.slice(0, i) << "[...]'";
         } else {
-            std::cout << "Test SACA on '" << text << "'";
+            std::cout << "'" << text << "'";
         }
-
-        std::cout << " (" << text.size() << " bytes)\n";
+        std::cout << " (" << text.size() << " bytes)" << std::endl;
 
         auto output = prepare_and_construct_sa<Algorithm, sa_index_type>(
             text.size(), [&](auto s) {
