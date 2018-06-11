@@ -44,7 +44,7 @@ using saca_prefix_doubling_discarding =
 SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
               saca_prefix_doubling_discarding)
               
-using sais = sacabench::saca::sais;
+using sais = sacabench::saca::sais::sais;
 SACA_REGISTER("SAIS", "Suffix Array Induced Sorting by Nong, Zhang and Chan", sais)              
 
 using saca_gsaca = sacabench::gsaca::gsaca;
