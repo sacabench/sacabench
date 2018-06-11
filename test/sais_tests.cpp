@@ -6,8 +6,8 @@
 
 #include <gtest/gtest.h>
 #include "test/saca.hpp"
-#include <saca/sais/sais.hpp>
+#include <saca/sais.hpp>
 
 TEST(sais, construct_sa) {
-	test::saca_corner_cases<sacabench::saca::sais::sais>();
+	test::saca_corner_cases<sacabench::sais::sais>();
 }

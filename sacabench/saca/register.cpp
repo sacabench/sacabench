@@ -15,6 +15,7 @@
 #include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
 #include "saca/qsufsort.hpp"
+#include "saca/sais.hpp"
 
 #include "util/saca.hpp"
 
@@ -44,8 +45,8 @@ using saca_prefix_doubling_discarding =
 SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
               saca_prefix_doubling_discarding)
               
-using sais = sacabench::saca::sais::sais;
-SACA_REGISTER("SAIS", "Suffix Array Induced Sorting by Nong, Zhang and Chan", sais)              
+using saca_sais = sacabench::sais::sais;
+SACA_REGISTER("SAIS", "Suffix Array Induced Sorting by Nong, Zhang and Chan", saca_sais)              
 
 using saca_gsaca = sacabench::gsaca::gsaca;
 SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca by Uwe Baier.", saca_gsaca)
