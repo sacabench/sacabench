@@ -64,7 +64,11 @@ public:
     }
 
     /// \brief Updates the element at the given kd position.
-    inline void set(const std::array<size_t, k>& idx, content v) {
+    inline void set(const std::array<size_t, k>& idx, const content& v) {
+        memory[index(idx)] = v;
+    }
+
+    inline void set(const std::array<size_t, k>& idx, content&& v) {
         memory[index(idx)] = v;
     }
 
@@ -164,9 +168,7 @@ public:
     }
 
     // Delete assignment operators, because this is the const-variant.
-    inline content& operator=(content) = delete;
-    inline content& operator=(const content&) = delete;
-    inline content& operator=(content&&) = delete;
+    inline void operator=(content) = delete;
 };
 
 /// \brief A helper definition for a 2d-array.
