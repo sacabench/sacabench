@@ -20,7 +20,8 @@ class sais {
         static const size_t L_Type = 0;
         static const size_t S_Type = 1;
 
-        static void compute_types(container<size_t> &t, container<size_t> &p_1, string_span s) {
+        template<typename T>
+        static void compute_types(container<size_t> &t, container<size_t> &p_1, T s) {
             t[s.size() - 1] = S_Type;
 
             for (ssize i = s.size() - 2; i >= 0; i--) {
@@ -33,7 +34,12 @@ class sais {
             }
         }
 
-        static void generate_buckets(string_span s, container<size_t> &buckets, size_t K, bool end) {
+        static bool is_LMS(container<size_t> &p_1, ssize position) {
+            return (position > 0) && (p_1[position] == 1);
+        }
+
+        template<typename T>
+        static void generate_buckets(T s, container<size_t> &buckets, size_t K, bool end) {
             size_t sum = 0;
 
             for (size_t i = 0; i <= K; i++) { buckets[i] = 0; }
@@ -48,7 +54,8 @@ class sais {
             }
         }
 
-        static void induce_L_Types(string_span s, container<size_t> &buckets, size_t K, bool end, container<ssize> &SA, container<size_t> &t) {
+        template<typename T>
+        static void induce_L_Types(T s, container<size_t> &buckets, size_t K, bool end, container<ssize> &SA, container<size_t> &t) {
             generate_buckets(s, buckets, K, end);
             for (size_t i = 0; i < s.size(); i++) {
                 ssize pre_index = SA[i] - 1; // pre index of the ith suffix array position
@@ -59,7 +66,8 @@ class sais {
             }
         }
 
-        static void induce_S_Types(string_span s, container<size_t> &buckets, size_t K, bool end, container<ssize> &SA, container<size_t> &t) {
+        template<typename T>
+        static void induce_S_Types(T s, container<size_t> &buckets, size_t K, bool end, container<ssize> &SA, container<size_t> &t) {
             generate_buckets(s, buckets, K, end);
             for (ssize i = s.size() - 1; i >= 0; i--) {
                 ssize pre_index = SA[i] - 1;
@@ -70,7 +78,8 @@ class sais {
             }
         }
 
-        static void run_saca(string_span s, container<ssize> &SA, ssize K) {
+        template<typename T>
+        static void run_saca(T s, container<ssize> &SA, size_t K) {
             container<size_t> t = make_container<size_t>(s.size());
             container<size_t> p_1 = make_container<size_t>(s.size());
             container<size_t> buckets = make_container<size_t>(K + 1);
@@ -80,9 +89,10 @@ class sais {
             generate_buckets(s, buckets, K, true);
             // Initialize each entry in SA with -1
             for (size_t i = 0; i < s.size(); i++) { SA[i] = -1; }
-            // iterate from left to right (starting by 1 cause 0 can never be LMS) and put LMS to end of the bucket and move bucket's tail backwards
+            // iterate from left to right (starting by 1 cause 0 can never be LMS) and put LMS to end of 
+            // the bucket and move bucket's tail backwards
             for (size_t i = 1; i < s.size(); i++) {
-                if (p_1[i] == 1) {
+                if (is_LMS(p_1, i)) {
                     SA[--buckets[s.at(i)]] = i;
                 }
             }
@@ -94,7 +104,7 @@ class sais {
             // because we have at most n/2 LMS, we can store the sorted indices in the first half of the SA
             ssize n1 = 0;
             for (size_t i = 0; i < s.size(); i++) {
-                if (p_1[SA[i]] == 1) {
+                if (is_LMS(p_1, SA[i]) == 1) {
                     SA[n1++] = SA[i];
                 }
             }
@@ -102,7 +112,8 @@ class sais {
             // All LMS are now stored in the (at most) first half of the SA, so the rest half of the suffix array can be used 
             for (size_t i = n1; i < s.size(); i++) { SA[i] = -1; }
 
-            // The given names correspond to the buckets the LMS are sorted ssizeo. To find the names, the strings have to be compared by its type and lexicographical value per char
+            // The given names correspond to the buckets the LMS are sorted ssizeo. To find the names, the strings have 
+            // to be compared by its type and lexicographical value per char
             ssize name = 0;
             ssize previous_LMS = -1;
             for (ssize i = 0; i < n1; i++) { // max n/2 iterations
@@ -114,7 +125,7 @@ class sais {
                         diff = true;
                         break;
                     }
-                    else if (j > 0 && (p_1[current_LMS + j] == 1 || p_1[previous_LMS + j] == 1)) { // check if next LMS is reached
+                    else if (j > 0 && (is_LMS(p_1, current_LMS + j) || is_LMS(p_1, previous_LMS + j))) { // check if next LMS is reached
                         break; // no diff was found
                     }
                 }
@@ -135,16 +146,15 @@ class sais {
                 }
             }
 
-            // if there are more as less names than LMS, we have duplicates and have to recurse
+            // if there are more names than LMS, we have duplicates and have to recurse
 
-            container<character> s1 = make_container<character>(n1);
+            container<size_t> s1 = make_container<size_t>(n1);
             for (size_t i = s.size() - n1; i < s.size(); i++) {
                 s1[i - (s.size() - n1)] = SA[i];
             }
 
             if (name < n1) {
-                // new string that consists of ssizeegers now, as they represent the names
-                run_saca(s1, SA, name - 1);
+                run_saca<span<size_t const>>(s1, SA, name - 1);
             }
             else {
                 for (ssize i = 0; i < n1; i++) {
@@ -156,7 +166,7 @@ class sais {
             generate_buckets(s, buckets, K, true);
             size_t j;
             for (size_t i = 1, j = 0; i < s.size(); i++) {
-                if (p_1[i] == 1) {
+                if (is_LMS(p_1, i)) {
                     s1[j++] = i;
                 }
             }
@@ -177,10 +187,9 @@ class sais {
         }
         
 	    template<typename sa_index>
-	    static void construct_sa(util::string_span text, sacabench::util::alphabet alph, util::span<sa_index> out_sa) {
+	    static void construct_sa(util::string_span text, sacabench::util::alphabet alphabet, util::span<sa_index> out_sa) {
             container<ssize> SA = make_container<ssize>(text.size());    
-            run_saca(text, SA, alph.max_character_value());
-            
+            run_saca<string_span>(text, SA, alphabet.max_character_value());
             for (size_t i = 0; i < text.size(); i++) { out_sa[i] = SA[i]; } 
         }   
     };
