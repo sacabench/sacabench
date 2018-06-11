@@ -142,28 +142,23 @@ namespace sacabench::nzSufSort {
                 std::cout << "out_sa: " << out_sa << std::endl;
                 
                 // calculate isa_0 and isa_12 into s-type-positions of out_sa
-                size_t rank = 0;
                 s_type = true;
                 for (size_t i = text.size()-1; i > 0; i--) {
                     if (text[i-1] > text[i]) { s_type = false; }
                     else if (text[i-1] < text[i]) { s_type = true; }
                     
-                    if (!s_type) { 
-                        if (i-1 > h) { out_sa[out_sa[i-1]] = rank++; }
-                        if (i-1 <= h) {
-                            if (i-1 == h) { rank = 0; }
-                            out_sa[out_sa[i-1]] = rank++;
-                        }
-                    }
+                    if (!s_type) { out_sa[out_sa[i-1]] = i-1; }
                 }
+                std::cout << "after calculating isa_0 and isa_12: " << std::endl;
                 std::cout << "out_sa: " << out_sa << std::endl;
                 
                 // merge sa_0 and sa_12 by calculating positions in merged sa
                 curr_pos_sa_0 = out_sa.size()-1;
                 curr_pos_sa_12 = h+1;
                 size_t pos_in_merged_sa = 0;
-                bool s_type_sa_0 = true;
+                bool s_type_sa_0 = false;
                 bool s_type_sa_12 = false;
+                    std::cout << "curr_pos_sa_0: " << curr_pos_sa_0 << ", curr_pos_sa_12: " << curr_pos_sa_12 <<std::endl;
                 // traverse l-type-positions
                 while (curr_pos_sa_0-1 > h && curr_pos_sa_12 > 0) {
                     // get next index for sa_0
@@ -174,8 +169,8 @@ namespace sacabench::nzSufSort {
                     }
                     // get next index for sa_12
                     while (s_type_sa_12) { 
-                        if (curr_pos_sa_12 == 0) { break; }
                         curr_pos_sa_12--;
+                        if (curr_pos_sa_12 == 0) { break; }
                         if (text[curr_pos_sa_12-1] > text[curr_pos_sa_12]) { s_type_sa_12 = false; }
                         else if (text[curr_pos_sa_12-1] < text[curr_pos_sa_12]) { s_type_sa_12 = true; }
                     }
@@ -198,13 +193,20 @@ namespace sacabench::nzSufSort {
                     // NB: This is a closure so that we can evaluate it later, because
                     // evaluating it if `eq` is not true causes out-of-bounds errors.
                     auto lesser_suf = [&]() {
-                        return out_sa[out_sa[curr_pos_sa_0-1]+t_0.size()-1] <
+                        return out_sa[out_sa[curr_pos_sa_0-1]+t_0.size()-1] >   // greater because sa_0 and sa_12 are stored from right to left
                             out_sa[out_sa[curr_pos_sa_12-1]+t_12.size()-1];
                     };
                     if (less_than || (eq && lesser_suf())) {
                         out_sa[(curr_pos_sa_0--)-1] = pos_in_merged_sa++;
+                        if (text[curr_pos_sa_0-1] > text[curr_pos_sa_0]) { s_type_sa_0 = false; }
+                        else if (text[curr_pos_sa_0-1] < text[curr_pos_sa_0]) { s_type_sa_0 = true; }
                     }
-                    else { out_sa[(curr_pos_sa_12--)-1] = pos_in_merged_sa++; }
+                    else { 
+                        out_sa[(curr_pos_sa_12--)-1] = pos_in_merged_sa++; 
+                        if (curr_pos_sa_12 == 0) { break; }
+                        if (text[curr_pos_sa_12-1] > text[curr_pos_sa_12]) { s_type_sa_12 = false; }
+                        else if (text[curr_pos_sa_12-1] < text[curr_pos_sa_12]) { s_type_sa_12 = true; }
+                    }
                 }
                 std::cout << "out_sa: " << out_sa << std::endl;
                 // There are positions in sa_0 left
@@ -212,23 +214,80 @@ namespace sacabench::nzSufSort {
                     // get next index for sa_0
                     while (s_type_sa_0) { 
                         curr_pos_sa_0--;
-                        if (text[curr_pos_sa_0-1] > text[curr_pos_sa_0]) { s_type = false; }
-                        else if (text[curr_pos_sa_0-1] < text[curr_pos_sa_0]) { s_type = true; }
+                        if (text[curr_pos_sa_0-1] > text[curr_pos_sa_0]) { s_type_sa_0 = false; }
+                        else if (text[curr_pos_sa_0-1] < text[curr_pos_sa_0]) { s_type_sa_0 = true; }
                     }
                     out_sa[(curr_pos_sa_0--)-1] = pos_in_merged_sa++;
+                    if (text[curr_pos_sa_0-1] > text[curr_pos_sa_0]) { s_type_sa_0 = false; }
+                    else if (text[curr_pos_sa_0-1] < text[curr_pos_sa_0]) { s_type_sa_0 = true; }
                 }
                 // There are positions in sa_12 left
                 while (curr_pos_sa_12 > 0) {
                     // get next index for sa_12
                     while (s_type_sa_12) { 
-                        if (curr_pos_sa_12 == 0) { break; }
                         curr_pos_sa_12--;
-                        if (text[curr_pos_sa_12-1] > text[curr_pos_sa_12]) { s_type = false; }
-                        else if (text[curr_pos_sa_12-1] < text[curr_pos_sa_12]) { s_type = true; }
+                        if (curr_pos_sa_12 == 0) { break; }
+                        if (text[curr_pos_sa_12-1] > text[curr_pos_sa_12]) { s_type_sa_12 = false; }
+                        else if (text[curr_pos_sa_12-1] < text[curr_pos_sa_12]) { s_type_sa_12 = true; }
                     }
+                    std::cout << "curr_pos_sa_12: " << curr_pos_sa_12 << std::endl;
                     out_sa[(curr_pos_sa_12--)-1] = pos_in_merged_sa++;
+                    if (curr_pos_sa_12 == 0) { break; }
+                    if (text[curr_pos_sa_12-1] > text[curr_pos_sa_12]) { s_type_sa_12 = false; }
+                    else if (text[curr_pos_sa_12-1] < text[curr_pos_sa_12]) { s_type_sa_12 = true; }
                 }
                 std::cout << "out_sa: " << out_sa << std::endl;
+                
+                /* update isa_0 and isa_12 with positions in merged arrays to calculate isa_012 */
+                s_type = true;
+                out_sa[text.size()-1] = out_sa[out_sa[text.size()-1]];
+                for (size_t i = text.size()-1; i > 0; i--) {
+                    if (text[i-1] > text[i]) { s_type = false; }
+                    else if (text[i-1] < text[i]) { s_type = true; }
+                    
+                    if (s_type) { out_sa[i-1] = out_sa[out_sa[i-1]]; }
+                }
+                std::cout << "out_sa: " << out_sa << std::endl;
+                
+                /* move isa_012 to the end of out_sa */
+                s_type = true;
+                size_t counter = text.size()-2;
+                for (size_t i = text.size()-1; i > 0; i--) {
+                    if (text[i-1] > text[i]) { s_type = false; }
+                    else if (text[i-1] < text[i]) { s_type = true; }
+                    
+                    if (s_type) { out_sa[counter--] = out_sa[i-1]; }
+                }
+                std::cout << "out_sa: " << out_sa << std::endl;
+                
+                /* calculate sa_012 by traversing isa_012 */
+                util::span<sa_index> sa_012 = out_sa.slice(0, count_s_type_pos);
+                util::span<sa_index> isa_012 = out_sa.slice(out_sa.size()-count_s_type_pos, out_sa.size()); 
+                std::cout << "sa_012: " << sa_012 << std::endl;
+                std::cout << "isa_012: " << isa_012 << std::endl;
+                for (size_t i = 0; i < sa_012.size(); i++) {
+                    sa_012[isa_012[i]] = i;
+                }
+                std::cout << "out_sa: " << out_sa << std::endl;
+                
+                /* calculate position array of s-type-positions in right half */
+                util::span<sa_index> p_012 = out_sa.slice(out_sa.size()-count_s_type_pos, out_sa.size());
+                s_type = true;
+                counter = p_012.size()-1;
+                p_012[counter--] = text.size()-1;
+                for (size_t i = text.size()-1; i > 0; i--) {
+                    if (text[i-1] > text[i]) { s_type = false; }
+                    else if (text[i-1] < text[i]) { s_type = true; }
+                    
+                    if (s_type) { p_012[counter--] = i-1; }
+                }
+                std::cout << "p_012: " << p_012 << std::endl;
+                
+                /* update sa_012 with positions in p_012 */ 
+                for (size_t i = 0; i < sa_012.size(); i++) {
+                    sa_012[i] = p_012[sa_012[i]];
+                }
+                std::cout << "sa_012: " << sa_012 << std::endl;
             }
           
         private:
