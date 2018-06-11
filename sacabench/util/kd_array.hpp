@@ -10,6 +10,12 @@
 
 namespace sacabench::util {
 
+// Forward-declare helper classes.
+template <typename content, size_t k>
+class incomplete_kd_array_access;
+template <typename content, size_t k>
+class incomplete_kd_array_access_const;
+
 /// \brief A class which holds a large memory chunk and supports
 ///        multi-dimensional indexing into it.
 template <typename content, size_t k>
@@ -30,9 +36,6 @@ public:
         for (size_t dim_n : sizes) {
             size_in_objects *= dim_n;
         }
-
-        // std::cout << "Allocating space for " << size_in_objects << " objects."
-        //           << std::endl;
 
         // Allocate Memory
         memory = make_container<content>(size_in_objects);
@@ -64,6 +67,106 @@ public:
     inline void set(const std::array<size_t, k>& idx, content v) {
         memory[index(idx)] = v;
     }
+
+    /// \brief Constructs a incomplete_kd_array_access objects and starts
+    ///        indexing into the memory.
+    inline incomplete_kd_array_access<content, k>
+    operator[](const size_t& idx) {
+        return incomplete_kd_array_access<content, k>(*this, idx);
+    }
+
+    /// \brief Constructs a incomplete_kd_array_access_const objects and starts
+    ///        indexing into the memory. This function yields a read-only
+    ///        reference.
+    inline incomplete_kd_array_access_const<content, k>
+    operator[](const size_t& idx) const {
+        return incomplete_kd_array_access_const<content, k>(*this, idx);
+    }
+};
+
+/// \brief A helper class to support [a][b][c]... syntax. It support indexing
+///        (with []) and implicit casting into the target type.
+template <typename content, size_t k>
+class incomplete_kd_array_access {
+private:
+    kd_array<content, k>& array;
+    std::array<size_t, k> indices;
+    size_t n_indices;
+
+public:
+    inline incomplete_kd_array_access(kd_array<content, k>& _array,
+                                      size_t index)
+        : array(_array), indices(), n_indices(1) {
+        indices[0] = index;
+    }
+
+    inline incomplete_kd_array_access(incomplete_kd_array_access&& other,
+                                      size_t index)
+        : array(other.array), indices(other.indices),
+          n_indices(other.n_indices + 1) {
+        indices[n_indices - 1] = index;
+    }
+
+    inline incomplete_kd_array_access<content, k>
+    operator[](const size_t& index) {
+        return incomplete_kd_array_access(std::move(*this), index);
+    }
+
+    inline operator content() const {
+        DCHECK_MSG(n_indices == k, "incomplete kd-array access");
+        return array.get(indices);
+    }
+
+    inline const content& operator=(const content& other) {
+        DCHECK_MSG(n_indices == k, "incomplete kd-array access");
+        array.set(indices, other);
+        return other;
+    }
+
+    inline void operator=(content&& other) {
+        DCHECK_MSG(n_indices == k, "incomplete kd-array access");
+        array.set(indices, other);
+    }
+};
+
+/// \brief A helper class to support [a][b][c]... syntax. It support indexing
+///        (with []) and implicit casting into the target type. This variant
+///        is used, if the kd-array is read only ("const").
+template <typename content, size_t k>
+class incomplete_kd_array_access_const {
+private:
+    const kd_array<content, k>& array;
+    std::array<size_t, k> indices;
+    size_t n_indices;
+
+public:
+    inline incomplete_kd_array_access_const(const kd_array<content, k>& _array,
+                                      size_t index)
+        : array(_array), indices(), n_indices(1) {
+        indices[0] = index;
+    }
+
+    inline incomplete_kd_array_access_const(const incomplete_kd_array_access_const&& other,
+                                      size_t index)
+        : array(other.array), indices(other.indices),
+          n_indices(other.n_indices + 1) {
+        indices[n_indices - 1] = index;
+    }
+
+    inline incomplete_kd_array_access_const<content, k>
+    operator[](const size_t& index) const {
+        return incomplete_kd_array_access_const(std::move(*this), index);
+    }
+
+    inline operator content() const {
+        DCHECK_MSG(n_indices == k, "incomplete kd-array access");
+        return array.get(indices);
+    }
+
+    // Delete assignment operators, because this is the const-variant.
+    inline content& operator=(content) = delete;
+    inline content& operator=(const content&) = delete;
+    inline content& operator=(content&&) = delete;
 };
 
 /// \brief A helper definition for a 2d-array.
