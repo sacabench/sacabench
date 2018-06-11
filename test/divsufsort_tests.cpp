@@ -13,7 +13,7 @@
 using namespace sacabench::saca::divsufsort {
     
 TEST(DivSufSort, extract_rms) {
-    util::string_span text = "caabaccaabacaa"_s;
+    util::string text = "caabaccaabacaa\0"_s;
     auto output = make_container<sa_index_t>(text.size());
     util::alphabet alphabet = util::apply_effective_alphabet(text);
     
@@ -37,7 +37,7 @@ TEST(DivSufSort, extract_rms) {
 }
 
 TEST(DivSufSort, correct_bucket_sizes) {
-    util::string_span text = "caabaccaabacaa"_s;
+    util::string text = "caabaccaabacaa\0"_s;
     auto output = make_container<sa_index_t>(text.size());
     util::alphabet alphabet = util::apply_effective_alphabet(text);
     
@@ -45,11 +45,12 @@ TEST(DivSufSort, correct_bucket_sizes) {
     ASSERT_EQ(types.size(), text.size());
     get_types_tmp(text, types);
     
-    buckets bkts = { /*.alphabet_size=*/alphabet.max_character_value(), 
-    /*.l_buckets=*/util::make_container<sa_index>(
-    alphabet.max_character_value()), /*.s_buckets=*/
-    util::make_container<sa_index>(pow(alphabet.max_character_value(),
-    2)) };
+    buckets bkts = { 
+        /*.alphabet_size=*/alphabet.max_character_value(), 
+        /*.l_buckets=*/util::make_container<sa_index>(
+        alphabet.max_character_value()), /*.s_buckets=*/
+        util::make_container<sa_index>(pow(alphabet.max_character_value(),
+        2)) };
     
     ASSERT_EQ(bkts.l_buckets.size(), 4);
     
