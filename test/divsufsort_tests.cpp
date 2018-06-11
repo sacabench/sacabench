@@ -37,6 +37,7 @@ using namespace sacabench::saca::divsufsort {
     }
 
     TEST(DivSufSort, correct_bucket_sizes) {
+        // TODO: needed for several test-cases -> extract into helper function
         util::string text = "caabaccaabacaa\0"_s;
         auto output = make_container<sa_index_t>(text.size());
         util::alphabet alphabet = util::apply_effective_alphabet(text);
@@ -48,9 +49,15 @@ using namespace sacabench::saca::divsufsort {
         buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value(),
                         /*.l_buckets=*/
                         util::make_container<sa_index>(
-                            alphabet.max_character_value()), /*.s_buckets=*/
+                            alphabet.max_character_value() + 1), /*.s_buckets=*/
                         util::make_container<sa_index>(
-                            pow(alphabet.max_character_value(), 2))};
+                            pow(alphabet.max_character_value() + 1, 2))};
+        buckets result = {/*.alphabet_size=*/alphabet.max_character_value(),
+                        /*.l_buckets=*/
+                        util::make_container<sa_index>(
+                            alphabet.max_character_value() + 1), /*.s_buckets=*/
+                        util::make_container<sa_index>(
+                            pow(alphabet.max_character_value() + 1, 2))};
 
         ASSERT_EQ(bkts.l_buckets.size(), 4);
 
@@ -60,6 +67,36 @@ using namespace sacabench::saca::divsufsort {
         bkts.l_buckets[3] = 11;
 
         ASSERT_EQ(bkts.s_buckets.size(), 16);
-        // TODO: Create ground truth instance for s_buckets.
+        
+        /*
+                                    // buckets for types
+        bkts.s_buckets[5] = 2;      // (a,a) for s
+        bkts.s_buckets[6] = 2;      // (a,b) for s
+        bkts.s_buckets[7] = 2;      // (a,c) for s
+        bkts.s_buckets[9] = 2;      // (a,b) for rms
+        bkts.s_buckets[10] = 2;     // (b,b) for s
+        bkts.s_buckets[11] = 2;     // (b,c) for s
+        bkts.s_buckets[13] = 4;     // (a,c) for rms
+        //bkts.s_buckets[14] = 4;     // (b,c) for rms
+        //bkts.s_buckets[15] = 2;     // (c,c) for s
+        */
+        
+        
+        bkts.s_buckets[5] = 2;      // (a,a) for s
+        bkts.s_buckets[9] = 2;      // (a,b) for rms
+        bkts.s_buckets[13] = 4;     // (a,c) for rms
+        bkts.s_buckets[14] = 4;     // (b,c) for rms
+        
+        compute_buckets(text, alphabet, types, result);
+        
+        // Assertions for l_buckets
+        for(size_t index = 0; index < bkts.l_buckets.size(); ++index) {
+            ASSERT_EQ(bkts.l_buckets[index], result.l_buckets[index]);
+        }
+        
+        // Assertions for s_buckets (i.e. for s- and rms-buckets)
+        for(size_t index = 0; index < bkts.s_buckets.size(); ++index) {
+            ASSERT_EQ(bkts.s_buckets[index], result.s_buckets[index]);
+        }
     }
 }

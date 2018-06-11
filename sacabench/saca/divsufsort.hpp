@@ -49,7 +49,7 @@ struct rms_suffixes {
     const util::string_span text;
     util::span<sa_index> relative_indices;
     util::span<sa_index> absolute_indices;
-}
+};
 
 struct buckets {
     size_t alphabet_size;
@@ -86,8 +86,7 @@ public:
                              util::span<sa_index> out_sa) {
         DCHECK_EQ(text.size(), out_sa.size());
         // Create container for l/s types
-        util::container<bool> sa_type_container =
-            util::make_container(text.size());
+        auto sa_type_container = util::make_container<bool>(text.size());
 
         // Compute l/s types for given text; TODO: Replace with version from
         // 'extract_types.hpp' after RTL-Insertion was merged.
@@ -105,12 +104,12 @@ public:
 
         // Initialize buckets: alphabet_size slots for l-buckets,
         // alphabet_size² for s-buckets
-        buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value(),
+        buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                         /*.l_buckets=*/
                         util::make_container<sa_index>(
-                            alphabet.max_character_value()), /*.s_buckets=*/
+                            alphabet.max_character_value() + 1), /*.s_buckets=*/
                         util::make_container<sa_index>(
-                            pow(alphabet.max_character_value(), 2))};
+                            pow(alphabet.max_character_value() + 1, 2))};
     }
 
     // TODO: Change in optimization-phase (while computing l/s-types,
@@ -259,6 +258,7 @@ public:
      * completeness), i.e. s_buckets.size() = (|alphabet| + 1)²
      */
     // TODO: Testing
+    template <typename sa_index>
     inline static void compute_buckets(util::string_span input,
                                        util::alphabet alphabet,
                                        util::container<bool>& suffix_types,
@@ -267,6 +267,9 @@ public:
         // Use Methods from bucketsort.hpp to compute bucket sizes.
         auto buckets = util::sort::get_buckets(
             input, alphabet.size_without_sentinel(), bucket_depth);
+        // Variables used in (inner) loop.
+        sa_index counted_s, counted_rms;
+        std::size_t index_s, index_rms;
         // Indices indicating the buckets. current_leftmost for first
         // letter only, current_rightmost for first + second letter.
         for (std::size_t first_letter = 0, current_leftmost = 0,
@@ -279,26 +282,30 @@ public:
             current_leftmost = current_rightmost;
             sa_buckets.l_buckets[first_letter] =
                 buckets[current_leftmost].position;
-
             // Compute relative starting positions for rms-buckets.
             for (std::size_t second_letter = 0;
                  second_letter < alphabet.max_character_value() + 1;
                  ++second_letter, ++current_rightmost) {
-                std::size_t counted_s = count_for_s_type_in_bucket(
+                // Only currently counted for s-bucket
+                counted_s = count_for_s_type_in_bucket<sa_index>(
                     buckets[current_rightmost], suffix_types);
-                std::size_t counted_rms = count_for_rms_type_in_bucket(
+                // Relative left border of rms-bucket (i.e. sum over all 
+                // preceding rms-buckets
+                counted_rms += count_for_rms_type_in_bucket<sa_index>(
                     buckets[current_rightmost], suffix_types);
-                std::size_t index_s =
-                    first_letter * (alphabet.max_character_value() + 1) +
-                    second_letter;
-                std::size_t index_rms =
-                    second_letter * (alphabet.max_character_value() + 1) +
-                    first_letter;
+                index_s = 
+                    sa_buckets.get_s_bucket_index(first_letter, second_letter);
+                index_rms =
+                    sa_buckets.get_rms_bucket_index(
+                        first_letter, second_letter);
                 sa_buckets.s_buckets[index_s] = counted_s;
                 sa_buckets.s_buckets[index_rms] = counted_rms;
+
+                // Contains value for current_leftmost for next iteration.
+                // Needs to be increased after each bucket containing two 
+                // characters.
+                current_rightmost++;
             }
-            // Contains value for current_leftmost for next iteration
-            current_rightmost++;
         }
     }
 
