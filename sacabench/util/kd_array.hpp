@@ -145,13 +145,13 @@ private:
 
 public:
     inline incomplete_kd_array_access_const(const kd_array<content, k>& _array,
-                                      size_t index)
+                                            size_t index)
         : array(_array), indices(), n_indices(1) {
         indices[0] = index;
     }
 
-    inline incomplete_kd_array_access_const(const incomplete_kd_array_access_const&& other,
-                                      size_t index)
+    inline incomplete_kd_array_access_const(
+        const incomplete_kd_array_access_const&& other, size_t index)
         : array(other.array), indices(other.indices),
           n_indices(other.n_indices + 1) {
         indices[n_indices - 1] = index;

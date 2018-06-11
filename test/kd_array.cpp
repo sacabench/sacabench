@@ -129,7 +129,8 @@ TEST(kd_array, access3d_better_syntax_const) {
         }
     }
 
-    const kd_array<size_t, 3>& array2 = const_cast<const kd_array<size_t, 3>&>(array);
+    const kd_array<size_t, 3>& array2 =
+        const_cast<const kd_array<size_t, 3>&>(array);
 
     {
         size_t i = 0;
