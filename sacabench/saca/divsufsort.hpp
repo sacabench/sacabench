@@ -77,6 +77,8 @@ namespace sacabench::saca::divsufsort {
 
     class divsufsort {
     public:
+        const EXTRA_SENTINELS = 1;
+        
         //TODO
         template<typename sa_index>
         static void construct_sa(util::string_span text,
