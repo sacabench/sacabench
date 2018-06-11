@@ -111,7 +111,7 @@ public:
                             alphabet.max_character_value()), /*.s_buckets=*/
                         util::make_container<sa_index>(
                             pow(alphabet.max_character_value(), 2))};
-    };
+    }
 
     // TODO: Change in optimization-phase (while computing l/s-types,
     // counting bucket sizes)
@@ -223,117 +223,118 @@ public:
             }
             return counted;
         }
-
-        /** \brief Counts the amount of s-suffixes (not rms) in a given
-            (two-character) bucket. Needed to compute the initial s-buckets
-
-        */
-        template <typename sa_index>
-        inline static sa_index count_for_s_type_in_bucket(
-            util::sort::bucket bucket_to_search,
-            util::container<bool> & suffix_types_container) {
-            sa_index counted = 0;
-            sa_index next_bucket =
-                bucket_to_search.position + bucket_to_search.count;
-            for (sa_index pos = bucket_to_search.position; pos < next_bucket;
-                 ++pos) {
-                if(sa_types::is_s_type(pos, suffix_types_container) {
-                    ++counted;
-            }
-            return counted;
-            }
-
-            /**
-             * Computes the bucket sizes for l-, s- and rms-suffixes.
-             * @param input The input text.
-             * @param alphabet The given alphabet of the text.
-             * @param suffix_types The suffix types of the corresponding
-             * suffixes. Needed to determine which bucket to increase.
-             * @param l_buckets The buckets for the l-suffixes. Contains a
-             * bucket for each symbol (sentinel included), i.e. l_buckets.size()
-             * = |alphabet|+1
-             * @param s_buckets The buckets for the s- and rms-suffixes.
-             * Contains a bucket for each two symbols (sentinel included for
-             * completeness), i.e. s_buckets.size() = (|alphabet| + 1)²
-             */
-            // TODO: Testing
-            inline static void compute_buckets(
-                util::string_span input, util::alphabet alphabet,
-                util::container<bool> & suffix_types, buckets sa_buckets) {
-                const std::size_t bucket_depth = 2;
-                // Use Methods from bucketsort.hpp to compute bucket sizes.
-                auto buckets = util::sort::get_buckets(
-                    input, alphabet.size_without_sentinel(), bucket_depth);
-                // Indices indicating the buckets. current_leftmost for first
-                // letter only, current_rightmost for first + second letter.
-                for (std::size_t first_letter = 0, current_leftmost = 0,
-                                 current_rightmost = 0;
-                     first_letter < alphabet.max_character_value() + 1;
-                     ++first_letter) {
-                    // Need to adjust index for current l-bucket: only one
-                    // character considered, but buckets contain two (for s/rms
-                    // buckets)
-                    current_leftmost = current_rightmost;
-                    sa_buckets.l_buckets[first_letter] =
-                        buckets[current_leftmost].position;
-
-                    // Compute relative starting positions for rms-buckets.
-                    for (std::size_t second_letter = 0;
-                         second_letter < alphabet.max_character_value() + 1;
-                         ++second_letter, ++current_rightmost) {
-                        std::size_t counted_s = count_for_s_type_in_bucket(
-                            buckets[current_rightmost], suffix_types);
-                        std::size_t counted_rms = count_for_rms_type_in_bucket(
-                            buckets[current_rightmost], suffix_types);
-                        std::size_t index_s =
-                            first_letter *
-                                (alphabet.max_character_value() + 1) +
-                            second_letter;
-                        std::size_t index_rms =
-                            second_letter *
-                                (alphabet.max_character_value() + 1) +
-                            first_letter;
-                        sa_buckets.s_buckets[index_s] = counted_s;
-                        sa_buckets.s_buckets[index_rms] = counted_rms;
-                    }
-                    // Contains value for current_leftmost for next iteration
-                    current_rightmost++;
-                }
-            }
-
-            template <typename sa_index>
-            inline static void incude_S_suffixes(
-                util::string_span input, util::span<bool> suffix_types,
-                buckets buckets, util::span<sa_index> sa,
-                character max_character) {
-                // bit mask: 1000...000
-                constexpr sa_index NEGATIVE_MASK =
-                    size_t(1) << (sizeof(sa_index) * 8 - 1);
-
-                for (character c0 = max_character; c0 > '\1'; --c0) {
-                    // c1 = c0 - 1
-                    // start at rightmost position of L-bucket of c1
-                    size_t interval_start = buckets.l_buckets(c0) - 1;
-                    // end at RMS-bucket[c1, c1 + 1]
-                    size_t interval_end =
-                        buckets.s_buckets[get_rms_bucket_index(c0 - 1; c0)];
-
-                    // induce positions for each suffix in range
-                    for (size_t i = interval_start; i >= interval_end; --i) {
-                        if ((sa[i] | NEGATIVE_MASK) == 0) {
-                            // entry is not negative -> induce predecessor
-
-                            // insert suffix i-1 at rightmost free index of
-                            // associated S-bucket
-                            size_t destination_bucket = get_s_bucket_index(
-                                input[sa[i] - 1], input[sa[i]]);
-                            sa[buckets.s_buckets[destination_bucket]--] = i - 1;
-                        }
-
-                        // toggle flag
-                        sa[i] ^= NEGATIVE_MASK;
-                    }
-                }
-            }
-        };
     }
+
+    /** \brief Counts the amount of s-suffixes (not rms) in a given
+        (two-character) bucket. Needed to compute the initial s-buckets
+
+    */
+    template <typename sa_index>
+    inline static sa_index
+    count_for_s_type_in_bucket(util::sort::bucket bucket_to_search,
+                               util::container<bool>& suffix_types_container) {
+        sa_index counted = 0;
+        sa_index next_bucket =
+            bucket_to_search.position + bucket_to_search.count;
+        for (sa_index pos = bucket_to_search.position; pos < next_bucket;
+             ++pos) {
+            if(sa_types::is_s_type(pos, suffix_types_container) {
+                ++counted;
+            }
+        }
+        return counted;
+    }
+
+    /**
+     * Computes the bucket sizes for l-, s- and rms-suffixes.
+     * @param input The input text.
+     * @param alphabet The given alphabet of the text.
+     * @param suffix_types The suffix types of the corresponding
+     * suffixes. Needed to determine which bucket to increase.
+     * @param l_buckets The buckets for the l-suffixes. Contains a
+     * bucket for each symbol (sentinel included), i.e. l_buckets.size()
+     * = |alphabet|+1
+     * @param s_buckets The buckets for the s- and rms-suffixes.
+     * Contains a bucket for each two symbols (sentinel included for
+     * completeness), i.e. s_buckets.size() = (|alphabet| + 1)²
+     */
+    // TODO: Testing
+    inline static void compute_buckets(util::string_span input,
+                                       util::alphabet alphabet,
+                                       util::container<bool>& suffix_types,
+                                       buckets sa_buckets) {
+        const std::size_t bucket_depth = 2;
+        // Use Methods from bucketsort.hpp to compute bucket sizes.
+        auto buckets = util::sort::get_buckets(
+            input, alphabet.size_without_sentinel(), bucket_depth);
+        // Indices indicating the buckets. current_leftmost for first
+        // letter only, current_rightmost for first + second letter.
+        for (std::size_t first_letter = 0, current_leftmost = 0,
+                         current_rightmost = 0;
+             first_letter < alphabet.max_character_value() + 1;
+             ++first_letter) {
+            // Need to adjust index for current l-bucket: only one
+            // character considered, but buckets contain two (for s/rms
+            // buckets)
+            current_leftmost = current_rightmost;
+            sa_buckets.l_buckets[first_letter] =
+                buckets[current_leftmost].position;
+
+            // Compute relative starting positions for rms-buckets.
+            for (std::size_t second_letter = 0;
+                 second_letter < alphabet.max_character_value() + 1;
+                 ++second_letter, ++current_rightmost) {
+                std::size_t counted_s = count_for_s_type_in_bucket(
+                    buckets[current_rightmost], suffix_types);
+                std::size_t counted_rms = count_for_rms_type_in_bucket(
+                    buckets[current_rightmost], suffix_types);
+                std::size_t index_s =
+                    first_letter * (alphabet.max_character_value() + 1) +
+                    second_letter;
+                std::size_t index_rms =
+                    second_letter * (alphabet.max_character_value() + 1) +
+                    first_letter;
+                sa_buckets.s_buckets[index_s] = counted_s;
+                sa_buckets.s_buckets[index_rms] = counted_rms;
+            }
+            // Contains value for current_leftmost for next iteration
+            current_rightmost++;
+        }
+    }
+
+    template <typename sa_index>
+    inline static void
+    incude_S_suffixes(util::string_span input, util::span<bool> suffix_types,
+                      buckets buckets, util::span<sa_index> sa,
+                      character max_character) {
+        // bit mask: 1000...000
+        constexpr sa_index NEGATIVE_MASK = size_t(1)
+                                           << (sizeof(sa_index) * 8 - 1);
+
+        for (character c0 = max_character; c0 > '\1'; --c0) {
+            // c1 = c0 - 1
+            // start at rightmost position of L-bucket of c1
+            size_t interval_start = buckets.l_buckets(c0) - 1;
+            // end at RMS-bucket[c1, c1 + 1]
+            size_t interval_end =
+                buckets.s_buckets[get_rms_bucket_index(c0 - 1; c0)];
+
+            // induce positions for each suffix in range
+            for (size_t i = interval_start; i >= interval_end; --i) {
+                if ((sa[i] | NEGATIVE_MASK) == 0) {
+                    // entry is not negative -> induce predecessor
+
+                    // insert suffix i-1 at rightmost free index of
+                    // associated S-bucket
+                    size_t destination_bucket =
+                        get_s_bucket_index(input[sa[i] - 1], input[sa[i]]);
+                    sa[buckets.s_buckets[destination_bucket]--] = i - 1;
+                }
+
+                // toggle flag
+                sa[i] ^= NEGATIVE_MASK;
+            }
+        }
+    }
+};
+} // namespace sacabench::saca::divsufsort
