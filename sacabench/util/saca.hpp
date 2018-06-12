@@ -113,7 +113,7 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
         auto text = text_with_sentinels.slice(0, text_size);
 
         {
-            tdc::StatPhase init_phase("initialize Text");
+            tdc::StatPhase init_phase("Initialize Text");
             text_init.initializer(text);
         }
 
