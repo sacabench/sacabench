@@ -22,7 +22,7 @@ bool string_is_finished = false;
 /**\Initialise the inplace L-S-TypeExtraction which you can call with
  * "get_next_type_onfly" \param t_0 input text
  */
-void initialize_type_extraction_rtl_onfly(string_span t_0) {
+inline void initialize_type_extraction_rtl_onfly(string_span t_0) {
 
     from_right_global = true;
     t_0_global = t_0;
@@ -33,7 +33,7 @@ void initialize_type_extraction_rtl_onfly(string_span t_0) {
 
 /**\Return the L/S-Type of the next character in the initialized text, in the
  * initialized direction (boolean: 1 = L, 0 = S) */
-bool get_next_type_onfly() {
+inline bool get_next_type_onfly() {
     ssize iteration_direction = from_right_global ? -1 : 1;
 
     bool const not_sentinel =
@@ -61,7 +61,8 @@ bool get_next_type_onfly() {
 
 /** Returns a type b (L=1, S=0) and a number n so that the next n characters
  * have type b */
-std::tuple<bool, size_t> get_type_ltr_dynamic(string_span t_0, size_t index) {
+inline std::tuple<bool, size_t> get_type_ltr_dynamic(string_span t_0,
+                                                     size_t index) {
     if (t_0[index] == util::SENTINEL)
         return std::make_tuple(false, 1);
 
@@ -89,7 +90,8 @@ std::tuple<bool, size_t> get_type_ltr_dynamic(string_span t_0, size_t index) {
  * \param index index of the character
  * \param right_type type of the character on the right of the current index
  */
-bool get_type_rtl_dynamic(string_span t_0, size_t index, bool right_type) {
+inline bool get_type_rtl_dynamic(string_span t_0, size_t index,
+                                 bool right_type) {
     // sentinel is never included in actual string t_0!!
 
     bool const right_before_sentinel = (index == t_0.size() - 1);
@@ -105,7 +107,7 @@ bool get_type_rtl_dynamic(string_span t_0, size_t index, bool right_type) {
  * S) \param t_0 input text \param alph alphabet \param ba boolean array where
  * the result is saved
  */
-void get_types(string_span t_0, span<bool> ba) {
+inline void get_types(string_span t_0, span<bool> ba) {
 
     DCHECK_MSG(t_0.size() == ba.size(),
                "t_0 must have the same length as the type array ba");
@@ -131,7 +133,7 @@ void get_types(string_span t_0, span<bool> ba) {
     }
 }
 
-size_t symbols_left() {
+inline size_t symbols_left() {
     return string_is_finished
                ? 0
                : (from_right_global
