@@ -20,15 +20,15 @@
 
 namespace sacabench::saca {
 
-void calculate_deep_sa(util::span<size_t>& t_0, util::container<size_t>& sa,
-                       size_t max_char) {
+inline void calculate_deep_sa(util::span<size_t>& t_0,
+                              util::container<size_t>& sa, size_t max_char) {
 
     // TODO: almost the same as the usual method, but without the use of bkt
     // array. Needs negative size_t variables!!
 }
 
-void induced_sort(util::string_span t, util::container<size_t>& sa,
-                  size_t max_char) {
+inline void induced_sort(util::string_span t, util::container<size_t>& sa,
+                         size_t max_char) {
 
     // Iterate SA RTL and distribute the LMS suffixes into the S-Buckets
 
@@ -113,8 +113,8 @@ void induced_sort(util::string_span t, util::container<size_t>& sa,
     Given an effective string t_0 with one sentinel symbol it calculates the
    suffix array sa
 */
-void calculate_sa(util::string& t_0, util::container<size_t>& sa,
-                  size_t max_char) {
+inline void calculate_sa(util::string& t_0, util::container<size_t>& sa,
+                         size_t max_char) {
 
     // Initialize SA so that all items are -1 at the beginning
 

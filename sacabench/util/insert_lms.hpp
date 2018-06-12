@@ -15,7 +15,7 @@ namespace sacabench::util {
 /*
     Tries to find entry j in SA after index start
 */
-bool entry_comes_after(container<size_t>& sa, size_t start, size_t j) {
+inline bool entry_comes_after(container<size_t>& sa, size_t start, size_t j) {
     for (size_t i = start + 1; i < sa.size(); i++) {
         if (sa[i] == j)
             return true;
@@ -27,7 +27,7 @@ bool entry_comes_after(container<size_t>& sa, size_t start, size_t j) {
 /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating
    LTR returns the amount of LMS substrings indices found.
 */
-size_t insert_lms_ltr(string_span t_0, container<size_t>& sa) {
+inline size_t insert_lms_ltr(string_span t_0, container<size_t>& sa) {
 
     std::tuple<bool, size_t> last_type = get_type_ltr_dynamic(t_0, 0);
     size_t amount = 0;
@@ -58,7 +58,7 @@ size_t insert_lms_ltr(string_span t_0, container<size_t>& sa) {
 /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating
 RTL returns the amount of LMS substrings indices found
 */
-size_t insert_lms_rtl(string_span t_0, container<size_t>& sa) {
+inline size_t insert_lms_rtl(string_span t_0, container<size_t>& sa) {
 
     bool last_type = true;
     size_t amount = 1;
@@ -101,7 +101,7 @@ size_t insert_lms_rtl(string_span t_0, container<size_t>& sa) {
     Call this function to get the sorted LMS-Strings into the beginning of your
    SA after you have induced sorted your SA.
 */
-size_t extract_sorted_lms(string_span t, container<size_t>& sa) {
+inline size_t extract_sorted_lms(string_span t, container<size_t>& sa) {
     size_t null_counter = 0;
     size_t amount = 0;
 
