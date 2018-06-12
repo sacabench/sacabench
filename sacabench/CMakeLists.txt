@@ -14,7 +14,7 @@ target_include_directories(saca_bench_lib INTERFACE
 
 target_link_libraries(saca_bench_lib INTERFACE
   $<$<CONFIG:Debug>:dl>
-  tudocomp_stats
+  tudocomp_stat
 )
 
 # Create executable that runs all registered SACAs
@@ -25,7 +25,7 @@ add_executable(sacabench
 
 target_link_libraries(sacabench
   saca_bench_lib
-  tudocomp_stats
+  tudocomp_stat
 )
 
 target_compile_options(sacabench PUBLIC

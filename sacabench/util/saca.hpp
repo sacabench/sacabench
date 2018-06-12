@@ -130,8 +130,8 @@ prepare_and_construct_sa(text_initializer const& text_init,
     auto ret = uniform_sa<sa_index>{extra_sentinels, std::move(output)};
 
     if (WIP_print_stats) {
-        root.to_json().str(std::cout);
-        std::cout << std::endl;
+        auto j = root.to_json();
+        std::cout << j.dump(4) << std::endl;
     }
 
     return ret;
