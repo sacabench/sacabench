@@ -20,7 +20,7 @@
 
 namespace sacabench::sacak {
 
-template <typename character_type, sa_index>
+template <typename character_type, typename sa_index>
 inline void calculate_deep_sa(util::span<character_type> t_0,
                               util::span<sa_index> sa, size_t max_char) {
 
