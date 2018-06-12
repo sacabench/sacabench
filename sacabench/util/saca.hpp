@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "alphabet.hpp"
+#include "bits.hpp"
 #include "container.hpp"
 #include "read_text.hpp"
 #include "span.hpp"
@@ -149,6 +150,11 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
         }
 
         ret = uniform_sa<sa_index>{extra_sentinels, std::move(output)};
+
+        root.log("text_size", text.size());
+        root.log("extra_sentinels", extra_sentinels);
+        root.log("sa_index_size",
+                 ceil_log2(std::numeric_limits<sa_index>::max()));
     }
 
     if (WIP_print_stats) {
