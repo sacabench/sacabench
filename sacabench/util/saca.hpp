@@ -132,44 +132,29 @@ public:
 
 protected:
     virtual void construct_sa_32(string_span test_input) const override {
-        using T = uint32_t;
-
-        prepare_and_construct_sa<Algorithm, T>(test_input.size(), [&](auto s) {
-            for (size_t i = 0; i < s.size(); i++) {
-                s[i] = test_input[i];
-            }
-        });
+        construct_sa<uint32_t>(test_input);
     }
     /*
     virtual void construct_sa_40(string_span test_input) const override {
-        using T = uint40_t;
-
-        prepare_and_construct_sa<Algorithm, T>(
-            test_input.size(), [&](auto s) {
-                for (size_t i = 0; i < s.size(); i++) {
-                    s[i] = test_input[i];
-                }
-            });
+        construct_sa<uint40_t>(test_input);
     }
     virtual void construct_sa_48(string_span test_input) const override {
-        using T = uint48_t;
-
-        prepare_and_construct_sa<Algorithm, T>(
-            test_input.size(), [&](auto s) {
-                for (size_t i = 0; i < s.size(); i++) {
-                    s[i] = test_input[i];
-                }
-            });
+        construct_sa<uint48_t>(test_input);
     }
     */
     virtual void construct_sa_64(string_span test_input) const override {
-        using T = uint64_t;
+        construct_sa<uint64_t>(test_input);
+    }
 
-        prepare_and_construct_sa<Algorithm, T>(test_input.size(), [&](auto s) {
-            for (size_t i = 0; i < s.size(); i++) {
-                s[i] = test_input[i];
-            }
-        });
+private:
+    template <typename sa_index>
+    inline void construct_sa(string_span test_input) const {
+        prepare_and_construct_sa<Algorithm, sa_index>(
+            test_input.size(), [&](auto s) {
+                for (size_t i = 0; i < s.size(); i++) {
+                    s[i] = test_input[i];
+                }
+            });
     }
 }; // class concrete_saca
 
