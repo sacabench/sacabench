@@ -160,6 +160,17 @@ inline void calculate_sa(util::string& t_0, util::container<size_t>& sa,
     induced_sort(t_0, sa, max_char);
 }
 
+struct sacak {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alphabet,
+                             util::span<sa_index> out_sa) {
+        calculate_sa(text, out_sa, alphabet.max_character_value());
+    }
+}; // struct sacak
+
 } // namespace sacabench::sacak
 
 /******************************************************************************/

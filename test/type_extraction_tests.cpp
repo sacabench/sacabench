@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <tuple>
+#include "test/saca.hpp"
 #include "../sacabench/util/type_extraction.hpp"
 #include "../sacabench/util/container.hpp"
 #include "../sacabench/util/string.hpp"
@@ -246,7 +247,9 @@ TEST(saca_k, error_test_2) {
 
 }
 
-
+TEST(saca_k, corner_cases) {
+    test::saca_corner_cases<sacak::sacak>();
+}
 
 
 
