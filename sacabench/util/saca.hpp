@@ -24,25 +24,25 @@ namespace sacabench::util {
 ///
 /// It allows a uniform view of the SA, with entries for extra sentinel
 /// characters removed.
-template <typename sa_index_t>
-class uniform_sa_type {
+template <typename sa_index>
+class uniform_sa {
     size_t m_extra_sentinels;
-    container<sa_index_t> m_sa;
+    container<sa_index> m_sa;
 
 public:
-    inline uniform_sa_type(size_t extra_sentinels, container<sa_index_t>&& sa)
+    inline uniform_sa(size_t extra_sentinels, container<sa_index>&& sa)
         : m_extra_sentinels(extra_sentinels), m_sa(std::move(sa)) {}
 
     /// Return number of sentinel characters
     inline size_t extra_sentinels() { return m_extra_sentinels; }
 
     /// Return uniform suffix array without sentinel positions.
-    inline span<sa_index_t> sa_without_sentinels() {
+    inline span<sa_index> sa_without_sentinels() {
         return m_sa.slice(extra_sentinels());
     }
 
     /// Return original suffix array, with potential sentinel positions.
-    inline span<sa_index_t> sa_with_sentinels() { return m_sa; }
+    inline span<sa_index> sa_with_sentinels() { return m_sa; }
 };
 
 /// A type that represents a input text before any allocation.
@@ -94,13 +94,13 @@ public:
 /// them.
 ///
 /// \param text_init Initializer for the text.
-template <typename Algorithm, typename sa_index_t>
-uniform_sa_type<sa_index_t>
+template <typename Algorithm, typename sa_index>
+uniform_sa<sa_index>
 prepare_and_construct_sa(text_initializer const& text_init) {
     size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
     size_t text_size = text_init.text_size();
 
-    auto output = make_container<sa_index_t>(text_size + extra_sentinels);
+    auto output = make_container<sa_index>(text_size + extra_sentinels);
     auto text_with_sentinels = string(text_size + extra_sentinels);
 
     auto text = text_with_sentinels.slice(0, text_size);
@@ -119,12 +119,12 @@ prepare_and_construct_sa(text_initializer const& text_init) {
     auto alph = apply_effective_alphabet(text);
 
     {
-        span<sa_index_t> out_sa = output;
+        span<sa_index> out_sa = output;
         string_span readonly_text_with_sentinels = text_with_sentinels;
         Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
     }
 
-    return uniform_sa_type<sa_index_t>{extra_sentinels, std::move(output)};
+    return uniform_sa<sa_index>{extra_sentinels, std::move(output)};
 }
 
 class saca;
