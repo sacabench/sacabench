@@ -20,8 +20,9 @@
 
 namespace sacabench::sacak {
 
-inline void calculate_deep_sa(util::span<size_t>& t_0,
-                              util::container<size_t>& sa, size_t max_char) {
+template <typename character_type, sa_index>
+inline void calculate_deep_sa(util::span<character_type> t_0,
+                              util::span<sa_index> sa, size_t max_char) {
 
     // TODO: almost the same as the usual method, but without the use of bkt
     // array. Needs negative size_t variables!!
