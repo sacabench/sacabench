@@ -103,11 +103,21 @@ public:
         saca_list::get().register_saca(this);
     }
 
-    virtual void run_example() const = 0;
-    virtual void construct_sa(string_span test_input) const = 0;
+    inline void construct_sa(string_span test_input) const {
+        construct_sa_64(test_input);
+    }
+    inline void run_example() const { construct_sa_32("hello world"_s); }
 
     std::string const& name() const { return name_; }
     std::string const& description() const { return description_; }
+
+protected:
+    virtual void construct_sa_32(string_span test_input) const = 0;
+    /*
+    virtual void construct_sa_40(string_span test_input) const = 0;
+    virtual void construct_sa_48(string_span test_input) const = 0;
+    */
+    virtual void construct_sa_64(string_span test_input) const = 0;
 
 private:
     std::string name_;
@@ -120,24 +130,46 @@ public:
     concrete_saca(const std::string& name, const std::string& description)
         : saca(name, description) {}
 
-    virtual void construct_sa(string_span test_input) const override {
-        prepare_and_construct_sa<Algorithm, size_t>(
+protected:
+    virtual void construct_sa_32(string_span test_input) const override {
+        using T = uint32_t;
+
+        prepare_and_construct_sa<Algorithm, T>(test_input.size(), [&](auto s) {
+            for (size_t i = 0; i < s.size(); i++) {
+                s[i] = test_input[i];
+            }
+        });
+    }
+    /*
+    virtual void construct_sa_40(string_span test_input) const override {
+        using T = uint40_t;
+
+        prepare_and_construct_sa<Algorithm, T>(
             test_input.size(), [&](auto s) {
                 for (size_t i = 0; i < s.size(); i++) {
                     s[i] = test_input[i];
                 }
             });
     }
-    virtual void run_example() const override {
-        using sa_index_t = uint32_t;
-        string_span test_input = "hello world"_s;
+    virtual void construct_sa_48(string_span test_input) const override {
+        using T = uint48_t;
 
-        prepare_and_construct_sa<Algorithm, sa_index_t>(
+        prepare_and_construct_sa<Algorithm, T>(
             test_input.size(), [&](auto s) {
                 for (size_t i = 0; i < s.size(); i++) {
                     s[i] = test_input[i];
                 }
             });
+    }
+    */
+    virtual void construct_sa_64(string_span test_input) const override {
+        using T = uint64_t;
+
+        prepare_and_construct_sa<Algorithm, T>(test_input.size(), [&](auto s) {
+            for (size_t i = 0; i < s.size(); i++) {
+                s[i] = test_input[i];
+            }
+        });
     }
 }; // class concrete_saca
 
