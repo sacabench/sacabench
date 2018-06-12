@@ -153,7 +153,7 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
 
         root.log("text_size", text.size());
         root.log("extra_sentinels", extra_sentinels);
-        root.log("sa_index_size",
+        root.log("sa_index_bit_size",
                  ceil_log2(std::numeric_limits<sa_index>::max()));
     }
 
