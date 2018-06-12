@@ -55,11 +55,7 @@ void saca_corner_cases_single_type(bool print_cases) {
         }
 
         auto output = prepare_and_construct_sa<Algorithm, sa_index_type>(
-            text.size(), [&](auto s) {
-                for (size_t i = 0; i < s.size(); i++) {
-                    s[i] = text[i];
-                }
-            });
+            text_initializer_from_span(text));
 
         auto fast_result = sa_check(output.sa_without_sentinels(), text);
         if (fast_result != sa_check_result::ok) {
