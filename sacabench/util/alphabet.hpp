@@ -60,6 +60,9 @@ public:
         }
     }
 
+    /// \brief Generates an uninitialized alphabet.
+    inline alphabet() : m_max_character(0), m_is_effective(false) {}
+
     inline size_t size_with_sentinel() const { return m_max_character + 1; }
 
     inline size_t size_without_sentinel() const { return m_max_character; }

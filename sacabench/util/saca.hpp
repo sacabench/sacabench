@@ -30,6 +30,8 @@ class uniform_sa {
     container<sa_index> m_sa;
 
 public:
+    inline uniform_sa() : m_extra_sentinels(0) {}
+
     inline uniform_sa(size_t extra_sentinels, container<sa_index>&& sa)
         : m_extra_sentinels(extra_sentinels), m_sa(std::move(sa)) {}
 
@@ -94,40 +96,51 @@ public:
 /// them.
 ///
 /// \param text_init Initializer for the text.
-template <typename Algorithm, typename sa_index>
-uniform_sa<sa_index>
-prepare_and_construct_sa(text_initializer const& text_init,
-                         bool WIP_print_stats = false) {
-    tdc::StatPhase root("prepare_and_construct_sa()");
+template <typename Algorithm, typename sa_index, typename text_init_function>
+uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
+                                                bool WIP_print_stats = false) {
+    tdc::StatPhase root("SACA");
+    uniform_sa<sa_index> ret;
+    {
+        tdc::StatPhase phase("Prepare SA and Text containers");
 
-    size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
-    size_t text_size = text_init.text_size();
+        size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
+        size_t text_size = text_init.text_size();
 
-    auto output = make_container<sa_index>(text_size + extra_sentinels);
-    auto text_with_sentinels = string(text_size + extra_sentinels);
+        auto output = make_container<sa_index>(text_size + extra_sentinels);
+        auto text_with_sentinels = string(text_size + extra_sentinels);
 
-    auto text = text_with_sentinels.slice(0, text_size);
+        auto text = text_with_sentinels.slice(0, text_size);
 
-    text_init.initializer(text);
+        {
+            tdc::StatPhase init_phase("initialize Text");
+            text_init.initializer(text);
+        }
 
-    IF_DEBUG({
-        for (size_t i = 0; i < text.size(); i++) {
-            DCHECK_MSG(text[i] != 0, "Input byte "
-                                         << i
+        IF_DEBUG({
+            for (size_t i = 0; i < text.size(); i++) {
+                DCHECK_MSG(text[i] != 0,
+                           "Input byte " << i
                                          << " has value 0, which is reserved "
                                             "for the terminating sentinel!");
+            }
+        })
+
+        alphabet alph;
+        {
+            tdc::StatPhase init_phase("Apply effective Alphabet");
+            alph = apply_effective_alphabet(text);
         }
-    })
 
-    auto alph = apply_effective_alphabet(text);
+        {
+            tdc::StatPhase init_phase("Algorithm");
+            span<sa_index> out_sa = output;
+            string_span readonly_text_with_sentinels = text_with_sentinels;
+            Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
+        }
 
-    {
-        span<sa_index> out_sa = output;
-        string_span readonly_text_with_sentinels = text_with_sentinels;
-        Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
+        ret = uniform_sa<sa_index>{extra_sentinels, std::move(output)};
     }
-
-    auto ret = uniform_sa<sa_index>{extra_sentinels, std::move(output)};
 
     if (WIP_print_stats) {
         auto j = root.to_json();
