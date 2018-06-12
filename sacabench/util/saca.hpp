@@ -99,9 +99,9 @@ public:
 /// them.
 ///
 /// \param text_init Initializer for the text.
-template <typename Algorithm, typename sa_index, typename text_init_function>
+template <typename Algorithm, typename sa_index>
 uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
-                                                bool WIP_print_stats = false) {
+                                              bool WIP_print_stats = false) {
     tdc::StatPhase root("SACA");
     uniform_sa<sa_index> ret;
     {
@@ -258,19 +258,19 @@ public:
 
 protected:
     virtual void construct_sa_32(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, uint32_t>(text);
+        prepare_and_construct_sa<Algorithm, uint32_t>(text, true);
     }
     /*
     TODO: Commented out because of compile errors with the uint4X types.
     virtual void construct_sa_40(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, util::uint40>(text);
+        prepare_and_construct_sa<Algorithm, util::uint40>(text, true);
     }
     virtual void construct_sa_48(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, util::uint48>(text);
+        prepare_and_construct_sa<Algorithm, util::uint48>(text, true);
     }
     */
     virtual void construct_sa_64(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, uint64_t>(text);
+        prepare_and_construct_sa<Algorithm, uint64_t>(text, true);
     }
 }; // class concrete_saca
 
