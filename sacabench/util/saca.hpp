@@ -138,14 +138,14 @@ public:
     void operator=(saca_list&&) = delete;
 
     /// Get a single static instance of the list. (Singleton pattern)
-    static saca_list& get() {
+    inline static saca_list& get() {
         static saca_list list;
         return list;
     }
 
     /// Register a SACA. This gets called automatically by the
     /// `SACA_REGISTER` macro.
-    void register_saca(saca const* algorithm) {
+    inline void register_saca(saca const* algorithm) {
         algorithms_.push_back(algorithm);
     }
 
@@ -157,7 +157,7 @@ public:
     inline auto cend() { return algorithms_.cend(); }
 
 private:
-    saca_list() {}
+    inline saca_list() = default;
 
     std::vector<saca const*> algorithms_;
 }; // class saca_list
