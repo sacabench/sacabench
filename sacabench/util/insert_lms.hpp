@@ -58,12 +58,14 @@ inline size_t insert_lms_ltr(string_span t_0, container<size_t>& sa) {
 /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating
 RTL returns the amount of LMS substrings indices found
 */
-inline size_t insert_lms_rtl(string_span t_0, container<size_t>& sa) {
+template <typename sa_index>
+inline size_t insert_lms_rtl(string_span t_0, span<sa_index> sa) {
 
     bool last_type = true;
     size_t amount = 1;
     size_t sa_pointer = 1;
 
+    DCHECK_GE(sa.size(), 1);
     sa[0] = t_0.size() - 1;
 
     // Iterate whole string RTL and compare types of symbols with each other
@@ -101,7 +103,8 @@ inline size_t insert_lms_rtl(string_span t_0, container<size_t>& sa) {
     Call this function to get the sorted LMS-Strings into the beginning of your
    SA after you have induced sorted your SA.
 */
-inline size_t extract_sorted_lms(string_span t, container<size_t>& sa) {
+template <typename sa_index>
+inline size_t extract_sorted_lms(string_span t, span<sa_index> sa) {
     size_t null_counter = 0;
     size_t amount = 0;
 

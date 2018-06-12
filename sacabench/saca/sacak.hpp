@@ -27,7 +27,8 @@ inline void calculate_deep_sa(util::span<size_t>& t_0,
     // array. Needs negative size_t variables!!
 }
 
-inline void induced_sort(util::string_span t, util::container<size_t>& sa,
+template <typename sa_index>
+inline void induced_sort(util::string_span t, util::span<sa_index> sa,
                          size_t max_char) {
 
     // Iterate SA RTL and distribute the LMS suffixes into the S-Buckets
@@ -113,7 +114,8 @@ inline void induced_sort(util::string_span t, util::container<size_t>& sa,
     Given an effective string t_0 with one sentinel symbol it calculates the
    suffix array sa
 */
-inline void calculate_sa(util::string& t_0, util::container<size_t>& sa,
+template <typename sa_index>
+inline void calculate_sa(util::string_span t_0, util::span<sa_index> sa,
                          size_t max_char) {
 
     // Initialize SA so that all items are -1 at the beginning
@@ -127,7 +129,7 @@ inline void calculate_sa(util::string& t_0, util::container<size_t>& sa,
     // always in the form of {0, ..., n} That means you only need the n to know
     // the whole effective alphabet
 
-    size_t lms_amount = util::insert_lms_rtl(t_0, sa);
+    size_t lms_amount = util::insert_lms_rtl<sa_index>(t_0, sa);
     induced_sort(t_0, sa, max_char);
 
     // Allocate t_1 in the last bits of space of SA by slicing it
@@ -167,7 +169,7 @@ struct sacak {
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
-        calculate_sa(text, out_sa, alphabet.max_character_value());
+        calculate_sa<sa_index>(text, out_sa, alphabet.max_character_value());
     }
 }; // struct sacak
 

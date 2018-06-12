@@ -48,7 +48,7 @@ TEST(insert_lms, test_1) {
             input_w[i] = util::SENTINEL;
     }
 
-    insert_lms_rtl(input_w, sa);
+    insert_lms_rtl(input_w.slice(), sa.slice());
 
 }
 
@@ -76,8 +76,8 @@ TEST(induced_sorting, test_1) {
             input_w[i] = util::SENTINEL;
     }
 
-    insert_lms_rtl(input_w, sa);
-    sacak::induced_sort(input_w, sa, alph.size_without_sentinel());
+    insert_lms_rtl(input_w.slice(), sa.slice());
+    sacak::induced_sort(input_w, sa.slice(), alph.size_without_sentinel());
 
     ASSERT_EQ(sa[0], 14);
     ASSERT_EQ(sa[1], 13);
@@ -96,8 +96,8 @@ TEST(induced_sorting, test_1) {
     ASSERT_EQ(sa[14], 5);
 }
 
-
-void make_sacak(util::string_span &test_text, util::container<size_t> &sa, bool print)
+template<typename sa_index>
+void make_sacak(util::string_span &test_text, util::container<sa_index> &sa, bool print)
 {
     if(print)
         std::cout << "testing text: " << test_text << std::endl;
@@ -129,7 +129,7 @@ void make_sacak(util::string_span &test_text, util::container<size_t> &sa, bool 
         std::cout << std::endl;
     }
 
-    sacak::calculate_sa(input_w, sa, alph.size_without_sentinel());
+    sacak::calculate_sa<sa_index>(input_w, sa, alph.size_without_sentinel());
 
     if (print) {
         std::cout << "The resulting SA is: [ ";
