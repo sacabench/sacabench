@@ -13,6 +13,7 @@
 
 #include "alphabet.hpp"
 #include "container.hpp"
+#include "read_text.hpp"
 #include "span.hpp"
 #include "string.hpp"
 #include "uint_types.hpp"
@@ -47,24 +48,47 @@ public:
 /// A type that represents a input text before any allocation.
 struct text_initializer {
     /// Size of the text. In bytes, without any sentinel values.
-    size_t text_size = 0;
+    virtual size_t text_size() const = 0;
 
     /// Initializer function, that writes the text to the passed
     /// span of size `text_size`.
-    std::function<void(span<character>)> initializer;
+    virtual void initializer(span<character>) const = 0;
+
+    /// Declare a virtual destructor, because you have to do that (TM)
+    virtual ~text_initializer() = default;
 };
 
 /// Creates a `text_initializer` that initializes with a `string_span`.
-inline text_initializer text_initializer_from_span(string_span text) {
-    return {
-        text.size(),
-        [=](span<character> s) {
-            for (size_t i = 0; i < s.size(); i++) {
-                s[i] = text[i];
-            }
-        },
-    };
-}
+class text_initializer_from_span : public text_initializer {
+    string_span m_text;
+
+public:
+    inline text_initializer_from_span(string_span text) : m_text(text) {}
+
+    virtual size_t text_size() const override { return m_text.size(); }
+
+    virtual void initializer(span<character> s) const override {
+        DCHECK_EQ(s.size(), m_text.size());
+        for (size_t i = 0; i < s.size(); i++) {
+            s[i] = m_text[i];
+        }
+    }
+};
+
+/// Creates a `text_initializer` that initializes with the content of a file.
+class text_initializer_from_file : public text_initializer {
+    read_text_context m_ctx;
+
+public:
+    inline text_initializer_from_file(read_text_context&& ctx)
+        : m_ctx(std::move(ctx)) {}
+
+    virtual size_t text_size() const override { return m_ctx.size; }
+
+    virtual void initializer(span<character> s) const override {
+        m_ctx.read_text(s);
+    }
+};
 
 /// Prepares SA and Text containers, and calls the given SACA Algorithm with
 /// them.
@@ -74,15 +98,14 @@ template <typename Algorithm, typename sa_index_t>
 uniform_sa_type<sa_index_t>
 prepare_and_construct_sa(text_initializer const& text_init) {
     size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
-    size_t text_size = text_init.text_size;
-    auto const& init = text_init.initializer;
+    size_t text_size = text_init.text_size();
 
     auto output = make_container<sa_index_t>(text_size + extra_sentinels);
     auto text_with_sentinels = string(text_size + extra_sentinels);
 
     auto text = text_with_sentinels.slice(0, text_size);
 
-    init(text);
+    text_init.initializer(text);
 
     IF_DEBUG({
         for (size_t i = 0; i < text.size(); i++) {
