@@ -18,11 +18,6 @@ sacabench::util::string_span get_substring(const sacabench::util::string& t, con
     return sacabench::util::span(ptr, n);
 }
 
-// implementation of comp method
-bool comp(const sacabench::util::string_span& a, const sacabench::util::string_span& b) {
-    return a < b;
-}
-
 TEST(DC, merge) {
     sacabench::util::string input_string = sacabench::util::make_string("caabaccaabacaa$");
 
@@ -35,8 +30,8 @@ TEST(DC, merge) {
     auto sa = sacabench::util::container<size_t> {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
     //run method to test it
-    sacabench::util::merge_sa_dc<sacabench::util::character>(input_string, sa_0, sa_12,
-            isa_12, sa, comp, get_substring);
+    sacabench::util::merge_sa_dc<const sacabench::util::character>(input_string, sa_0, sa_12,
+            isa_12, sa, std::less<sacabench::util::string_span>(), get_substring);
 
     //expected values for merged SA with DC
     auto expected = sacabench::util::container<size_t> {14,13,12,7,1,8,2,10,4,
