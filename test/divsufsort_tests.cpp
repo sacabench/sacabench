@@ -62,9 +62,9 @@ TEST(DivSufSort, correctBucketSizes) {
                         pow(alphabet.max_character_value() + 1, 2));
     
     
-    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value(),
+    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value()+1,
                     /*.l_buckets=*/ l1, /*.s_buckets=*/ s1};
-    buckets result = {/*.alphabet_size=*/alphabet.max_character_value(),
+    buckets result = {/*.alphabet_size=*/alphabet.max_character_value()+1,
                     /*.l_buckets=*/ l2, /*.s_buckets=*/ s2};
 
     ASSERT_EQ(bkts.l_buckets.size(), std::size_t(4));
@@ -97,13 +97,18 @@ TEST(DivSufSort, correctBucketSizes) {
     
     dss::compute_buckets(text, alphabet, types, result);
     
+    std::cout << "l-buckets:" << std::endl;
     // Assertions for l_buckets
     for(std::size_t index = 0; index < bkts.l_buckets.size(); ++index) {
+        std::cout << "Index: " << index << " # computed: " << result.l_buckets[index] << " # should: " << bkts.l_buckets[index] << std::endl;
         ASSERT_EQ(bkts.l_buckets[index], result.l_buckets[index]);
     }
     
+    std::cout << "s-buckets:" << std::endl;
+    
     // Assertions for s_buckets (i.e. for s- and rms-buckets)
     for(std::size_t index = 0; index < bkts.s_buckets.size(); ++index) {
+        std::cout << "Index: " << index << " # computed: " << result.s_buckets[index] << " # should: " << bkts.s_buckets[index] << std::endl;
         ASSERT_EQ(bkts.s_buckets[index], result.s_buckets[index]);
     }
 }

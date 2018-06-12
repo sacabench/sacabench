@@ -188,9 +188,9 @@ public:
         // Check wether given span has same size as text.
         DCHECK_EQ(text.size(), types.size());
         // Last index always l-type suffix
-        types[text.size() - 1] = 0;
-
+        types[text.size() - 1] = 1;
         for (std::size_t prev_pos = text.size() - 1; prev_pos > 0; --prev_pos) {
+            
             if (text[prev_pos - 1] == text[prev_pos]) {
                 types[prev_pos - 1] = types[prev_pos];
             } else {
@@ -209,11 +209,17 @@ public:
         util::sort::bucket bucket_to_search,
         util::container<bool>& suffix_types_container) {
         sa_index counted = 0;
+       // std::cout << "Counting for rms-types:" << std::endl;
         sa_index next_bucket =
             bucket_to_search.position + bucket_to_search.count;
+        //std::cout << "Start position of current bucket: " << bucket_to_search.position << std::endl;
+        //std::cout << "Start position of next bucket: " << next_bucket << std::endl;
         for (sa_index pos = bucket_to_search.position; pos < next_bucket;
              ++pos) {
-                if(sa_types<sa_index>::is_rms_type(pos, suffix_types_container)) {
+            bool is_rms = sa_types<sa_index>::is_rms_type(pos, suffix_types_container);
+            
+            //std::cout << "Pos " << pos << " is rms-type: " << is_rms << std::endl; 
+            if(is_rms) {
                 ++counted;
             }
         }
@@ -230,12 +236,16 @@ public:
         sa_index counted = 0;
         sa_index next_bucket =
             bucket_to_search.position + bucket_to_search.count;
+        std::cout << "Searching for s-buckets from " << bucket_to_search.position << " to " << next_bucket-1 << std::endl; 
         for (sa_index pos = bucket_to_search.position; pos < next_bucket;
              ++pos) {
-            if(sa_types<sa_index>::is_s_type(pos, suffix_types_container)) {
+            bool is_s = sa_types<sa_index>::is_s_type(pos, suffix_types_container);
+            std::cout << "Pos " << pos << " is s-type: " << is_s << std::endl; 
+            if(is_s) {
                 ++counted;
             }
         }
+        //std::cout << counted << " s-types have been counted." << std::endl;
         return counted;
     }
 
@@ -253,7 +263,7 @@ public:
      * completeness), i.e. s_buckets.size() = (|alphabet| + 1)²
      */
     // TODO: Testing
-    inline static void compute_buckets(util::string_span input,
+    inline static void compute_buckets_old(util::string_span input,
                                        util::alphabet alphabet,
                                        util::container<bool>& suffix_types,
                                        buckets sa_buckets) {
@@ -261,44 +271,120 @@ public:
         // Use Methods from bucketsort.hpp to compute bucket sizes.
         auto bkts = util::sort::get_buckets(
             input, alphabet.size_without_sentinel(), bucket_depth);
+        std::cout << "Total of " << bkts.size() << " buckets precomputed (bucketsort)." << std::endl;
         // Variables used in (inner) loop.
-        sa_index counted_s, counted_rms;
-        std::size_t index_s, index_rms;
+        sa_index counted_s, counted_rms = 0;
+        std::size_t index_s, index_rms, current_leftmost, current_rightmost = 0;       
         // Indices indicating the buckets. current_leftmost for first
         // letter only, current_rightmost for first + second letter.
-        for (util::character first_letter = 0, current_leftmost = 0,
-                         current_rightmost = 0;
+        for (util::character first_letter = 0;
              first_letter < alphabet.max_character_value() + 1;
              ++first_letter) {
             // Need to adjust index for current l-bucket: only one
             // character considered, but buckets contain two (for s/rms
             // buckets)
             current_leftmost = current_rightmost;
+            std::cout << "Getting first bucket position (l-bucket) for letter " << (size_t) first_letter << ":" << bkts[current_leftmost].position << std::endl;
             sa_buckets.l_buckets[first_letter] =
-                bkts[current_leftmost].position;
+                bkts[current_leftmost].position + 1;
             // Compute relative starting positions for rms-buckets.
             for (util::character second_letter = 0;
                  second_letter < alphabet.max_character_value() + 1;
                  ++second_letter, ++current_rightmost) {
+                std::cout << "Current bucket: " << current_rightmost << " | Starting pos: " << bkts[current_rightmost].position << " | Counted in bucket: " << bkts[current_rightmost].count << std::endl;
+                // This order in the text can't be s- or rms-type:
+                if(second_letter < first_letter) { continue; }
                 // Only currently counted for s-bucket
+                std::cout << "Counting for s-types in bucket (" << (size_t) first_letter << "," << (size_t) second_letter << ")" << std::endl;
                 counted_s = count_for_s_type_in_bucket(
                     bkts[current_rightmost], suffix_types);
-                // Relative left border of rms-bucket (i.e. sum over all 
-                // preceding rms-buckets
-                counted_rms += count_for_rms_type_in_bucket(
-                    bkts[current_rightmost], suffix_types);
+                std::cout << counted_s << " s-types have been counted." << std::endl;
                 index_s = 
                     sa_buckets.get_s_bucket_index(first_letter, second_letter);
-                index_rms =
-                    sa_buckets.get_rms_bucket_index(
-                        first_letter, second_letter);
+                std::cout << "Bucket index for s-type bucket (" << (size_t) first_letter << "," << (size_t) second_letter << "):" << index_s << std::endl;
                 sa_buckets.s_buckets[index_s] = counted_s;
-                sa_buckets.s_buckets[index_rms] = counted_rms;
-
-                // Contains value for current_leftmost for next iteration.
-                // Needs to be increased after each bucket containing two 
-                // characters.
-                current_rightmost++;
+                // Relative left border of rms-bucket (i.e. sum over all 
+                // preceding rms-buckets
+                std::cout << "Counting for rms-types in bucket (" << (size_t) first_letter << "," << (size_t) second_letter << ")" << std::endl;
+                if(first_letter != second_letter) {
+                    counted_rms += count_for_rms_type_in_bucket(
+                    bkts[current_rightmost], suffix_types);
+                    std::cout << counted_rms << " rms-types have been counted." << std::endl;
+                    index_rms =
+                        sa_buckets.get_rms_bucket_index(
+                            first_letter, second_letter);
+                    std::cout << "Bucket index for rms-type bucket (" << (size_t) first_letter << "," << (size_t) second_letter << "):" << index_rms << std::endl;
+                    sa_buckets.s_buckets[index_rms] = counted_rms;
+                }
+            }
+        }
+    }
+    
+    inline static void compute_buckets(util::string_span input,
+                                       util::alphabet alphabet,
+                                       util::container<bool>& suffix_types,
+                                       buckets sa_buckets) {
+        count_buckets(input, suffix_types, sa_buckets);
+        prefix_sum(alphabet, sa_buckets);
+    }
+    
+    inline static void count_buckets(util::string_span input, 
+        util::container<bool>& suffix_types, buckets sa_buckets) {
+        util::character first_letter, second_letter;
+        // Used for accessing buckets in sa_buckets.s_buckets
+        std::size_t bucket_index;
+        for(sa_index current; current < input.size(); ++current) {
+            first_letter = input[current];
+            if(suffix_types[current] == 1) {
+                ++sa_buckets.l_buckets[first_letter];
+            } else {
+                // Indexing safe because last two indices are always l-type.
+                DCHECK_LT(current, input.size()-1);
+                second_letter = input[current+1];
+                // Compute bucket_index regarding current suffix being either
+                // s- or rms-type
+                //std::cout << "(" << (size_t)first_letter << "," << (size_t)second_letter << ")-bucket" << std::endl;
+                bucket_index = (sa_types<sa_index>::is_rms_type) ? 
+                sa_buckets.get_rms_bucket_index(first_letter, second_letter) : 
+                sa_buckets.get_s_bucket_index(first_letter, second_letter);
+                
+                // Increase count for bucket at bucket_index by one.
+                ++sa_buckets.s_buckets[bucket_index];
+                //std::cout << "s-bucket index: " << bucket_index << ", new count: " << sa_buckets.s_buckets[bucket_index] << std::endl;
+            }
+        }
+    }
+    
+    inline static void prefix_sum(util::alphabet& alph, buckets sa_buckets) {
+        // l_count starts at one because of sentinel (skipped in loop)
+        sa_index l_count = 1, rms_relative_count = 0, l_border = 0;
+        size_t s_bucket_index;
+        // Adjust left border for first l-bucket (sentinel)
+        sa_buckets.l_buckets[0] = 0;
+        
+        for(util::character first_letter = 1; first_letter < alph.max_character_value()+1; ++first_letter) {
+            // New left border completely computed (see inner loop)
+            l_border += l_count;
+            // Save count for current l-bucket for l_border of next l-bucket
+            l_count = sa_buckets.l_buckets[first_letter];
+            // Set left border of current bucket
+            sa_buckets.l_buckets[first_letter] = l_border;
+            //std::cout << "New left border for l-bucket " << (size_t) first_letter << ":" << l_border << std::endl;
+            for(util::character second_letter = first_letter; second_letter < alph.max_character_value()+1; ++second_letter) {
+                // Compute index for current s-bucket in s_buckets
+                s_bucket_index = sa_buckets.get_s_bucket_index(first_letter, second_letter);
+                // Add count for s-bucket to left-border of following l-bucket
+                l_border += sa_buckets.s_buckets[s_bucket_index];
+                // (c0,c0) buckets can be skipped for rms-buckets (because they don't exist)
+                if(first_letter==second_letter) {continue;}
+                // Compute index for current rms-bucket in s_buckets
+                s_bucket_index = sa_buckets.get_rms_bucket_index(first_letter, second_letter);
+                // Add current count for rms-bucket to l-border of next bucket
+                l_border += sa_buckets.s_buckets[s_bucket_index];
+                // Compute new relative right border for rms-bucket
+                rms_relative_count += sa_buckets.s_buckets[s_bucket_index];
+                // Set new relative right border for rms-bucket
+                sa_buckets.s_buckets[s_bucket_index] = rms_relative_count;
             }
         }
     }
