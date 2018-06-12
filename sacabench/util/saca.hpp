@@ -102,14 +102,21 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
     tdc::StatPhase root("SACA");
     uniform_sa<sa_index> ret;
     {
-        tdc::StatPhase phase("Prepare SA and Text containers");
-
         size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
         size_t text_size = text_init.text_size();
 
-        auto output = make_container<sa_index>(text_size + extra_sentinels);
-        auto text_with_sentinels = string(text_size + extra_sentinels);
+        container<sa_index> output;
+        string text_with_sentinels;
+        alphabet alph;
 
+        {
+            tdc::StatPhase init_phase("Allocate SA and Text container");
+            output = make_container<sa_index>(text_size + extra_sentinels);
+            text_with_sentinels = string(text_size + extra_sentinels);
+        }
+
+        // Create a slice to the part of the Text container
+        // that contains the original text without sentinels.
         auto text = text_with_sentinels.slice(0, text_size);
 
         {
@@ -118,6 +125,7 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
         }
 
         IF_DEBUG({
+            // Check that we got valid input.
             for (size_t i = 0; i < text.size(); i++) {
                 DCHECK_MSG(text[i] != 0,
                            "Input byte " << i
@@ -126,7 +134,6 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
             }
         })
 
-        alphabet alph;
         {
             tdc::StatPhase init_phase("Apply effective Alphabet");
             alph = apply_effective_alphabet(text);
@@ -136,7 +143,9 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
             tdc::StatPhase init_phase("Algorithm");
             span<sa_index> out_sa = output;
             string_span readonly_text_with_sentinels = text_with_sentinels;
-            Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
+            alphabet const& readonly_alphabet = alph;
+            Algorithm::construct_sa(readonly_text_with_sentinels,
+                                    readonly_alphabet, out_sa);
         }
 
         ret = uniform_sa<sa_index>{extra_sentinels, std::move(output)};
