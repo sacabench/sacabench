@@ -25,6 +25,11 @@ inline void calculate_deep_sa(util::span<size_t>& t_0,
 
     // TODO: almost the same as the usual method, but without the use of bkt
     // array. Needs negative size_t variables!!
+    // ignore warnings:
+    (void)t_0;
+    (void)sa;
+    (void)max_char;
+    DCHECK(false); // not done yet
 }
 
 template <typename sa_index>
