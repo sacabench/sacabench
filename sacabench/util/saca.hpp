@@ -96,7 +96,10 @@ public:
 /// \param text_init Initializer for the text.
 template <typename Algorithm, typename sa_index>
 uniform_sa<sa_index>
-prepare_and_construct_sa(text_initializer const& text_init) {
+prepare_and_construct_sa(text_initializer const& text_init,
+                         bool WIP_print_stats = false) {
+    tdc::StatPhase root("prepare_and_construct_sa()");
+
     size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
     size_t text_size = text_init.text_size();
 
@@ -124,7 +127,14 @@ prepare_and_construct_sa(text_initializer const& text_init) {
         Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
     }
 
-    return uniform_sa<sa_index>{extra_sentinels, std::move(output)};
+    auto ret = uniform_sa<sa_index>{extra_sentinels, std::move(output)};
+
+    if (WIP_print_stats) {
+        root.to_json().str(std::cout);
+        std::cout << std::endl;
+    }
+
+    return ret;
 }
 
 class saca;
