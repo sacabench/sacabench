@@ -17,7 +17,9 @@ template <typename content, size_t k>
 class incomplete_kd_array_access_const;
 
 /// \brief A class which holds a large memory chunk and supports
-///        multi-dimensional indexing into it.
+///        multi-dimensional indexing into it. You can use either
+///         array.get({a,b,c})/array.get_mut({a,b,c}), array[a][b][c] or
+///         array[{a,b,c}] to access the array elements.
 template <typename content, size_t k>
 class kd_array {
 private:
@@ -59,8 +61,25 @@ public:
     }
 
     /// \brief Returns the element at the given kd position.
-    inline content get(const std::array<size_t, k>& idx) const {
+    inline const content& get(const std::array<size_t, k>& idx) const {
         return memory[index(idx)];
+    }
+
+    /// \brief Returns the element at the given kd position.
+    inline content& get_mut(const std::array<size_t, k>& idx) {
+        return memory[index(idx)];
+    }
+
+    /// \brief Returns the element at the given kd position, using the
+    ///        array[{1,2,3}] syntax.
+    inline content& operator[](const std::array<size_t, k>& idx) {
+        return get_mut(idx);
+    }
+
+    /// \brief Returns the element at the given kd position, using the
+    ///        array[{1,2,3}] syntax. Const variant.
+    inline const content& operator[](const std::array<size_t, k>& idx) const {
+        return get(idx);
     }
 
     /// \brief Updates the element at the given kd position.
@@ -68,14 +87,14 @@ public:
         memory[index(idx)] = v;
     }
 
+    /// \brief Updates the element at the given kd position.
     inline void set(const std::array<size_t, k>& idx, content&& v) {
         memory[index(idx)] = v;
     }
 
     /// \brief Constructs a incomplete_kd_array_access objects and starts
     ///        indexing into the memory.
-    inline incomplete_kd_array_access<content, k>
-    operator[](const size_t& idx) {
+    inline incomplete_kd_array_access<content, k> operator[](const size_t idx) {
         return incomplete_kd_array_access<content, k>(*this, idx);
     }
 
@@ -83,7 +102,7 @@ public:
     ///        indexing into the memory. This function yields a read-only
     ///        reference.
     inline incomplete_kd_array_access_const<content, k>
-    operator[](const size_t& idx) const {
+    operator[](const size_t idx) const {
         return incomplete_kd_array_access_const<content, k>(*this, idx);
     }
 };
@@ -99,13 +118,13 @@ private:
 
 public:
     inline incomplete_kd_array_access(kd_array<content, k>& _array,
-                                      size_t index)
+                                      const size_t index)
         : array(_array), indices(), n_indices(1) {
         indices[0] = index;
     }
 
     inline incomplete_kd_array_access(incomplete_kd_array_access&& other,
-                                      size_t index)
+                                      const size_t index)
         : array(other.array), indices(other.indices),
           n_indices(other.n_indices + 1) {
         indices[n_indices - 1] = index;
@@ -116,9 +135,9 @@ public:
         return incomplete_kd_array_access(std::move(*this), index);
     }
 
-    inline operator content() const {
+    inline operator content&() const {
         DCHECK_MSG(n_indices == k, "incomplete kd-array access");
-        return array.get(indices);
+        return array.get_mut(indices);
     }
 
     inline const content& operator=(const content& other) {
@@ -145,30 +164,30 @@ private:
 
 public:
     inline incomplete_kd_array_access_const(const kd_array<content, k>& _array,
-                                            size_t index)
+                                            const size_t index)
         : array(_array), indices(), n_indices(1) {
         indices[0] = index;
     }
 
     inline incomplete_kd_array_access_const(
-        const incomplete_kd_array_access_const&& other, size_t index)
+        const incomplete_kd_array_access_const&& other, const size_t index)
         : array(other.array), indices(other.indices),
           n_indices(other.n_indices + 1) {
         indices[n_indices - 1] = index;
     }
 
     inline incomplete_kd_array_access_const<content, k>
-    operator[](const size_t& index) const {
+    operator[](const size_t index) const {
         return incomplete_kd_array_access_const(std::move(*this), index);
     }
 
-    inline operator content() const {
+    inline operator const content&() const {
         DCHECK_MSG(n_indices == k, "incomplete kd-array access");
         return array.get(indices);
     }
 
     // Delete assignment operators, because this is the const-variant.
-    inline void operator=(content) = delete;
+    inline void operator=(const content) = delete;
 };
 
 /// \brief A helper definition for a 2d-array.

@@ -188,3 +188,32 @@ TEST(kd_array, access3d_set_better_syntax) {
 //         }
 //     }
 // }
+
+TEST(kd_array, loebel_syntax) {
+    kd_array<size_t, 3> array({5, 10, 15});
+
+    {
+        size_t i = 0;
+        for (size_t a = 0; a < 5; ++a) {
+            for (size_t b = 0; b < 10; ++b) {
+                for (size_t c = 0; c < 15; ++c) {
+                    array[{a, b, c}] = i;
+                    ++i;
+                }
+            }
+        }
+    }
+
+    {
+        size_t i = 0;
+        for (size_t a = 0; a < 5; ++a) {
+            for (size_t b = 0; b < 10; ++b) {
+                for (size_t c = 0; c < 15; ++c) {
+                    size_t v = array[{a, b, c}];
+                    ASSERT_EQ(i, v);
+                    ++i;
+                }
+            }
+        }
+    }
+}
