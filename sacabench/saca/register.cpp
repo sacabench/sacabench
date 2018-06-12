@@ -15,6 +15,7 @@
 #include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
 #include "saca/qsufsort.hpp"
+#include "saca/dc7.hpp"
 #include "saca/dc3.hpp"
 
 #include "util/saca.hpp"
@@ -34,8 +35,8 @@ SACA_REGISTER("Deep-Shallow", "Deep Shallow SACA by Manzini and Ferragina",
 using saca_bucket_pointer_refinement =
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
 SACA_REGISTER("Bucket-Pointer Refinement",
-        "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
-        saca_bucket_pointer_refinement)
+              "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
+              saca_bucket_pointer_refinement)
 
 using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling;
 SACA_REGISTER("Prefix Doubling", "TODO", saca_prefix_doubling)
@@ -47,6 +48,8 @@ SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
 
 using saca_gsaca = sacabench::gsaca::gsaca;
 SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca by Uwe Baier.", saca_gsaca)
+using saca_dc7 = sacabench::dc7::dc7;
+SACA_REGISTER("DC7", "Description of DC7 TODO", saca_dc7)
 
 using saca_qsufsort_naive =
     sacabench::qsufsort::qsufsort_naive;
