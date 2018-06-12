@@ -80,8 +80,8 @@ class text_initializer_from_file : public text_initializer {
     read_text_context m_ctx;
 
 public:
-    inline text_initializer_from_file(read_text_context&& ctx)
-        : m_ctx(std::move(ctx)) {}
+    inline text_initializer_from_file(std::string const& file_path)
+        : m_ctx(file_path) {}
 
     virtual inline size_t text_size() const override { return m_ctx.size; }
 
