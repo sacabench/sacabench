@@ -58,16 +58,16 @@ struct text_initializer {
     virtual ~text_initializer() = default;
 };
 
-/// Creates a `text_initializer` that initializes with a `string_span`.
+/// A `text_initializer` that initializes with a `string_span`.
 class text_initializer_from_span : public text_initializer {
     string_span m_text;
 
 public:
     inline text_initializer_from_span(string_span text) : m_text(text) {}
 
-    virtual size_t text_size() const override { return m_text.size(); }
+    virtual inline size_t text_size() const override { return m_text.size(); }
 
-    virtual void initializer(span<character> s) const override {
+    virtual inline void initializer(span<character> s) const override {
         DCHECK_EQ(s.size(), m_text.size());
         for (size_t i = 0; i < s.size(); i++) {
             s[i] = m_text[i];
@@ -75,7 +75,7 @@ public:
     }
 };
 
-/// Creates a `text_initializer` that initializes with the content of a file.
+/// A `text_initializer` that initializes with the content of a file.
 class text_initializer_from_file : public text_initializer {
     read_text_context m_ctx;
 
@@ -83,9 +83,9 @@ public:
     inline text_initializer_from_file(read_text_context&& ctx)
         : m_ctx(std::move(ctx)) {}
 
-    virtual size_t text_size() const override { return m_ctx.size; }
+    virtual inline size_t text_size() const override { return m_ctx.size; }
 
-    virtual void initializer(span<character> s) const override {
+    virtual inline void initializer(span<character> s) const override {
         m_ctx.read_text(s);
     }
 };
