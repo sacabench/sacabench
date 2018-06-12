@@ -15,7 +15,8 @@ namespace sacabench::util {
 /*
     Tries to find entry j in SA after index start
 */
-inline bool entry_comes_after(container<size_t>& sa, size_t start, size_t j) {
+template <typename sa_index>
+inline bool entry_comes_after(span<sa_index> sa, size_t start, size_t j) {
     for (size_t i = start + 1; i < sa.size(); i++) {
         if (sa[i] == j)
             return true;
@@ -27,7 +28,8 @@ inline bool entry_comes_after(container<size_t>& sa, size_t start, size_t j) {
 /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating
    LTR returns the amount of LMS substrings indices found.
 */
-inline size_t insert_lms_ltr(string_span t_0, container<size_t>& sa) {
+template <typename sa_index>
+inline size_t insert_lms_ltr(string_span t_0, span<size_t> sa) {
 
     std::tuple<bool, size_t> last_type = get_type_ltr_dynamic(t_0, 0);
     size_t amount = 0;
