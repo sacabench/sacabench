@@ -12,52 +12,61 @@
 
 namespace sacabench::util {
 
-bool from_right_global = false;
-string_span t_0_global;
+class type_extraction_rtl_onfly {
+    bool from_right_global = false;
+    string_span t_0_global;
 
-size_t current_string_position = 0;
-bool last_type_global = 0;
-bool string_is_finished = false;
+    size_t current_string_position = 0;
+    bool last_type_global = 0;
+    bool string_is_finished = false;
 
-/**\Initialise the inplace L-S-TypeExtraction which you can call with
- * "get_next_type_onfly" \param t_0 input text
- */
-inline void initialize_type_extraction_rtl_onfly(string_span t_0) {
+public:
+    /**\Initialise the inplace L-S-TypeExtraction which you can call with
+     * "get_next_type_onfly" \param t_0 input text
+     */
+    inline type_extraction_rtl_onfly(string_span t_0) {
+        from_right_global = true;
+        t_0_global = t_0;
 
-    from_right_global = true;
-    t_0_global = t_0;
+        current_string_position = from_right_global ? t_0.size() - 1 : 0;
+        last_type_global = 0;
+    }
 
-    current_string_position = from_right_global ? t_0.size() - 1 : 0;
-    last_type_global = 0;
-}
+    /**\Return the L/S-Type of the next character in the initialized text, in
+     * the initialized direction (boolean: 1 = L, 0 = S) */
+    inline bool get_next_type_onfly() {
+        ssize iteration_direction = from_right_global ? -1 : 1;
 
-/**\Return the L/S-Type of the next character in the initialized text, in the
- * initialized direction (boolean: 1 = L, 0 = S) */
-inline bool get_next_type_onfly() {
-    ssize iteration_direction = from_right_global ? -1 : 1;
+        bool const not_sentinel =
+            (current_string_position != t_0_global.size() - 1);
 
-    bool const not_sentinel =
-        (current_string_position != t_0_global.size() - 1);
+        last_type_global =
+            (not_sentinel && // Symbol is not sentinel
+             (t_0_global[current_string_position] >
+                  t_0_global[current_string_position +
+                             1] || // Symbol is larger than following Symbol OR
+              (t_0_global[current_string_position] ==
+                   t_0_global[current_string_position + 1] &&
+               last_type_global))); // Symbol is equal to following Symbol
 
-    last_type_global =
-        (not_sentinel && // Symbol is not sentinel
-         (t_0_global[current_string_position] >
-              t_0_global[current_string_position +
-                         1] || // Symbol is larger than following Symbol OR
-          (t_0_global[current_string_position] ==
-               t_0_global[current_string_position + 1] &&
-           last_type_global))); // Symbol is equal to following Symbol
+        string_is_finished ==
+            ((current_string_position == 0 && iteration_direction == -1) ||
+             (current_string_position == t_0_global.size() - 1 &&
+              iteration_direction == 1));
 
-#pragma GCC diagnostic ignored "-Wunused-value"
-    string_is_finished ==
-        ((current_string_position == 0 && iteration_direction == -1) ||
-         (current_string_position == t_0_global.size() - 1 &&
-          iteration_direction == 1));
+        current_string_position += iteration_direction;
 
-    current_string_position += iteration_direction;
+        return last_type_global;
+    }
 
-    return last_type_global;
-}
+    inline size_t symbols_left() {
+        return string_is_finished
+                   ? 0
+                   : (from_right_global
+                          ? current_string_position + 1
+                          : t_0_global.size() - current_string_position);
+    }
+};
 
 /** Returns a type b (L=1, S=0) and a number n so that the next n characters
  * have type b */
@@ -131,14 +140,6 @@ inline void get_types(string_span t_0, span<bool> ba) {
 
         last_char = t_0[i];
     }
-}
-
-inline size_t symbols_left() {
-    return string_is_finished
-               ? 0
-               : (from_right_global
-                      ? current_string_position + 1
-                      : t_0_global.size() - current_string_position);
 }
 
 } // namespace sacabench::util
