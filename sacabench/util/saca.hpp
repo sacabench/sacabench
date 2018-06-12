@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 #include "alphabet.hpp"
 #include "bits.hpp"
 #include "container.hpp"
