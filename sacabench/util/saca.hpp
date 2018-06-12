@@ -147,15 +147,20 @@ public:
         saca_list::get().register_saca(this);
     }
 
-    /// Run the SACA on a text in memory.
+    /// Run the SACA on some text.
     ///
     /// It selects a suitable `sa_index` type automatically.
-    inline void construct_sa(string_span test_input) const {
-        construct_sa_64(test_input);
+    inline void construct_sa(text_initializer const& text) const {
+        // TODO: Select suitable `sa_index` type automatically,
+        // or offer an API for selecting it.
+
+        construct_sa_64(text);
     }
 
     /// Run the SACA on the example string `"hello world"`.
-    inline void run_example() const { construct_sa_32("hello world"_s); }
+    inline void run_example() const {
+        construct_sa_32(text_initializer_from_span("hello world"_s));
+    }
 
     /// Get the name of the SACA.
     std::string const& name() const { return name_; }
@@ -165,16 +170,16 @@ public:
 
 protected:
     /// Runs the SACA with a 32 bit `sa_index` type.
-    virtual void construct_sa_32(string_span test_input) const = 0;
+    virtual void construct_sa_32(text_initializer const& text) const = 0;
     /*
     TODO: Commented out because of compile errors with the uint4X types.
     /// Runs the SACA with a 40 bit `sa_index` type.
-    virtual void construct_sa_40(string_span test_input) const = 0;
+    virtual void construct_sa_40(text_initializer const& text) const = 0;
     /// Runs the SACA with a 48 bit `sa_index` type.
-    virtual void construct_sa_48(string_span test_input) const = 0;
+    virtual void construct_sa_48(text_initializer const& text) const = 0;
     */
     /// Runs the SACA with a 64 bit `sa_index` type.
-    virtual void construct_sa_64(string_span test_input) const = 0;
+    virtual void construct_sa_64(text_initializer const& text) const = 0;
 
 private:
     std::string name_;
@@ -189,28 +194,20 @@ public:
         : saca(name, description) {}
 
 protected:
-    virtual void construct_sa_32(string_span test_input) const override {
-        construct_sa<uint32_t>(test_input);
+    virtual void construct_sa_32(text_initializer const& text) const override {
+        prepare_and_construct_sa<Algorithm, uint32_t>(text);
     }
     /*
     TODO: Commented out because of compile errors with the uint4X types.
-    virtual void construct_sa_40(string_span test_input) const override {
-        construct_sa<util::uint40>(test_input);
+    virtual void construct_sa_40(text_initializer const& text) const override {
+        prepare_and_construct_sa<Algorithm, util::uint40>(text);
     }
-    virtual void construct_sa_48(string_span test_input) const override {
-        construct_sa<util::uint48>(test_input);
+    virtual void construct_sa_48(text_initializer const& text) const override {
+        prepare_and_construct_sa<Algorithm, util::uint48>(text);
     }
     */
-    virtual void construct_sa_64(string_span test_input) const override {
-        construct_sa<uint64_t>(test_input);
-    }
-
-private:
-    /// Delegates to the actual SACA runner.
-    template <typename sa_index>
-    inline void construct_sa(string_span test_input) const {
-        prepare_and_construct_sa<Algorithm, sa_index>(
-            text_initializer_from_span(test_input));
+    virtual void construct_sa_64(text_initializer const& text) const override {
+        prepare_and_construct_sa<Algorithm, uint64_t>(text);
     }
 }; // class concrete_saca
 
