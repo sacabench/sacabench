@@ -18,7 +18,7 @@
 #include "../util/sort/bucketsort.hpp"
 #include "../util/string.hpp"
 
-namespace sacabench::saca {
+namespace sacabench::sacak {
 
 inline void calculate_deep_sa(util::span<size_t>& t_0,
                               util::container<size_t>& sa, size_t max_char) {
@@ -160,6 +160,6 @@ inline void calculate_sa(util::string& t_0, util::container<size_t>& sa,
     induced_sort(t_0, sa, max_char);
 }
 
-} // namespace sacabench::saca
+} // namespace sacabench::sacak
 
 /******************************************************************************/

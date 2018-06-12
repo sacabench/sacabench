@@ -76,7 +76,7 @@ TEST(induced_sorting, test_1) {
     }
 
     insert_lms_rtl(input_w, sa);
-    saca::induced_sort(input_w, sa, alph.size_without_sentinel());
+    sacak::induced_sort(input_w, sa, alph.size_without_sentinel());
 
     ASSERT_EQ(sa[0], 14);
     ASSERT_EQ(sa[1], 13);
@@ -128,7 +128,7 @@ void make_sacak(util::string_span &test_text, util::container<size_t> &sa, bool 
         std::cout << std::endl;
     }
 
-    saca::calculate_sa(input_w, sa, alph.size_without_sentinel());
+    sacak::calculate_sa(input_w, sa, alph.size_without_sentinel());
 
     if (print) {
         std::cout << "The resulting SA is: [ ";
