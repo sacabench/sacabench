@@ -1,11 +1,13 @@
 /*******************************************************************************
  * Copyright (C) 2018 Florian Kurpicz <florian.kurpicz@tu-dortmund.de>
+ * Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -42,17 +44,38 @@ public:
     inline span<sa_index_t> sa_with_sentinels() { return m_sa; }
 };
 
+/// A type that represents a input text before any allocation.
+struct text_initializer {
+    /// Size of the text. In bytes, without any sentinel values.
+    size_t text_size = 0;
+
+    /// Initializer function, that writes the text to the passed
+    /// span of size `text_size`.
+    std::function<void(span<character>)> initializer;
+};
+
+/// Creates a `text_initializer` that initializes with a `string_span`.
+inline text_initializer text_initializer_from_span(string_span text) {
+    return {
+        text.size(),
+        [=](span<character> s) {
+            for (size_t i = 0; i < s.size(); i++) {
+                s[i] = text[i];
+            }
+        },
+    };
+}
+
 /// Prepares SA and Text containers, and calls the given SACA Algorithm with
 /// them.
 ///
-/// \param text_size Original size of the text without sentinel characters
-/// \param text_init_function Init function that gets passed a span to the Text
-/// container, and that should write the actual Text into it.
-template <typename Algorithm, typename sa_index_t, typename text_init_function>
-uniform_sa_type<sa_index_t> prepare_and_construct_sa(size_t text_size,
-                                                     text_init_function init) {
-
+/// \param text_init Initializer for the text.
+template <typename Algorithm, typename sa_index_t>
+uniform_sa_type<sa_index_t>
+prepare_and_construct_sa(text_initializer const& text_init) {
     size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
+    size_t text_size = text_init.text_size;
+    auto const& init = text_init.initializer;
 
     auto output = make_container<sa_index_t>(text_size + extra_sentinels);
     auto text_with_sentinels = string(text_size + extra_sentinels);
@@ -187,11 +210,7 @@ private:
     template <typename sa_index>
     inline void construct_sa(string_span test_input) const {
         prepare_and_construct_sa<Algorithm, sa_index>(
-            test_input.size(), [&](auto s) {
-                for (size_t i = 0; i < s.size(); i++) {
-                    s[i] = test_input[i];
-                }
-            });
+            text_initializer_from_span(test_input));
     }
 }; // class concrete_saca
 
