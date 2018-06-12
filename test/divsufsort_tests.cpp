@@ -5,98 +5,105 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
-#include <sacabench/saca/divsufsort.hpp>
-#include <util/alphabet>
-#include <util/span>
-#include <util/string>
+#include <iostream>
+#include <saca/divsufsort.hpp>
+#include <util/alphabet.hpp>
+#include <util/span.hpp>
+#include <util/string.hpp>
+#include <util/container.hpp>
 
-using namespace sacabench::saca::divsufsort {
+using namespace sacabench::saca::divsufsort;
+using namespace sacabench;
+using dss = divsufsort<std::size_t>;
 
-    TEST(DivSufSort, extract_rms) {
-        util::string text = "caabaccaabacaa\0"_s;
-        auto output = make_container<sa_index_t>(text.size());
-        util::alphabet alphabet = util::apply_effective_alphabet(text);
+TEST(DivSufSort, extractRms) {
+    util::string text = "caabaccaabacaa\0"_s;
+    auto output = util::make_container<std::size_t>(text.size());
+    sacabench::util::apply_effective_alphabet(text.slice(0, text.size() - 1));
 
-        auto types = make_container<bool>(text.size());
-        ASSERT_EQ(types.size(), text.size());
-        get_types_tmp(text, types);
+    auto types = util::make_container<bool>(text.size());
+    ASSERT_EQ(types.size(), text.size());
+    dss::get_types_tmp(text, types);
 
-        auto left_border = extract_rms_suffixes(text, types, output);
+    auto count = dss::extract_rms_suffixes(text, types, output);
 
-        auto rms_gt = make_container<size_t>(4);
-        rms_gt[0] = 2;
-        rms_gt[1] = 4;
-        rms_gt[2] = 8;
-        rms_gt[3] = 10;
+    auto rms_gt = util::make_container<std::size_t>(4);
+    rms_gt[0] = 2;
+    rms_gt[1] = 4;
+    rms_gt[2] = 8;
+    rms_gt[3] = 10;
 
-        ASSERT_EQ(output.size() - left_border, rms_gt.size());
+    ASSERT_EQ(count, rms_gt.size());
 
-        for (size_t index = 0; index < rms_gt.size(); ++index) {
-            ASSERT_EQ(rms_gt[index], output[left_border + index]);
-        }
+    auto left_border = text.size() - count;
+    
+    for (std::size_t index = 0; index < count; ++index) {
+        ASSERT_EQ(rms_gt[index], output[left_border + index]);
     }
+}
 
-    TEST(DivSufSort, correct_bucket_sizes) {
-        // TODO: needed for several test-cases -> extract into helper function
-        util::string text = "caabaccaabacaa\0"_s;
-        auto output = make_container<sa_index_t>(text.size());
-        util::alphabet alphabet = util::apply_effective_alphabet(text);
+TEST(DivSufSort, correctBucketSizes) {
+    // TODO: needed for several test-cases -> extract into helper function
+    util::string text = "caabaccaabacaa\0"_s;
+    auto output = util::make_container<std::size_t>(text.size());
+    util::alphabet alphabet = util::apply_effective_alphabet(text.slice(0, text.size() - 1));
 
-        auto types = make_container<bool>(text.size());
-        ASSERT_EQ(types.size(), text.size());
-        get_types_tmp(text, types);
+    auto types = util::make_container<bool>(text.size());
+    ASSERT_EQ(types.size(), text.size());
+    dss::get_types_tmp(text, types);
+    
+    auto l1 = util::make_container<std::size_t>(
+                        alphabet.max_character_value() + 1);
+    auto l2 = util::make_container<std::size_t>(
+                        alphabet.max_character_value() + 1);
+    auto s1 = util::make_container<std::size_t>(
+                        pow(alphabet.max_character_value() + 1, 2));
+    auto s2 = util::make_container<std::size_t>(
+                        pow(alphabet.max_character_value() + 1, 2));
+    
+    
+    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value(),
+                    /*.l_buckets=*/ l1, /*.s_buckets=*/ s1};
+    buckets result = {/*.alphabet_size=*/alphabet.max_character_value(),
+                    /*.l_buckets=*/ l2, /*.s_buckets=*/ s2};
 
-        buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value(),
-                        /*.l_buckets=*/
-                        util::make_container<sa_index>(
-                            alphabet.max_character_value() + 1), /*.s_buckets=*/
-                        util::make_container<sa_index>(
-                            pow(alphabet.max_character_value() + 1, 2))};
-        buckets result = {/*.alphabet_size=*/alphabet.max_character_value(),
-                        /*.l_buckets=*/
-                        util::make_container<sa_index>(
-                            alphabet.max_character_value() + 1), /*.s_buckets=*/
-                        util::make_container<sa_index>(
-                            pow(alphabet.max_character_value() + 1, 2))};
+    ASSERT_EQ(bkts.l_buckets.size(), std::size_t(4));
 
-        ASSERT_EQ(bkts.l_buckets.size(), 4);
+    bkts.l_buckets[0] = 0;
+    bkts.l_buckets[1] = 1;
+    bkts.l_buckets[2] = 9;
+    bkts.l_buckets[3] = 11;
 
-        bkts.l_buckets[0] = 0;
-        bkts.l_buckets[1] = 1;
-        bkts.l_buckets[2] = 9;
-        bkts.l_buckets[3] = 11;
-
-        ASSERT_EQ(bkts.s_buckets.size(), 16);
-        
-        /*
-                                    // buckets for types
-        bkts.s_buckets[5] = 2;      // (a,a) for s
-        bkts.s_buckets[6] = 2;      // (a,b) for s
-        bkts.s_buckets[7] = 2;      // (a,c) for s
-        bkts.s_buckets[9] = 2;      // (a,b) for rms
-        bkts.s_buckets[10] = 2;     // (b,b) for s
-        bkts.s_buckets[11] = 2;     // (b,c) for s
-        bkts.s_buckets[13] = 4;     // (a,c) for rms
-        //bkts.s_buckets[14] = 4;     // (b,c) for rms
-        //bkts.s_buckets[15] = 2;     // (c,c) for s
-        */
-        
-        
-        bkts.s_buckets[5] = 2;      // (a,a) for s
-        bkts.s_buckets[9] = 2;      // (a,b) for rms
-        bkts.s_buckets[13] = 4;     // (a,c) for rms
-        bkts.s_buckets[14] = 4;     // (b,c) for rms
-        
-        compute_buckets(text, alphabet, types, result);
-        
-        // Assertions for l_buckets
-        for(size_t index = 0; index < bkts.l_buckets.size(); ++index) {
-            ASSERT_EQ(bkts.l_buckets[index], result.l_buckets[index]);
-        }
-        
-        // Assertions for s_buckets (i.e. for s- and rms-buckets)
-        for(size_t index = 0; index < bkts.s_buckets.size(); ++index) {
-            ASSERT_EQ(bkts.s_buckets[index], result.s_buckets[index]);
-        }
+    ASSERT_EQ(bkts.s_buckets.size(), std::size_t(16));
+    
+    /*
+                                // buckets for types
+    bkts.s_buckets[5] = 2;      // (a,a) for s
+    bkts.s_buckets[6] = 2;      // (a,b) for s
+    bkts.s_buckets[7] = 2;      // (a,c) for s
+    bkts.s_buckets[9] = 2;      // (a,b) for rms
+    bkts.s_buckets[10] = 2;     // (b,b) for s
+    bkts.s_buckets[11] = 2;     // (b,c) for s
+    bkts.s_buckets[13] = 4;     // (a,c) for rms
+    //bkts.s_buckets[14] = 4;     // (b,c) for rms
+    //bkts.s_buckets[15] = 2;     // (c,c) for s
+    */
+    
+    
+    bkts.s_buckets[5] = 2;      // (a,a) for s
+    bkts.s_buckets[9] = 2;      // (a,b) for rms
+    bkts.s_buckets[13] = 4;     // (a,c) for rms
+    bkts.s_buckets[14] = 4;     // (b,c) for rms
+    
+    dss::compute_buckets(text, alphabet, types, result);
+    
+    // Assertions for l_buckets
+    for(std::size_t index = 0; index < bkts.l_buckets.size(); ++index) {
+        ASSERT_EQ(bkts.l_buckets[index], result.l_buckets[index]);
+    }
+    
+    // Assertions for s_buckets (i.e. for s- and rms-buckets)
+    for(std::size_t index = 0; index < bkts.s_buckets.size(); ++index) {
+        ASSERT_EQ(bkts.s_buckets[index], result.s_buckets[index]);
     }
 }
