@@ -8,9 +8,9 @@
 #include <iostream>
 #include <saca/divsufsort.hpp>
 #include <util/alphabet.hpp>
+#include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/container.hpp>
 
 using namespace sacabench::saca::divsufsort;
 using namespace sacabench;
@@ -36,7 +36,7 @@ TEST(DivSufSort, extractRms) {
     ASSERT_EQ(count, rms_gt.size());
 
     auto left_border = text.size() - count;
-    
+
     for (std::size_t index = 0; index < count; ++index) {
         ASSERT_EQ(rms_gt[index], output[left_border + index]);
     }
@@ -46,26 +46,26 @@ TEST(DivSufSort, correctBucketSizes) {
     // TODO: needed for several test-cases -> extract into helper function
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
-    util::alphabet alphabet = util::apply_effective_alphabet(text.slice(0, text.size() - 1));
+    util::alphabet alphabet =
+        util::apply_effective_alphabet(text.slice(0, text.size() - 1));
 
     auto types = util::make_container<bool>(text.size());
     ASSERT_EQ(types.size(), text.size());
     dss::get_types_tmp(text, types);
-    
-    auto l1 = util::make_container<std::size_t>(
-                        alphabet.max_character_value() + 1);
-    auto l2 = util::make_container<std::size_t>(
-                        alphabet.max_character_value() + 1);
+
+    auto l1 =
+        util::make_container<std::size_t>(alphabet.max_character_value() + 1);
+    auto l2 =
+        util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     auto s1 = util::make_container<std::size_t>(
-                        pow(alphabet.max_character_value() + 1, 2));
+        pow(alphabet.max_character_value() + 1, 2));
     auto s2 = util::make_container<std::size_t>(
-                        pow(alphabet.max_character_value() + 1, 2));
-    
-    
-    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value()+1,
-                    /*.l_buckets=*/ l1, /*.s_buckets=*/ s1};
-    buckets result = {/*.alphabet_size=*/alphabet.max_character_value()+1,
-                    /*.l_buckets=*/ l2, /*.s_buckets=*/ s2};
+        pow(alphabet.max_character_value() + 1, 2));
+
+    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+                    /*.l_buckets=*/l1, /*.s_buckets=*/s1};
+    buckets result = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+                      /*.l_buckets=*/l2, /*.s_buckets=*/s2};
 
     ASSERT_EQ(bkts.l_buckets.size(), std::size_t(4));
 
@@ -75,7 +75,7 @@ TEST(DivSufSort, correctBucketSizes) {
     bkts.l_buckets[3] = 11;
 
     ASSERT_EQ(bkts.s_buckets.size(), std::size_t(16));
-    
+
     /*
                                 // buckets for types
     bkts.s_buckets[5] = 2;      // (a,a) for s
@@ -88,27 +88,30 @@ TEST(DivSufSort, correctBucketSizes) {
     //bkts.s_buckets[14] = 4;     // (b,c) for rms
     //bkts.s_buckets[15] = 2;     // (c,c) for s
     */
-    
-    
-    bkts.s_buckets[5] = 2;      // (a,a) for s
-    bkts.s_buckets[9] = 2;      // (a,b) for rms
-    bkts.s_buckets[13] = 4;     // (a,c) for rms
-    bkts.s_buckets[14] = 4;     // (b,c) for rms
-    
+
+    bkts.s_buckets[5] = 2;  // (a,a) for s
+    bkts.s_buckets[9] = 2;  // (a,b) for rms
+    bkts.s_buckets[13] = 4; // (a,c) for rms
+    bkts.s_buckets[14] = 4; // (b,c) for rms
+
     dss::compute_buckets(text, alphabet, types, result);
-    
+
     std::cout << "l-buckets:" << std::endl;
     // Assertions for l_buckets
-    for(std::size_t index = 0; index < bkts.l_buckets.size(); ++index) {
-        std::cout << "Index: " << index << " # computed: " << result.l_buckets[index] << " # should: " << bkts.l_buckets[index] << std::endl;
+    for (std::size_t index = 0; index < bkts.l_buckets.size(); ++index) {
+        std::cout << "Index: " << index
+                  << " # computed: " << result.l_buckets[index]
+                  << " # should: " << bkts.l_buckets[index] << std::endl;
         ASSERT_EQ(bkts.l_buckets[index], result.l_buckets[index]);
     }
-    
+
     std::cout << "s-buckets:" << std::endl;
-    
+
     // Assertions for s_buckets (i.e. for s- and rms-buckets)
-    for(std::size_t index = 0; index < bkts.s_buckets.size(); ++index) {
-        std::cout << "Index: " << index << " # computed: " << result.s_buckets[index] << " # should: " << bkts.s_buckets[index] << std::endl;
+    for (std::size_t index = 0; index < bkts.s_buckets.size(); ++index) {
+        std::cout << "Index: " << index
+                  << " # computed: " << result.s_buckets[index]
+                  << " # should: " << bkts.s_buckets[index] << std::endl;
         ASSERT_EQ(bkts.s_buckets[index], result.s_buckets[index]);
     }
 }
