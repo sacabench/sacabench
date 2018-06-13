@@ -66,7 +66,12 @@ public:
         DCHECK_EQ(bucket_bounds.size(), bounds.size()[0] * bounds.size()[1]);
 
         for (size_t i = 0; i < bucket_bounds.size(); ++i) {
-            bounds[i].starting_position = bucket_bounds[i].position;
+            const util::character alpha = i / real_alphabet_size;
+            const util::character beta = i % real_alphabet_size;
+
+            // std::cout << (size_t)alpha << ", " << (size_t)beta << std::endl;
+
+            bounds[{alpha,beta}].starting_position = bucket_bounds[i].position;
         }
 
         end_of_last_bucket = bucket_bounds[bucket_bounds.size() - 1].position +
@@ -75,17 +80,17 @@ public:
 
     inline bool is_bucket_sorted(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        return bounds[a][b].is_sorted;
+        return bounds[{a,b}].is_sorted;
     }
 
     inline void mark_bucket_sorted(const u_char a, const u_char b) {
         check_bounds(a, b);
-        bounds[a][b].is_sorted = true;
+        bounds[{a,b}].is_sorted = true;
     }
 
     inline sa_index_type start_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        return bounds[a][b].starting_position;
+        return bounds[{a,b}].starting_position;
     }
 
     inline sa_index_type end_of_bucket(const u_char a, const u_char b) const {
@@ -93,7 +98,7 @@ public:
         if (a == b && b == real_alphabet_size - 1) {
             return end_of_last_bucket;
         } else {
-            return bounds[a][b+1].starting_position;
+            return bounds[{a,b+1u}].starting_position;
         }
     }
 
