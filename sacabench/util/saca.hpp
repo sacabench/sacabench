@@ -17,18 +17,28 @@
 #include "bits.hpp"
 #include "container.hpp"
 #include "read_text.hpp"
+#include "sa_check.hpp"
 #include "span.hpp"
 #include "string.hpp"
 #include "uint_types.hpp"
 
 namespace sacabench::util {
 
+/// Abstract base class for a suffix array with undetermined `sa_index` type.
+class abstract_sa {
+public:
+    virtual ~abstract_sa() = default;
+
+    // Run the sa checker, and return its result.
+    virtual sa_check_result check(string_span text) = 0;
+};
+
 /// A wrapper around a suffix array container with extra sentinel values.
 ///
 /// It allows a uniform view of the SA, with entries for extra sentinel
 /// characters removed.
 template <typename sa_index>
-class uniform_sa {
+class uniform_sa : public abstract_sa {
     size_t m_extra_sentinels;
     container<sa_index> m_sa;
 
@@ -48,6 +58,10 @@ public:
 
     /// Return original suffix array, with potential sentinel positions.
     inline span<sa_index> sa_with_sentinels() { return m_sa; }
+
+    inline virtual sa_check_result check(string_span text) override {
+        return sa_check<sa_index>(sa_without_sentinels(), text);
+    }
 };
 
 /// A type that represents a input text before any allocation.
