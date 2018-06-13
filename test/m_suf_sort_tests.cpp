@@ -43,6 +43,21 @@ TEST(m_suf_sort, test_refine_u_chains) {
     ASSERT_EQ(chain_stack.size(), 3);
 }
 
+// TEST(m_suf_sort, debugging) {
+//     util::string input = util::make_string("abcabcabc"_s);
+//     auto alphabet = util::apply_effective_alphabet(input);
+//
+//     input[input.size()-1] = '\0';
+//
+//     std::cout << input.size() << std::endl;
+//
+//     auto sa = util::make_container<size_t>(input.size());
+//
+//     m_suf_sort2::construct_sa<size_t>(input, alphabet, sa);
+//
+//     ASSERT_TRUE(sa_check(util::span<size_t>(sa), util::span<util::character>(input)));
+// }
+
 /* For this test to run, comment in m_suf_sort2::construct_sa the line with isa to sa conversion!
 
 TEST(m_suf_sort, test_ISA_construction_stage1) {

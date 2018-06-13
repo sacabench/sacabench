@@ -34,7 +34,7 @@ namespace sacabench::util::sort {
      *
      * \return Size and starting position for each bucket in the suffix array.
      */
-    container<bucket> get_buckets(const string_span input,
+    inline container<bucket> get_buckets(const string_span input,
             const std::size_t max_character_code, const std::size_t depth) {
         DCHECK_GE(depth, 1);
 
@@ -110,7 +110,7 @@ namespace sacabench::util::sort {
      * \return Size and starting position for each bucket in the suffix array.
      */
     template <typename index_type>
-        container<bucket> bucketsort_presort(const string_span input,
+        inline container<bucket> bucketsort_presort(const string_span input,
                 const std::size_t max_character_code, const std::size_t depth,
                 span<index_type> sa) {
             DCHECK_EQ(input.size(), sa.size());
@@ -167,7 +167,7 @@ namespace sacabench::util::sort {
     /// This is the recursiv helper function for the function bucket sort.
     /// Do not use this function directly, instead use
     /// void bucket_sort(container<string>& strings, size_t maxDepth, container<string>& result).
-    void bucket_sort_recursiv(span<string const> const strings, size_t currentDepth, size_t maxDepth, span<string> result) {
+    inline void bucket_sort_recursiv(span<string const> const strings, size_t currentDepth, size_t maxDepth, span<string> result) {
         DCHECK_EQ(strings.size(), result.size());
 
         // check end of recursion
@@ -220,7 +220,7 @@ namespace sacabench::util::sort {
      * The result contains all buckets in sorted ascending order.
      * The strings within each bucket are not necessarily sorted.
      */
-    void bucket_sort(span<string const> const strings, size_t maxDepth, span<string> result) {
+    inline void bucket_sort(span<string const> const strings, size_t maxDepth, span<string> result) {
         DCHECK_EQ(strings.size(), result.size());
         bucket_sort_recursiv(strings, 0, maxDepth, result);
     }

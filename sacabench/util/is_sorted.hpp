@@ -6,7 +6,10 @@
 
 #pragma once
 
+#include "container.hpp"
 #include "span.hpp"
+#include "string.hpp"
+#include "sort/std_sort.hpp"
 
 namespace sacabench::util {
 // Checks the sorting of the array in O(n).
@@ -20,5 +23,18 @@ bool is_sorted(const span<content> array, Compare less = Compare()) {
         }
     }
     return true;
+}
+
+template <typename sa_index_type>
+bool is_partially_suffix_sorted(const span<sa_index_type> array, util::string_span text) {
+    auto copy = make_container(array);
+
+    // Construct a SA by sorting according
+    // to the suffix starting at that index.
+    sort::std_sort(copy, compare_key([&](size_t i) {
+        return text.slice(i);
+    }));
+
+    return array == span<sa_index_type>(copy);
 }
 } // namespace sacabench::util

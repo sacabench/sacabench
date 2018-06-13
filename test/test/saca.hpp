@@ -7,7 +7,10 @@
 
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include <util/alphabet.hpp>
+#include <util/bits.hpp>
 #include <util/sa_check.hpp>
 #include <util/saca.hpp>
 
@@ -23,31 +26,42 @@ namespace test {
 /// test::saca_corner_cases<MyAlgorithm>();
 /// ```
 template <typename Algorithm, typename sa_index_type = size_t>
-void saca_corner_cases() {
+void saca_corner_cases_single_type(bool print_cases) {
     using namespace sacabench::util;
 
-    auto test = [](string_span text) {
+    std::cout << "Test with "
+              << ceil_log2(std::numeric_limits<sa_index_type>::max())
+              << " bit sa_index type..." << std::endl;
+
+    auto test = [&](string_span text) {
         size_t slice_limit = 40;
 
+        std::stringstream ss;
+
+        ss << "Test SACA on ";
         if (text.size() > slice_limit) {
             size_t i = slice_limit;
             while (i < text.size() && (text[i] >> 6 == 0b10)) {
                 i++;
             }
-            std::cout << "Test SACA on '" << text.slice(0, i) << "[...]'\n";
+            ss << "'" << text.slice(0, i) << "[...]'";
         } else {
-            std::cout << "Test SACA on '" << text << "'\n";
+            ss << "'" << text << "'";
+        }
+        ss << " (" << text.size() << " bytes)" << std::endl;
+
+        if (print_cases) {
+            std::cout << ss.str();
         }
 
         auto output = prepare_and_construct_sa<Algorithm, sa_index_type>(
-            text.size(), [&](auto s) {
-                for (size_t i = 0; i < s.size(); i++) {
-                    s[i] = text[i];
-                }
-            });
+            text_initializer_from_span(text));
 
         auto fast_result = sa_check(output.sa_without_sentinels(), text);
         if (fast_result != sa_check_result::ok) {
+            if (!print_cases) {
+                std::cout << ss.str();
+            }
             auto slow_result =
                 sa_check_naive(output.sa_without_sentinels(), text);
             ASSERT_EQ(bool(fast_result), bool(slow_result))
@@ -56,13 +70,13 @@ void saca_corner_cases() {
         }
     };
 
-    //test(""_s);
+    test(""_s);
     test("hello world"_s);
     test("caabaccaabacaa"_s);
     test("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"_s);
 
     // All test strings below are take fromn tudocomp
-    /*test("abcdebcdeabc"_s);
+    test("abcdebcdeabc"_s);
     test("a"_s);
 
     test("aaaaaaaaa"_s);
@@ -116,6 +130,30 @@ void saca_corner_cases() {
     test("0	100009425	0.1661:0.1661	#businessfor"_s);
 
     // Actual Hieroglyphs!
-    test("𓉑 𓉀𓊈𓈵𓊉𓉓𓊈𓈰𓊃𓈷𓊃𓈳𓊃𓈸𓊃𓈱𓊉"_s);*/
+    test("𓉑 𓉀𓊈𓈵𓊉𓉓𓊈𓈰𓊃𓈷𓊃𓈳𓊃𓈸𓊃𓈱𓊉"_s);
+
+    // Emoji
+    test("🌠🐖💯🎁 🏠👰🌊💴🕜🎂 💞🕀🍴👤 🍳📠🐓🐖📤 👮🔶🔍💟🔝 🗽"
+         "🌹🔥🌿 💉📈👇🔝🔔 👕🔏🕚🏠🎽. 🔱📇🌳💚🎈 🔑🌲🐢👞🕣💘 🏥"
+         "💕🐰🐹💉🎳 🍂🐤💺🍗 🔷🍹🕁🏀🐴 👻💞💂🌇📋 👴🔛📚🔭📙 👣📆"
+         "🏭🎠👠🏈 👧🌹🌉🔋🎅🔟 🎴🍮🍶👹🍋📐🌕🐂 🍆🔄🌉🍫🍶 🐝🌚🔫🏄"
+         " 👙🎊📢🎄💘."_s);
 }
+
+/// Helper function to run a SA construction algorithm
+/// on a number of short test strings.
+///
+/// The list of test strings can be freely extended as needed,
+/// since every algorithm should always be able to handle any Input.
+///
+/// Example:
+/// ```cpp
+/// test::saca_corner_cases<MyAlgorithm>();
+/// ```
+template <typename Algorithm>
+void saca_corner_cases() {
+    saca_corner_cases_single_type<Algorithm, uint64_t>(true);
+    saca_corner_cases_single_type<Algorithm, uint32_t>(false);
+}
+
 } // namespace test

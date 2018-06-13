@@ -1,6 +1,6 @@
-
 /*******************************************************************************
- * Copyright (C) 2018 Rosa Pink
+ * Copyright (C) 2018 Rosa Pink <rosa.pink@tu-dortmund.de>
+ * Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -26,6 +26,7 @@ template <typename sa_index> constexpr sa_index END = ((sa_index)(-1)) >> 1;
 template <typename sa_index> constexpr sa_index NEG_BIT = ((sa_index)1) << (util::bits_of<sa_index> - 1);
 
 template<typename content> using pairstack = std::stack<std::pair<content, content>>;
+template<typename content2> using pair_si = std::pair<content2, content2>;
 
 
 template <typename sa_index>
@@ -47,7 +48,8 @@ public:
         global_rank++;
     }
     sa_index get_rank(sa_index index) {
-        return isa[index] & END<sa_index>;
+        const auto rank = isa[index] & END<sa_index>;
+        return rank;
     }
     bool is_link(sa_index index) {
         return !is_rank(index);
@@ -65,6 +67,21 @@ public:
     //return copy of global_rank if needed
     sa_index get_global_rank(){
         return global_rank;
+    }
+
+    inline void print() const {
+        for(const sa_index i : isa) {
+            if(i == END<sa_index>) {
+                std::cout << "[END]" << ", ";
+            }
+            else {
+                if((i & NEG_BIT<sa_index>) > 0) {
+                    std::cout << "R" << (i & END<sa_index>) << ", ";
+                } else {
+                    std::cout << "L" << (i & END<sa_index>) << ", ";
+                }
+            }
+        }
     }
 
     special_bits(util::span<sa_index> isa_to_be) : isa(isa_to_be), global_rank(0) {}
@@ -102,7 +119,7 @@ public:
         refine_uChain(text, isa, chain_stack, all_indices, length);
 
         // begin main loop:
-        while(chain_stack.size() > 0){
+        while(chain_stack.size() > 0) {
             std::pair<sa_index, sa_index> current_chain = chain_stack.top();
             chain_stack.pop();
             sa_index chain_index = current_chain.first;
@@ -114,24 +131,24 @@ public:
                 continue;
             }
 
-
             // else follow the chain and refine it
             std::vector<sa_index> to_be_refined_;
-            std::vector<sa_index> sorting_induced;
+            std::vector<pair_si<sa_index>> sorting_induced_;
 
             // follow the chain
             while(true) {
-                //TODO: Simple sorting by induction implementation
 
                 // if is not sortable by simple induction
                 // refine u-Chain with this element
 
-                //if(!isa.is_rank(chain_index + length)) {
+                if(!isa.is_rank(chain_index + length)) {
                     to_be_refined_.push_back(chain_index);
-                //}
-                //else {
-                    //sorting_induced.push_back(chain_index);
-                //}
+                }
+                else {
+                    // make new pair from chain_index and sort key, rank of chain_index + length to be sorted by easy induced sort
+                    pair_si<sa_index> new_sort_pair = std::make_pair(chain_index, isa.get_rank(chain_index + length));
+                    sorting_induced_.push_back(new_sort_pair);
+                }
                 if(isa.is_END(chain_index)) {
                     break;
                 }
@@ -139,9 +156,14 @@ public:
                 chain_index = isa.get(chain_index);
             }
 
-            //TODO: here sorting and ranking of induced suffixes
+            util::span<pair_si<sa_index>> sorting_induced = util::span<pair_si<sa_index>>(sorting_induced_);
             util::span<sa_index> to_be_refined = util::span<sa_index>(to_be_refined_);
-            refine_uChain(text, isa, chain_stack, to_be_refined, length);
+
+            easy_induced_sort(text, isa, sorting_induced);
+            // only refine uChain if elements are left!
+            if(to_be_refined.size() > 0) {
+                refine_uChain(text, isa, chain_stack, to_be_refined, length);
+            }
         }
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later (try 2 other options)
@@ -155,7 +177,7 @@ public:
 // There is missing a third argument for that.
 template <typename sa_index>
 void assign_rank(sa_index index, special_bits<sa_index>& isa) {
-        isa.set_rank(index);
+    isa.set_rank(index);
 }
 
 // compare function for introsort that sorts first after text symbols at given indices
@@ -170,23 +192,6 @@ public:
     const sa_index length;
 
     bool operator()(const sa_index& a, const sa_index& b) const {
-
-        /*
-        SENTINEL IS ADDED, NO NEED FOR THIS ANYMORE, RIGHT?
-
-        const bool a_is_too_short = length + a >= input_text.size();
-        const bool b_is_too_short = length + b >= input_text.size();
-
-        if (a_is_too_short) {
-            // b should be larger
-            return false;
-        }
-
-        if (b_is_too_short) {
-            // a should be larger
-            return true;
-        }
-        */
         DCHECK_LT(length + a, input_text.size());
         DCHECK_LT(length + b, input_text.size());
 
@@ -201,6 +206,27 @@ public:
             is_a_smaller = a < b;
         }
         return is_a_smaller;
+    }
+
+private:
+    const util::string_span input_text;
+};
+
+// compare function for introsort that sorts a pair of sa_index types after second argument
+// used for easy_induced_sort
+template <typename sa_index>
+struct compare_sortkey {
+public:
+    // Function for comparisons within introsort
+    compare_sortkey(const util::string_span text)
+        : input_text(text) {}
+
+    bool operator()(const pair_si<sa_index> pair_a, const pair_si<sa_index> pair_b) const {
+
+        const sa_index sortkey_a = pair_a.second;
+        const sa_index sortkey_b = pair_b.second;
+
+        return sortkey_a < sortkey_b;
     }
 
 private:
@@ -249,5 +275,18 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
          isa.set_link(new_chain_IDs[new_chain_IDs.size() - 1], last_ID);
          std::pair<sa_index, sa_index> new_chain (new_chain_IDs[new_chain_IDs.size() - 1], length + 1);
          cstack.push(new_chain);
+}
+
+//function to sort a set of suffix indices
+template <typename sa_index>
+void easy_induced_sort(util::string_span text, special_bits<sa_index>& isa, util::span<pair_si<sa_index>> to_be_ranked) {
+    //sort elements after their sortkey:
+    compare_sortkey<sa_index> comparator(text);
+    util::sort::introsort(to_be_ranked, comparator);
+
+    //rank all elements in sorted order:
+    for(const auto current_index : to_be_ranked) {
+        assign_rank(current_index.first, isa);
+    }
 }
 } // namespace sacabench::m_suf_sort

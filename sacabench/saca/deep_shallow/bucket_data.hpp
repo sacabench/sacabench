@@ -9,6 +9,7 @@
 #include <util/container.hpp>
 #include <util/string.hpp>
 #include <util/uint_types.hpp>
+#include <util/kd_array.hpp>
 
 namespace sacabench::deep_shallow {
 
@@ -35,59 +36,58 @@ static_assert(sizeof(bucket_information<util::uint48>) <= sizeof(uint64_t));
 template <typename sa_index_type>
 struct bucket_data_container {
 private:
+    // This is the real alphabet size, containing the SENTINEL symbol.
+    size_t real_alphabet_size;
+
     // This container has length `alphabet_size`^2.
     // It contains for every `alpha` a continous sequence of entries of bucket
     // information.
-    util::container<bucket_information<sa_index_type>> bounds;
-    sa_index_type end_of_last_bucket;
-
-    // This is the real alphabet size, containing the SENTINEL symbol.
-    size_t real_alphabet_size;
+    util::kd_array<bucket_information<sa_index_type>, 2> bounds;
+    sa_index_type end_of_last_bucket = 0;
 
 public:
     inline bucket_data_container() : bucket_data_container(0) {}
 
     inline bucket_data_container(const size_t alphabet_size)
-        : real_alphabet_size(alphabet_size + 1) {
-        const auto n = real_alphabet_size * real_alphabet_size;
-
-        // Check if `n` overflowed
-        DCHECK_GE(n, real_alphabet_size);
-
-        bounds = util::make_container<bucket_information<sa_index_type>>(n);
-    }
+        : real_alphabet_size(alphabet_size + 1), bounds({real_alphabet_size,real_alphabet_size}) {}
 
     inline void check_bounds(const u_char a, const u_char b) const {
         DCHECK_LT(a, real_alphabet_size);
         DCHECK_LT(b, real_alphabet_size);
-        (void) a;
-        (void) b;
+
+        // "Use" `a` and `b` so that the compiler doesn't warn about them
+        // being unused.
+        (void)a;
+        (void)b;
     }
 
     inline void set_bucket_bounds(
         const util::container<util::sort::bucket>& bucket_bounds) {
-        DCHECK_EQ(bucket_bounds.size(), bounds.size());
+        DCHECK_EQ(bucket_bounds.size(), bounds.size()[0] * bounds.size()[1]);
 
         for (size_t i = 0; i < bucket_bounds.size(); ++i) {
-            bounds[i].starting_position = bucket_bounds[i].position;
+            const util::character alpha = i / real_alphabet_size;
+            const util::character beta = i % real_alphabet_size;
+            bounds[{alpha,beta}].starting_position = bucket_bounds[i].position;
         }
+
         end_of_last_bucket = bucket_bounds[bucket_bounds.size() - 1].position +
                              bucket_bounds[bucket_bounds.size() - 1].count;
     }
 
     inline bool is_bucket_sorted(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        return bounds[a * real_alphabet_size + b].is_sorted;
+        return bounds[{a,b}].is_sorted;
     }
 
     inline void mark_bucket_sorted(const u_char a, const u_char b) {
         check_bounds(a, b);
-        bounds[a * real_alphabet_size + b].is_sorted = true;
+        bounds[{a,b}].is_sorted = true;
     }
 
     inline sa_index_type start_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
-        return bounds[a * real_alphabet_size + b].starting_position;
+        return bounds[{a,b}].starting_position;
     }
 
     inline sa_index_type end_of_bucket(const u_char a, const u_char b) const {
@@ -95,8 +95,7 @@ public:
         if (a == b && b == real_alphabet_size - 1) {
             return end_of_last_bucket;
         } else {
-            const size_t next_index = a * real_alphabet_size + b + 1;
-            return bounds[next_index].starting_position;
+            return bounds[{a,b+1u}].starting_position;
         }
     }
 
