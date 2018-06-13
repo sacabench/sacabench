@@ -51,7 +51,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << std::endl;
     }
 
-
     if (construct) {
         sacabench::util::saca const* algo = nullptr;
         for (const auto& a : saca_list) {
@@ -64,15 +63,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             std::cerr << "Algorithm does not exist" << std::endl;
             return 1;
         }
-        algo->run_example();
-    }
 
-    /*
-    for (const auto& a : saca_list) {
-        std::cout << "Running " << a->name() << "..." << std::endl;
-        a->run_example();
+        auto text =
+            sacabench::util::text_initializer_from_file(input_filename);
+        algo->construct_sa(text);
     }
-    */
 
     return 0;
 }
