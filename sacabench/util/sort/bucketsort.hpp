@@ -34,7 +34,8 @@ namespace sacabench::util::sort {
      *
      * \return Size and starting position for each bucket in the suffix array.
      */
-    inline container<bucket> get_buckets(const string_span input,
+    template <typename span_type>
+    inline container<bucket> get_buckets(const span_type input,
             const std::size_t max_character_code, const std::size_t depth) {
         DCHECK_GE(depth, 1);
 
