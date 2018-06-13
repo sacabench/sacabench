@@ -450,7 +450,7 @@ public:
 
             // induce positions for each suffix in range
             for (size_t i = interval_start; i >= interval_end; --i) {
-                if ((sa[i] | NEGATIVE_MASK) == 0) {
+                if ((sa[i] & NEGATIVE_MASK) == 0) {
                     // entry is not negative -> induce predecessor
 
                     // insert suffix i-1 at rightmost free index of
@@ -462,6 +462,38 @@ public:
 
                 // toggle flag
                 sa[i] ^= NEGATIVE_MASK;
+            }
+        }
+
+        // "$" is the first index
+        sa[0] = input.size() - 1;
+
+        // if predecessor is S-suffix
+        if (input[input.size()-2] < input[input.size()-1]) {
+            sa[0] |= NEGATIVE_MASK;
+        }
+    }
+
+    inline static void induce_L_suffixes (util::string_span input,
+                                          util::span<bool> suffix_types,
+                                          buckets buckets,
+                                          util::span<sa_index> sa,
+                                          util::character max_character) {
+        // bit mask: 1000...000
+        constexpr sa_index NEGATIVE_MASK = size_t(1)
+                                           << (sizeof(sa_index) * 8 - 1);
+
+        for (size_t i = 0; i < sa.size(); ++i) {
+            if (sa[i] & NEGATIVE_MASK > 0) {
+                // entry is negative: sa[i-1] already induced -> remove flag
+                sa[i] ^= NEGATIVE_MASK;
+            } else {
+                // predecessor has yet to be induced
+                sa[buckets.l_buckets[input[sa[i] - 1]]++] = sa[i] - 1;
+                if (input[sa[i-1]-1] < input[sa[i-1]]) {
+                    // predecessor of induced index i S-suffix
+                    // negierten Wert induzieren?
+                }
             }
         }
     }
