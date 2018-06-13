@@ -36,14 +36,15 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool check_sa;
     construct.add_flag("--check", check_sa);
 
-    construct.add_flag("-b,--benchmark", "Record benchmark");
+    bool record_benchmark;
+    construct.add_flag("-b,--benchmark", record_benchmark, "Record benchmark");
 
     CLI11_PARSE(app, argc, argv);
 
     // Handle CLI arguments
     auto& saca_list = util::saca_list::get();
 
-    if (list) {
+    auto implemented_algos = [&] {
         std::cout << "Currently implemented Algorithms:" << std::endl;
         for (const auto& a : saca_list) {
             std::cout << "  [" << a->name() << "]" << std::endl;
@@ -53,6 +54,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             }
         }
         std::cout << std::endl;
+    };
+
+    if (list) {
+        implemented_algos();
     }
 
     if (construct) {
@@ -65,24 +70,34 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
         if (algo == nullptr) {
             std::cerr << "Algorithm does not exist" << std::endl;
+            no_desc = true;
+            implemented_algos();
             return 1;
         }
+        {
+            tdc::StatPhase root("CLI");
+            {
+                auto text = util::text_initializer_from_file(input_filename);
+                auto sa = algo->construct_sa(text);
+                if (check_sa) {
+                    // Read the string in again
+                    auto s = util::string(text.text_size());
+                    text.initializer(s);
 
-        auto text = util::text_initializer_from_file(input_filename);
-        auto sa = algo->construct_sa(text);
-        if (check_sa) {
-            // Read the string in again
-            auto s = util::string(text.text_size());
-            text.initializer(s);
+                    // Run the SA checker, and print the result
+                    auto res = sa->check(s);
+                    if (res != util::sa_check_result::ok) {
+                        std::cerr << "SA check failed!" << std::endl;
+                        return 1;
+                    } else {
+                        std::cerr << "SA check OK." << std::endl;
+                    }
+                }
+            }
 
-            // Run the SA checker, and print the result
-            auto res = sa->check(s);
-            if (res != util::sa_check_result::ok) {
-                std::cerr << "SA check failed!" << std::endl;
-                return 1;
-            } else {
-                std::cerr << "SA check OK." << std::endl;
-                return 0;
+            if (record_benchmark) {
+                auto j = root.to_json();
+                std::cout << j.dump(4) << std::endl;
             }
         }
     }

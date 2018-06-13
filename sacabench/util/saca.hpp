@@ -114,8 +114,8 @@ public:
 ///
 /// \param text_init Initializer for the text.
 template <typename Algorithm, typename sa_index>
-uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
-                                              bool WIP_print_stats = false) {
+uniform_sa<sa_index>
+prepare_and_construct_sa(text_initializer const& text_init) {
     tdc::StatPhase root("SACA");
     uniform_sa<sa_index> ret;
     {
@@ -172,12 +172,6 @@ uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
         root.log("sa_index_bit_size",
                  ceil_log2(std::numeric_limits<sa_index>::max()));
     }
-
-    if (WIP_print_stats) {
-        auto j = root.to_json();
-        std::cout << j.dump(4) << std::endl;
-    }
-
     return ret;
 }
 
@@ -301,7 +295,7 @@ private:
     template <typename sa_index>
     abstract_sa_ptr construct_sa_helper(text_initializer const& text) const {
         return std::make_unique<uniform_sa<sa_index>>(
-            prepare_and_construct_sa<Algorithm, sa_index>(text, true));
+            prepare_and_construct_sa<Algorithm, sa_index>(text));
     }
 }; // class concrete_saca
 
