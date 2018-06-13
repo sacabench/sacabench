@@ -20,7 +20,7 @@ public:
     static const size_t S_Type = 1;
 
     template <typename T>
-    static void compute_types(container<size_t>& t, container<size_t>& p_1,
+    static void compute_types(span<size_t> t, span<size_t> p_1,
                               T s) {
         t[s.size() - 1] = S_Type;
 
@@ -38,12 +38,12 @@ public:
         }
     }
 
-    static bool is_LMS(container<size_t>& p_1, ssize position) {
+    static bool is_LMS(span<size_t> p_1, ssize position) {
         return (position > 0) && (p_1[position] == 1);
     }
 
     template <typename T>
-    static void generate_buckets(T s, container<size_t>& buckets, size_t K,
+    static void generate_buckets(T s, span<size_t> buckets, size_t K,
                                  bool end) {
         size_t sum = 0;
 
@@ -64,9 +64,9 @@ public:
     }
 
     template <typename T>
-    static void induce_L_Types(T s, container<size_t>& buckets, size_t K,
-                               bool end, container<ssize>& SA,
-                               container<size_t>& t) {
+    static void induce_L_Types(T s, span<size_t> buckets, size_t K,
+                               bool end, span<ssize> SA,
+                               span<size_t> t) {
         generate_buckets(s, buckets, K, end);
         for (size_t i = 0; i < s.size(); i++) {
             ssize pre_index =
@@ -81,9 +81,9 @@ public:
     }
 
     template <typename T>
-    static void induce_S_Types(T s, container<size_t>& buckets, size_t K,
-                               bool end, container<ssize>& SA,
-                               container<size_t>& t) {
+    static void induce_S_Types(T s, span<size_t> buckets, size_t K,
+                               bool end, span<ssize> SA,
+                               span<size_t> t) {
         generate_buckets(s, buckets, K, end);
         for (ssize i = s.size() - 1; i >= 0; i--) {
             ssize pre_index = SA[i] - 1;
@@ -95,7 +95,7 @@ public:
     }
 
     template <typename T>
-    static void run_saca(T s, container<ssize>& SA, size_t K) {
+    static void run_saca(T s, span<ssize> SA, size_t K) {
         container<size_t> t = make_container<size_t>(s.size());
         container<size_t> p_1 = make_container<size_t>(s.size());
         container<size_t> buckets = make_container<size_t>(K + 1);
