@@ -92,7 +92,7 @@ public:
         memory[index(idx)] = std::move(v);
     }
 
-    /// \brief A
+    /// \brief This returns the sizes in every dimension of this array.
     inline std::array<size_t, k> size() const {
         return sizes;
     }
