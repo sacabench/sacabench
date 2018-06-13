@@ -14,30 +14,38 @@
 std::int32_t main(std::int32_t argc, char const** argv) {
     using namespace sacabench;
 
-    CLI::App app{"App description"};
+    CLI::App app{"CLI for SACABench."};
     app.require_subcommand();
     app.set_failure_message(CLI::FailureMessage::help);
 
-    CLI::App& list = *app.add_subcommand("list", "TODO");
+    CLI::App& list =
+        *app.add_subcommand("list", "List all Implemented Algorithms.");
     bool no_desc;
-    list.add_flag("--no-description", no_desc);
-    CLI::App& construct = *app.add_subcommand("construct", "TODO");
+    {
+        list.add_flag("--no-description", no_desc,
+                      "Don't show a description for each Algorithm.");
+    }
 
+    CLI::App& construct = *app.add_subcommand("construct", "Construct a SA.");
     std::string input_filename = "";
     std::string output_filename = "";
     std::string algorithm = "";
-    construct.add_option("-i,--in", input_filename, "Path to input file")
-        ->required()
-        ->check(CLI::ExistingFile);
-    construct.add_option("-o,--out", output_filename, "Path to output file")
-        ->check(CLI::NonexistentPath);
-    construct.add_option("-a,--algorithm", algorithm, "Algorithm")->required();
-
     bool check_sa;
-    construct.add_flag("--check", check_sa);
-
     bool record_benchmark;
-    construct.add_flag("-b,--benchmark", record_benchmark, "Record benchmark");
+    {
+        construct.add_option("-i,--in", input_filename, "Path to input file.")
+            ->required()
+            ->check(CLI::ExistingFile);
+        construct
+            .add_option("-o,--out", output_filename, "Path to output file.")
+            ->check(CLI::NonexistentPath);
+        construct
+            .add_option("-a,--algorithm", algorithm, "Which Algorithm to run.")
+            ->required();
+        construct.add_flag("--check", check_sa, "Check the constructed SA.");
+        construct.add_flag("-b,--benchmark", record_benchmark,
+                           "Record benchmark and display as JSON.");
+    }
 
     CLI11_PARSE(app, argc, argv);
 
