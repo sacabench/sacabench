@@ -99,6 +99,9 @@ namespace sacabench::nzSufSort {
                 util::induce_sa_dc<size_t>(t_0, isa_12, t_0);
                 util::span<sa_index> sa_0 = t_0;
                 
+                /* positions in sa_0 are multiplied by 3 so divide by 3 */
+                for (size_t i = 0; i < sa_0.size(); i++) { sa_0[i] = sa_0[i]/3; }
+                
                 std::cout << "sa_0: " << sa_0 << std::endl;
                 
                 //update SA(t_0) and SA(t_12) with position arrays
@@ -171,7 +174,6 @@ namespace sacabench::nzSufSort {
                 bool s_type_sa_12 = false;
                 // traverse l-type-positions
                 while (count_sa_0 < sa_0.size() && count_sa_12 < sa_12.size()) {
-                    std::cout << "curr_pos_sa_0: " << curr_pos_sa_0 << ", curr_pos_sa_12: " << curr_pos_sa_12 << std::endl;
                     // get next index for sa_0
                     while (s_type_sa_0) { 
                         curr_pos_sa_0--;
@@ -243,7 +245,6 @@ namespace sacabench::nzSufSort {
                 }
                 // There are positions in sa_12 left
                 while (count_sa_12 < sa_12.size()) {
-                    std::cout << "curr_pos_sa_0: " << curr_pos_sa_0 << ", curr_pos_sa_12: " << curr_pos_sa_12 << std::endl;
                     // get next index for sa_12
                     while (s_type_sa_12) { 
                         curr_pos_sa_12--;
@@ -312,6 +313,7 @@ namespace sacabench::nzSufSort {
                 std::cout << "sa_012: " << sa_012 << std::endl;
                 
                 /* induction scan to calculate correct sa */
+                std::cout << "start of induction scan" << std::endl;
                 left_induction_scan(text, out_sa, alphabet.size_with_sentinel(), count_s_type_pos);
             }
           
@@ -350,15 +352,17 @@ namespace sacabench::nzSufSort {
                 std::cout << "buckets: " << buckets << std::endl;
                 
                 /* move sa_s to the end of their buckets */
+                //TODO: Here is a bug
                 for (size_t i = count_s_type_pos; i < out_sa.size(); i++) { out_sa[i] = UNDEFINED; }
                 std::cout << "out_sa: " << out_sa << std::endl;
                 for (size_t i = count_s_type_pos; i > 0; i--) {
                     auto elem = text[out_sa[i-1]];
+                    std::cout << "out_sa[i-1]: " << out_sa[i-1] << std::endl;
                     if (buckets[elem] != i-1) {
                         out_sa[buckets[elem]] = out_sa[i-1];
                         out_sa[i-1] = UNDEFINED;
                     }
-                    buckets[elem]--;
+                    if (buckets[elem] > 0) { buckets[elem]--; }
                 }
                 std::cout << "out_sa: " << out_sa << std::endl;
                 
@@ -387,7 +391,6 @@ namespace sacabench::nzSufSort {
                         bool curr_pos_is_s_type = (i < buckets[text[curr_pos]]); // bucket pointer points at l-type-positions 
                         if (text[pre_pos] > text[curr_pos] || (text[pre_pos] == text[curr_pos] && curr_pos_is_s_type)) {
                             auto elem = text[pre_pos];
-                            std::cout << "buckets[elem]: " << buckets[elem] << std::endl;
                             out_sa[buckets[elem]] = pre_pos;
                             buckets[elem]++;
                         }
