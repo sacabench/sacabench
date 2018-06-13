@@ -83,6 +83,10 @@ namespace sacabench::nzSufSort {
                 //calculate SA(t_12) by calling the lightweight variant of DC3
                 //TODO
                 util::span<sa_index> tmp_out_sa = out_sa.slice(count_s_type_pos+mod_0, 2*count_s_type_pos);
+                
+                util::container<sa_index> tmp_t_12 = t_12.slice(0,t_12.size()); //just until the lightweight_dc3 is not working
+                lightweight_dc3(tmp_t_12, tmp_out_sa);
+                
                 naive_sa(t_12, tmp_out_sa);
                 for (size_t i = 0; i < t_12.size(); i++) {
                     t_12[i] = tmp_out_sa[i];
@@ -319,6 +323,105 @@ namespace sacabench::nzSufSort {
           
         private:
             //TODO: Naive SACA for testing purposes until the lightweight DC3 is finished
+            template<typename sa_index, typename T>
+            static void lightweight_dc3(T& text,
+                             util::span<sa_index> out_sa) {
+                //u and v will be later part of parameter
+                auto u = util::make_container<sa_index>(text.size());
+                auto v = util::make_container<sa_index>(text.size());
+                
+                //position of first index i mod 3 = 0;
+                size_t end_pos_of_12 = 2*u.size()/3;
+                
+                size_t counter_12 = 0;
+                size_t counter_0 = 0;
+                
+                for (size_t i = 0; i < text.size(); ++i) {
+                    if(i % 3 == 1 || i % 3 == 2)
+                    {
+                        u[counter_12++] = i;
+                    }else{
+                        u[end_pos_of_12+(counter_0++)] = i;
+                    }
+                }
+                std::cout << "u unsortiert: " ;
+                for(size_t i = 0; i < u.size(); ++i){
+                    std::cout << u[i] << " " ;
+                }std::cout << std::endl;
+                //TODO sort triplets_12 with radix sort
+                auto comp = [&](size_t i, size_t j) {
+                    util::span<const sa_index> t_1 = retrieve_triplets<const sa_index>(text, i, 3);
+                    util::span<const sa_index> t_2 = retrieve_triplets<const sa_index>(text, j, 3);
+                    return t_1 < t_2;
+                };
+                
+                //first sort triplets i mod 3 != 0
+                std::sort(u.begin(), u.end()-end_pos_of_12, comp);
+                //then sort triplets i mod 3 = 0
+                std::sort(u.begin()+end_pos_of_12, u.end(), comp);
+                
+                std::cout << "u sortiert: " ;
+                for(size_t i = 0; i < u.size(); ++i){
+                    std::cout << u[i] << " " ;
+                }std::cout << std::endl;
+                
+                size_t rank = 1;
+                //Determine lexicographical names of triplets beginning in i mod 3 != 0;
+                for(size_t i = 0; i < end_pos_of_12;++i){
+                    v[u[i]] = rank; // save ranks in correct positions
+                    if((i+1)<end_pos_of_12){
+                        size_t index_1 = u[i]; //Position 1
+                        size_t index_2 = u[i+1]; //Position2
+                        
+                        if(index_1 < text.size()-3){
+                            if(index_2 < text.size()-3){
+                                if(text[index_1]!=text[index_2] || text[index_1+1]!=text[index_2+1] || text[index_1+2]!=text[index_2+2]){
+                                    ++rank;
+                                }
+                            }else ++rank;
+                        }else ++rank;
+                    }else ++rank;
+                }
+                rank = 1;
+                //Determine lexicographical names of triplets beginning in i mod 3 = 0;
+                for(size_t i = end_pos_of_12; i < u.size();++i){
+                    v[u[i]] = rank; // save ranks in correct positions
+                    if((i+1)<end_pos_of_12){
+                        size_t index_1 = u[i]; //Position 1
+                        size_t index_2 = u[i+1]; //Position2
+                        
+                        if(index_1 < text.size()-3){
+                            if(index_2 < text.size()-3){
+                                if(text[index_1]!=text[index_2] || text[index_1+1]!=text[index_2+1] || text[index_1+2]!=text[index_2+2]){
+                                    ++rank;
+                                }
+                            }else ++rank;
+                        }else ++rank;
+                    }else ++rank;
+                }
+                
+                std::cout << "ranks: " ;
+                for(size_t i = 0; i < v.size(); ++i){
+                    std::cout << v[i] << " " ;
+                }std::cout << std::endl;
+                
+                //Store lexicographical names in correct positions of text as:
+                //[---i%3=1---||---i%3=2---||---i%3=0---]
+                counter_0 = end_pos_of_12;
+                size_t counter_1 = 0;
+                size_t counter_2 = end_pos_of_12/2 + ((end_pos_of_12 % 2)!=0);
+                for(size_t i = 0; i < v.size(); ++i){
+                    if(i % 3 == 0){
+                        text[counter_0++] = v[i];
+                    }else if(i % 3 == 1){
+                        text[counter_1++] = v[i];
+                    }else{
+                        text[counter_2++] = v[i];
+                    }
+                }
+                std::cout << "new text: " << text << std::endl;
+            }
+            
             template<typename sa_index>
             static void naive_sa(util::span<sa_index> text,
                              util::span<sa_index> out_sa) {
@@ -693,6 +796,15 @@ namespace sacabench::nzSufSort {
                     }
                 }
                 return util::span<const C>(&text[s_pos], curr_s_pos-s_pos+1); 
+            }
+            
+            template<typename C, typename T>
+            static util::span<const C> retrieve_triplets(T& text, size_t pos, size_t count) {
+                if((pos+count) < text.size()){
+                    return util::span<const C>(&text[pos], count); 
+                }else{
+                    return util::span<const C>(&text[pos], text.size()-pos); 
+                }
             }
             
             template<typename A>
