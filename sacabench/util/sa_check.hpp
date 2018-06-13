@@ -105,7 +105,7 @@ namespace sacabench::util {
         auto P = make_container<pair>(N);
 
         for(size_t i = 0; i < N; ++i) {
-            P[i] = pair { sa[i], i + 1 };
+            P[i] = pair { sa[i], sa_index_type(i + 1) };
         }
 
         sort::std_sort(P, [](auto const& lhs, auto const& rhs) {
