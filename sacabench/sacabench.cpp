@@ -51,6 +51,22 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << std::endl;
     }
 
+
+    if (construct) {
+        sacabench::util::saca const* algo = nullptr;
+        for (const auto& a : saca_list) {
+            if (a->name() == algorithm) {
+                algo = a;
+                break;
+            }
+        }
+        if (algo == nullptr) {
+            std::cerr << "Algorithm does not exist" << std::endl;
+            return 1;
+        }
+        algo->run_example();
+    }
+
     /*
     for (const auto& a : saca_list) {
         std::cout << "Running " << a->name() << "..." << std::endl;
