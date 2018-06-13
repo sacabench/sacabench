@@ -153,6 +153,8 @@ void saca_corner_cases_single_type(bool print_cases) {
 template <typename Algorithm>
 void saca_corner_cases() {
     saca_corner_cases_single_type<Algorithm, uint64_t>(true);
+    saca_corner_cases_single_type<Algorithm, sacabench::util::uint40>(false);
+    saca_corner_cases_single_type<Algorithm, sacabench::util::uint48>(false);
     saca_corner_cases_single_type<Algorithm, uint32_t>(false);
 }
 

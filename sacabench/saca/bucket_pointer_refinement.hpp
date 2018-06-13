@@ -176,12 +176,12 @@ class bucket_pointer_refinement {
             // sort_key maps a suffix s_i to the bucket identifier of suffix
             // s_{i+offset}. If no such suffix exists, it's assumed to be $.
             auto sort_key = [=] (sa_index suffix) {
-                if (suffix >= bptr.size() - offset) {
-                    return (sa_index) 0;
+                if (static_cast<size_t>(suffix) >= bptr.size() - offset) {
+                    return static_cast<size_t>(0);
                 } else {
                     // Add 1 to sort key in order to prevent collision with
                     // sentinel.
-                    return bptr[suffix + offset] + 1;
+                    return static_cast<size_t>(bptr[static_cast<size_t>(suffix) + offset]) + 1;
                 }
             };
 
@@ -253,7 +253,7 @@ class bucket_pointer_refinement {
             // from right to left: Calculate codes in order to determine
             // bucket borders
             while (start_of_bucket < bucket.size()) {
-                end_of_bucket = bptr[bucket[start_of_bucket]] - bucket_start;
+                end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) - bucket_start;
                 // Sort sub-buckets recursively
                 refine_single_bucket<sa_index>(offset + step_size, step_size,
                         bptr, start_of_bucket + bucket_start,
@@ -266,4 +266,3 @@ class bucket_pointer_refinement {
 }; // class bucket_pointer_refinement
 
 } // namespace sacabench::bucket_pointer_refinement
-

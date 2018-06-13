@@ -223,7 +223,8 @@ public:
         container<ssize> SA = make_container<ssize>(text.size());
         run_saca<string_span>(text, SA, alphabet.max_character_value());
         for (size_t i = 0; i < text.size(); i++) {
-            out_sa[i] = SA[i];
+            DCHECK_LE(SA[i], std::numeric_limits<sa_index>::max());
+            out_sa[i] = static_cast<sa_index>(SA[i]);
         }
     }
 };
