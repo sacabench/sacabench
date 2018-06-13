@@ -80,6 +80,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 auto text = util::text_initializer_from_file(input_filename);
                 auto sa = algo->construct_sa(text);
                 if (check_sa) {
+                    tdc::StatPhase check_sa_phase("SA Checker");
+
                     // Read the string in again
                     auto s = util::string(text.text_size());
                     text.initializer(s);
