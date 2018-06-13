@@ -14,16 +14,23 @@
 std::int32_t main(std::int32_t argc, char const** argv) {
 
     CLI::App app{"App description"};
+    app.require_subcommand();
+    app.set_failure_message(CLI::FailureMessage::help);
+
+    CLI::App& list = *app.add_subcommand("list", "TODO");
+    CLI::App& construct = *app.add_subcommand("construct", "TODO");
 
     std::string input_filename = "";
-    app.add_option("-f,--file", input_filename, "Path to input file");
+    std::string output_filename = "";
+    std::string algorithm = "";
+    construct.add_option("-i,--in", input_filename, "Path to input file")->required();
+    construct.add_option("-o,--out", output_filename, "Path to output file");
+    construct.add_option("-a,--algorithm", algorithm, "Algorithm")->required();
 
-    app.add_flag("-l,--list", "Show a list of available algorithms");
+    construct.add_flag("-b,--benchmark", "Record benchmark");
 
     CLI11_PARSE(app, argc, argv);
 
-    //std::cout << "Input file: " << (input_filename == "") ? "- not set -" : input_filename << std::endl;
-    //std::cout << "Show list: " << (app.count("--list") > 0) ? "true" : "false" << std::endl;
 
     /*
     auto& saca_list = sacabench::util::saca_list::get();
