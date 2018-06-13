@@ -29,9 +29,9 @@ template <typename Algorithm, typename sa_index_type = size_t>
 void saca_corner_cases_single_type(bool print_cases) {
     using namespace sacabench::util;
 
-    std::cout << "Test with sa_index with bits "
-              << ceil_log2(std::numeric_limits<sa_index_type>::max()) << "..."
-              << std::endl;
+    std::cout << "Test with "
+              << ceil_log2(std::numeric_limits<sa_index_type>::max())
+              << " bit sa_index type..." << std::endl;
 
     auto test = [&](string_span text) {
         size_t slice_limit = 40;
