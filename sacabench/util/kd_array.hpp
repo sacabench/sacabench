@@ -92,6 +92,11 @@ public:
         memory[index(idx)] = std::move(v);
     }
 
+    /// \brief This returns the sizes in every dimension of this array.
+    inline std::array<size_t, k> size() const {
+        return sizes;
+    }
+
     /// \brief Constructs a incomplete_kd_array_access objects and starts
     ///        indexing into the memory.
     inline incomplete_kd_array_access<content, k> operator[](const size_t idx) {
