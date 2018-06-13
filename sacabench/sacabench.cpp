@@ -77,7 +77,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             }
         }
         if (algo == nullptr) {
-            std::cerr << "Algorithm does not exist" << std::endl;
+            std::cerr << "ERROR: Algorithm does not exist" << std::endl;
             no_desc = true;
             implemented_algos();
             return 1;
@@ -97,10 +97,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     // Run the SA checker, and print the result
                     auto res = sa->check(s);
                     if (res != util::sa_check_result::ok) {
-                        std::cerr << "SA check failed!" << std::endl;
+                        std::cerr << "ERROR: SA check failed" << std::endl;
                         return 1;
                     } else {
-                        std::cerr << "SA check OK." << std::endl;
+                        std::cerr << "SA check OK" << std::endl;
                     }
                 }
             }
