@@ -15,6 +15,9 @@
 #include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
 #include "saca/qsufsort.hpp"
+#include "saca/sais.hpp"
+#include "saca/dc7.hpp"
+#include "saca/dc3.hpp"
 #include "saca/sacak.hpp"
 
 #include "util/saca.hpp"
@@ -44,9 +47,14 @@ using saca_prefix_doubling_discarding =
     sacabench::prefix_doubling::prefix_doubling_discarding;
 SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
               saca_prefix_doubling_discarding)
+              
+using saca_sais = sacabench::sais::sais;
+SACA_REGISTER("SAIS", "Suffix Array Induced Sorting by Nong, Zhang and Chan", saca_sais)              
 
 using saca_gsaca = sacabench::gsaca::gsaca;
 SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca by Uwe Baier.", saca_gsaca)
+using saca_dc7 = sacabench::dc7::dc7;
+SACA_REGISTER("DC7", "Description of DC7 TODO", saca_dc7)
 
 using saca_qsufsort_naive =
     sacabench::qsufsort::qsufsort_naive;
@@ -63,6 +71,9 @@ SACA_REGISTER("Naiv", "Naiver Algorithmus. Sortiert Suffixe direkt.",
 
 using sacak = sacabench::sacak::sacak;
 SACA_REGISTER("SACA-K", "Constant-Space SA-Algorithm based on SAIS", sacak);
+
+using saca_dc3 = sacabench::dc3::dc3;
+SACA_REGISTER("DC3", "Difference Cover Modulo 3 SACA ", saca_dc3)
 
 } // namespace sacabench::saca
 
