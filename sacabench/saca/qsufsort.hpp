@@ -104,7 +104,7 @@ public:
 
     // template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             util::alphabet const& alphabet,
+                             util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
         size_t n = text.size();
@@ -313,7 +313,7 @@ public:
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             util::alphabet const& alphabet,
+                             util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
         size_t n = text.size();
@@ -359,6 +359,8 @@ public:
                 }
                 // unsorted group
                 else {
+                    util::allow_container_copy guard;
+
                     // sort unsorted group
                     util::sort::ternary_quicksort::ternary_quicksort(
                         out_sa.slice(counter, counter + L[counter]),

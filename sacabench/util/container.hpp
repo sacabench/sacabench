@@ -18,6 +18,26 @@
 namespace sacabench::util {
 
 template <typename element_type>
+class container;
+
+class allow_container_copy {
+    inline static bool s_allow_copy = false;
+    bool m_last_allow_copy;
+
+    template <typename element_type>
+    friend class container;
+
+public:
+    inline allow_container_copy() {
+        m_last_allow_copy = s_allow_copy;
+        s_allow_copy = true;
+    }
+    inline ~allow_container_copy() { s_allow_copy = m_last_allow_copy; }
+    inline allow_container_copy(allow_container_copy const&) = delete;
+    inline allow_container_copy(allow_container_copy&&) = delete;
+};
+
+template <typename element_type>
 class container {
 private:
     std::unique_ptr<element_type[]> m_allocation;
@@ -28,7 +48,7 @@ private:
         IF_DEBUG({
             constexpr bool make_error = false;
 
-            if (!other.empty()) {
+            if (!allow_container_copy::s_allow_copy && !other.empty()) {
                 std::stringstream ss;
 
                 bool possible_trigger = false;

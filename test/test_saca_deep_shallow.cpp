@@ -48,7 +48,7 @@ struct blind_saca {
     inline static void construct_sa(util::string_span text,
                                     const util::alphabet& /*alphabet*/,
                                     util::span<sa_index_type> sa) {
-        using blind_trie = sacabench::deep_shallow::blind::trie<size_t>;
+        using blind_trie = sacabench::deep_shallow::blind::trie<sa_index_type>;
 
         if (text.size() < 2) {
             return;
