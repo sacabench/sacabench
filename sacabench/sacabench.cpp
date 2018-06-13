@@ -18,6 +18,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     app.set_failure_message(CLI::FailureMessage::help);
 
     CLI::App& list = *app.add_subcommand("list", "TODO");
+    bool no_desc;
+    list.add_flag("--no-description", no_desc);
     CLI::App& construct = *app.add_subcommand("construct", "TODO");
 
     std::string input_filename = "";
@@ -31,9 +33,22 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     CLI11_PARSE(app, argc, argv);
 
+    // Handle CLI arguments
+    auto& saca_list = sacabench::util::saca_list::get();
+
+    if (list) {
+        std::cout << "Currently implemented Algorithms:" << std::endl;
+        for (const auto& a : saca_list) {
+            std::cout << "  [" << a->name() << "]" << std::endl;
+            if (!no_desc) {
+                std::cout << "    " << a->description() << std::endl;
+                std::cout << std::endl;
+            }
+        }
+        std::cout << std::endl;
+    }
 
     /*
-    auto& saca_list = sacabench::util::saca_list::get();
     for (const auto& a : saca_list) {
         std::cout << "Running " << a->name() << "..." << std::endl;
         a->run_example();
