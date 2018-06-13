@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -224,19 +224,21 @@ public:
         saca_list::get().register_saca(this);
     }
 
+    using abstract_sa_ptr = std::unique_ptr<abstract_sa>;
+
     /// Run the SACA on some text.
     ///
     /// It selects a suitable `sa_index` type automatically.
-    inline void construct_sa(text_initializer const& text) const {
+    inline abstract_sa_ptr construct_sa(text_initializer const& text) const {
         // TODO: Select suitable `sa_index` type automatically,
         // or offer an API for selecting it.
 
-        construct_sa_64(text);
+        return construct_sa_64(text);
     }
 
     /// Run the SACA on the example string `"hello world"`.
-    inline void run_example() const {
-        construct_sa_32(text_initializer_from_span("hello world"_s));
+    inline abstract_sa_ptr run_example() const {
+        return construct_sa_32(text_initializer_from_span("hello world"_s));
     }
 
     /// Get the name of the SACA.
@@ -247,16 +249,20 @@ public:
 
 protected:
     /// Runs the SACA with a 32 bit `sa_index` type.
-    virtual void construct_sa_32(text_initializer const& text) const = 0;
+    virtual abstract_sa_ptr
+    construct_sa_32(text_initializer const& text) const = 0;
     /*
-    TODO: Commented out because of compile errors with the uint4X types.
+    // TODO: Commented out because of compile errors with the uint4X types.
     /// Runs the SACA with a 40 bit `sa_index` type.
-    virtual void construct_sa_40(text_initializer const& text) const = 0;
+    virtual abstract_sa_ptr
+    construct_sa_40(text_initializer const& text) const = 0;
     /// Runs the SACA with a 48 bit `sa_index` type.
-    virtual void construct_sa_48(text_initializer const& text) const = 0;
+    virtual abstract_sa_ptr
+    construct_sa_48(text_initializer const& text) const = 0;
     */
     /// Runs the SACA with a 64 bit `sa_index` type.
-    virtual void construct_sa_64(text_initializer const& text) const = 0;
+    virtual abstract_sa_ptr
+    construct_sa_64(text_initializer const& text) const = 0;
 
 private:
     std::string name_;
@@ -271,20 +277,31 @@ public:
         : saca(name, description) {}
 
 protected:
-    virtual void construct_sa_32(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, uint32_t>(text, true);
+    virtual abstract_sa_ptr
+    construct_sa_32(text_initializer const& text) const override {
+        return construct_sa_helper<uint32_t>(text);
     }
     /*
-    TODO: Commented out because of compile errors with the uint4X types.
-    virtual void construct_sa_40(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, util::uint40>(text, true);
+    // TODO: Commented out because of compile errors with the uint4X types.
+    virtual abstract_sa_ptr
+    construct_sa_40(text_initializer const& text) const override {
+        return construct_sa_helper<util::uint40>(text);
     }
-    virtual void construct_sa_48(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, util::uint48>(text, true);
+    virtual abstract_sa_ptr
+    construct_sa_48(text_initializer const& text) const override {
+        return construct_sa_helper<util::uint48>(text);
     }
     */
-    virtual void construct_sa_64(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, uint64_t>(text, true);
+    virtual abstract_sa_ptr
+    construct_sa_64(text_initializer const& text) const override {
+        return construct_sa_helper<uint64_t>(text);
+    }
+
+private:
+    template <typename sa_index>
+    abstract_sa_ptr construct_sa_helper(text_initializer const& text) const {
+        return std::make_unique<uniform_sa<sa_index>>(
+            prepare_and_construct_sa<Algorithm, sa_index>(text, true));
     }
 }; // class concrete_saca
 
