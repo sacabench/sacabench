@@ -469,16 +469,16 @@ public:
         sa[0] = input.size() - 1;
 
         // if predecessor is S-suffix
-        if (input[input.size()-2] < input[input.size()-1]) {
+        if (input[input.size() - 2] < input[input.size() - 1]) {
             sa[0] |= NEGATIVE_MASK;
         }
     }
 
-    inline static void induce_L_suffixes (util::string_span input,
-                                          util::span<bool> suffix_types,
-                                          buckets buckets,
-                                          util::span<sa_index> sa,
-                                          util::character max_character) {
+    inline static void induce_L_suffixes(util::string_span input,
+                                         util::span<bool> suffix_types,
+                                         buckets buckets,
+                                         util::span<sa_index> sa,
+                                         util::character max_character) {
         // bit mask: 1000...000
         constexpr sa_index NEGATIVE_MASK = size_t(1)
                                            << (sizeof(sa_index) * 8 - 1);
@@ -490,9 +490,9 @@ public:
             } else {
                 // predecessor has yet to be induced
                 sa[buckets.l_buckets[input[sa[i] - 1]]++] = sa[i] - 1;
-                if (input[sa[i]-2] < input[sa[i]-1]) {
+                if (input[sa[i] - 2] < input[sa[i] - 1]) {
                     // predecessor of induced index i S-suffix
-                    sa[i-1] |= NEGATIVE_MASK;
+                    sa[i - 1] |= NEGATIVE_MASK;
                 }
             }
         }
