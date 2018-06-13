@@ -54,7 +54,6 @@ TEST(insert_lms, test_1) {
 
 TEST(induced_sorting, test_1) {
 
-
     util::string_span test_text = "caabaccaabacaa"_s;
     util::container<size_t> sa = util::make_container<size_t>(15);
     util::alphabet alph = util::alphabet(test_text);
@@ -66,7 +65,7 @@ TEST(induced_sorting, test_1) {
 
     util::string input = util::make_string(test_text);
     util::apply_effective_alphabet(input, alph);
-    util::string input_w = util::make_container<util::character>(15);
+    sacabench::util::string input_w = util::make_container<util::character>(15);
 
     for (size_t i = 0; i < input_w.size(); i++)
     {
@@ -76,8 +75,8 @@ TEST(induced_sorting, test_1) {
             input_w[i] = util::SENTINEL;
     }
 
-    insert_lms_rtl(input_w.slice(), sa.slice());
-    sacak::induced_sort(input_w, sa.slice(), alph.size_without_sentinel());
+    util::insert_lms_rtl<size_t>(input_w, sa);
+    sacak::sacak::induced_sort<size_t>(input_w, sa, alph.size_without_sentinel());
 
     ASSERT_EQ(sa[0], 14);
     ASSERT_EQ(sa[1], 13);
@@ -129,7 +128,7 @@ void make_sacak(util::string_span &test_text, util::container<sa_index> &sa, boo
         std::cout << std::endl;
     }
 
-    sacak::calculate_sa<sa_index>(input_w, sa, alph.size_without_sentinel());
+    sacak::sacak::calculate_sa<size_t>(input_w, sa, alph.size_without_sentinel());
 
     if (print) {
         std::cout << "The resulting SA is: [ ";

@@ -20,165 +20,207 @@
 
 namespace sacabench::sacak {
 
-template <typename character_type, typename sa_index>
-inline void calculate_deep_sa(util::span<character_type> t_0,
-                              util::span<sa_index> sa, size_t max_char) {
+    class sacak {
+    public:
+        static constexpr size_t EXTRA_SENTINELS = 1;
 
-    // TODO: almost the same as the usual method, but without the use of bkt
-    // array. Needs negative size_t variables!!
-    // ignore warnings:
-    (void)t_0;
-    (void)sa;
-    (void)max_char;
-    DCHECK(false); // not done yet
-}
+        template <typename sa_index>
+        inline static void calculate_deep_sa(util::span<sa_index> t_0,
+            util::span<sa_index> sa, size_t max_char) {
 
-template <typename sa_index>
-inline void induced_sort(util::string_span t, util::span<sa_index> sa,
-                         size_t max_char) {
-
-    // Iterate SA RTL and distribute the LMS suffixes into the S-Buckets
-
-    // Initialize bkt so that the pointers point to the S-Buckets (end of
-    // buckets)
-    util::container<util::sort::bucket> bkt =
-        util::sort::get_buckets(t, max_char, 1);
-
-    for (size_t i = 0; i < bkt.size(); i++) {
-        bkt[i].position = bkt[i].position + bkt[i].count - 1;
-    }
-
-    // At this state the LMS substrings are supposed to be right at the
-    // beginning of SA and all other entries are 0 We distribute them to their
-    // respective S-Buckets now
-
-    for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
-    {
-        if (sa[i - 1] != 0 && sa[i - 1] != -1) {
-            size_t c = t[sa[i - 1]]; // The character c itself is already his
-                                     // bkt index (-1)
-            sa[bkt[c].position] = sa[i - 1];
-            if (bkt[c].position !=
-                i - 1) // We need to overwrite all unused slots with 0 but we
-                       // dont want to overwrite the slot that was just written
-                       // to
-                sa[i - 1] = -1;
-            bkt[c].position--;
+            // TODO: almost the same as the usual method, but without the use of bkt
+            // array. Needs negative size_t variables!!
+            // ignore warnings:
+            (void)t_0;
+            (void)sa;
+            (void)max_char;
+            DCHECK(false); // not done yet
         }
-    }
 
-    // Iterate SA LTR and distribute all the indices into L-Buckets which are
-    // lefthand next to already sorted indices
+        template <typename sa_index>
+        inline static void induced_sort(util::string_span t, util::span<sa_index> sa,
+            size_t max_char) {
 
-    // Initialize bkt so that the pointers point to the L-Buckets (start of
-    // buckets)
+            // Iterate SA RTL and distribute the LMS suffixes into the S-Buckets
 
-    bkt = util::sort::get_buckets(t, max_char, 1);
+            // Initialize bkt so that the pointers point to the S-Buckets (end of
+            // buckets)
+            util::container<util::sort::bucket> bkt = util::sort::get_buckets(t, max_char, 1);
 
-    for (size_t i = 0; i < t.size(); i++) // LTR Iteration of SA
-    {
+            for (size_t i = 0; i < bkt.size(); i++) {
+                bkt[i].position = bkt[i].position + bkt[i].count - 1;
+            }
 
-        if (sa[i] != 0 && sa[i] != -1 &&
-            t[sa[i] - 1] >= t[sa[i]]) // check if t[sa[i]-1] is L-Type
-        {
-            size_t c = t[sa[i] - 1];
-            sa[bkt[c].position] = sa[i] - 1;
-            bkt[c].position++;
+            // At this state the LMS substrings are supposed to be right at the
+            // beginning of SA and all other entries are 0 We distribute them to their
+            // respective S-Buckets now
+
+            for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
+            {
+                if (sa[i - 1] != 0 && sa[i - 1] != -1) {
+                    size_t c = t[sa[i - 1]]; // The character c itself is already his
+                                             // bkt index (-1)
+                    sa[bkt[c].position] = sa[i - 1];
+                    if (bkt[c].position !=  i - 1) // We need to overwrite all unused slots with 0 but we
+                               // dont want to overwrite the slot that was just written
+                               // to
+                        sa[i - 1] = -1;
+                    bkt[c].position--;
+                }
+            }
+
+            // Iterate SA LTR and distribute all the indices into L-Buckets which are
+            // lefthand next to already sorted indices
+
+            // Initialize bkt so that the pointers point to the L-Buckets (start of
+            // buckets)
+
+            bkt = util::sort::get_buckets(t, max_char, 1);
+
+            for (size_t i = 0; i < t.size(); i++) // LTR Iteration of SA
+            {
+
+                if (sa[i] != 0 && sa[i] != -1 &&
+                    t[sa[i] - 1] >= t[sa[i]]) // check if t[sa[i]-1] is L-Type
+                {
+                    size_t c = t[sa[i] - 1];
+                    sa[bkt[c].position] = sa[i] - 1;
+                    bkt[c].position++;
+                }
+            }
+
+            // Iterate SA RTL and distribute all the indices into S-Buckets which are
+            // righthand next to already sorted indices
+
+            // Initialize bkt so that the pointers point to the S-Buckets (end of
+            // buckets)
+            bkt = util::sort::get_buckets(t, max_char, 1);
+
+            for (size_t i = 0; i < bkt.size(); i++) {
+                bkt[i].position = bkt[i].position + bkt[i].count - 1;
+            }
+
+            for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
+            {
+                size_t ind = sa[i - 1];
+
+                if (ind != -1 && ind != 0 && ind != t.size() - 1 &&
+                    !std::get<0>(util::get_type_ltr_dynamic(t, ind - 1))) // check if t[ind - 1] is S-Type (inefficient!)
+                {
+
+                    size_t c = t[ind - 1]; // The character c itself is already his bkt index (-1)
+                    sa[bkt[c].position] = sa[i - 1] - 1;
+                    bkt[c].position--;
+                }
+            }
         }
-    }
 
-    // Iterate SA RTL and distribute all the indices into S-Buckets which are
-    // righthand next to already sorted indices
+        /*
+            Given an effective string t_0 with one sentinel symbol it calculates the
+           suffix array sa
+        */
+        template <typename sa_index>
+        inline static void calculate_sa(util::string_span t_0, util::span<sa_index> sa,
+            size_t max_char) {
 
-    // Initialize bkt so that the pointers point to the S-Buckets (end of
-    // buckets)
-    bkt = util::sort::get_buckets(t, max_char, 1);
+            // Initialize SA so that all items are -1 at the beginning
 
-    for (size_t i = 0; i < bkt.size(); i++) {
-        bkt[i].position = bkt[i].position + bkt[i].count - 1;
-    }
+            for (size_t i = 0; i < t_0.size(); i++) {
+                sa[i] = -1;
+            }
 
-    for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
-    {
-        size_t ind = sa[i - 1];
+            // First get the alphabet container of t_0
+            // The alphabet is given to saca-k normalized and effective, so that it's
+            // always in the form of {0, ..., n} That means you only need the n to know
+            // the whole effective alphabet
 
-        if (ind != -1 && ind != 0 && ind != t.size() - 1 &&
-            !std::get<0>(util::get_type_ltr_dynamic(
-                t, ind - 1))) // check if t[ind - 1] is S-Type (inefficient!)
-        {
+            size_t lms_amount = util::insert_lms_rtl<sa_index>(t_0, sa);
+            induced_sort(t_0, sa, max_char);
 
-            size_t c =
-                t[ind -
-                  1]; // The character c itself is already his bkt index (-1)
-            sa[bkt[c].position] = sa[i - 1] - 1;
-            bkt[c].position--;
-        }
-    }
-}
+            // Allocate t_1 in the last bits of space of SA by slicing it
 
-/*
-    Given an effective string t_0 with one sentinel symbol it calculates the
-   suffix array sa
-*/
-template <typename sa_index>
-inline void calculate_sa(util::string_span t_0, util::span<sa_index> sa,
-                         size_t max_char) {
+            util::span<sa_index>t_1 = sa.slice(sa.size() - lms_amount - 1, sa.size());
 
-    // Initialize SA so that all items are -1 at the beginning
+            // After this operation the sorted LMS Strings will be in the first half of
+            // the SA
+            util::extract_sorted_lms(t_0, sa);
 
-    for (size_t i = 0; i < t_0.size(); i++) {
-        sa[i] = -1;
-    }
+            std::cout << "The SA before renaming is: [ ";
+            for (size_t i = 0; i < sa.size(); i++)
+            {
+                int symb = sa[i] == -1 ? -1 : sa[i];
+                std::cout << symb << " ";
+            }
+            std::cout << "]" << std::endl;
 
-    // First get the alphabet container of t_0
-    // The alphabet is given to saca-k normalized and effective, so that it's
-    // always in the form of {0, ..., n} That means you only need the n to know
-    // the whole effective alphabet
+            // TODO: "Create" t_1 by renaming the sorted LMS Substrings in SA as indices
 
-    size_t lms_amount = util::insert_lms_rtl<sa_index>(t_0, sa);
-    induced_sort(t_0, sa, max_char);
+            // for (size_t i = lms_amount; i < t_0.size(); i++) { sa[i] = -1; }
 
-    // Allocate t_1 in the last bits of space of SA by slicing it
+            util::ssize name = 0;
+            util::ssize previous_LMS = -1;
+            for (util::ssize i = 0; i < lms_amount; i++) { // max n/2 iterations
+                bool diff = false;
+                // compare types and chars
+                util::ssize current_LMS = sa[i];
+                for (size_t j = 0; j < t_0.size(); j++) {
+                    if (previous_LMS == -1 || t_0.at(current_LMS + j) != t_0.at(previous_LMS + j) || std::get<0>(util::get_type_ltr_dynamic(t_0, current_LMS + j)) != std::get<0>(util::get_type_ltr_dynamic(t_0, previous_LMS + j))) {
+                        diff = true;
+                        break;
+                    }
+                    else if (j > 0 && (util::is_LMS<size_t>(t_0, current_LMS + j) || util::is_LMS<size_t>(t_0, previous_LMS + j))) { // check if next LMS is reached
+                        break; // no diff was found
+                    }
+                }
 
-    util::span<size_t> t_1 = sa.slice(sa.size() - lms_amount - 1, sa.size());
+                if (diff) { // if diff was found, adjust the name and continue with current LMS as previous
+                    name++;
+                    previous_LMS = current_LMS;
+                }
 
-    // After this operation the sorted LMS Strings will be in the first half of
-    // the SA
-    util::extract_sorted_lms(t_0, sa);
+                current_LMS = (current_LMS % 2 == 0) ? current_LMS / 2 : (current_LMS - 1) / 2;
+                sa[lms_amount + current_LMS] = name - 1;
+            }
 
-    // TODO: "Create" t_1 by renaming the sorted LMS Substrings in SA as indices
-    // to their own buckets and put them into t_1 How exactly?!
 
-    size_t k_1 = 0;
+            std::cout << "The SA after renaming is: [ ";
+            for (size_t i = 0; i < sa.size(); i++)
+            {
+                int symb = sa[i] == -1 ? -1 : sa[i];
+                std::cout << symb << " ";
+            }
+            std::cout << "]" << std::endl;
 
-    // if new alphabetsize k_1 != |t_1|, we need to call the recursion and
-    // calculate SA_1 of t_1 else t_1 is already ordered by SA and we can
-    // immediately calculate the full SA of t_0
 
-    if (t_1.size() != k_1) {
 
-        // util::container<size_t> sa_sliced = util::make_container(sa.slice(0,
-        // t_1.size())); calculate_deep_sa(t_1, sa_sliced, max_char);
+                size_t k_1 = 0;
 
-        // TODO(?): remapping the pointers of SA_1 to pointers of SA
-    }
+                // if new alphabetsize k_1 != |t_1|, we need to call the recursion and
+                // calculate SA_1 of t_1 else t_1 is already ordered by SA and we can
+                // immediately calculate the full SA of t_0
 
-    // calculate the first round of SA from the now sorted SA_1
+                if (t_1.size() != k_1) {
 
-    induced_sort(t_0, sa, max_char);
-}
+                    // util::container<size_t> sa_sliced = util::make_container(sa.slice(0,
+                    // t_1.size())); calculate_deep_sa(t_1, sa_sliced, max_char);
 
-struct sacak {
-    static constexpr size_t EXTRA_SENTINELS = 0;
+                    // TODO(?): remapping the pointers of SA_1 to pointers of SA
+                }
 
-    template <typename sa_index>
-    static void construct_sa(util::string_span text,
-                             util::alphabet const& alphabet,
-                             util::span<sa_index> out_sa) {
-        calculate_sa<sa_index>(text, out_sa, alphabet.max_character_value());
-    }
-}; // struct sacak
+                // calculate the first round of SA from the now sorted SA_1
 
+                induced_sort(t_0, sa, max_char);
+            }
+
+            template<typename sa_index>
+            static void construct_sa(util::string_span text_with_sentinels,
+                util::alphabet const& alphabet,
+                util::span<sa_index> out_sa) {
+
+                calculate_sa(text_with_sentinels, out_sa, alphabet.size_without_sentinel());
+            }
+
+    }; // class sacak
 } // namespace sacabench::sacak
 
 /******************************************************************************/

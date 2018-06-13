@@ -15,6 +15,7 @@
 #include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
 #include "saca/qsufsort.hpp"
+#include "saca/sacak.hpp"
 
 #include "util/saca.hpp"
 
@@ -58,7 +59,10 @@ SACA_REGISTER("qsufsort",
               saca_qsufsort)
 using saca_naive = sacabench::naive::naive;
 SACA_REGISTER("Naiv", "Naiver Algorithmus. Sortiert Suffixe direkt.",
-              saca_naive)
+    saca_naive)
+
+using sacak = sacabench::sacak::sacak;
+SACA_REGISTER("SACA-K", "Constant-Space SA-Algorithm based on SAIS", sacak);
 
 } // namespace sacabench::saca
 

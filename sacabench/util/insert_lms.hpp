@@ -61,7 +61,7 @@ inline size_t insert_lms_ltr(string_span t_0, span<size_t> sa) {
 RTL returns the amount of LMS substrings indices found
 */
 template <typename sa_index>
-inline size_t insert_lms_rtl(string_span t_0, span<sa_index> sa) {
+inline static size_t insert_lms_rtl(util::string t_0, span<sa_index> sa) {
 
     bool last_type = true;
     size_t amount = 1;
@@ -99,6 +99,22 @@ inline size_t insert_lms_rtl(string_span t_0, span<sa_index> sa) {
     }
 
     return amount;
+}
+
+template <typename sa_index>
+inline bool is_LMS(string_span t, sa_index index) {
+    
+    bool last_type = true;
+    size_t amount = 1;
+    size_t sa_pointer = 1;
+
+    if (index <= 0 || t.size() <= index || t[index] >= t[index - 1] || std::get<0>(util::get_type_ltr_dynamic(t,index))) 
+    {
+        return false;
+    }
+
+    return true;
+
 }
 
 /**
