@@ -89,7 +89,12 @@ public:
 
     /// \brief Updates the element at the given kd position.
     inline void set(const std::array<size_t, k>& idx, content&& v) {
-        memory[index(idx)] = v;
+        memory[index(idx)] = std::move(v);
+    }
+
+    /// \brief This returns the sizes in every dimension of this array.
+    inline std::array<size_t, k> size() const {
+        return sizes;
     }
 
     /// \brief Constructs a incomplete_kd_array_access objects and starts
@@ -148,7 +153,7 @@ public:
 
     inline void operator=(content&& other) {
         DCHECK_MSG(n_indices == k, "incomplete kd-array access");
-        array.set(indices, other);
+        array.set(indices, std::move(other));
     }
 };
 

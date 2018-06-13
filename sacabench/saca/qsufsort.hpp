@@ -104,7 +104,7 @@ public:
 
     // template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             util::alphabet const& alphabet,
+                             util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
         size_t n = text.size();
@@ -313,7 +313,7 @@ public:
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             util::alphabet const& alphabet,
+                             util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
         size_t n = text.size();
