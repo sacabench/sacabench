@@ -359,6 +359,8 @@ public:
                 }
                 // unsorted group
                 else {
+                    util::allow_container_copy guard;
+
                     // sort unsorted group
                     util::sort::ternary_quicksort::ternary_quicksort(
                         out_sa.slice(counter, counter + L[counter]),
