@@ -12,6 +12,7 @@
 #include "util/saca.hpp"
 
 std::int32_t main(std::int32_t argc, char const** argv) {
+    using namespace sacabench;
 
     CLI::App app{"App description"};
     app.require_subcommand();
@@ -40,7 +41,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     CLI11_PARSE(app, argc, argv);
 
     // Handle CLI arguments
-    auto& saca_list = sacabench::util::saca_list::get();
+    auto& saca_list = util::saca_list::get();
 
     if (list) {
         std::cout << "Currently implemented Algorithms:" << std::endl;
@@ -55,7 +56,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     if (construct) {
-        sacabench::util::saca const* algo = nullptr;
+        util::saca const* algo = nullptr;
         for (const auto& a : saca_list) {
             if (a->name() == algorithm) {
                 algo = a;
@@ -67,11 +68,22 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             return 1;
         }
 
-        auto text =
-            sacabench::util::text_initializer_from_file(input_filename);
-        algo->construct_sa(text);
+        auto text = util::text_initializer_from_file(input_filename);
+        auto sa = algo->construct_sa(text);
         if (check_sa) {
-            // TODO
+            // Read the string in again
+            auto s = util::string(text.text_size());
+            text.initializer(s);
+
+            // Run the SA checker, and print the result
+            auto res = sa->check(s);
+            if (res != util::sa_check_result::ok) {
+                std::cerr << "SA check failed!" << std::endl;
+                return 1;
+            } else {
+                std::cerr << "SA check OK." << std::endl;
+                return 0;
+            }
         }
     }
 
