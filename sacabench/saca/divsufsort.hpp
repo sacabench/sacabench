@@ -490,9 +490,9 @@ public:
             } else {
                 // predecessor has yet to be induced
                 sa[buckets.l_buckets[input[sa[i] - 1]]++] = sa[i] - 1;
-                if (input[sa[i-1]-1] < input[sa[i-1]]) {
+                if (input[sa[i]-2] < input[sa[i]-1]) {
                     // predecessor of induced index i S-suffix
-                    // negierten Wert induzieren?
+                    sa[i-1] |= NEGATIVE_MASK;
                 }
             }
         }
