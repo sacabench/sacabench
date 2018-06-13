@@ -4,10 +4,10 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
-#include <cstdint>
-#include <CLI/CLI.hpp>
 #include "util/bucket_size.hpp"
 #include "util/container.hpp"
+#include <CLI/CLI.hpp>
+#include <cstdint>
 
 #include "util/saca.hpp"
 
@@ -23,14 +23,16 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string input_filename = "";
     std::string output_filename = "";
     std::string algorithm = "";
-    construct.add_option("-i,--in", input_filename, "Path to input file")->required();
-    construct.add_option("-o,--out", output_filename, "Path to output file");
+    construct.add_option("-i,--in", input_filename, "Path to input file")
+        ->required()
+        ->check(CLI::ExistingFile);
+    construct.add_option("-o,--out", output_filename, "Path to output file")
+        ->check(CLI::NonexistentPath);
     construct.add_option("-a,--algorithm", algorithm, "Algorithm")->required();
 
     construct.add_flag("-b,--benchmark", "Record benchmark");
 
     CLI11_PARSE(app, argc, argv);
-
 
     /*
     auto& saca_list = sacabench::util::saca_list::get();
