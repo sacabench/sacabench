@@ -11,7 +11,10 @@
 #include <string>
 #include <vector>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 #include "alphabet.hpp"
+#include "bits.hpp"
 #include "container.hpp"
 #include "read_text.hpp"
 #include "span.hpp"
@@ -30,6 +33,8 @@ class uniform_sa {
     container<sa_index> m_sa;
 
 public:
+    inline uniform_sa() : m_extra_sentinels(0) {}
+
     inline uniform_sa(size_t extra_sentinels, container<sa_index>&& sa)
         : m_extra_sentinels(extra_sentinels), m_sa(std::move(sa)) {}
 
@@ -95,36 +100,71 @@ public:
 ///
 /// \param text_init Initializer for the text.
 template <typename Algorithm, typename sa_index>
-uniform_sa<sa_index>
-prepare_and_construct_sa(text_initializer const& text_init) {
-    size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
-    size_t text_size = text_init.text_size();
+uniform_sa<sa_index> prepare_and_construct_sa(text_initializer const& text_init,
+                                              bool WIP_print_stats = false) {
+    tdc::StatPhase root("SACA");
+    uniform_sa<sa_index> ret;
+    {
+        size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
+        size_t text_size = text_init.text_size();
 
-    auto output = make_container<sa_index>(text_size + extra_sentinels);
-    auto text_with_sentinels = string(text_size + extra_sentinels);
+        container<sa_index> output;
+        string text_with_sentinels;
+        alphabet alph;
 
-    auto text = text_with_sentinels.slice(0, text_size);
+        {
+            tdc::StatPhase init_phase("Allocate SA and Text container");
+            output = make_container<sa_index>(text_size + extra_sentinels);
+            text_with_sentinels = string(text_size + extra_sentinels);
+        }
 
-    text_init.initializer(text);
+        // Create a slice to the part of the Text container
+        // that contains the original text without sentinels.
+        auto text = text_with_sentinels.slice(0, text_size);
 
-    IF_DEBUG({
-        for (size_t i = 0; i < text.size(); i++) {
-            DCHECK_MSG(text[i] != 0, "Input byte "
-                                         << i
+        {
+            tdc::StatPhase init_phase("Initialize Text");
+            text_init.initializer(text);
+        }
+
+        IF_DEBUG({
+            // Check that we got valid input.
+            for (size_t i = 0; i < text.size(); i++) {
+                DCHECK_MSG(text[i] != 0,
+                           "Input byte " << i
                                          << " has value 0, which is reserved "
                                             "for the terminating sentinel!");
+            }
+        })
+
+        {
+            tdc::StatPhase init_phase("Apply effective Alphabet");
+            alph = apply_effective_alphabet(text);
         }
-    })
 
-    auto alph = apply_effective_alphabet(text);
+        {
+            tdc::StatPhase init_phase("Algorithm");
+            span<sa_index> out_sa = output;
+            string_span readonly_text_with_sentinels = text_with_sentinels;
+            alphabet const& readonly_alphabet = alph;
+            Algorithm::construct_sa(readonly_text_with_sentinels,
+                                    readonly_alphabet, out_sa);
+        }
 
-    {
-        span<sa_index> out_sa = output;
-        string_span readonly_text_with_sentinels = text_with_sentinels;
-        Algorithm::construct_sa(readonly_text_with_sentinels, alph, out_sa);
+        ret = uniform_sa<sa_index>{extra_sentinels, std::move(output)};
+
+        root.log("text_size", text.size());
+        root.log("extra_sentinels", extra_sentinels);
+        root.log("sa_index_bit_size",
+                 ceil_log2(std::numeric_limits<sa_index>::max()));
     }
 
-    return uniform_sa<sa_index>{extra_sentinels, std::move(output)};
+    if (WIP_print_stats) {
+        auto j = root.to_json();
+        std::cout << j.dump(4) << std::endl;
+    }
+
+    return ret;
 }
 
 class saca;
@@ -218,19 +258,19 @@ public:
 
 protected:
     virtual void construct_sa_32(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, uint32_t>(text);
+        prepare_and_construct_sa<Algorithm, uint32_t>(text, true);
     }
     /*
     TODO: Commented out because of compile errors with the uint4X types.
     virtual void construct_sa_40(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, util::uint40>(text);
+        prepare_and_construct_sa<Algorithm, util::uint40>(text, true);
     }
     virtual void construct_sa_48(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, util::uint48>(text);
+        prepare_and_construct_sa<Algorithm, util::uint48>(text, true);
     }
     */
     virtual void construct_sa_64(text_initializer const& text) const override {
-        prepare_and_construct_sa<Algorithm, uint64_t>(text);
+        prepare_and_construct_sa<Algorithm, uint64_t>(text, true);
     }
 }; // class concrete_saca
 
