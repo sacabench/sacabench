@@ -489,10 +489,11 @@ public:
                 sa[i] ^= NEGATIVE_MASK;
             } else {
                 // predecessor has yet to be induced
-                sa[buckets.l_buckets[input[sa[i] - 1]]++] = sa[i] - 1;
+                size_t insert_position = buckets.l_buckets[input[sa[i] - 1]]++;
+                sa[insert_position] = sa[i] - 1;
                 if (input[sa[i] - 2] < input[sa[i] - 1]) {
                     // predecessor of induced index i S-suffix
-                    sa[i - 1] |= NEGATIVE_MASK;
+                    sa[insert_position] |= NEGATIVE_MASK;
                 }
             }
         }
