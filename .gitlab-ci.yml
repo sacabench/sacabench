@@ -4,7 +4,7 @@ debug_make:
         - cd build
         - cmake -DCMAKE_BUILD_TYPE=Debug ..
         - make
-        - "./sacabench/sacabench" list
+        - ./sacabench/sacabench list
 debug_make_check:
     script:
         - mkdir build
@@ -17,7 +17,7 @@ release_make:
         - cd build
         - cmake -DCMAKE_BUILD_TYPE=Release ..
         - make
-        - "./sacabench/sacabench" list
+        - ./sacabench/sacabench list
 release_make_check:
     script:
         - mkdir build
