@@ -32,6 +32,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         ->check(CLI::NonexistentPath);
     construct.add_option("-a,--algorithm", algorithm, "Algorithm")->required();
 
+    bool check_sa;
+    construct.add_flag("--check", check_sa);
+
     construct.add_flag("-b,--benchmark", "Record benchmark");
 
     CLI11_PARSE(app, argc, argv);
@@ -67,6 +70,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         auto text =
             sacabench::util::text_initializer_from_file(input_filename);
         algo->construct_sa(text);
+        if (check_sa) {
+            // TODO
+        }
     }
 
     return 0;
