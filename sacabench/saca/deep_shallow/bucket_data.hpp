@@ -68,9 +68,6 @@ public:
         for (size_t i = 0; i < bucket_bounds.size(); ++i) {
             const util::character alpha = i / real_alphabet_size;
             const util::character beta = i % real_alphabet_size;
-
-            // std::cout << (size_t)alpha << ", " << (size_t)beta << std::endl;
-
             bounds[{alpha,beta}].starting_position = bucket_bounds[i].position;
         }
 
