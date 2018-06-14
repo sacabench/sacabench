@@ -96,6 +96,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
                     // Run the SA checker, and print the result
                     auto res = sa->check(s);
+                    check_sa_phase.log("check_result", res);
                     if (res != util::sa_check_result::ok) {
                         std::cerr << "ERROR: SA check failed" << std::endl;
                         return 1;
