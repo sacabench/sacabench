@@ -143,13 +143,16 @@ TEST(DivSufSort, sortRmsSubstrings) {
     buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                     /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
+    std::cout << "Computing bucket sizes." << std::endl;
     dss::compute_buckets(text, alphabet, sa_type_container, bkts);
 
+    std::cout << "Inserting rms-suffixes into buckets" << std::endl;
     dss::insert_into_buckets(rms_suf, bkts);
 
+    std::cout << "Sorting RMS-Substrings." << std::endl;
     dss::sort_rms_substrings(rms_suf, alphabet, bkts);
 
-    auto rel_ind = util::container<size_t>({0, 2, 3, 1});
+    auto rel_ind = util::container<size_t>({2, 0, 3, 1});
     for(size_t pos = 0; pos < rel_ind.size(); ++pos) {
         std::cout << "Index: " << rms_suf.relative_indices[pos] << " , should: " << rel_ind[pos] << std::endl;
         ASSERT_EQ(rms_suf.relative_indices[pos], rel_ind[pos]);
