@@ -131,9 +131,11 @@ TEST(DivSufSort, sortRmsSubstrings) {
     // Initialize struct rms_suffixes with text, relative positions
     // (first rms_count positions in output) and absolute positions
     // (last rms_count positions in output) for rms-suffixes
-    rms_suffixes<size_t> rms_suf = {/*.text=*/text,
+    rms_suffixes<size_t> rms_suf = {
+        /*.text=*/text,
         /*.relative_indices=*/output.slice(0, rms_count),
-        /*.absolute_indices=*/output.slice(output.size() - rms_count, output.size())};
+        /*.absolute_indices=*/
+        output.slice(output.size() - rms_count, output.size())};
     auto s_bkt = util::make_container<std::size_t>(
         pow(alphabet.max_character_value() + 1, 2));
     auto l_bkt =
@@ -153,8 +155,9 @@ TEST(DivSufSort, sortRmsSubstrings) {
     dss::sort_rms_substrings(rms_suf, alphabet, bkts);
 
     auto rel_ind = util::container<size_t>({2, 0, 3, 1});
-    for(size_t pos = 0; pos < rel_ind.size(); ++pos) {
-        std::cout << "Index: " << rms_suf.relative_indices[pos] << " , should: " << rel_ind[pos] << std::endl;
+    for (size_t pos = 0; pos < rel_ind.size(); ++pos) {
+        std::cout << "Index: " << rms_suf.relative_indices[pos]
+                  << " , should: " << rel_ind[pos] << std::endl;
         ASSERT_EQ(rms_suf.relative_indices[pos], rel_ind[pos]);
     }
 }

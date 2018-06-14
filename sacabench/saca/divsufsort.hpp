@@ -9,14 +9,14 @@
 #include <cmath>
 #include <iostream>
 //#include <tuple>
-#include <utility>
 #include <util/alphabet.hpp>
 #include <util/assertions.hpp>
 #include <util/container.hpp>
 #include <util/sort/bucketsort.hpp>
+#include <util/sort/introsort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/sort/introsort.hpp>
+#include <utility>
 
 // TODO: Move helper functions to different files/classes/structs
 namespace sacabench::saca::divsufsort {
@@ -78,54 +78,61 @@ struct buckets {
 template <typename sa_index>
 struct compare_rms_substrings {
 public:
-    inline compare_rms_substrings(const util::string_span text,
-        util::container<std::pair<sa_index, sa_index>>& substrings) : input(text),
-        substrings(substrings) {
-            std::cout << "Initializing rms-substrings compare fct." << std::endl;
-        }
+    inline compare_rms_substrings(
+        const util::string_span text,
+        util::container<std::pair<sa_index, sa_index>>& substrings)
+        : input(text), substrings(substrings) {
+        std::cout << "Initializing rms-substrings compare fct." << std::endl;
+    }
 
-    inline bool operator()(const sa_index& elem, const sa_index& compare_to) const{
-        //DCHECK_NE(elem, compare_to);
-        if(elem == compare_to) { return false; }
+    inline bool operator()(const sa_index& elem,
+                           const sa_index& compare_to) const {
+        // DCHECK_NE(elem, compare_to);
+        if (elem == compare_to) {
+            return false;
+        }
         const bool elem_too_large = (elem >= substrings.size());
         const bool compare_to_too_large = (compare_to >= substrings.size());
 
-        if(elem_too_large) {
-            if(compare_to_too_large) {
-                //Check how to handle this case (possibly the shorter one is smaller)
+        if (elem_too_large) {
+            if (compare_to_too_large) {
+                // Check how to handle this case (possibly the shorter one is
+                // smaller)
                 return elem < compare_to;
             }
             return true;
         }
-        if(compare_to_too_large) {
+        if (compare_to_too_large) {
             DCHECK_EQ(elem_too_large, false);
             return false;
         }
         sa_index max_pos = std::min(std::get<1>(substrings[elem]),
-        std::get<1>(substrings[compare_to]));
+                                    std::get<1>(substrings[compare_to]));
         sa_index elem_begin = std::get<0>(substrings[elem]);
         sa_index compare_to_begin = std::get<0>(substrings[compare_to]);
-        sa_index elem_index = elem_begin+2, compare_to_index = compare_to_begin+2;
+        sa_index elem_index = elem_begin + 2,
+                 compare_to_index = compare_to_begin + 2;
 
-        for(sa_index pos = 2; pos < max_pos; ++pos) {
-            if(input[elem_index] == input[compare_to_index]) {
+        for (sa_index pos = 2; pos < max_pos; ++pos) {
+            if (input[elem_index] == input[compare_to_index]) {
                 ++elem_index;
                 ++compare_to_index;
             } else {
                 return input[elem_index] < input[compare_to_index];
             }
         }
-        // If one substring is shorter than the other and they are the same until
-        // now:
-        sa_index elem_size = std::get<1>(substrings[elem]) -
-        std::get<0>(substrings[elem]) + 1;
+        // If one substring is shorter than the other and they are the same
+        // until now:
+        sa_index elem_size =
+            std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]) + 1;
         sa_index compare_to_size = std::get<1>(substrings[compare_to]) -
-        std::get<0>(substrings[compare_to]) + 1;
+                                   std::get<0>(substrings[compare_to]) + 1;
         // Either they differ in length (shorter string is smaller) or they have
         // the same length (i.e. return false)
-        return (elem_size == compare_to_size) ? false : elem_size <
-        compare_to_size;
+        return (elem_size == compare_to_size) ? false
+                                              : elem_size < compare_to_size;
     }
+
 private:
     const util::string_span input;
     util::container<std::pair<sa_index, sa_index>>& substrings;
@@ -195,18 +202,18 @@ public:
         // Count of rms-suffixes
         return text.size() - right_border;
     }
-    
+
     inline static void insert_into_buckets(rms_suffixes<sa_index>& rms_suf,
                                            buckets& bkts) {
         sa_index current_index, relative_index;
         util::character first_letter, second_letter;
         size_t bucket_index;
         sa_index rms_count = rms_suf.absolute_indices.size();
-        //Skip last rms-suffix in this loop
-        for (sa_index pos = rms_count-1; 0 < pos; --pos) {
+        // Skip last rms-suffix in this loop
+        for (sa_index pos = rms_count - 1; 0 < pos; --pos) {
             // Retrieve index and first two characters for current rms-
             // suffix
-            current_index = rms_suf.absolute_indices[pos-1];
+            current_index = rms_suf.absolute_indices[pos - 1];
             first_letter = rms_suf.text[current_index];
             second_letter = rms_suf.text[current_index + 1];
             // Retrieve index for current bucket containing the bucket's
@@ -217,84 +224,97 @@ public:
             relative_index = --bkts.s_buckets[bucket_index];
             // Set current suffix into correct "bucket" at beginning of sa
             // (i.e. into relative_indices)
-            std::cout << "Inserting " << pos-1 << " into " << relative_index << std::endl; 
-            rms_suf.relative_indices[relative_index] = pos-1;
+            std::cout << "Inserting " << pos - 1 << " into " << relative_index
+                      << std::endl;
+            rms_suf.relative_indices[relative_index] = pos - 1;
         }
-        current_index = rms_suf.absolute_indices[rms_count-1];
+        current_index = rms_suf.absolute_indices[rms_count - 1];
         first_letter = rms_suf.text[current_index];
         second_letter = rms_suf.text[current_index + 1];
         // Retrieve index for current bucket containing the bucket's
         // border.
         // TODO: Check wether new bucket borders are correct.
-        bucket_index =
-            bkts.get_rms_bucket_index(first_letter, second_letter);
+        bucket_index = bkts.get_rms_bucket_index(first_letter, second_letter);
         relative_index = --bkts.s_buckets[bucket_index];
         // Sort last rms-suffix into correct bucket:
-        std::cout << "Inserting " << rms_count-1 << " into " << relative_index << std::endl; 
-        rms_suf.relative_indices[relative_index] = rms_count-1;
+        std::cout << "Inserting " << rms_count - 1 << " into " << relative_index
+                  << std::endl;
+        rms_suf.relative_indices[relative_index] = rms_count - 1;
     }
 
-    inline static util::container<std::pair<sa_index, sa_index>> extract_rms_suffixes(
-        rms_suffixes<sa_index>& rms_suf) { 
+    inline static util::container<std::pair<sa_index, sa_index>>
+    extract_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
         sa_index rms_count = rms_suf.absolute_indices.size();
         // Create tupel for last rms-substring: from index of last
         // rms-suffix to index of sentinel
         std::pair<sa_index, sa_index> substring = std::make_pair(
             rms_suf.absolute_indices[rms_suf.absolute_indices.size() - 1],
             rms_suf.text.size() - 1);
-        auto substrings_container = util::make_container<std::pair<sa_index, sa_index>>(
-            rms_count);
+        auto substrings_container =
+            util::make_container<std::pair<sa_index, sa_index>>(rms_count);
         std::cout << substrings_container.end() << std::endl;
         substrings_container[substrings_container.size() - 1] = substring;
-        
+
         sa_index substr_start, substr_end;
-        for (sa_index current_index = 0;
-             current_index < rms_count - 1;
+        for (sa_index current_index = 0; current_index < rms_count - 1;
              ++current_index) {
-                 
+
             substr_start = rms_suf.absolute_indices[current_index];
             substr_end = rms_suf.absolute_indices[current_index + 1] + 1;
-            std::cout << "Creating substring <" << substr_start << "," << substr_end << ">" << std::endl;
+            std::cout << "Creating substring <" << substr_start << ","
+                      << substr_end << ">" << std::endl;
             // Create RMS-Substring for rms-suffix from suffix-index of rms
             // and starting index of following rms-suffix + 1
             substring = std::make_pair(substr_start, substr_end);
             substrings_container[current_index] = substring;
         }
-        // Create substring for last rms-suffix from rms-suffix index to sentinel
-        substr_start = rms_suf.absolute_indices[rms_count-1];
-        substr_end = rms_suf.text.size()-1;
-        std::cout << "Creating substring <" << substr_start << "," << substr_end << ">" << std::endl;
+        // Create substring for last rms-suffix from rms-suffix index to
+        // sentinel
+        substr_start = rms_suf.absolute_indices[rms_count - 1];
+        substr_end = rms_suf.text.size() - 1;
+        std::cout << "Creating substring <" << substr_start << "," << substr_end
+                  << ">" << std::endl;
         // Create RMS-Substring for rms-suffix from suffix-index of rms
         // and starting index of following rms-suffix + 1
         substring = std::make_pair(substr_start, substr_end);
-        substrings_container[rms_count-1] = substring;
+        substrings_container[rms_count - 1] = substring;
         return substrings_container;
     }
 
-    inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf, util::alphabet& alph, buckets sa_buckets) {
+    inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
+                                           util::alphabet& alph,
+                                           buckets sa_buckets) {
         // Compute RMS-Substrings (tupel with start-/end-position)
         auto substrings_container = extract_rms_suffixes(rms_suf);
-        compare_rms_substrings<sa_index> cmp(rms_suf.text, substrings_container);
+        compare_rms_substrings<sa_index> cmp(rms_suf.text,
+                                             substrings_container);
 
         // Sort rms-substrings (suffix-indices) inside of buckets
         size_t bucket_index;
         sa_index interval_begin, interval_end = rms_suf.relative_indices.size();
         util::span<sa_index> current_interval;
         // Sort every rms-bucket, starting at last bucket
-        for(util::character first_letter = alph.max_character_value()-1; 0 < first_letter; --first_letter) {
-            for(util::character second_letter = alph.max_character_value(); first_letter < second_letter; --second_letter) {
-                std::cout << "Currently sorting (" << (size_t) first_letter << "," << (size_t) second_letter << ")-bucket." << std::endl;
-                bucket_index = sa_buckets.get_rms_bucket_index(first_letter, second_letter);
+        for (util::character first_letter = alph.max_character_value() - 1;
+             0 < first_letter; --first_letter) {
+            for (util::character second_letter = alph.max_character_value();
+                 first_letter < second_letter; --second_letter) {
+                std::cout << "Currently sorting (" << (size_t)first_letter
+                          << "," << (size_t)second_letter << ")-bucket."
+                          << std::endl;
+                bucket_index = sa_buckets.get_rms_bucket_index(first_letter,
+                                                               second_letter);
                 interval_begin = sa_buckets.s_buckets[bucket_index];
                 // Interval of indices to sort
-                current_interval = rms_suf.relative_indices.slice(interval_begin, interval_end);
+                current_interval = rms_suf.relative_indices.slice(
+                    interval_begin, interval_end);
                 // sort current interval/bucket
-                util::sort::introsort<sa_index, compare_rms_substrings<sa_index>>(current_interval, cmp);
+                util::sort::introsort<sa_index,
+                                      compare_rms_substrings<sa_index>>(
+                    current_interval, cmp);
                 // Refresh end_index
                 interval_end = interval_begin;
             }
         }
-
     }
 
     // Temporary function for suffix-types, until RTL-Extraction merged.
