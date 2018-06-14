@@ -123,7 +123,7 @@ public:
         // the first half of the SA
         ssize n1 = 0;
         for (size_t i = 0; i < s.size(); i++) {
-            if (is_LMS(p_1, SA[i]) == 1) {
+            if (is_LMS(p_1, SA[i]) == 1 || s.size() == 1) {
                 SA[n1++] = SA[i];
             }
         }
