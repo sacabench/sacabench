@@ -103,6 +103,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         std::cerr << "SA check OK" << std::endl;
                     }
                 }
+                root.log("algorithm_name", algo->name());
             }
 
             if (record_benchmark) {
