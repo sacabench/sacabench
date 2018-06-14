@@ -5,10 +5,9 @@
 ################################################################################
 
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message("CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
-  message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source builds are not allowed. "
-    "Create a sub-directory and call cmake ..")
+    "Please remove ${CMAKE_BINARY_DIR}/CMakeCache.txt and the ${CMAKE_BINARY_DIR}/CMakeFiles/ directory. "
+    "Then create a sub-directory and call `cmake ..`")
 endif()
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
