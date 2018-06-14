@@ -234,13 +234,13 @@ public:
 protected:
     /// Runs the SACA with a 32 bit `sa_index` type.
     virtual void construct_sa_32(text_initializer const& text) const = 0;
-    /*
-    TODO: Commented out because of compile errors with the uint4X types.
+
     /// Runs the SACA with a 40 bit `sa_index` type.
     virtual void construct_sa_40(text_initializer const& text) const = 0;
+
     /// Runs the SACA with a 48 bit `sa_index` type.
     virtual void construct_sa_48(text_initializer const& text) const = 0;
-    */
+
     /// Runs the SACA with a 64 bit `sa_index` type.
     virtual void construct_sa_64(text_initializer const& text) const = 0;
 
@@ -260,15 +260,15 @@ protected:
     virtual void construct_sa_32(text_initializer const& text) const override {
         prepare_and_construct_sa<Algorithm, uint32_t>(text, true);
     }
-    /*
-    TODO: Commented out because of compile errors with the uint4X types.
+
     virtual void construct_sa_40(text_initializer const& text) const override {
         prepare_and_construct_sa<Algorithm, util::uint40>(text, true);
     }
+
     virtual void construct_sa_48(text_initializer const& text) const override {
         prepare_and_construct_sa<Algorithm, util::uint48>(text, true);
     }
-    */
+
     virtual void construct_sa_64(text_initializer const& text) const override {
         prepare_and_construct_sa<Algorithm, uint64_t>(text, true);
     }

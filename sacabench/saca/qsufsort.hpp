@@ -58,8 +58,8 @@ public:
         : V(_V.make_copy()), h(_h) {}
 
     bool operator()(const sa_index& a, const sa_index& b) const {
-        bool a_out_of_bound = a + h >= V.size();
-        bool b_out_of_bound = b + h >= V.size();
+        bool a_out_of_bound = static_cast<size_t>(a) + h >= V.size();
+        bool b_out_of_bound = static_cast<size_t>(b) + h >= V.size();
         if (a_out_of_bound && b_out_of_bound) {
             return false;
         } else if (a_out_of_bound) {
@@ -67,7 +67,7 @@ public:
         } else if (b_out_of_bound) {
             return false;
         }
-        return (V[a + h] < V[b + h]);
+        return (V[static_cast<size_t>(a) + h] < V[static_cast<size_t>(b) + h]);
     }
     const util::container<sa_index> V;
     const size_t h;
@@ -363,7 +363,7 @@ public:
 
                     // sort unsorted group
                     util::sort::ternary_quicksort::ternary_quicksort(
-                        out_sa.slice(counter, counter + L[counter]),
+                        out_sa.slice(counter, static_cast<size_t>(counter) + L[counter]),
                         compare_function);
                     // update ranks within group
                     update_group_ranks(out_sa, V, compare_function, counter,
@@ -438,7 +438,7 @@ private:
     template <typename sa_index, typename key_func>
     static void update_group_ranks(util::span<sa_index> out_sa,
                                    util::container<sa_index>& V, key_func& cmp,
-                                   sa_index start, sa_index end) {
+                                   size_t start, size_t end) {
 
         const auto less = cmp;
         const auto equal = util::as_equal(cmp);
