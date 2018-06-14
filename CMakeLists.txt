@@ -4,7 +4,9 @@
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
 ################################################################################
 
-if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+  message("CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
+  message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source builds are not allowed. "
     "Create a sub-directory and call cmake ..")
 endif()
