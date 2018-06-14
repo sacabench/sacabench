@@ -85,7 +85,10 @@ namespace sacabench::nzSufSort {
                 util::span<sa_index> tmp_out_sa = out_sa.slice(count_s_type_pos+mod_0, 2*count_s_type_pos);
                 
                 util::container<sa_index> tmp_t_12 = t_12.slice(0,t_12.size()); //just until the lightweight_dc3 is not working
-                lightweight_dc3(tmp_t_12, tmp_out_sa);
+                
+                auto u_1 = util::make_container<sa_index>(t_12.size());
+                auto v_1 = util::make_container<sa_index>(t_12.size());
+                lightweight_dc3(tmp_t_12, u_1, v_1, tmp_out_sa);
                 
                 naive_sa(t_12, tmp_out_sa);
                 for (size_t i = 0; i < t_12.size(); i++) {
@@ -323,12 +326,9 @@ namespace sacabench::nzSufSort {
           
         private:
             //TODO: Naive SACA for testing purposes until the lightweight DC3 is finished
-            template<typename sa_index, typename T>
-            static void lightweight_dc3(T& text,
+            template<typename sa_index, typename T, typename H>
+            static void lightweight_dc3(T& text, H& u, H& v,
                              util::span<sa_index> out_sa) {
-                //u and v will be later part of parameter
-                auto u = util::make_container<sa_index>(text.size());
-                auto v = util::make_container<sa_index>(text.size());
                 
                 //position of first index i mod 3 = 0;
                 size_t end_pos_of_12 = 2*u.size()/3;
@@ -336,6 +336,8 @@ namespace sacabench::nzSufSort {
                 size_t counter_12 = 0;
                 size_t counter_0 = 0;
                 
+                //Store indices correct as:
+                //[----i%3=1,2----||----i%3=0----]
                 for (size_t i = 0; i < text.size(); ++i) {
                     if(i % 3 == 1 || i % 3 == 2)
                     {
@@ -365,8 +367,11 @@ namespace sacabench::nzSufSort {
                     std::cout << u[i] << " " ;
                 }std::cout << std::endl;
                 
+                bool rekursion = false;
                 size_t rank = 1;
                 //Determine lexicographical names of triplets beginning in i mod 3 != 0;
+                //if triplets are the same, they will get the same rank and the bool rekursion
+                //will be set to true. 
                 for(size_t i = 0; i < end_pos_of_12;++i){
                     v[u[i]] = rank; // save ranks in correct positions
                     if((i+1)<end_pos_of_12){
@@ -377,13 +382,15 @@ namespace sacabench::nzSufSort {
                             if(index_2 < text.size()-3){
                                 if(text[index_1]!=text[index_2] || text[index_1+1]!=text[index_2+1] || text[index_1+2]!=text[index_2+2]){
                                     ++rank;
-                                }
-                            }else ++rank;
-                        }else ++rank;
-                    }else ++rank;
+                                }else rekursion = true; //tripletes are the same
+                            }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
+                        }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
+                    }else ++rank; //last element 
                 }
                 rank = 1;
                 //Determine lexicographical names of triplets beginning in i mod 3 = 0;
+                //if triplets are the same, they will get the same rank and the bool rekursion
+                //will be set to true. 
                 for(size_t i = end_pos_of_12; i < u.size();++i){
                     v[u[i]] = rank; // save ranks in correct positions
                     if((i+1)<end_pos_of_12){
@@ -394,10 +401,10 @@ namespace sacabench::nzSufSort {
                             if(index_2 < text.size()-3){
                                 if(text[index_1]!=text[index_2] || text[index_1+1]!=text[index_2+1] || text[index_1+2]!=text[index_2+2]){
                                     ++rank;
-                                }
-                            }else ++rank;
-                        }else ++rank;
-                    }else ++rank;
+                                }else rekursion = true; //tripletes are the same
+                            }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
+                        }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
+                    }else ++rank; //last element 
                 }
                 
                 std::cout << "ranks: " ;
@@ -420,6 +427,19 @@ namespace sacabench::nzSufSort {
                     }
                 }
                 std::cout << "new text: " << text << std::endl;
+                
+                //unfortunately it's not working, if I pass the spans directly
+                auto u_1 = util::span<sa_index>(u).slice(0,end_pos_of_12);
+                auto v_1 = util::span<sa_index>(v).slice(0,end_pos_of_12);
+                auto text_1 = text.slice(0,end_pos_of_12);
+                //Rekursion
+                if(rekursion){
+                    lightweight_dc3(text_1, u_1, v_1, out_sa);
+                    std::cout << "Mit Rekursion" << std::endl;
+                }
+                
+                //Next step: Induce SA_0 with SA_12
+                
             }
             
             template<typename sa_index>
