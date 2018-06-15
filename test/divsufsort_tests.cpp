@@ -16,8 +16,6 @@ using namespace sacabench::saca::divsufsort;
 using namespace sacabench;
 using dss = divsufsort<std::size_t>;
 
-
-
 TEST(DivSufSort, extractRms) {
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());

@@ -52,7 +52,7 @@ struct rms_suffixes {
     const util::string_span text;
     util::span<sa_index> relative_indices;
     util::span<sa_index> absolute_indices;
-    //util::span<sa_index> partial_isa;
+    // util::span<sa_index> partial_isa;
 };
 
 struct buckets {
@@ -78,7 +78,7 @@ struct buckets {
 
 template <typename sa_index>
 struct compare_rms_substrings {
-public:    
+public:
     inline compare_rms_substrings(
         const util::string_span text,
         util::container<std::pair<sa_index, sa_index>>& substrings)
@@ -107,8 +107,10 @@ public:
             DCHECK_EQ(elem_too_large, false);
             return false;
         }
-        sa_index elem_size = std::get<1>(substrings[elem]) - std::get<0>(substrings[elem])+1;
-        sa_index compare_to_size = std::get<1>(substrings[compare_to]) - std::get<0>(substrings[compare_to])+1;
+        sa_index elem_size =
+            std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]) + 1;
+        sa_index compare_to_size = std::get<1>(substrings[compare_to]) -
+                                   std::get<0>(substrings[compare_to]) + 1;
         sa_index max_pos = std::min(elem_size, compare_to_size);
         sa_index elem_begin = std::get<0>(substrings[elem]);
         sa_index compare_to_begin = std::get<0>(substrings[compare_to]);
@@ -117,12 +119,15 @@ public:
 
         for (sa_index pos = 2; pos < max_pos; ++pos) {
             std::cout << "Current index :" << pos << std::endl;
-            std::cout << "Comparing " << (size_t)input[elem_index] << " to " << (size_t)input[compare_to_index] << std::endl;
+            std::cout << "Comparing " << (size_t)input[elem_index] << " to "
+                      << (size_t)input[compare_to_index] << std::endl;
             if (input[elem_index] == input[compare_to_index]) {
                 ++elem_index;
                 ++compare_to_index;
             } else {
-                std::cout << "Symbol " << (size_t)input[elem_index] << " differs from " << (size_t)input[compare_to_index] << std::endl;
+                std::cout << "Symbol " << (size_t)input[elem_index]
+                          << " differs from " << (size_t)input[compare_to_index]
+                          << std::endl;
                 return input[elem_index] < input[compare_to_index];
             }
         }
@@ -132,7 +137,7 @@ public:
         elem_size =
             std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]);
         compare_to_size = std::get<1>(substrings[compare_to]) -
-                                   std::get<0>(substrings[compare_to]);
+                          std::get<0>(substrings[compare_to]);
         // Either they differ in length (shorter string is smaller) or they have
         // the same length (i.e. return false)
         return (elem_size == compare_to_size) ? false
@@ -149,7 +154,7 @@ class divsufsort {
 public:
     static const std::size_t EXTRA_SENTINELS = 1;
     static constexpr sa_index NEGATIVE_MASK = size_t(1)
-                                           << (sizeof(sa_index) * 8 - 1);
+                                              << (sizeof(sa_index) * 8 - 1);
 
     // TODO
     static void construct_sa(util::string_span text,
@@ -288,24 +293,31 @@ public:
         substrings_container[rms_count - 1] = substring;
         return substrings_container;
     }
-    
-    inline static void set_unsorted_rms_substring_intervals(rms_suffixes<sa_index>& rms_suf, compare_rms_substrings<sa_index> cmp, sa_index interval_start, sa_index interval_end) {
+
+    inline static void set_unsorted_rms_substring_intervals(
+        rms_suffixes<sa_index>& rms_suf, compare_rms_substrings<sa_index> cmp,
+        sa_index interval_start, sa_index interval_end) {
         sa_index elem, compare_to;
         // Last element to be compared to its predecessor: interval_start + 1
         // interval_end must not contain last element of interval
         bool less, greater;
-        for(sa_index pos = interval_end-1; interval_start < pos; --pos) {
-            elem = rms_suf.relative_indices[pos-1];
+        for (sa_index pos = interval_end - 1; interval_start < pos; --pos) {
+            elem = rms_suf.relative_indices[pos - 1];
             compare_to = rms_suf.relative_indices[pos];
             // None of the substrings is smaller than the other (i.e. the same)
             less = cmp(elem, compare_to);
             greater = cmp(compare_to, elem);
-            std::cout << "Index " << elem << " is smaller than " << compare_to << ":" << less << std::endl;
-            std::cout << "Index " << elem << " is greater than " << compare_to << ":" << greater << std::endl;
-            
-            if(!(cmp(elem, compare_to) || cmp(compare_to, elem))) {
+            std::cout << "Index " << elem << " is smaller than " << compare_to
+                      << ":" << less << std::endl;
+            std::cout << "Index " << elem << " is greater than " << compare_to
+                      << ":" << greater << std::endl;
+
+            if (!(cmp(elem, compare_to) || cmp(compare_to, elem))) {
                 rms_suf.relative_indices[pos] |= NEGATIVE_MASK;
-                std::cout << "Negated index " << compare_to << " because it's the same substring as its predecessor." << std::endl;
+                std::cout
+                    << "Negated index " << compare_to
+                    << " because it's the same substring as its predecessor."
+                    << std::endl;
             }
         }
     }
@@ -340,49 +352,57 @@ public:
                 util::sort::introsort<sa_index,
                                       compare_rms_substrings<sa_index>>(
                     current_interval, cmp);
-                    
+
                 // Modify elements in interval if they are the same (MSB set)
-                std::cout << "Checking bucket for unsorted (i.e. same) substrings." << std::endl;
-                set_unsorted_rms_substring_intervals(rms_suf, cmp, interval_begin, interval_end);
+                std::cout
+                    << "Checking bucket for unsorted (i.e. same) substrings."
+                    << std::endl;
+                set_unsorted_rms_substring_intervals(
+                    rms_suf, cmp, interval_begin, interval_end);
                 // Refresh end_index
                 interval_end = interval_begin;
             }
         }
     }
-    
+
     inline static void compute_partial_isa(rms_suffixes<sa_index>& rms_suf) {
         sa_index sorted_count = 0;
         sa_index unsorted_count = 0;
         util::span<sa_index> rel_ind = rms_suf.relative_indices;
-        sa_index rank = rel_ind.size()-1;
-        for(sa_index pos = rel_ind.size(); 0 < pos; --pos) {
+        sa_index rank = rel_ind.size() - 1;
+        for (sa_index pos = rel_ind.size(); 0 < pos; --pos) {
             // Has been negated
-            if(rel_ind[pos-1] & NEGATIVE_MASK == 0){
-                if(unsorted_count > 0) {
-                    std::cout << "Set rank for index " << rel_ind[pos] << " to " << rank << std::endl;
-                    // Set rank for "final" index in unsorted interval (i.e. 
+            if (rel_ind[pos - 1] & NEGATIVE_MASK == 0) {
+                if (unsorted_count > 0) {
+                    std::cout << "Set rank for index " << rel_ind[pos] << " to "
+                              << rank << std::endl;
+                    // Set rank for "final" index in unsorted interval (i.e.
                     // interval with same substrings).
                     rms_suf.partial_isa[rel_ind[pos]] = rank;
-                    // Reduce rank by unsorted_count (number of indices with same rank)
+                    // Reduce rank by unsorted_count (number of indices with
+                    // same rank)
                     rank -= unsorted_count;
                     std::cout << "Reduced rank to " << rank << std::endl;
                     // Reset unsorted count;
                     unsorted_count = 0;
                 }
-                std::cout << "Set rank for index " << rel_ind[pos-1] << " to " << rank << std::endl;
-                rms_suf.partial_isa[rel_ind[pos-1]] = rank--;
+                std::cout << "Set rank for index " << rel_ind[pos - 1] << " to "
+                          << rank << std::endl;
+                rms_suf.partial_isa[rel_ind[pos - 1]] = rank--;
                 ++sorted_count;
             } else {
                 // Can only occur if there have been non-negated indices
-                if(sorted_count > 0) {
-                    std::cout << "Sorted interval of length " << sorted_count << "ending at " << pos << std::endl;
+                if (sorted_count > 0) {
+                    std::cout << "Sorted interval of length " << sorted_count
+                              << "ending at " << pos << std::endl;
                     // Could cause issues with inducing (normally inverted)
                     rel_ind[pos] = sorted_count | NEGATIVE_MASK;
                     // Reset sorted count
                     sorted_count = 0;
                 }
-                std::cout << "Set rank for index " << rel_ind[pos] << " to " << rank << std::endl;
-                rms_suf.partial_isa[rel_ind[pos-1]] = rank;
+                std::cout << "Set rank for index " << rel_ind[pos] << " to "
+                          << rank << std::endl;
+                rms_suf.partial_isa[rel_ind[pos - 1]] = rank;
                 ++unsorted_count;
             }
         }
