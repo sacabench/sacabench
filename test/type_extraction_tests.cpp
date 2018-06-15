@@ -23,5 +23,3 @@ TEST(type_extraction, test_type_l_easy) {
     bool is_type_l = std::get<0>(get_type_ltr_dynamic(test_text, test_ind));
     ASSERT_EQ(true, is_type_l);
 }
-
-

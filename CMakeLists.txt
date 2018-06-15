@@ -32,9 +32,19 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
+IF (WIN32)
+
+set(SACA_BENCH_FLAGS "/std:c++17")
+set(SACA_BENCH_DEBUG_FLAGS "")
+set(SACA_BENCH_RELEASE_FLAGS "")
+
+ELSE()
+
 set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra;-Werror=return-type")
 set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb;-DDEBUG")
 set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG")
+
+ENDIF()
 
 # Add custom cmake extensions
 include(cmakemodules/git_submodule_subdirectories.cmake)
