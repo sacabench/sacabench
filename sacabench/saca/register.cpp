@@ -10,8 +10,6 @@
 #include "saca/dc3.hpp"
 #include "saca/dc7.hpp"
 #include "saca/deep_shallow/saca.hpp"
-#include "saca/example1.hpp"
-#include "saca/example2.hpp"
 #include "saca/gsaca.hpp"
 #include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
@@ -22,12 +20,6 @@
 #include "util/saca.hpp"
 
 namespace sacabench::saca {
-
-using saca_example1 = sacabench::example1::example1;
-SACA_REGISTER("Example1", "Description of Example1", saca_example1)
-
-using saca_example2 = sacabench::example2::example2;
-SACA_REGISTER("Example2", "Description of Example2", saca_example2)
 
 using deep_shallow = sacabench::deep_shallow::saca;
 SACA_REGISTER("Deep-Shallow", "Deep Shallow SACA by Manzini and Ferragina",
