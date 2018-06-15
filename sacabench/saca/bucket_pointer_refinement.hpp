@@ -17,6 +17,8 @@
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/compare.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 namespace sacabench::bucket_pointer_refinement {
 
 class bucket_pointer_refinement {
@@ -30,34 +32,39 @@ class bucket_pointer_refinement {
         template<typename sa_index>
         static void construct_sa(util::string_span input,
                 util::alphabet const& alphabet, util::span<sa_index> sa) {
-            size_t alphabet_size = alphabet.size_with_sentinel();
+            tdc::StatPhase bpr("Phase 1.1");
+            {
+                size_t alphabet_size = alphabet.size_with_sentinel();
 
-            size_t const n = input.size();
-            if (n == 0) { // there's nothing to do
-                return;
+                size_t const n = input.size();
+                if (n == 0) { // there's nothing to do
+                    return;
+                }
+
+                // TODO: choose appropiate value
+                size_t bucketsort_depth = 2;
+                if (bucketsort_depth > input.size()) {
+                    bucketsort_depth = input.size();
+                }
+
+                // Phase 1.1
+                // determine initial buckets with bucketsort
+                auto buckets =
+                    util::sort::bucketsort_presort(input, alphabet_size,
+                            bucketsort_depth, sa);
+
+                // Phase 1.2
+                // initialize bucket pointers such that each suffix is mapped to the
+                // bucket it's currenly in, indexed by right inclusive bound
+                bpr.split("Phase 1.2");
+                util::container<sa_index> bptr =
+                    initialize_bucket_pointers<sa_index>(input, alphabet_size,
+                            bucketsort_depth, sa);
+
+                // Phase 2
+                bpr.split("Phase 2");
+                refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
             }
-
-            // TODO: choose appropiate value
-            size_t bucketsort_depth = 2;
-            if (bucketsort_depth > input.size()) {
-                bucketsort_depth = input.size();
-            }
-
-            // Phase 1.1
-            // determine initial buckets with bucketsort
-            auto buckets =
-                util::sort::bucketsort_presort(input, alphabet_size,
-                        bucketsort_depth, sa);
-
-            // Phase 1.2
-            // initialize bucket pointers such that each suffix is mapped to the
-            // bucket it's currenly in, indexed by right inclusive bound
-            util::container<sa_index> bptr =
-                initialize_bucket_pointers<sa_index>(input, alphabet_size,
-                    bucketsort_depth, sa);
-
-            // Phase 2
-            refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
         }
 
     private:
