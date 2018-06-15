@@ -6,19 +6,18 @@
 
 #include "saca/bucket_pointer_refinement.hpp"
 
+#include "saca/bucket_pointer_refinement.hpp"
+#include "saca/dc3.hpp"
+#include "saca/dc7.hpp"
 #include "saca/deep_shallow/saca.hpp"
 #include "saca/example1.hpp"
 #include "saca/example2.hpp"
 #include "saca/gsaca.hpp"
-#include "saca/deep_shallow/saca.hpp"
-#include "saca/bucket_pointer_refinement.hpp"
 #include "saca/naive.hpp"
 #include "saca/prefix_doubling.hpp"
 #include "saca/qsufsort.hpp"
-#include "saca/sais.hpp"
-#include "saca/dc7.hpp"
-#include "saca/dc3.hpp"
 #include "saca/sacak.hpp"
+#include "saca/sais.hpp"
 
 #include "util/saca.hpp"
 
@@ -41,24 +40,33 @@ SACA_REGISTER("Bucket-Pointer Refinement",
               saca_bucket_pointer_refinement)
 
 using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling;
-SACA_REGISTER("Prefix Doubling", "TODO", saca_prefix_doubling)
+SACA_REGISTER("Doubling",
+              "In-Memory variant of Naive Prefix Doubling by R. Dementiev, J. "
+              "Kärkkäinen, J. Mehnert, and P. Sanders",
+              saca_prefix_doubling)
 
 using saca_prefix_doubling_discarding =
     sacabench::prefix_doubling::prefix_doubling_discarding;
-SACA_REGISTER("Prefix Doubling+Discarding", "TODO",
+SACA_REGISTER("Discarding",
+              "In-Memory variant of Naive Doubling with Discarding by R. "
+              "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders",
               saca_prefix_doubling_discarding)
-              
+
 using saca_sais = sacabench::sais::sais;
-SACA_REGISTER("SAIS", "Suffix Array Induced Sorting by Nong, Zhang and Chan", saca_sais)              
+SACA_REGISTER("SAIS", "Suffix Array Induced Sorting by Nong, Zhang and Chan",
+              saca_sais)
 
 using saca_gsaca = sacabench::gsaca::gsaca;
-SACA_REGISTER("GSACA", "Computes a suffix array with the algorithm gsaca by Uwe Baier.", saca_gsaca)
-using saca_dc7 = sacabench::dc7::dc7;
-SACA_REGISTER("DC7", "Description of DC7 TODO", saca_dc7)
+SACA_REGISTER("GSACA",
+              "Computes a suffix array with the algorithm gsaca by Uwe Baier.",
+              saca_gsaca)
 
-using saca_qsufsort_naive =
-    sacabench::qsufsort::qsufsort_naive;
-SACA_REGISTER("Naive qsufsort","Naive Version of N. Larssons and K. SADAKANES qsufsort",
+using saca_dc7 = sacabench::dc7::dc7;
+SACA_REGISTER("DC7", "Difference Cover Modulo 7 SACA", saca_dc7)
+
+using saca_qsufsort_naive = sacabench::qsufsort::qsufsort_naive;
+SACA_REGISTER("Naive qsufsort",
+              "Naive Version of N. Larssons and K. SADAKANES qsufsort",
               saca_qsufsort_naive)
 
 using saca_qsufsort = sacabench::qsufsort::qsufsort;
@@ -73,7 +81,7 @@ using sacak = sacabench::sacak::sacak;
 SACA_REGISTER("SACA-K", "Constant-Space SA-Algorithm based on SAIS", sacak);
 
 using saca_dc3 = sacabench::dc3::dc3;
-SACA_REGISTER("DC3", "Difference Cover Modulo 3 SACA ", saca_dc3)
+SACA_REGISTER("DC3", "Difference Cover Modulo 3 SACA", saca_dc3)
 
 } // namespace sacabench::saca
 
