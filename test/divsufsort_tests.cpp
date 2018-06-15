@@ -16,6 +16,8 @@ using namespace sacabench::saca::divsufsort;
 using namespace sacabench;
 using dss = divsufsort<std::size_t>;
 
+
+
 TEST(DivSufSort, extractRms) {
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
@@ -154,7 +156,8 @@ TEST(DivSufSort, sortRmsSubstrings) {
     std::cout << "Sorting RMS-Substrings." << std::endl;
     dss::sort_rms_substrings(rms_suf, alphabet, bkts);
 
-    auto rel_ind = util::container<size_t>({2, 0, 3, 1});
+    auto rel_ind = util::container<size_t>({0, 2, 3, 1});
+    rel_ind[1] |= dss::NEGATIVE_MASK;
     for (size_t pos = 0; pos < rel_ind.size(); ++pos) {
         std::cout << "Index: " << rms_suf.relative_indices[pos]
                   << " , should: " << rel_ind[pos] << std::endl;
