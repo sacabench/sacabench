@@ -28,8 +28,7 @@ TEST(Bucketsort, function_call) {
 }
 
 TEST(Bucketsort, bucket_sizes){
-    sacabench::util::string input =
-        sacabench::util::make_string("blablablub");
+    sacabench::util::string input = "blablablub"_s;
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
     sacabench::util::apply_effective_alphabet(input, a);
     size_t depth = 1;
