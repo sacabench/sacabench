@@ -40,16 +40,13 @@ SACA_REGISTER("Bucket-Pointer Refinement",
               saca_bucket_pointer_refinement)
 
 using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling;
-SACA_REGISTER("Doubling",
-              "In-Memory variant of Naive Prefix Doubling by R. Dementiev, J. "
-              "Kärkkäinen, J. Mehnert, and P. Sanders",
+SACA_REGISTER(saca_prefix_doubling::NAME, saca_prefix_doubling::DESCRIPTION,
               saca_prefix_doubling)
 
 using saca_prefix_doubling_discarding =
     sacabench::prefix_doubling::prefix_doubling_discarding;
-SACA_REGISTER("Discarding",
-              "In-Memory variant of Naive Doubling with Discarding by R. "
-              "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders",
+SACA_REGISTER(saca_prefix_doubling_discarding::NAME,
+              saca_prefix_doubling_discarding::DESCRIPTION,
               saca_prefix_doubling_discarding)
 
 using saca_sais = sacabench::sais::sais;
