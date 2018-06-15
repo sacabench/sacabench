@@ -24,7 +24,6 @@ namespace sacabench::sacak {
     public:
         static constexpr size_t EXTRA_SENTINELS = 1;
 
-        
 
         template <typename string_type, typename sa_index>
         inline static void induced_sort(const string_type t, util::span<sa_index> sa,
@@ -114,6 +113,14 @@ namespace sacabench::sacak {
 
             induced_sort<util::span<sa_index>, sa_index>(t, sa, max_char);
 
+            if (lms_amount <= 2) { // breaking point for special cases so we dont need to do more calculation
+                for (size_t i = 0; i < t.size(); i++)
+                {
+                    t[i] = -1; // finishing up the recursion before returning
+                }
+                return;
+            }
+
             util::extract_sorted_lms<util::span<sa_index>, sa_index>(t, sa);
 
             util::ssize name = 0;
@@ -187,7 +194,7 @@ namespace sacabench::sacak {
 
             for (size_t i = 0; i < t.size(); i++)
             {
-                t[i] = -1;
+                t[i] = -1; // finishing up the recursion before returning
             }
         }
 
@@ -201,7 +208,7 @@ namespace sacabench::sacak {
 
             // Initialize SA so that all items are -1 at the beginning
 
-            for (size_t i = 0; i < t_0.size(); i++) {
+            for (size_t i = 0; i < sa.size(); i++) {
                 sa[i] = -1;
             }
 
@@ -212,6 +219,11 @@ namespace sacabench::sacak {
 
             size_t lms_amount = util::insert_lms_rtl<util::string_span, sa_index>(t_0, sa);
             induced_sort(t_0, sa, max_char);
+
+            if (lms_amount <= 2) {
+                // for special corner cases and optimization
+                return;
+            }
 
             // After this operation the sorted LMS Strings will be in the first half of the SA
             util::extract_sorted_lms<util::string_span>(t_0, sa);
@@ -226,6 +238,8 @@ namespace sacabench::sacak {
                 bool diff = false;
 
                 util::ssize current_LMS = sa[i];
+                if (sa[i] < 0) continue;
+
                 for (size_t j = 0; j < t_0.size(); j++) {
 
                     if (previous_LMS == -1)
