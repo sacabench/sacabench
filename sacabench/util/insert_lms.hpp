@@ -28,8 +28,8 @@ inline bool entry_comes_after(span<sa_index> sa, size_t start, size_t j) {
 /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating
    LTR returns the amount of LMS substrings indices found.
 */
-template <typename sa_index>
-inline size_t insert_lms_ltr(string_span t_0, span<size_t> sa) {
+template <typename string_type, typename sa_index>
+inline size_t insert_lms_ltr(string_type &t_0, span<size_t> sa) {
 
     std::tuple<bool, size_t> last_type = get_type_ltr_dynamic(t_0, 0);
     size_t amount = 0;
@@ -60,9 +60,9 @@ inline size_t insert_lms_ltr(string_span t_0, span<size_t> sa) {
 /* Inserts LMS Substrings into the beginning of the Suffix-Array by iterating
 RTL returns the amount of LMS substrings indices found
 */
-template <typename sa_index>
-inline static size_t insert_lms_rtl(util::string t_0, span<sa_index> sa) {
-
+template <typename string_type, typename sa_index>
+inline static size_t insert_lms_rtl(const string_type t_0, span<sa_index> sa) {
+    
     bool last_type = true;
     size_t amount = 1;
     size_t sa_pointer = 1;
@@ -81,6 +81,7 @@ inline static size_t insert_lms_rtl(util::string t_0, span<sa_index> sa) {
         if (!last_type && current_type) {
             sa[sa_pointer] = i;
             sa_pointer++;
+            amount++;
 
             // Now, for keeping the LMS Substrings in order (which is important
             // for induced sort) we shift our current entry left as long as the
@@ -101,8 +102,8 @@ inline static size_t insert_lms_rtl(util::string t_0, span<sa_index> sa) {
     return amount;
 }
 
-template <typename sa_index>
-inline bool is_LMS(string_span t, sa_index index) {
+template <typename string_type, typename sa_index>
+inline bool is_LMS(const string_type& t, sa_index index) {
     
     bool last_type = true;
     size_t amount = 1;
@@ -121,8 +122,8 @@ inline bool is_LMS(string_span t, sa_index index) {
     Call this function to get the sorted LMS-Strings into the beginning of your
    SA after you have induced sorted your SA.
 */
-template <typename sa_index>
-inline size_t extract_sorted_lms(string_span t, span<sa_index> sa) {
+template <typename string_type, typename sa_index>
+inline size_t extract_sorted_lms(string_type &t, span<sa_index> sa) {
     size_t null_counter = 0;
     size_t amount = 0;
 
@@ -147,6 +148,57 @@ inline size_t extract_sorted_lms(string_span t, span<sa_index> sa) {
 
     return amount;
 }
+
+
+template <typename string_type, typename sa_index>
+inline static void recover_lms_after_recursion(string_type &t, span<sa_index> sa) {
+    size_t sa_counter = 0;
+
+    // first shift the calculated lms indizes to the right of the array
+
+    for (ssize i = sa.size() - 1; i >= 0; i--)
+    {
+        if (sa[i] == -1)
+            sa_counter++;
+        else {
+            sa[i + sa_counter] = sa[i];
+            sa[i] = -1;
+        }
+    }
+
+    size_t sa_pointer = sa_counter;
+    sa_counter = sa.size() - sa_counter - 1;
+
+    bool last_type = true;
+
+    DCHECK_GE(sa.size(), 1);
+
+    // Iterate whole string RTL and compare types of symbols with each other
+
+    for (ssize i = t.size() - 1; i >= 0; i--)
+    {
+        bool current_type = (t[i] != util::SENTINEL && get_type_rtl_dynamic(t, i, last_type));
+
+        if (!last_type && current_type) {
+
+            for (size_t j = 0; j + sa_pointer < sa.size(); j++)
+            {
+                if (sa[j + sa_pointer] == sa_counter)
+                {
+                    sa[j] = i + 1;
+                    sa_counter--;
+                    sa[j + sa_pointer] = -1;
+                    break;
+                }
+            }
+
+
+        }
+
+        last_type = current_type;
+    }
+}
+
 } // namespace sacabench::util
 
 /******************************************************************************/

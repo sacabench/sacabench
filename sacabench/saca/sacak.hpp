@@ -24,28 +24,17 @@ namespace sacabench::sacak {
     public:
         static constexpr size_t EXTRA_SENTINELS = 1;
 
-        template <typename sa_index>
-        inline static void calculate_deep_sa(util::span<sa_index> t_0,
-            util::span<sa_index> sa, size_t max_char) {
+        
 
-            // TODO: almost the same as the usual method, but without the use of bkt
-            // array. Needs negative size_t variables!!
-            // ignore warnings:
-            (void)t_0;
-            (void)sa;
-            (void)max_char;
-            DCHECK(false); // not done yet
-        }
-
-        template <typename sa_index>
-        inline static void induced_sort(util::string_span t, util::span<sa_index> sa,
+        template <typename string_type, typename sa_index>
+        inline static void induced_sort(const string_type t, util::span<sa_index> sa,
             size_t max_char) {
 
             // Iterate SA RTL and distribute the LMS suffixes into the S-Buckets
 
             // Initialize bkt so that the pointers point to the S-Buckets (end of
             // buckets)
-            util::container<util::sort::bucket> bkt = util::sort::get_buckets(t, max_char, 1);
+            util::container<util::sort::bucket> bkt = util::sort::get_buckets<string_type>(t, max_char, 1);
 
             for (size_t i = 0; i < bkt.size(); i++) {
                 bkt[i].position = bkt[i].position + bkt[i].count - 1;
@@ -61,9 +50,7 @@ namespace sacabench::sacak {
                     size_t c = t[sa[i - 1]]; // The character c itself is already his
                                              // bkt index (-1)
                     sa[bkt[c].position] = sa[i - 1];
-                    if (bkt[c].position !=  i - 1) // We need to overwrite all unused slots with 0 but we
-                               // dont want to overwrite the slot that was just written
-                               // to
+                    if (bkt[c].position !=  i - 1) // We need to overwrite all unused slots with 0 but we  dont want to overwrite the slot that was just written to
                         sa[i - 1] = -1;
                     bkt[c].position--;
                 }
@@ -74,8 +61,7 @@ namespace sacabench::sacak {
 
             // Initialize bkt so that the pointers point to the L-Buckets (start of
             // buckets)
-
-            bkt = util::sort::get_buckets(t, max_char, 1);
+            bkt = util::sort::get_buckets<string_type>(t, max_char, 1);
 
             for (size_t i = 0; i < t.size(); i++) // LTR Iteration of SA
             {
@@ -94,7 +80,7 @@ namespace sacabench::sacak {
 
             // Initialize bkt so that the pointers point to the S-Buckets (end of
             // buckets)
-            bkt = util::sort::get_buckets(t, max_char, 1);
+            bkt = util::sort::get_buckets<string_type>(t, max_char, 1);
 
             for (size_t i = 0; i < bkt.size(); i++) {
                 bkt[i].position = bkt[i].position + bkt[i].count - 1;
@@ -105,13 +91,103 @@ namespace sacabench::sacak {
                 size_t ind = sa[i - 1];
 
                 if (ind != -1 && ind != 0 && ind != t.size() - 1 &&
-                    !std::get<0>(util::get_type_ltr_dynamic(t, ind - 1))) // check if t[ind - 1] is S-Type (inefficient!)
+                    !std::get<0>(util::get_type_ltr_dynamic<string_type>(t, ind - 1))) // check if t[ind - 1] is S-Type (inefficient!)
                 {
 
                     size_t c = t[ind - 1]; // The character c itself is already his bkt index (-1)
                     sa[bkt[c].position] = sa[i - 1] - 1;
                     bkt[c].position--;
                 }
+            }
+        }
+
+
+        template <typename sa_index>
+        inline static void calculate_deep_sa(util::span<sa_index> t,
+            util::span<sa_index> sa, size_t max_char) {
+
+            for (size_t i = 0; i < sa.size(); i++) {
+                sa[i] = -1;
+            }
+
+            size_t lms_amount = util::insert_lms_rtl<util::span<sa_index>, sa_index>(t, sa);
+
+            induced_sort<util::span<sa_index>, sa_index>(t, sa, max_char);
+
+            util::extract_sorted_lms<util::span<sa_index>, sa_index>(t, sa);
+
+            util::ssize name = 0;
+            util::ssize previous_LMS = -1;
+            for (util::ssize i = 0; i < lms_amount; i++) {
+                bool diff = false;
+
+                util::ssize current_LMS = sa[i];
+                for (size_t j = 0; j < t.size(); j++) {
+
+                    if (previous_LMS == -1)
+                    {
+                        diff = true;
+                        break;
+                    }
+
+                    util::character c_old = t[previous_LMS + j];
+                    util::character c_new = t[current_LMS + j];
+
+                    bool type_old = std::get<0>(util::get_type_ltr_dynamic(t, previous_LMS + j));
+                    bool type_new = std::get<0>(util::get_type_ltr_dynamic(t, current_LMS + j));
+
+                    if (c_old != c_new || type_new != type_old) {
+                        diff = true;
+                        break;
+                    }
+                    else if (j > 0 && (util::is_LMS<util::span<sa_index>, size_t>(t, current_LMS + j) || util::is_LMS<util::span<sa_index>, size_t>(t, previous_LMS + j))) {
+                        break;
+                    }
+
+                }
+
+                if (diff) {
+                    name++;
+                    previous_LMS = current_LMS;
+                }
+
+                current_LMS = (current_LMS % 2 == 0) ? current_LMS / 2 : (current_LMS - 1) / 2;
+                sa[lms_amount + current_LMS] = name - 1;
+            }
+
+            size_t null_counter = 0;
+            for (size_t i = sa.size() - 1; i >= lms_amount; i--)
+            {
+                if (sa[i] != -1)
+                {
+                    sa[i + null_counter] = sa[i];
+                    sa[i] = -1;
+                }
+                else
+                    null_counter++;
+            }
+
+            size_t k_1 = name;
+
+            if (lms_amount > k_1) {
+
+                calculate_deep_sa<sa_index>(sa.slice(sa.size() - lms_amount, sa.size()), sa.slice(0, lms_amount), k_1);
+                util::recover_lms_after_recursion<util::span<sa_index>, sa_index>(t, sa);
+
+            }
+            else
+            {
+                for (size_t i = sa.size() - 1; i >= lms_amount; i--)
+                {
+                    sa[i] = -1;
+                }
+            }
+
+            induced_sort<util::span<sa_index>, sa_index>(t, sa, max_char);
+
+            for (size_t i = 0; i < t.size(); i++)
+            {
+                t[i] = -1;
             }
         }
 
@@ -134,24 +210,11 @@ namespace sacabench::sacak {
             // always in the form of {0, ..., n} That means you only need the n to know
             // the whole effective alphabet
 
-            size_t lms_amount = util::insert_lms_rtl<sa_index>(t_0, sa);
+            size_t lms_amount = util::insert_lms_rtl<util::string_span, sa_index>(t_0, sa);
             induced_sort(t_0, sa, max_char);
 
-            // Allocate t_1 in the last bits of space of SA by slicing it
-
-            util::span<sa_index>t_1 = sa.slice(sa.size() - lms_amount - 1, sa.size());
-
-            // After this operation the sorted LMS Strings will be in the first half of
-            // the SA
-            util::extract_sorted_lms(t_0, sa);
-
-            std::cout << "The SA before renaming is: [ ";
-            for (size_t i = 0; i < sa.size(); i++)
-            {
-                int symb = sa[i] == -1 ? -1 : sa[i];
-                std::cout << symb << " ";
-            }
-            std::cout << "]" << std::endl;
+            // After this operation the sorted LMS Strings will be in the first half of the SA
+            util::extract_sorted_lms<util::string_span>(t_0, sa);
 
             // TODO: "Create" t_1 by renaming the sorted LMS Substrings in SA as indices
 
@@ -161,16 +224,30 @@ namespace sacabench::sacak {
             util::ssize previous_LMS = -1;
             for (util::ssize i = 0; i < lms_amount; i++) { // max n/2 iterations
                 bool diff = false;
-                // compare types and chars
+
                 util::ssize current_LMS = sa[i];
                 for (size_t j = 0; j < t_0.size(); j++) {
-                    if (previous_LMS == -1 || t_0.at(current_LMS + j) != t_0.at(previous_LMS + j) || std::get<0>(util::get_type_ltr_dynamic(t_0, current_LMS + j)) != std::get<0>(util::get_type_ltr_dynamic(t_0, previous_LMS + j))) {
+
+                    if (previous_LMS == -1)
+                    {
                         diff = true;
                         break;
                     }
-                    else if (j > 0 && (util::is_LMS<size_t>(t_0, current_LMS + j) || util::is_LMS<size_t>(t_0, previous_LMS + j))) { // check if next LMS is reached
-                        break; // no diff was found
+
+                    util::character c_old = t_0[previous_LMS + j];
+                    util::character c_new = t_0[current_LMS + j];
+
+                    bool type_old = std::get<0>(util::get_type_ltr_dynamic(t_0, previous_LMS + j));
+                    bool type_new = std::get<0>(util::get_type_ltr_dynamic(t_0, current_LMS + j));
+
+                    if (c_old != c_new || type_new != type_old) {
+                        diff = true;
+                        break;
                     }
+                    else if (j > 0 && (util::is_LMS<util::string_span, size_t>(t_0, current_LMS + j) || util::is_LMS<util::string_span, size_t>(t_0, previous_LMS + j))) { // check if next LMS is reached
+                       break; // no diff was found
+                    }
+
                 }
 
                 if (diff) { // if diff was found, adjust the name and continue with current LMS as previous
@@ -182,30 +259,42 @@ namespace sacabench::sacak {
                 sa[lms_amount + current_LMS] = name - 1;
             }
 
-
-            std::cout << "The SA after renaming is: [ ";
-            for (size_t i = 0; i < sa.size(); i++)
+            size_t null_counter = 0;
+            for (size_t i = sa.size() - 1; i >= lms_amount; i--)
             {
-                int symb = sa[i] == -1 ? -1 : sa[i];
-                std::cout << symb << " ";
+                if (sa[i] != -1)
+                {
+                    sa[i + null_counter] = sa[i];
+                    sa[i] = -1; 
+                }
+                else
+                    null_counter++;
             }
-            std::cout << "]" << std::endl;
 
+            // Allocate t_1 in the last bits of space of SA by slicing it
 
-
-                size_t k_1 = 0;
+            // util::span<sa_index>t_1 = sa.slice(sa.size() - lms_amount, sa.size());
+            size_t k_1 = name;
 
                 // if new alphabetsize k_1 != |t_1|, we need to call the recursion and
                 // calculate SA_1 of t_1 else t_1 is already ordered by SA and we can
                 // immediately calculate the full SA of t_0
 
-                if (t_1.size() != k_1) {
+                if (lms_amount > k_1) {
 
-                    // util::container<size_t> sa_sliced = util::make_container(sa.slice(0,
-                    // t_1.size())); calculate_deep_sa(t_1, sa_sliced, max_char);
+                    calculate_deep_sa<sa_index>(sa.slice(sa.size() - lms_amount, sa.size()), sa.slice(0, lms_amount), k_1);
+                    util::recover_lms_after_recursion<util::string_span, sa_index>(t_0, sa);
 
-                    // TODO(?): remapping the pointers of SA_1 to pointers of SA
                 }
+                else
+                {
+                    // Delete the (now) unneccessary, previously calculated names here
+                    for (size_t i = sa.size() - 1; i >= lms_amount; i--)
+                    {
+                        sa[i] = -1;
+                    }
+                }
+
 
                 // calculate the first round of SA from the now sorted SA_1
 
@@ -217,7 +306,7 @@ namespace sacabench::sacak {
                 util::alphabet const& alphabet,
                 util::span<sa_index> out_sa) {
 
-                calculate_sa(text_with_sentinels, out_sa, alphabet.size_without_sentinel());
+                calculate_sa<sa_index>(text_with_sentinels, out_sa, alphabet.size_without_sentinel());
             }
 
     }; // class sacak

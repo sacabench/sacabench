@@ -19,6 +19,11 @@
 
 using namespace sacabench;
 
+
+TEST(saca_k, corner_cases) {
+    test::saca_corner_cases<sacak::sacak>();
+}
+
 TEST(type_extraction, test_type_l_easy) {
     util::string_span test_text = "caabaccaabacaa"_s;
     size_t test_ind = 0;
@@ -48,7 +53,7 @@ TEST(insert_lms, test_1) {
             input_w[i] = util::SENTINEL;
     }
 
-    insert_lms_rtl(input_w.slice(), sa.slice());
+    util::insert_lms_rtl<util::string, size_t>(input_w, sa);
 
 }
 
@@ -75,8 +80,8 @@ TEST(induced_sorting, test_1) {
             input_w[i] = util::SENTINEL;
     }
 
-    util::insert_lms_rtl<size_t>(input_w, sa);
-    sacak::sacak::induced_sort<size_t>(input_w, sa, alph.size_without_sentinel());
+    util::insert_lms_rtl<util::string_span, size_t>((util::string_span)input_w, sa);
+    sacak::sacak::induced_sort<util::string_span, size_t>((util::string_span)input_w, sa, alph.size_without_sentinel());
 
     ASSERT_EQ(sa[0], 14);
     ASSERT_EQ(sa[1], 13);
@@ -141,10 +146,42 @@ void make_sacak(util::string_span &test_text, util::container<sa_index> &sa, boo
     }
 }
 
-TEST(saca_k, nonrec_1) { // For saca-k we differentiate between recursive (complex words) and non recursive calls (simple words)
+TEST(saca_k, nonrec_1) {
+
+    util::string_span test_text = "kappa"_s;
+    util::container<size_t> sa = util::make_container<size_t>(test_text.size() + 1);
+    make_sacak(test_text, sa, true);
+
+    ASSERT_EQ(sa[0], 5);
+    ASSERT_EQ(sa[1], 4);
+    ASSERT_EQ(sa[2], 1);
+    ASSERT_EQ(sa[3], 0);
+    ASSERT_EQ(sa[4], 3);
+    ASSERT_EQ(sa[5], 2);
+}
+
+
+
+TEST(saca_k, nonrec_2) {
+
+    util::string_span test_text = "abanana"_s;
+    util::container<size_t> sa = util::make_container<size_t>(test_text.size() + 1);
+    make_sacak(test_text, sa, true);
+
+    ASSERT_EQ(sa[0], 7);
+    ASSERT_EQ(sa[1], 6);
+    ASSERT_EQ(sa[2], 0);
+    ASSERT_EQ(sa[3], 4);
+    ASSERT_EQ(sa[4], 2);
+    ASSERT_EQ(sa[5], 1);
+    ASSERT_EQ(sa[6], 5);
+    ASSERT_EQ(sa[7], 3);
+}
+
+TEST(saca_k, recursion_1) { // For saca-k we differentiate between recursive (complex words with same LMS substrings) and non recursive calls (simple words)
 
     util::string_span test_text = "caabaccaabacaa"_s;
-    util::container<size_t> sa = util::make_container<size_t>(test_text.size()+1);
+    util::container<size_t> sa = util::make_container<size_t>(test_text.size() + 1);
     make_sacak(test_text, sa, true);
 
     ASSERT_EQ(sa[0], 14);
@@ -164,47 +201,11 @@ TEST(saca_k, nonrec_1) { // For saca-k we differentiate between recursive (compl
     ASSERT_EQ(sa[14], 5);
 }
 
-
-
-TEST(saca_k, nonrec_2) {
-
-    util::string_span test_text = "kappa"_s;
-    util::container<size_t> sa = util::make_container<size_t>(test_text.size() + 1);
-    make_sacak(test_text, sa, true);
-
-    ASSERT_EQ(sa[0], 5);
-    ASSERT_EQ(sa[1], 4);
-    ASSERT_EQ(sa[2], 1);
-    ASSERT_EQ(sa[3], 0);
-    ASSERT_EQ(sa[4], 3);
-    ASSERT_EQ(sa[5], 2);
-}
-
-
-
-TEST(saca_k, nonrec_3) {
-
-    util::string_span test_text = "abanana"_s;
-    util::container<size_t> sa = util::make_container<size_t>(test_text.size() + 1);
-    make_sacak(test_text, sa, true);
-
-    ASSERT_EQ(sa[0], 7);
-    ASSERT_EQ(sa[1], 6);
-    ASSERT_EQ(sa[2], 0);
-    ASSERT_EQ(sa[3], 4);
-    ASSERT_EQ(sa[4], 2);
-    ASSERT_EQ(sa[5], 1);
-    ASSERT_EQ(sa[6], 5);
-    ASSERT_EQ(sa[7], 3);
-}
-
-TEST(saca_k, recursion_1) { // will not be passed yet because recursion isnt properly implemented in saca-k
+TEST(saca_k, recursion_2) {
 
     util::string_span test_text = "minimumaluminium"_s;
     util::container<size_t> sa = util::make_container<size_t>(test_text.size() + 1);
     make_sacak(test_text, sa, true);
-
-    return;
 
     ASSERT_EQ(sa[0], 16);
     ASSERT_EQ(sa[1], 7);
@@ -213,13 +214,13 @@ TEST(saca_k, recursion_1) { // will not be passed yet because recursion isnt pro
     ASSERT_EQ(sa[4], 11);
     ASSERT_EQ(sa[5], 13);
     ASSERT_EQ(sa[6], 8);
-    ASSERT_EQ(sa[7], 2);
-    ASSERT_EQ(sa[8], 12);
-    ASSERT_EQ(sa[9], 15);
-    ASSERT_EQ(sa[10], 6);
-    ASSERT_EQ(sa[11], 0);
-    ASSERT_EQ(sa[12], 10);
-    ASSERT_EQ(sa[13], 4);
+    ASSERT_EQ(sa[7], 15);
+    ASSERT_EQ(sa[8], 6);
+    ASSERT_EQ(sa[9], 0);
+    ASSERT_EQ(sa[10], 10);
+    ASSERT_EQ(sa[11], 4);
+    ASSERT_EQ(sa[12], 2);
+    ASSERT_EQ(sa[13], 12);
     ASSERT_EQ(sa[14], 14);
     ASSERT_EQ(sa[15], 5);
     ASSERT_EQ(sa[16], 9);
@@ -246,9 +247,6 @@ TEST(saca_k, error_test_2) {
 
 }
 
-TEST(saca_k, corner_cases) {
-    test::saca_corner_cases<sacak::sacak>();
-}
 
 
 
