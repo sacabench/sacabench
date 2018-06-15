@@ -26,8 +26,8 @@ SACA_REGISTER(deep_shallow::NAME, deep_shallow::DESCRIPTION, deep_shallow)
 
 using saca_bucket_pointer_refinement =
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
-SACA_REGISTER("Bucket-Pointer Refinement",
-              "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
+SACA_REGISTER(saca_bucket_pointer_refinement::NAME,
+              saca_bucket_pointer_refinement::DESCRIPTION,
               saca_bucket_pointer_refinement)
 
 using saca_prefix_doubling = sacabench::prefix_doubling::prefix_doubling;
