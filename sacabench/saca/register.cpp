@@ -22,8 +22,7 @@
 namespace sacabench::saca {
 
 using deep_shallow = sacabench::deep_shallow::saca;
-SACA_REGISTER("Deep-Shallow", "Deep Shallow SACA by Manzini and Ferragina",
-              deep_shallow)
+SACA_REGISTER(deep_shallow::NAME, deep_shallow::DESCRIPTION, deep_shallow)
 
 using saca_bucket_pointer_refinement =
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement;

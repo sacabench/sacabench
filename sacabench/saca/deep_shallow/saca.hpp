@@ -17,6 +17,9 @@ namespace sacabench::deep_shallow {
 class saca {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Deep-Shallow";
+    static constexpr char const* DESCRIPTION =
+        "Deep Shallow SACA by Manzini and Ferragina";
 
     /// \brief Use Deep Shallow Sorting to construct the suffix array.
     template <typename sa_index_type>
