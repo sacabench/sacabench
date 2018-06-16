@@ -77,6 +77,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         opt_fixed_bits->needs(opt_binary);
     }
 
+    CLI::App& demo =
+        *app.add_subcommand("demo", "Run all Algorithms on an example string.");
+
     CLI11_PARSE(app, argc, argv);
 
     // Handle CLI arguments
@@ -184,6 +187,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     write_bench(benchmark_file);
                 }
             }
+        }
+    }
+
+    if (demo) {
+        for (const auto& a : saca_list) {
+            std::cout << "Running " << a->name() << "..." << std::endl;
+            a->run_example();
         }
     }
 
