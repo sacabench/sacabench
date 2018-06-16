@@ -4,11 +4,13 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
+#include <cstdint>
+#include <memory>
+
+#include <CLI/CLI.hpp>
+
 #include "util/bucket_size.hpp"
 #include "util/container.hpp"
-#include <CLI/CLI.hpp>
-#include <cstdint>
-
 #include "util/saca.hpp"
 
 std::int32_t main(std::int32_t argc, char const** argv) {
@@ -32,19 +34,42 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string algorithm = "";
     bool check_sa;
     bool record_benchmark;
+    bool out_json;
+    bool out_binary;
+    uint8_t out_fixed_bits = 0;
     {
         construct.add_option("-i,--in", input_filename, "Path to input file.")
             ->required()
             ->check(CLI::ExistingFile);
-        construct
-            .add_option("-o,--out", output_filename, "Path to output file.")
-            ->check(CLI::NonexistentPath);
+        auto opt_output =
+            construct
+                .add_option("-o,--out", output_filename, "Path to output file.")
+                ->check(CLI::NonexistentPath);
         construct
             .add_option("-a,--algorithm", algorithm, "Which Algorithm to run.")
             ->required();
         construct.add_flag("--check", check_sa, "Check the constructed SA.");
         construct.add_flag("-b,--benchmark", record_benchmark,
                            "Record benchmark and display as JSON.");
+
+        auto opt_json =
+            construct.add_flag("-J,--json", out_json, "Output as JSON array.");
+        auto opt_binary = construct.add_flag(
+            "-B,--binary", out_binary,
+            "Output as binary array of unsigned integers, with a 1 Byte header "
+            "describing the number of bits used for each integer.");
+
+        opt_json->needs(opt_output);
+        opt_json->excludes(opt_binary);
+
+        opt_binary->needs(opt_output);
+        opt_binary->excludes(opt_json);
+
+        auto opt_fixed_bits = construct.add_option(
+            "-F,--fixed", out_fixed_bits,
+            "Elide the header, and output a fixed number of bits per SA entry");
+
+        opt_fixed_bits->needs(opt_binary);
     }
 
     CLI11_PARSE(app, argc, argv);
