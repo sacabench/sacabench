@@ -50,14 +50,12 @@ using saca_dc7 = sacabench::dc7::dc7;
 SACA_REGISTER(saca_dc7::NAME, saca_dc7::DESCRIPTION, saca_dc7)
 
 using saca_qsufsort_naive = sacabench::qsufsort::qsufsort_naive;
-SACA_REGISTER("Naive qsufsort",
-              "Naive Version of N. Larssons and K. SADAKANES qsufsort",
+SACA_REGISTER(saca_qsufsort_naive::NAME, saca_qsufsort_naive::DESCRIPTION,
               saca_qsufsort_naive)
 
 using saca_qsufsort = sacabench::qsufsort::qsufsort;
-SACA_REGISTER("qsufsort",
-              "Improved Version of N. Larssons and K. SADAKANES qsufsort",
-              saca_qsufsort)
+SACA_REGISTER(saca_qsufsort::NAME, saca_qsufsort::DESCRIPTION, saca_qsufsort)
+
 using saca_naive = sacabench::naive::naive;
 SACA_REGISTER("Naiv", "Naiver Algorithmus. Sortiert Suffixe direkt.",
               saca_naive)
