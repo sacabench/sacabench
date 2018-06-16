@@ -34,24 +34,27 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string input_filename = "";
     std::string output_filename = "";
     std::string algorithm = "";
-    bool check_sa;
-    bool record_benchmark;
-    bool out_json;
-    bool out_binary;
+    std::string benchmark_filename = "";
+    bool check_sa = false;
+    bool out_json = false;
+    bool out_binary = false;
     uint8_t out_fixed_bits = 0;
     {
-        construct.add_option("input", input_filename, "Path to input file.")
+        construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
-        auto opt_output = construct
-                              .add_option("-o,--output", output_filename,
-                                          "Path to output file.")
-                              ->check(CLI::NonexistentPath);
         construct
-            .add_option("-a,--algorithm", algorithm, "Which Algorithm to run.")
+            .add_option("input", input_filename,
+                        "Path to input file, or - for STDIN.")
             ->required();
+        auto opt_output =
+            construct
+                .add_option("-o,--output", output_filename,
+                            "Path to output file, or - for STDOUT.")
+                ->check(CLI::NonexistentPath);
         construct.add_flag("--check", check_sa, "Check the constructed SA.");
-        construct.add_flag("-b,--benchmark", record_benchmark,
-                           "Record benchmark and display as JSON.");
+        construct.add_option("-b,--benchmark", benchmark_filename,
+                             "Record benchmark and output as JSON. Takes Path "
+                             "to output file, or - for STDOUT");
 
         auto opt_json =
             construct.add_flag("-J,--json", out_json, "Output as JSON array.");
@@ -167,9 +170,18 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 root.log("algorithm_name", algo->name());
             }
 
-            if (record_benchmark) {
-                auto j = root.to_json();
-                std::cerr << j.dump(4) << std::endl;
+            if (benchmark_filename.size() > 0) {
+                auto write_bench = [&](std::ostream& out) {
+                    auto j = root.to_json();
+                    out << j.dump(4) << std::endl;
+                };
+
+                if (benchmark_filename == "-") {
+                    write_bench(std::cout);
+                } else {
+                    std::ofstream benchmark_file(benchmark_filename);
+                    write_bench(benchmark_file);
+                }
             }
         }
     }
