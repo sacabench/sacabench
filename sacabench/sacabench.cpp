@@ -5,9 +5,9 @@
  ******************************************************************************/
 
 #include <cstdint>
-#include <memory>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <memory>
 
 #include <CLI/CLI.hpp>
 
@@ -40,13 +40,12 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool out_binary;
     uint8_t out_fixed_bits = 0;
     {
-        construct.add_option("-i,--in", input_filename, "Path to input file.")
-            ->required()
-            ->check(CLI::ExistingFile);
-        auto opt_output =
-            construct
-                .add_option("-o,--out", output_filename, "Path to output file.")
-                ->check(CLI::NonexistentPath);
+        construct.add_option("input", input_filename, "Path to input file.")
+            ->required();
+        auto opt_output = construct
+                              .add_option("-o,--output", output_filename,
+                                          "Path to output file.")
+                              ->check(CLI::NonexistentPath);
         construct
             .add_option("-a,--algorithm", algorithm, "Which Algorithm to run.")
             ->required();
@@ -112,25 +111,48 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         {
             tdc::StatPhase root("CLI");
             {
-                auto text = util::text_initializer_from_file(input_filename);
-                auto sa = algo->construct_sa(text);
+                std::unique_ptr<util::text_initializer> text;
+                std::string stdin_buf;
+
+                if (input_filename == "-") {
+                    stdin_buf = std::string(
+                        std::istreambuf_iterator<char>(std::cin), {});
+                    text = std::make_unique<util::text_initializer_from_span>(
+                        util::string_span(
+                            (util::character const*)stdin_buf.data(),
+                            stdin_buf.size()));
+                } else {
+                    text = std::make_unique<util::text_initializer_from_file>(
+                        input_filename);
+                }
+
+                auto sa = algo->construct_sa(*text);
+
                 if (output_filename.size() != 0) {
                     tdc::StatPhase check_sa_phase("Output SA");
 
-                    std::ofstream out_file(output_filename);
-                    if (out_json) {
-                        sa->write_json(out_file);
-                    }
-                    if (out_binary) {
-                        sa->write_binary(out_file, out_fixed_bits);
+                    auto write_out = [&](std::ostream& out_stream) {
+                        if (out_json) {
+                            sa->write_json(out_stream);
+                        }
+                        if (out_binary) {
+                            sa->write_binary(out_stream, out_fixed_bits);
+                        }
+                    };
+
+                    if (output_filename == "-") {
+                        write_out(std::cout);
+                    } else {
+                        std::ofstream out_file(output_filename);
+                        write_out(out_file);
                     }
                 }
                 if (check_sa) {
                     tdc::StatPhase check_sa_phase("SA Checker");
 
                     // Read the string in again
-                    auto s = util::string(text.text_size());
-                    text.initializer(s);
+                    auto s = util::string(text->text_size());
+                    text->initializer(s);
 
                     // Run the SA checker, and print the result
                     auto res = sa->check(s);
