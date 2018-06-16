@@ -60,7 +60,7 @@ using saca_naive = sacabench::naive::naive;
 SACA_REGISTER(saca_naive::NAME, saca_naive::DESCRIPTION, saca_naive)
 
 using sacak = sacabench::sacak::sacak;
-SACA_REGISTER("SACA-K", "Constant-Space SA-Algorithm based on SAIS", sacak);
+SACA_REGISTER(sacak::NAME, sacak::DESCRIPTION, sacak);
 
 using saca_dc3 = sacabench::dc3::dc3;
 SACA_REGISTER("DC3", "Difference Cover Modulo 3 SACA", saca_dc3)
