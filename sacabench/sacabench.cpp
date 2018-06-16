@@ -49,18 +49,19 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         auto opt_output =
             construct
                 .add_option("-o,--output", output_filename,
-                            "Path to output file, or - for STDOUT.")
+                            "Path to SA output file, or - for STDOUT.")
                 ->check(CLI::NonexistentPath);
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         construct.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes Path "
                              "to output file, or - for STDOUT");
 
-        auto opt_json =
-            construct.add_flag("-J,--json", out_json, "Output as JSON array.");
+        auto opt_json = construct.add_flag("-J,--json", out_json,
+                                           "Output SA as JSON array.");
         auto opt_binary = construct.add_flag(
             "-B,--binary", out_binary,
-            "Output as binary array of unsigned integers, with a 1 Byte header "
+            "Output SA as binary array of unsigned integers, with a 1 Byte "
+            "header "
             "describing the number of bits used for each integer.");
 
         opt_json->needs(opt_output);
