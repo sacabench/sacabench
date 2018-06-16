@@ -44,9 +44,7 @@ using saca_sais = sacabench::sais::sais;
 SACA_REGISTER(saca_sais::NAME, saca_sais::DESCRIPTION, saca_sais)
 
 using saca_gsaca = sacabench::gsaca::gsaca;
-SACA_REGISTER("GSACA",
-              "Computes a suffix array with the algorithm gsaca by Uwe Baier.",
-              saca_gsaca)
+SACA_REGISTER(saca_gsaca::NAME, saca_gsaca::DESCRIPTION, saca_gsaca)
 
 using saca_dc7 = sacabench::dc7::dc7;
 SACA_REGISTER("DC7", "Difference Cover Modulo 7 SACA", saca_dc7)
