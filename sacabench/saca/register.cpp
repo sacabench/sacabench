@@ -57,8 +57,7 @@ using saca_qsufsort = sacabench::qsufsort::qsufsort;
 SACA_REGISTER(saca_qsufsort::NAME, saca_qsufsort::DESCRIPTION, saca_qsufsort)
 
 using saca_naive = sacabench::naive::naive;
-SACA_REGISTER("Naiv", "Naiver Algorithmus. Sortiert Suffixe direkt.",
-              saca_naive)
+SACA_REGISTER(saca_naive::NAME, saca_naive::DESCRIPTION, saca_naive)
 
 using sacak = sacabench::sacak::sacak;
 SACA_REGISTER("SACA-K", "Constant-Space SA-Algorithm based on SAIS", sacak);
