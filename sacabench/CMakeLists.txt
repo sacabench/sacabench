@@ -44,17 +44,8 @@ function(SACA_REGISTER header type)
     set(SACA_TYPE "${type}")
     configure_file(saca/register.cpp.in "${CMAKE_CURRENT_BINARY_DIR}/${safe_type}.cpp")
 
-    add_library(
-        "${safe_type}"
+    target_sources(sacabench PRIVATE
         "${CMAKE_CURRENT_BINARY_DIR}/${safe_type}.cpp"
-    )
-    target_link_libraries(
-        "${safe_type}"
-        saca_bench_lib
-    )
-    target_link_libraries(
-        sacabench
-        "${safe_type}"
     )
 endfunction(SACA_REGISTER)
 
