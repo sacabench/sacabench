@@ -47,7 +47,7 @@ using saca_gsaca = sacabench::gsaca::gsaca;
 SACA_REGISTER(saca_gsaca::NAME, saca_gsaca::DESCRIPTION, saca_gsaca)
 
 using saca_dc7 = sacabench::dc7::dc7;
-SACA_REGISTER("DC7", "Difference Cover Modulo 7 SACA", saca_dc7)
+SACA_REGISTER(saca_dc7::NAME, saca_dc7::DESCRIPTION, saca_dc7)
 
 using saca_qsufsort_naive = sacabench::qsufsort::qsufsort_naive;
 SACA_REGISTER("Naive qsufsort",
