@@ -16,6 +16,7 @@
 #include "alphabet.hpp"
 #include "bits.hpp"
 #include "container.hpp"
+#include "macros.hpp"
 #include "read_text.hpp"
 #include "span.hpp"
 #include "string.hpp"
@@ -274,10 +275,10 @@ protected:
     }
 }; // class concrete_saca
 
-#define SACA_REGISTER(saca_impl)                  \
-    static const auto _saca_algo_##saca_impl##_register =                      \
-        ::sacabench::util::concrete_saca<saca_impl>(saca_impl::NAME,           \
-                                                    saca_impl::DESCRIPTION);
+#define SACA_REGISTER(...)                                                     \
+    static const auto GENSYM(_saca_algo_register_) =                           \
+        ::sacabench::util::concrete_saca<__VA_ARGS__>(                         \
+            __VA_ARGS__::NAME, __VA_ARGS__::DESCRIPTION);
 
 } // namespace sacabench::util
 /******************************************************************************/

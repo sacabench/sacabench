@@ -45,6 +45,11 @@ namespace sacabench::util {
     #define IF_DEBUG(x)
 #endif
 
+#define __GENSYM2(x,y) x##y
+#define __GENSYM1(x,y) __GENSYM2(x,y)
+// Generate a unique identifier
+#define GENSYM(x) __GENSYM1(x,__COUNTER__)
+
 //! \}
 
 } // namespace util
