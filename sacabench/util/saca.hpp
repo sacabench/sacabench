@@ -254,8 +254,7 @@ private:
 template <typename Algorithm>
 class concrete_saca : saca {
 public:
-    concrete_saca(const std::string& name, const std::string& description)
-        : saca(name, description) {}
+    concrete_saca() : saca(Algorithm::NAME, Algorithm::DESCRIPTION) {}
 
 protected:
     virtual void construct_sa_32(text_initializer const& text) const override {
@@ -277,8 +276,7 @@ protected:
 
 #define SACA_REGISTER(...)                                                     \
     static const auto GENSYM(_saca_algo_register_) =                           \
-        ::sacabench::util::concrete_saca<__VA_ARGS__>(                         \
-            __VA_ARGS__::NAME, __VA_ARGS__::DESCRIPTION);
+        ::sacabench::util::concrete_saca<__VA_ARGS__>();
 
 } // namespace sacabench::util
 /******************************************************************************/
