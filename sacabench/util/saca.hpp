@@ -274,10 +274,10 @@ protected:
     }
 }; // class concrete_saca
 
-#define SACA_REGISTER(saca_name, saca_description, saca_impl)                  \
+#define SACA_REGISTER(saca_impl)                  \
     static const auto _saca_algo_##saca_impl##_register =                      \
-        ::sacabench::util::concrete_saca<saca_impl>(saca_name,                 \
-                                                    saca_description);
+        ::sacabench::util::concrete_saca<saca_impl>(saca_impl::NAME,           \
+                                                    saca_impl::DESCRIPTION);
 
 } // namespace sacabench::util
 /******************************************************************************/
