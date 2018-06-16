@@ -29,8 +29,14 @@ class abstract_sa {
 public:
     virtual ~abstract_sa() = default;
 
-    // Run the sa checker, and return its result.
+    /// Run the sa checker, and return its result.
     virtual sa_check_result check(string_span text) = 0;
+
+    /// Write the SA to the `ostream` as a JSON array.
+    virtual void write_json(std::ostream& out) = 0;
+
+    /// Write the SA to the `ostream` as a binary array.
+    virtual void write_binary(std::ostream& out, uint8_t bits = 0) = 0;
 };
 
 /// A wrapper around a suffix array container with extra sentinel values.
@@ -61,6 +67,51 @@ public:
 
     inline virtual sa_check_result check(string_span text) override {
         return sa_check<sa_index>(sa_without_sentinels(), text);
+    }
+
+    inline virtual void write_json(std::ostream& out) {
+        auto sa = sa_without_sentinels();
+        out << "[";
+        if (sa.size() > 0) {
+            out << sa[0];
+        }
+        for (size_t i = 1; i < sa.size(); i++) {
+            out << ", " << sa[i];
+        }
+        out << "]";
+    }
+
+    inline virtual void write_binary(std::ostream& out, uint8_t bits) {
+        auto sa = sa_without_sentinels();
+        if (bits == 0) {
+            if (sa.size() > 0) {
+                bits = ceil_log2(sa.size() - 1);
+            }
+            out.put(bits);
+        }
+        // TODO: Allow true by-bit output
+        if (bits % 8 != 0) {
+            do {
+                bits++;
+            } while (bits % 8 != 0);
+            std::cerr
+                << "INFO: Rounding SA bit size up to next power-of-two size "
+                << int(bits) << std::endl;
+        }
+        std::cerr << "INFO: Writing SA elements with bit size " << int(bits)
+                  << std::endl;
+
+        for (size_t i = 0; i < sa.size(); i++) {
+            // TODO: This only works for power-of-two sizes
+            uint64_t v = sa[i];
+            uint8_t b = bits;
+            while (b) {
+                uint8_t out_byte = v;
+                out.put(out_byte);
+                v >>= 8;
+                b -= 8;
+            }
+        }
     }
 };
 

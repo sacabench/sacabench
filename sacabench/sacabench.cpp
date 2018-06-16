@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <iostream>
+#include <fstream>
 
 #include <CLI/CLI.hpp>
 
@@ -112,6 +114,17 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             {
                 auto text = util::text_initializer_from_file(input_filename);
                 auto sa = algo->construct_sa(text);
+                if (output_filename.size() != 0) {
+                    tdc::StatPhase check_sa_phase("Output SA");
+
+                    std::ofstream out_file(output_filename);
+                    if (out_json) {
+                        sa->write_json(out_file);
+                    }
+                    if (out_binary) {
+                        sa->write_binary(out_file, out_fixed_bits);
+                    }
+                }
                 if (check_sa) {
                     tdc::StatPhase check_sa_phase("SA Checker");
 
@@ -134,7 +147,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
             if (record_benchmark) {
                 auto j = root.to_json();
-                std::cout << j.dump(4) << std::endl;
+                std::cerr << j.dump(4) << std::endl;
             }
         }
     }
