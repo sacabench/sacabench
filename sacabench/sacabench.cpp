@@ -51,7 +51,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 .add_option("-o,--output", output_filename,
                             "Path to output file, or - for STDOUT.")
                 ->check(CLI::NonexistentPath);
-        construct.add_flag("--check", check_sa, "Check the constructed SA.");
+        construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         construct.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes Path "
                              "to output file, or - for STDOUT");
