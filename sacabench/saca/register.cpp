@@ -63,7 +63,7 @@ using sacak = sacabench::sacak::sacak;
 SACA_REGISTER(sacak::NAME, sacak::DESCRIPTION, sacak);
 
 using saca_dc3 = sacabench::dc3::dc3;
-SACA_REGISTER("DC3", "Difference Cover Modulo 3 SACA", saca_dc3)
+SACA_REGISTER(saca_dc3::NAME, saca_dc3::DESCRIPTION, saca_dc3)
 
 } // namespace sacabench::saca
 
