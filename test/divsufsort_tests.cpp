@@ -62,10 +62,12 @@ TEST(DivSufSort, correctBucketSizes) {
     auto s2 = util::make_container<std::size_t>(
         pow(alphabet.max_character_value() + 1, 2));
 
-    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
-                    /*.l_buckets=*/l1, /*.s_buckets=*/s1};
-    buckets<size_t> result = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
-                      /*.l_buckets=*/l2, /*.s_buckets=*/s2};
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() +
+                                1,
+                            /*.l_buckets=*/l1, /*.s_buckets=*/s1};
+    buckets<size_t> result = {
+        /*.alphabet_size=*/alphabet.max_character_value() + 1,
+        /*.l_buckets=*/l2, /*.s_buckets=*/s2};
 
     ASSERT_EQ(bkts.l_buckets.size(), std::size_t(4));
 
@@ -144,11 +146,13 @@ TEST(DivSufSort, sortRmsSubstrings) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
-                    /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() +
+                                1,
+                            /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(),
+                         sa_type_container, bkts);
 
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
     dss::insert_into_buckets(rms_suf, bkts);
@@ -192,11 +196,13 @@ TEST(DivSufSort, partialISA) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
-                    /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() +
+                                1,
+                            /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(),
+                         sa_type_container, bkts);
 
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
     dss::insert_into_buckets(rms_suf, bkts);
@@ -260,12 +266,14 @@ TEST(DivSufSort, preInduce) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
-                    /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() +
+                                1,
+                            /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << std::endl;
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(),
+                         sa_type_container, bkts);
 
     std::cout << std::endl;
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
@@ -345,12 +353,14 @@ TEST(DivSufSort, inducing) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
-                    /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() +
+                                1,
+                            /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << std::endl;
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(),
+                         sa_type_container, bkts);
 
     std::cout << std::endl;
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
