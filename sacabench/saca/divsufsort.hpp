@@ -8,8 +8,8 @@
 
 #include <cmath>
 #include <iostream>
-//#include <tuple>
 #include <util/alphabet.hpp>
+#include <util/bits.hpp>
 #include <util/assertions.hpp>
 #include <util/container.hpp>
 #include <util/sort/bucketsort.hpp>
@@ -52,7 +52,8 @@ struct rms_suffixes {
     const util::string_span text;
     util::span<sa_index> relative_indices;
     util::span<sa_index> absolute_indices;
-    // util::span<sa_index> partial_isa;
+    // Consider wether partial_isa is suited for this struct
+    util::span<sa_index> partial_isa;
 };
 
 struct buckets {
@@ -150,6 +151,46 @@ private:
 };
 
 template <typename sa_index>
+struct compare_suffix_ranks {
+    sa_index depth;
+    
+    inline compare_suffix_ranks(util::span<sa_index> partial_isa, sa_index depth) : depth(depth), partial_isa(partial_isa) {
+        std::cout << "Initializing suffix ranks compare fct." << std::endl;
+    }
+    
+    inline bool operator()(const sa_index& elem, const sa_index& compare_to) const {
+        const size_t elem_at_depth = elem + pow(2, depth);
+        const size_t compare_to_at_depth = compare_to + pow(2, depth);
+        std::cout << "elem: " << elem_at_depth << ", compare_to: " << compare_to_at_depth << std::endl;
+        const bool elem_too_large = elem_at_depth >= partial_isa.size();
+        const bool compare_to_too_large = compare_to_at_depth >= partial_isa.size();
+        
+        if(elem_too_large) {
+            if(compare_to_too_large) {
+                // Both "out of bounds" -> bigger index means string ends earlier (i.e. smaller)
+                // TODO: Check if this condition always holds.
+                std::cout << "Both indices out of bounds." << std::endl;
+                return elem_at_depth > compare_to_at_depth;
+            }
+            std::cout << "elem out of bounds" << std::endl;
+            // Only first suffix (substring) ends "behind" sentinel
+            return true;
+        } else if(compare_to_too_large) {
+            std::cout << "compare_to out of bounds" << std::endl;
+            // Only second suffix (substring) ends "behind" sentinel
+            return false;
+        }
+        // Neither index "out of bounds":
+        // Ranks of compared substrings decide order
+        std::cout << "returns " << partial_isa[elem_at_depth] <<  " < " << partial_isa[compare_to_at_depth] << ": " << (partial_isa[elem_at_depth] < partial_isa[compare_to_at_depth]) << std::endl;
+        return partial_isa[elem_at_depth] < partial_isa[compare_to_at_depth];
+    }
+    
+private:
+    util::span<sa_index> partial_isa;
+};
+
+template <typename sa_index>
 class divsufsort {
 public:
     static const std::size_t EXTRA_SENTINELS = 1;
@@ -172,11 +213,12 @@ public:
         // Initialize struct rms_suffixes with text, relative positions
         // (first rms_count positions in out_sa) and absolute positions
         // (last rms_count positions in out_sa) for rms-suffixes
+        // partial_isa contains isa for relative_indices; in out_sa from rms_count to 2*rms_count (safe, because at most half of suffixes rms-type)
         rms_suffixes rms_suf = {
             /*.text=*/text, /*.relative_indices=*/
             out_sa.slice(0, rms_count),
             /*.absolute_indices=*/
-            out_sa.slice(out_sa.size() - rms_count, out_sa.size())};
+            out_sa.slice(out_sa.size() - rms_count, out_sa.size()), /*.partial_isa=*/out_sa.slice(rms_count, 2*rms_count)};
 
         // Initialize buckets: alphabet_size slots for l-buckets,
         // alphabet_size² for s-buckets
@@ -365,49 +407,280 @@ public:
         }
     }
 
-    inline static void compute_partial_isa(rms_suffixes<sa_index>& rms_suf) {
-        sa_index sorted_count = 0;
-        sa_index unsorted_count = 0;
-        util::span<sa_index> rel_ind = rms_suf.relative_indices;
+    inline static void compute_initial_isa(util::span<sa_index> rel_ind, util::span<sa_index> isa) {
+        sa_index sorted_count = 0, unsorted_count = 0;
         sa_index rank = rel_ind.size() - 1;
+        DCHECK_EQ(rel_ind.size(), isa.size());
+        std::cout << "interval of size " << rel_ind.size() << std::endl;
         for (sa_index pos = rel_ind.size(); 0 < pos; --pos) {
-            // Has been negated
-            if (rel_ind[pos - 1] & NEGATIVE_MASK == 0) {
-                if (unsorted_count > 0) {
-                    std::cout << "Set rank for index " << rel_ind[pos] << " to "
-                              << rank << std::endl;
-                    // Set rank for "final" index in unsorted interval (i.e.
-                    // interval with same substrings).
-                    rms_suf.partial_isa[rel_ind[pos]] = rank;
-                    // Reduce rank by unsorted_count (number of indices with
-                    // same rank)
-                    rank -= unsorted_count;
-                    std::cout << "Reduced rank to " << rank << std::endl;
-                    // Reset unsorted count;
-                    unsorted_count = 0;
-                }
-                std::cout << "Set rank for index " << rel_ind[pos - 1] << " to "
+            std::cout << "Index: " << rel_ind[pos-1] << ", negated: " << (rel_ind[pos-1] ^ NEGATIVE_MASK) << std::endl;
+            // Current index has been negated
+            if ((rel_ind[pos - 1] & NEGATIVE_MASK) > 0) {
+                rel_ind[pos-1] ^= NEGATIVE_MASK;
+                std::cout << "Negated index found." << std::endl;
+                std::cout << "Set rank for index " << rel_ind[pos-1] << " to "
                           << rank << std::endl;
-                rms_suf.partial_isa[rel_ind[pos - 1]] = rank--;
-                ++sorted_count;
-            } else {
-                // Can only occur if there have been non-negated indices
+                isa[rel_ind[pos-1]] = rank;
+                ++unsorted_count;
                 if (sorted_count > 0) {
                     std::cout << "Sorted interval of length " << sorted_count
-                              << "ending at " << pos << std::endl;
+                              << " ending at " << pos << std::endl;
                     // Could cause issues with inducing (normally inverted)
                     rel_ind[pos] = sorted_count | NEGATIVE_MASK;
                     // Reset sorted count
                     sorted_count = 0;
                 }
-                std::cout << "Set rank for index " << rel_ind[pos] << " to "
-                          << rank << std::endl;
-                rms_suf.partial_isa[rel_ind[pos - 1]] = rank;
-                ++unsorted_count;
+            } else {
+                // Current index not negated - either in interval of sorted 
+                // indices or interval of unsorted indices ended.
+                if (unsorted_count > 0) {
+                    std::cout << "Beginning of unsorted interval found." <<std::endl;
+                    std::cout << "Set rank for index " << rel_ind[pos-1] << " to "
+                              << rank << std::endl;
+                    // Set rank for "final" index in unsorted interval (i.e.
+                    // interval with same substrings).
+                    isa[rel_ind[pos-1]] = rank;
+                    // Reduce rank by unsorted_count (number of indices with
+                    // same rank; need to increase count one more time 
+                    // (for current index))
+                    // Overflow can only happen, if first index in rel_ind is
+                    // part of unsorted interval.
+                    rank -= ++unsorted_count;
+                    std::cout << "Reduced rank to " << rank << std::endl;
+                    // Reset unsorted count;
+                    unsorted_count = 0;
+                } else {
+                    std::cout << "Set rank for index " << rel_ind[pos - 1] << " to "
+                              << rank << std::endl;
+                    isa[rel_ind[pos - 1]] = rank--;
+                    ++sorted_count;
+                }
             }
         }
     }
+    
+    /** \brief recomputes ranks (isa) for a given interval after it has been sorted by sort-rms-suffixes
+    
+    
+        @param rel_ind: The interval of relative indices to recompute the isa for
+        @param isa: The complete partial isa (for all rms-suffixes)
+        @param cmp: The compare function containing the depth currently to be considered
+    
+        @returns Wether the interval to recompute the isa for is completely and uniquely sorted.
+    */
+    inline static bool recompute_isa(util::span<sa_index> rel_ind, util::span<sa_index> isa, compare_suffix_ranks<sa_index> cmp) {
+        sa_index sorted_count = 0, unsorted_count = 0, rank = rel_ind.size();
+        bool sorted = true;
+        // Iterate over (previously) unsorted interval, i.e. contains no negated values
+        // pos = current position + 1 (unsigned types compatible)
+        for(sa_index pos = rel_ind.size(); 1 < pos; --pos) {
+            // Either this index or predecessor has negated index (i.e. sorted) -> skip
+            if((rel_ind[pos-1] & NEGATIVE_MASK) > 0 || (rel_ind[pos-2] & NEGATIVE_MASK) > 0) {
+                ++sorted_count;
+                --rank;
+                continue;
+            }
+            
+            // Check if current position is sorted uniquely to its predecessor
+            // if(cmp(pos-2, pos-1) > 0) {
+            // If sorted: predecessor is smaller than current index
+            else if(cmp(rel_ind[pos-2], rel_ind[pos-1]) > 0) {
+                if(unsorted_count > 0) {
+                    std::cout << "Unsorted interval ended at position " << pos << std::endl;
+                    rank -= unsorted_count;
+                    std::cout << "new rank: " << rank << std::endl;
+                    // Reset unsorted count (sorted interval started)
+                    unsorted_count = 0;
+                }
+                isa[rel_ind[pos-1]] = --rank;
+                std::cout << "Gave index " << rel_ind[pos-1] << " rank " << rank << std::endl;
+                ++sorted_count;
+            } else {
+                // Still unsorted:
+                if(sorted_count > 0) {
+                    // There was an interval of sorted elements
+                    rel_ind[pos] = sorted_count ^ NEGATIVE_MASK;
+                    std::cout << "Sorted interval of length " << sorted_count << " ended at position " << pos << std::endl;
+                    // Reset sorted count (unsorted interval started)
+                    sorted_count = 0;
+                }
+                isa[rel_ind[pos-1]] = rank;
+                std::cout << "Gave index " << rel_ind[pos-1] << " rank " << rank << std::endl;
+                ++unsorted_count;
+                sorted = false;
+            }
+        }
+        if(sorted_count > 0) {
+            // lowest possible rank for first index if part of sorted interval
+            isa[rel_ind[0]] = 0;
+            // Set rel. index to negated length of sorted interval
+            rel_ind[0] = (++sorted_count) ^ NEGATIVE_MASK;
+            std::cout << "First index of interval is part of sorted interval of length " << sorted_count << std::endl;
+            return sorted;
+        } else {
+            // Set rank of current (unsorted) interval; rel_ind doesn't change
+            isa[rel_ind[0]] = rank;
+            std::cout << "First index of interval is part of unsorted interval with rank " << rank << std::endl;
+            return false;
+        }
+    }
+    
+    // One iteration for sorting rms-suffixes
+    inline static void sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf, compare_suffix_ranks<sa_index> cmp) {
+        sa_index interval_begin = 0, interval_end = 0, current_index;
+        // indicator wether unsorted interval was found (to sort)
+        bool unsorted = false;
+        util::span<sa_index> rel_ind = rms_suf.relative_indices;
+        util::span<sa_index> isa = rms_suf.partial_isa;
+        
+        
+        for(sa_index pos = 0; pos < rms_suf.partial_isa.size(); ++pos) {
+            // Search for unsorted interval
+            current_index = rms_suf.relative_indices[pos];
+            // Negated value
+            if((current_index & NEGATIVE_MASK) > 0) {
+                std::cout << "End of unsorted interval found at: " << pos << std::endl;
+                // End of unsorted interval found
+                interval_end = pos;
+                // Skip interval of sorted elements (negated length contained in current_index)
+                pos += (current_index ^ NEGATIVE_MASK);
+            } else {
+                if(unsorted == 0) {
+                    std::cout << "Start of unsorted interval set to " << pos << std::endl;
+                    interval_begin = pos;
+                }
+                unsorted = true;
+            }
+            // if unsorted interval contains more than one element (after interval_end has been set)
+            if(unsorted > 0 && interval_end > interval_begin) {
+                std::cout << "Sorting unsorted interval from " << interval_begin << " to " << interval_end << std::endl;
+                auto slice_to_sort = rel_ind.slice(interval_begin, interval_end);
+                std::cout << "Slice to sort of length " << slice_to_sort.size() << std::endl;
+                util::sort::introsort<sa_index, compare_suffix_ranks<sa_index>>(rel_ind.slice(interval_begin, interval_end), cmp);
+                // Refresh ranks for current interval
+                std::cout << "Recomputing ranks." << std::endl;
+                recompute_isa(rel_ind, isa, cmp); //isa.slice(interval_begin, interval_end)
+                // Reset indicator
+                std::cout << "Unsorted indicator reset." << std::endl;
+                unsorted = false;
+            }
+        }
+    }
+    
+    
+    inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
+        sa_index pos;
+        compare_suffix_ranks<sa_index> cmp(rms_suf.partial_isa, 0);
+        bool unsorted = true;
+        util::span<sa_index> rel_ind = rms_suf.relative_indices;
+        // At most that many iterations (if we have to consider last suffix (or later))
+        sa_index max_iterations = util::floor_log2(rms_suf.relative_indices.size())+1;
+        //while(unsorted) {
+        for(sa_index iter = 0; iter < max_iterations+1; ++iter) {
+            std::cout << "__________________________" << std::endl;
+            std::cout << "Iteration " << iter+1 << " | Calling internal sorting." << std::endl;
+            // Sort rms-suffixes
+            sort_rms_suffixes_internal(rms_suf, cmp);
+            std::cout << "Internal sorting finished" << std::endl;
+            std::cout << "__________________________" << std::endl;
 
+            unsorted = false;
+            // Check if still unsorted:
+            pos = 0;
+            while(pos < rel_ind.size()) {
+                // Negated length of sorted interval
+                if((rel_ind[pos] & NEGATIVE_MASK) > 0) {
+                    // Negated index at pos
+                    pos += (rel_ind[pos]^NEGATIVE_MASK);
+                    std::cout << "Sorted interval found. Skipped to " << pos << std::endl;
+                } else {
+                    // interval beginning with non-negated index found -> unsorted interval
+                    std::cout << "Interval not sorted (starting at pos " << pos << ")- still non-unique substrings checked." << std::endl;
+                    unsorted = true;
+                    // End inner loop - we know that there are still unsorted intervals
+                    break;
+                }
+            }
+            // Everything has been sorted - break outer loop
+            if(unsorted == 0) { 
+                std::cout << "No unsorted interval left - ending rms-suffix-sorting routine." << std::endl;
+                break; 
+            }
+            // Increase depth for next iteration
+            ++cmp.depth;
+            std::cout << "Depth currently at " << cmp.depth << std::endl;
+        }
+    }
+    
+    /** \brief Sorts all rms-suffixes at the beginning of out_sa in their correct order (via precomputed ranks)
+    
+    */
+    inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf, sa_index rms_count, util::container<bool> types, util::span<sa_index> out_sa) {
+        sa_index correct_pos;
+        auto isa = rms_suf.partial_isa;
+        // Skip last index because of sentinel
+        for(sa_index pos = rms_suf.text.size()-1; 0 < pos; --pos) {
+            correct_pos = pos-1;
+            // RMS-Suffix in text found
+            if(sa_types<sa_index>::is_rms_type(correct_pos,types)) {
+                
+                // If predecessor of correct_pos is l-type: negate, because not considered in first induce step
+                if(sa_types<sa_index>::is_l_type(correct_pos-1, types)) {
+                    std::cout << "Predecessor of " << correct_pos << " is l-type suffix -> negate index."<< std::endl;
+                    out_sa[isa[--rms_count]] = correct_pos ^ NEGATIVE_MASK;
+                    std::cout << "Index " << out_sa[isa[rms_count]] << " at position " << isa[rms_count] << std::endl;
+                } else {
+                    // Index correct_pos considered in first induce step
+                    std::cout << "Predecessor of " << correct_pos << " is no l-type suffix -> non-negated index." << std::endl;
+                    out_sa[isa[--rms_count]] = correct_pos;
+                    std::cout << "Index " << out_sa[isa[rms_count]] << " at position " << isa[rms_count] << std::endl;
+                }
+                //out_sa[isa[--rms_count]] = (sa_types<sa_index>::is_l_type(correct_pos-1, types)) ? current_pos ^ NEGATIVE_MASK : current_pos;
+            }
+        }
+    }
+    
+    /** \brief Sorts all rms-suffixes, according to their order from out_sa[0, rms_count) into their correct positions in out_sa
+    
+    */
+    inline static void insert_rms_into_correct_pos(sa_index rms_count, buckets bkts, size_t max_character_code, util::span<sa_index> out_sa) {
+        sa_index s_bkt_index = bkts.get_s_bucket_index(max_character_code, max_character_code);
+        sa_index right_border_s, right_border_rms;
+        bkts.s_buckets[s_bkt_index] = out_sa.size()-1; // Last pos for last bkt
+        for(util::character c0 = max_character_code-1; 0 < c0; --c0) {
+            right_border_s = bkts.l_buckets[c0+1]-1;
+            for(util::character c1 = max_character_code; c0 < c1; --c1) {
+                s_bkt_index = bkts.get_s_bucket_index(c0, c1);
+                right_border_rms = right_border_s - bkts.s_buckets[s_bkt_index];
+                // Set bucket value to right border of (c0,c1)-s-bucket 
+                std::cout << "Right border for s-bucket (" << (size_t)c0 << "," << (size_t)c1 << "): " << right_border_s << std::endl; 
+                bkts.s_buckets[s_bkt_index] = right_border_s;
+                // Compute bucket index for current rms-bucket
+                s_bkt_index = bkts.get_rms_bucket_index(c0,c1);
+                std::cout << "Inserting rms-suffixes into correct position. Starting at " << right_border_rms << ", ending at " << bkts.s_buckets[s_bkt_index] << std::endl;
+                // Only insert rms-suffixes if current rms-count is smaller than computed (right) border for rms-suffixes in (c0,c1)-bucket
+                for(sa_index sa_pos = right_border_rms; bkts.s_buckets[s_bkt_index] < rms_count; --sa_pos) {
+                    // Insert all rms-suffixes corresponding to this bucket
+                    // All indices of rms-suffixes contained in corresponding
+                    // order in out_sa[0,rms_count)
+                    out_sa[sa_pos] = out_sa[--rms_count];
+                    std::cout << "Inserted index " << out_sa[sa_pos] << " at pos " << sa_pos << std::endl;
+                    --right_border_s;
+                }
+            }
+            // Index for s-bucket (c0,c0)
+            s_bkt_index = bkts.get_s_bucket_index(c0,c0);
+            // Contains first position for interval to check in first induce step
+            // bkts.s_buckets[s_bkt_index] has yet to be altered (i.e. contains number of s-suffixes for (c0,c0)-bucket)
+            bkts.s_buckets[bkts.get_rms_bucket_index(c0,c0+1)] = right_border_s - bkts.s_buckets[s_bkt_index] + 1;
+            std::cout << "End border for inducing for " << (size_t)c0 << "-bucket: " << bkts.s_buckets[bkts.get_rms_bucket_index(c0,c0+1)] << std::endl;
+            // Refresh border for (c0,c0)-bucket to point to most right position of bucket (not part of inner loop)
+            std::cout << "Right border for s-bucket " << (size_t)c0 << "," << (size_t)c0 << ": " << right_border_s << std::endl; 
+            bkts.s_buckets[s_bkt_index] = right_border_s;
+        }
+    }
+    
+        
     // Temporary function for suffix-types, until RTL-Extraction merged.
     inline static void get_types_tmp(util::string_span text,
                                      util::container<bool>& types) {
@@ -494,7 +767,7 @@ public:
      * Contains a bucket for each two symbols (sentinel included for
      * completeness), i.e. s_buckets.size() = (|alphabet| + 1)²
      */
-    // TODO: Testing
+    // DEPRECATED
     inline static void compute_buckets_old(util::string_span input,
                                            util::alphabet alphabet,
                                            util::container<bool>& suffix_types,
