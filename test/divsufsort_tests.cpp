@@ -135,7 +135,8 @@ TEST(DivSufSort, sortRmsSubstrings) {
         /*.text=*/text,
         /*.relative_indices=*/output.slice(0, rms_count),
         /*.absolute_indices=*/
-        output.slice(output.size() - rms_count, output.size()), /*.partial_isa=*/output.slice(rms_count, 2*rms_count)};
+        output.slice(output.size() - rms_count, output.size()),
+        /*.partial_isa=*/output.slice(rms_count, 2 * rms_count)};
     auto s_bkt = util::make_container<std::size_t>(
         pow(alphabet.max_character_value() + 1, 2));
     auto l_bkt =
@@ -182,7 +183,8 @@ TEST(DivSufSort, partialISA) {
         /*.text=*/text,
         /*.relative_indices=*/output.slice(0, rms_count),
         /*.absolute_indices=*/
-        output.slice(output.size() - rms_count, output.size()), /*.partial_isa=*/output.slice(rms_count, 2*rms_count)};
+        output.slice(output.size() - rms_count, output.size()),
+        /*.partial_isa=*/output.slice(rms_count, 2 * rms_count)};
     auto s_bkt = util::make_container<std::size_t>(
         pow(alphabet.max_character_value() + 1, 2));
     auto l_bkt =
@@ -204,34 +206,34 @@ TEST(DivSufSort, partialISA) {
     std::cout << "Computing partial ISA." << std::endl;
     // Compute ISA
     dss::compute_initial_isa(rms_suf.relative_indices, rms_suf.partial_isa);
-    
+
     auto rel_ind = rms_suf.relative_indices;
     auto isa = rms_suf.partial_isa;
-    
-    auto gt_isa = util::container<size_t>({1,3,1,2});
-    auto gt_rel_ind = util::container<size_t>({0,2,2,1});
+
+    auto gt_isa = util::container<size_t>({1, 3, 1, 2});
+    auto gt_rel_ind = util::container<size_t>({0, 2, 2, 1});
     gt_rel_ind[2] |= dss::NEGATIVE_MASK;
-    
+
     ASSERT_EQ(isa.size(), gt_isa.size());
     ASSERT_EQ(rel_ind.size(), gt_rel_ind.size());
-    
+
     // Check relative indices
-    for(size_t pos = 0; pos < gt_rel_ind.size(); ++pos) {
-        std::cout << "Is: " <<  rel_ind[pos] << " | Should: " << gt_rel_ind[pos] << std::endl;
+    for (size_t pos = 0; pos < gt_rel_ind.size(); ++pos) {
+        std::cout << "Is: " << rel_ind[pos] << " | Should: " << gt_rel_ind[pos]
+                  << std::endl;
         ASSERT_EQ(rel_ind[pos], gt_rel_ind[pos]);
     }
-    
+
     // Check partial ISA
-    for(size_t pos = 0; pos < gt_isa.size(); ++pos) {
-        std::cout << "Is: " <<  isa[pos] << " | Should: " << gt_isa[pos] << std::endl;
+    for (size_t pos = 0; pos < gt_isa.size(); ++pos) {
+        std::cout << "Is: " << isa[pos] << " | Should: " << gt_isa[pos]
+                  << std::endl;
         ASSERT_EQ(isa[pos], gt_isa[pos]);
     }
-    
-    
 }
 
 TEST(DivSufSort, preInduce) {
-        util::string text = "caabaccaabacaa\0"_s;
+    util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
     util::alphabet alphabet =
         util::apply_effective_alphabet(text.slice(0, text.size() - 1));
@@ -249,7 +251,8 @@ TEST(DivSufSort, preInduce) {
         /*.text=*/text,
         /*.relative_indices=*/output.slice(0, rms_count),
         /*.absolute_indices=*/
-        output.slice(output.size() - rms_count, output.size()), /*.partial_isa=*/output.slice(rms_count, 2*rms_count)};
+        output.slice(output.size() - rms_count, output.size()),
+        /*.partial_isa=*/output.slice(rms_count, 2 * rms_count)};
     auto s_bkt = util::make_container<std::size_t>(
         pow(alphabet.max_character_value() + 1, 2));
     auto l_bkt =
@@ -275,38 +278,41 @@ TEST(DivSufSort, preInduce) {
     std::cout << "Computing partial ISA." << std::endl;
     // Compute ISA
     dss::compute_initial_isa(rms_suf.relative_indices, rms_suf.partial_isa);
-    
+
     std::cout << std::endl;
     std::cout << "Sorting rms-suffixes" << std::endl;
-    
+
     dss::sort_rms_suffixes(rms_suf);
-    
-    //Needs to be negative
+
+    // Needs to be negative
     size_t sorted_size = rms_suf.relative_indices[0] ^ dss::NEGATIVE_MASK;
-    
+
     ASSERT_EQ(sorted_size, rms_suf.relative_indices.size());
-    
-    std::cout << "Retrieving order of rms-suffixes at beginning of SA." << std::endl;
-    dss::sort_rms_indices_to_order(rms_suf, rms_count, sa_type_container, output);
-    
-    auto gt_pos_beg = util::container<size_t>({8,2,10,4});
+
+    std::cout << "Retrieving order of rms-suffixes at beginning of SA."
+              << std::endl;
+    dss::sort_rms_indices_to_order(rms_suf, rms_count, sa_type_container,
+                                   output);
+
+    auto gt_pos_beg = util::container<size_t>({8, 2, 10, 4});
     gt_pos_beg[2] ^= dss::NEGATIVE_MASK;
     gt_pos_beg[3] ^= dss::NEGATIVE_MASK;
-    
-    for(size_t pos = 0; pos < rms_suf.relative_indices.size(); ++pos) {
+
+    for (size_t pos = 0; pos < rms_suf.relative_indices.size(); ++pos) {
         ASSERT_EQ(rms_suf.relative_indices[pos], gt_pos_beg[pos]);
     }
-    
-    std::cout << "Placing rms-suffixes into correct text position. Also adjusting bucket borders for induce step." << std::endl;
-    
-    dss::insert_rms_into_correct_pos(rms_count, bkts, alphabet.max_character_value(), output);
-    
+
+    std::cout << "Placing rms-suffixes into correct text position. Also "
+                 "adjusting bucket borders for induce step."
+              << std::endl;
+
+    dss::insert_rms_into_correct_pos(rms_count, bkts,
+                                     alphabet.max_character_value(), output);
+
     // Manually check wether rms-suffixes were inserted at correct positions
     // All suffixes in one bucket in consecutive order (starting at pos 5):
-    
-    for(size_t pos = 0; pos < gt_pos_beg.size(); ++pos) {
-        ASSERT_EQ(gt_pos_beg[pos], output[5+pos]);
+
+    for (size_t pos = 0; pos < gt_pos_beg.size(); ++pos) {
+        ASSERT_EQ(gt_pos_beg[pos], output[5 + pos]);
     }
-    
-    
 }
