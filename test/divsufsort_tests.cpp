@@ -46,7 +46,7 @@ TEST(DivSufSort, correctBucketSizes) {
     // TODO: needed for several test-cases -> extract into helper function
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
-    util::alphabet alphabet =
+    const util::alphabet alphabet =
         util::apply_effective_alphabet(text.slice(0, text.size() - 1));
 
     auto types = util::make_container<bool>(text.size());
@@ -62,9 +62,9 @@ TEST(DivSufSort, correctBucketSizes) {
     auto s2 = util::make_container<std::size_t>(
         pow(alphabet.max_character_value() + 1, 2));
 
-    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                     /*.l_buckets=*/l1, /*.s_buckets=*/s1};
-    buckets result = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+    buckets<size_t> result = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                       /*.l_buckets=*/l2, /*.s_buckets=*/s2};
 
     ASSERT_EQ(bkts.l_buckets.size(), std::size_t(4));
@@ -94,7 +94,8 @@ TEST(DivSufSort, correctBucketSizes) {
     bkts.s_buckets[13] = 4; // (a,c) for rms
     bkts.s_buckets[14] = 4; // (b,c) for rms
 
-    dss::compute_buckets(text, alphabet, types, result);
+    std::cout << "Computing buckets." << std::endl;
+    dss::compute_buckets(text, alphabet.max_character_value(), types, result);
 
     std::cout << "l-buckets:" << std::endl;
     // Assertions for l_buckets
@@ -119,7 +120,7 @@ TEST(DivSufSort, correctBucketSizes) {
 TEST(DivSufSort, sortRmsSubstrings) {
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
-    util::alphabet alphabet =
+    const util::alphabet alphabet =
         util::apply_effective_alphabet(text.slice(0, text.size() - 1));
     auto sa_type_container = util::make_container<bool>(text.size());
 
@@ -143,17 +144,17 @@ TEST(DivSufSort, sortRmsSubstrings) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                     /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet, sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
 
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
     dss::insert_into_buckets(rms_suf, bkts);
 
     std::cout << "Sorting RMS-Substrings." << std::endl;
-    dss::sort_rms_substrings(rms_suf, alphabet, bkts);
+    dss::sort_rms_substrings(rms_suf, alphabet.max_character_value(), bkts);
 
     auto rel_ind = util::container<size_t>({0, 2, 3, 1});
     rel_ind[1] |= dss::NEGATIVE_MASK;
@@ -167,7 +168,7 @@ TEST(DivSufSort, sortRmsSubstrings) {
 TEST(DivSufSort, partialISA) {
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
-    util::alphabet alphabet =
+    const util::alphabet alphabet =
         util::apply_effective_alphabet(text.slice(0, text.size() - 1));
     auto sa_type_container = util::make_container<bool>(text.size());
 
@@ -191,17 +192,17 @@ TEST(DivSufSort, partialISA) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                     /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet, sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
 
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
     dss::insert_into_buckets(rms_suf, bkts);
 
     std::cout << "Sorting RMS-Substrings." << std::endl;
-    dss::sort_rms_substrings(rms_suf, alphabet, bkts);
+    dss::sort_rms_substrings(rms_suf, alphabet.max_character_value(), bkts);
 
     std::cout << "Computing partial ISA." << std::endl;
     // Compute ISA
@@ -235,7 +236,7 @@ TEST(DivSufSort, partialISA) {
 TEST(DivSufSort, preInduce) {
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
-    util::alphabet alphabet =
+    const util::alphabet alphabet =
         util::apply_effective_alphabet(text.slice(0, text.size() - 1));
     auto sa_type_container = util::make_container<bool>(text.size());
 
@@ -259,12 +260,12 @@ TEST(DivSufSort, preInduce) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                     /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << std::endl;
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet, sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
 
     std::cout << std::endl;
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
@@ -272,7 +273,7 @@ TEST(DivSufSort, preInduce) {
 
     std::cout << std::endl;
     std::cout << "Sorting RMS-Substrings." << std::endl;
-    dss::sort_rms_substrings(rms_suf, alphabet, bkts);
+    dss::sort_rms_substrings(rms_suf, alphabet.max_character_value(), bkts);
 
     std::cout << std::endl;
     std::cout << "Computing partial ISA." << std::endl;
@@ -320,7 +321,7 @@ TEST(DivSufSort, preInduce) {
 TEST(DivSufSort, inducing) {
     util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
-    util::alphabet alphabet =
+    const util::alphabet alphabet =
         util::apply_effective_alphabet(text.slice(0, text.size() - 1));
     auto sa_type_container = util::make_container<bool>(text.size());
 
@@ -344,12 +345,12 @@ TEST(DivSufSort, inducing) {
         util::make_container<std::size_t>(alphabet.max_character_value() + 1);
     // Initialize buckets: alphabet_size slots for l-buckets,
     // alphabet_size² for s-buckets
-    buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+    buckets<size_t> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                     /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
     std::cout << std::endl;
     std::cout << "Computing bucket sizes." << std::endl;
-    dss::compute_buckets(text, alphabet, sa_type_container, bkts);
+    dss::compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
 
     std::cout << std::endl;
     std::cout << "Inserting rms-suffixes into buckets" << std::endl;
@@ -357,7 +358,7 @@ TEST(DivSufSort, inducing) {
 
     std::cout << std::endl;
     std::cout << "Sorting RMS-Substrings." << std::endl;
-    dss::sort_rms_substrings(rms_suf, alphabet, bkts);
+    dss::sort_rms_substrings(rms_suf, alphabet.max_character_value(), bkts);
 
     std::cout << std::endl;
     std::cout << "Computing partial ISA." << std::endl;

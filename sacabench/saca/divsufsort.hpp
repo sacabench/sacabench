@@ -56,23 +56,24 @@ struct rms_suffixes {
     util::span<sa_index> partial_isa;
 };
 
+template <typename sa_index>
 struct buckets {
     size_t alphabet_size;
 
     // l_buckets containing buckets for l-suffixes of size of alphabet
-    util::container<std::size_t>& l_buckets;
+    util::container<sa_index>& l_buckets;
     // s_buckets containing buckets for s- and rms-suffixes of size
     // of alphabet squared
-    util::container<std::size_t>& s_buckets;
+    util::container<sa_index>& s_buckets;
 
     // TODO: Check wether size_t for first_letter/second_letter of better use
-    inline size_t get_s_bucket_index(util::character first_letter,
-                                     util::character second_letter) {
+    inline size_t get_s_bucket_index(size_t first_letter,
+                                     size_t second_letter) {
         return first_letter * alphabet_size + second_letter;
     }
 
-    inline size_t get_rms_bucket_index(util::character first_letter,
-                                       util::character second_letter) {
+    inline size_t get_rms_bucket_index(size_t first_letter,
+                                       size_t second_letter) {
         return second_letter * alphabet_size + first_letter;
     }
 };
@@ -162,6 +163,7 @@ struct compare_suffix_ranks {
 
     inline bool operator()(const sa_index& elem,
                            const sa_index& compare_to) const {
+        // Could cause overflow if depth is too big (especially for sa_index type)
         const size_t elem_at_depth = elem + pow(2, depth);
         const size_t compare_to_at_depth = compare_to + pow(2, depth);
         std::cout << "elem: " << elem_at_depth
@@ -235,18 +237,52 @@ public:
 
         // Initialize buckets: alphabet_size slots for l-buckets,
         // alphabet_size² for s-buckets
-        buckets bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
+        buckets<sa_index> bkts = {/*.alphabet_size=*/alphabet.max_character_value() + 1,
                         /*.l_buckets=*/
                         util::make_container<sa_index>(
                             alphabet.max_character_value() + 1), /*.s_buckets=*/
                         util::make_container<sa_index>(
                             pow(alphabet.max_character_value() + 1, 2))};
+        
+        
+        std::cout << std::endl;
+        std::cout << "Computing bucket sizes." << std::endl;
+        compute_buckets(text, alphabet.max_character_value(), sa_type_container, bkts);
 
-        compute_buckets(text, alphabet, sa_type_container, bkts);
-
+        std::cout << std::endl;
+        std::cout << "Inserting rms-suffixes into buckets" << std::endl;
         insert_into_buckets(rms_suf, bkts);
 
-        sort_rms_substrings(rms_suf, alphabet, bkts);
+        std::cout << std::endl;
+        std::cout << "Sorting RMS-Substrings." << std::endl;
+        sort_rms_substrings(rms_suf, alphabet.max_character_value(), bkts);
+
+        std::cout << std::endl;
+        std::cout << "Computing partial ISA." << std::endl;
+        // Compute ISA
+        compute_initial_isa(rms_suf.relative_indices, rms_suf.partial_isa);
+
+        std::cout << std::endl;
+        std::cout << "Sorting rms-suffixes" << std::endl;
+        sort_rms_suffixes(rms_suf);
+
+        std::cout << "Retrieving order of rms-suffixes at beginning of SA."
+                  << std::endl;
+        sort_rms_indices_to_order(rms_suf, rms_count, sa_type_container,
+                                       out_sa);
+
+        std::cout << "Placing rms-suffixes into correct text position. Also "
+                     "adjusting bucket borders for induce step."
+                  << std::endl;
+        insert_rms_into_correct_pos(rms_count, bkts,
+                                         alphabet.max_character_value(), out_sa);
+
+        std::cout << "Induce s-suffixes" << std::endl;
+        induce_s_suffixes(text, sa_type_container, bkts, out_sa,
+                               alphabet.max_character_value());
+
+        std::cout << "Induce l-suffixes" << std::endl;
+        induce_l_suffixes(text, bkts, out_sa);
     }
 
     // TODO: Change in optimization-phase (while computing l/s-types,
@@ -272,9 +308,9 @@ public:
     }
 
     inline static void insert_into_buckets(rms_suffixes<sa_index>& rms_suf,
-                                           buckets& bkts) {
+                                           buckets<sa_index>& bkts) {
         sa_index current_index, relative_index;
-        util::character first_letter, second_letter;
+        size_t first_letter, second_letter;
         size_t bucket_index;
         sa_index rms_count = rms_suf.absolute_indices.size();
         // Skip last rms-suffix in this loop
@@ -378,8 +414,8 @@ public:
     }
 
     inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
-                                           util::alphabet& alph,
-                                           buckets sa_buckets) {
+                                           const size_t max_character_value,
+                                           buckets<sa_index>& sa_buckets) {
         // Compute RMS-Substrings (tupel with start-/end-position)
         auto substrings_container = extract_rms_suffixes(rms_suf);
         compare_rms_substrings<sa_index> cmp(rms_suf.text,
@@ -390,12 +426,12 @@ public:
         sa_index interval_begin, interval_end = rms_suf.relative_indices.size();
         util::span<sa_index> current_interval;
         // Sort every rms-bucket, starting at last bucket
-        for (util::character first_letter = alph.max_character_value() - 1;
+        for (size_t first_letter = max_character_value - 1;
              0 < first_letter; --first_letter) {
-            for (util::character second_letter = alph.max_character_value();
+            for (size_t second_letter = max_character_value;
                  first_letter < second_letter; --second_letter) {
-                std::cout << "Currently sorting (" << (size_t)first_letter
-                          << "," << (size_t)second_letter << ")-bucket."
+                std::cout << "Currently sorting (" << first_letter
+                          << "," << second_letter << ")-bucket."
                           << std::endl;
                 bucket_index = sa_buckets.get_rms_bucket_index(first_letter,
                                                                second_letter);
@@ -710,22 +746,22 @@ public:
 
     */
     inline static void
-    insert_rms_into_correct_pos(sa_index rms_count, buckets bkts,
-                                size_t max_character_code,
+    insert_rms_into_correct_pos(sa_index rms_count, buckets<sa_index>& bkts,
+                                const size_t max_character_code,
                                 util::span<sa_index> out_sa) {
         sa_index s_bkt_index =
             bkts.get_s_bucket_index(max_character_code, max_character_code);
         sa_index right_border_s, right_border_rms;
         bkts.s_buckets[s_bkt_index] =
             out_sa.size() - 1; // Last pos for last bkt
-        for (util::character c0 = max_character_code - 1; 0 < c0; --c0) {
+        for (size_t c0 = max_character_code - 1; 0 < c0; --c0) {
             right_border_s = bkts.l_buckets[c0 + 1] - 1;
-            for (util::character c1 = max_character_code; c0 < c1; --c1) {
+            for (size_t c1 = max_character_code; c0 < c1; --c1) {
                 s_bkt_index = bkts.get_s_bucket_index(c0, c1);
                 right_border_rms = right_border_s - bkts.s_buckets[s_bkt_index];
                 // Set bucket value to right border of (c0,c1)-s-bucket
-                std::cout << "Right border for s-bucket (" << (size_t)c0 << ","
-                          << (size_t)c1 << "): " << right_border_s << std::endl;
+                std::cout << "Right border for s-bucket (" << c0 << ","
+                          << c1 << "): " << right_border_s << std::endl;
                 bkts.s_buckets[s_bkt_index] = right_border_s;
                 // Compute bucket index for current rms-bucket
                 s_bkt_index = bkts.get_rms_bucket_index(c0, c1);
@@ -753,14 +789,14 @@ public:
             // contains number of s-suffixes for (c0,c0)-bucket)
             bkts.s_buckets[bkts.get_rms_bucket_index(c0, c0 + 1)] =
                 right_border_s - bkts.s_buckets[s_bkt_index] + 1;
-            std::cout << "End border for inducing for " << (size_t)c0
+            std::cout << "End border for inducing for " << c0
                       << "-bucket: "
                       << bkts.s_buckets[bkts.get_rms_bucket_index(c0, c0 + 1)]
                       << std::endl;
             // Refresh border for (c0,c0)-bucket to point to most right position
             // of bucket (not part of inner loop)
-            std::cout << "Right border for s-bucket " << (size_t)c0 << ","
-                      << (size_t)c0 << ": " << right_border_s << std::endl;
+            std::cout << "Right border for s-bucket " << c0 << ","
+                      << c0 << ": " << right_border_s << std::endl;
             bkts.s_buckets[s_bkt_index] = right_border_s;
         }
     }
@@ -772,7 +808,7 @@ public:
         DCHECK_EQ(text.size(), types.size());
         // Last index always l-type suffix
         types[text.size() - 1] = 1;
-        for (std::size_t prev_pos = text.size() - 1; prev_pos > 0; --prev_pos) {
+        for (sa_index prev_pos = text.size() - 1; prev_pos > 0; --prev_pos) {
 
             if (text[prev_pos - 1] == text[prev_pos]) {
                 types[prev_pos - 1] = types[prev_pos];
@@ -781,63 +817,11 @@ public:
                 types[prev_pos - 1] =
                     (text[prev_pos - 1] < text[prev_pos]) ? 0 : 1;
             }
+            std::cout << types[prev_pos-1] << " ";
         }
+        std::cout << std::endl;
     }
-
-    /** \brief Counts the amount of rms-suffixes in a given (two-character)
-        bucket. Needed to compute the initial rms-buckets
-
-    */
-    inline static sa_index count_for_rms_type_in_bucket(
-        util::sort::bucket bucket_to_search,
-        util::container<bool>& suffix_types_container) {
-        sa_index counted = 0;
-        // std::cout << "Counting for rms-types:" << std::endl;
-        sa_index next_bucket =
-            bucket_to_search.position + bucket_to_search.count;
-        // std::cout << "Start position of current bucket: " <<
-        // bucket_to_search.position << std::endl; std::cout << "Start position
-        // of next bucket: " << next_bucket << std::endl;
-        for (sa_index pos = bucket_to_search.position; pos < next_bucket;
-             ++pos) {
-            bool is_rms =
-                sa_types<sa_index>::is_rms_type(pos, suffix_types_container);
-
-            // std::cout << "Pos " << pos << " is rms-type: " << is_rms <<
-            // std::endl;
-            if (is_rms) {
-                ++counted;
-            }
-        }
-        return counted;
-    }
-
-    /** \brief Counts the amount of s-suffixes (not rms) in a given
-        (two-character) bucket. Needed to compute the initial s-buckets
-
-    */
-    inline static sa_index
-    count_for_s_type_in_bucket(util::sort::bucket bucket_to_search,
-                               util::container<bool>& suffix_types_container) {
-        sa_index counted = 0;
-        sa_index next_bucket =
-            bucket_to_search.position + bucket_to_search.count;
-        std::cout << "Searching for s-buckets from "
-                  << bucket_to_search.position << " to " << next_bucket - 1
-                  << std::endl;
-        for (sa_index pos = bucket_to_search.position; pos < next_bucket;
-             ++pos) {
-            bool is_s =
-                sa_types<sa_index>::is_s_type(pos, suffix_types_container);
-            std::cout << "Pos " << pos << " is s-type: " << is_s << std::endl;
-            if (is_s) {
-                ++counted;
-            }
-        }
-        // std::cout << counted << " s-types have been counted." << std::endl;
-        return counted;
-    }
-
+    
     /**
      * Computes the bucket sizes for l-, s- and rms-suffixes.
      * @param input The input text.
@@ -852,23 +836,24 @@ public:
      * completeness), i.e. s_buckets.size() = (|alphabet| + 1)²
      */
     inline static void compute_buckets(util::string_span input,
-                                       util::alphabet alphabet,
+                                       const size_t max_character_value,
                                        util::container<bool>& suffix_types,
-                                       buckets sa_buckets) {
+                                       buckets<sa_index>& sa_buckets) {
         count_buckets(input, suffix_types, sa_buckets);
-        prefix_sum(alphabet, sa_buckets);
+        prefix_sum(max_character_value, sa_buckets);
     }
 
     inline static void count_buckets(util::string_span input,
                                      util::container<bool>& suffix_types,
-                                     buckets sa_buckets) {
-        util::character first_letter, second_letter;
+                                     buckets<sa_index>& sa_buckets) {
+        size_t first_letter, second_letter;
         // Used for accessing buckets in sa_buckets.s_buckets
         std::size_t bucket_index;
-        for (sa_index current; current < input.size(); ++current) {
+        for (sa_index current=0; current < input.size(); ++current) {
             first_letter = input[current];
             if (suffix_types[current] == 1) {
                 ++sa_buckets.l_buckets[first_letter];
+                std::cout << "Current value for " << first_letter << "-bucket: " << sa_buckets.l_buckets[first_letter] << std::endl;
             } else {
                 // Indexing safe because last two indices are always l-type.
                 DCHECK_LT(current, input.size() - 1);
@@ -891,25 +876,26 @@ public:
         }
     }
 
-    inline static void prefix_sum(util::alphabet& alph, buckets sa_buckets) {
+    inline static void prefix_sum(const size_t max_character_value, buckets<sa_index>& sa_buckets) {
         // l_count starts at one because of sentinel (skipped in loop)
         sa_index l_count = 1, rms_relative_count = 0, l_border = 0;
         size_t s_bucket_index;
         // Adjust left border for first l-bucket (sentinel)
         sa_buckets.l_buckets[0] = 0;
 
-        for (util::character first_letter = 1;
-             first_letter < alph.max_character_value() + 1; ++first_letter) {
+        for (size_t first_letter = 1;
+             first_letter < max_character_value + 1; ++first_letter) {
             // New left border completely computed (see inner loop)
             l_border += l_count;
             // Save count for current l-bucket for l_border of next l-bucket
             l_count = sa_buckets.l_buckets[first_letter];
+            std::cout << "Count of current l-bucket " << first_letter << ": " << l_count << std::endl;
             // Set left border of current bucket
             sa_buckets.l_buckets[first_letter] = l_border;
             // std::cout << "New left border for l-bucket " << (size_t)
             // first_letter << ":" << l_border << std::endl;
-            for (util::character second_letter = first_letter;
-                 second_letter < alph.max_character_value() + 1;
+            for (size_t second_letter = first_letter;
+                 second_letter < max_character_value + 1;
                  ++second_letter) {
                 // Compute index for current s-bucket in s_buckets
                 s_bucket_index =
@@ -936,25 +922,25 @@ public:
 
     inline static void induce_s_suffixes(util::string_span input,
                                          util::span<bool> suffix_types,
-                                         buckets buckets,
+                                         buckets<sa_index>& buckets,
                                          util::span<sa_index> sa,
-                                         util::character max_character) {
+                                         const size_t max_character) {
         // bit mask: 1000...000
         constexpr sa_index NEGATIVE_MASK = size_t(1)
                                            << (sizeof(sa_index) * 8 - 1);
 
-        for (util::character c0 = max_character; c0 > '\1'; --c0) {
+        for (size_t c0 = max_character; c0 > '\1'; --c0) {
             // c1 = c0 - 1
             // start at rightmost position of L-bucket of c1
-            size_t interval_start = buckets.l_buckets[c0] - 1;
+            sa_index interval_start = buckets.l_buckets[c0] - 1;
             // end at RMS-bucket[c1, c1 + 1]
-            size_t interval_end =
+            sa_index interval_end =
                 buckets.s_buckets[buckets.get_rms_bucket_index(c0 - 1, c0)];
             std::cout << "____________________________________" << std::endl;
             std::cout << "Currently inducing in interval <" << interval_start
                       << "," << interval_end << ">" << std::endl;
             // induce positions for each suffix in range
-            for (size_t i = interval_start; i >= interval_end; --i) {
+            for (sa_index i = interval_start; i >= interval_end; --i) {
                 if ((sa[i] & NEGATIVE_MASK) == 0) {
                     // entry is not negative -> induce predecessor
                     std::cout << "Using index " << sa[i] << " at pos " << i
@@ -1004,13 +990,13 @@ public:
     }
 
     inline static void induce_l_suffixes(util::string_span input,
-                                         buckets buckets,
+                                         buckets<sa_index>& buckets,
                                          util::span<sa_index> sa) {
         // bit mask: 1000...000
         constexpr sa_index NEGATIVE_MASK = size_t(1)
                                            << (sizeof(sa_index) * 8 - 1);
 
-        for (size_t i = 0; i < sa.size(); ++i) {
+        for (sa_index i = 0; i < sa.size(); ++i) {
             if (sa[i] == 0) {
                 continue;
             }
@@ -1023,7 +1009,7 @@ public:
                 std::cout << "Using index " << sa[i] << " at pos " << i
                           << " for inducing" << std::endl;
                 // predecessor has yet to be induced
-                size_t insert_position = buckets.l_buckets[input[sa[i] - 1]]++;
+                sa_index insert_position = buckets.l_buckets[input[sa[i] - 1]]++;
                 sa[insert_position] = sa[i] - 1;
                 if (sa[i] - 1 > 0 && input[sa[i] - 2] < input[sa[i] - 1]) {
                     std::cout << "Index " << sa[i] - 2
