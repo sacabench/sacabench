@@ -20,6 +20,10 @@ namespace sacabench::dc3 {
 class dc3 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "DC3";
+    static constexpr char const* DESCRIPTION =
+        "Difference Cover Modulo 3 SACA";
+
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
