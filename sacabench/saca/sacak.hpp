@@ -23,7 +23,9 @@ namespace sacabench::sacak {
     class sacak {
     public:
         static constexpr size_t EXTRA_SENTINELS = 1;
-
+        static constexpr char const* NAME = "SACA-K";
+        static constexpr char const* DESCRIPTION =
+            "Constant-Space SA-Algorithm based on SAIS";
 
         template <typename string_type, typename sa_index>
         inline static void induced_sort(const string_type t, util::span<sa_index> sa,
@@ -279,7 +281,7 @@ namespace sacabench::sacak {
                 if (sa[i] != -1)
                 {
                     sa[i + null_counter] = sa[i];
-                    sa[i] = -1; 
+                    sa[i] = -1;
                 }
                 else
                     null_counter++;

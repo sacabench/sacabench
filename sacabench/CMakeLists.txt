@@ -19,7 +19,6 @@ target_link_libraries(saca_bench_lib INTERFACE
 
 # Create executable that runs all registered SACAs
 add_executable(sacabench
-  saca/register.cpp
   sacabench.cpp
 )
 
@@ -33,6 +32,24 @@ target_compile_options(sacabench PUBLIC
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
   $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
 )
+
+function(SACA_REGISTER header type)
+    string(REGEX REPLACE
+        "[^a-zA-Z0-9\\.\\-]"
+        "_"
+        safe_type
+        "${type}")
+
+    set(SACA_HEADER "${header}")
+    set(SACA_TYPE "${type}")
+    configure_file(saca/register.cpp.in "${CMAKE_CURRENT_BINARY_DIR}/${safe_type}.cpp")
+
+    target_sources(sacabench PRIVATE
+        "${CMAKE_CURRENT_BINARY_DIR}/${safe_type}.cpp"
+    )
+endfunction(SACA_REGISTER)
+
+include(saca/register.cmake)
 
 # Register all SACAs to generate an executable for each SACA
 # TODO: If extra launchers are needed, use a single common
