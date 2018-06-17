@@ -14,6 +14,9 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
+    
+SACA_REGISTER("saca/sads.hpp"
+    sacabench::sads::sads)
 
 SACA_REGISTER("saca/gsaca.hpp"
     sacabench::gsaca::gsaca)
