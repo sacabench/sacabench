@@ -16,8 +16,9 @@
 #include <util/ISAtoSA.hpp>
 #include <util/kd_array.hpp>
 #include <util/type_extraction.hpp>
+#include <util/signed_size_type.hpp>
 
-//#include<iostream>
+#include<iostream>
 #include <vector>
 #include <stack>
 #include <utility>
@@ -38,25 +39,32 @@ private:
 
 public:
     bool exists(util::character alpha, util::character beta) {
-        return (tupel_list[{alpha,beta}] != null_pair);
+        return (tupel_list[{alpha,beta}].first != END<sa_index>);
     }
     void set_head(sa_index head_index, util::character alpha, util::character beta) {
-        pair_si<sa_index> head_tail = std::make_pair(index, index);
+        DCHECK((head_index | NEG_BIT<sa_index>) != head_index);
+        pair_si<sa_index> head_tail = std::make_pair(head_index, head_index);
         tupel_list[{alpha,beta}] = head_tail;
     }
     void set_tail(sa_index tail_index, util::character alpha, util::character beta) {
-        tupel_list[{alpha,beta}] = tail_index;
+        DCHECK((tail_index | NEG_BIT<sa_index>) != tail_index);
+        tupel_list[{alpha,beta}].second = tail_index;
     }
     sa_index get_tail(util::character alpha, util::character beta) {
+        DCHECK(exists(alpha,beta));
+        DCHECK_GE(alpha, beta);
         return tupel_list[{alpha,beta}].second;
     }
     sa_index get_head(util::character alpha, util::character beta) {
+        DCHECK(exists(alpha,beta));
+        DCHECK_GE(alpha, beta);
         return tupel_list[{alpha,beta}].first;
+    }
+    void set_empty(util::character alpha, util::character beta) {
+        tupel_list[{alpha,beta}] = null_pair;
     }
     type_l_lists(size_t alphabet_size) : tupel_list({alphabet_size,alphabet_size}) {
         //initialize all relevant elements as null pairs of END symbols which link to nothing
-        const sa_index END = ((sa_index)(-1)) >> 1;
-        const pair_si<sa_index> null_pair = std::make_pair(END<sa_index>, END<sa_index>);
 
         for(size_t i = 0; i<alphabet_size; i++) {
             for(size_t j = 0; j<=i; j++) {
@@ -64,6 +72,9 @@ public:
             }
         }
     }
+
+    type_l_lists operator=(const type_l_lists& rhs) = delete;
+    type_l_lists(const type_l_lists& rhs) = delete;
 };
 
 template <typename sa_index>
@@ -130,7 +141,7 @@ public:
 template <typename sa_index>
 struct m_suf_sort_attr {
     // make a special_bits struct out of out_sa for isa
-    special_bits isa;
+    special_bits<sa_index> isa;
     //special_bits isa(out_sa);
 
     // make initial list for induced sort with type l lists
@@ -141,6 +152,7 @@ struct m_suf_sort_attr {
     // sa_index head of uChain and sa_index length of uChain elements (offset)
     pairstack<sa_index> chain_stack;
 
+    // holds original text
     util::string_span text;
 
     m_suf_sort_attr(util::span<sa_index> isa_to_be, size_t alphabet_size, util::string_span input_text) : isa(isa_to_be),
@@ -155,20 +167,21 @@ public:
     static void construct_sa(util::string_span text, util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
         // TODO: Check if sa_index type fits for text.size() and extra bits
-        // Important: NO extra sentinel added. Catch all text[n] reads!!
 
         // Just for special test case of string '':
-        if(text.size() < 1) return;
+        if(text.size() < 2) return;
 
         // initialize m_suf_sort_attr struct that holds slots text, isa, m_list, chain_stack
-        m_suf_sort_attr<sa_index> attr{out_sa, alphabet.max_character_value(), text};
+        m_suf_sort_attr<sa_index> attr{out_sa, alphabet.size_with_sentinel(), text};
 
+        // make complete rtl scan for type s/type l suffixes
         std::vector<sa_index> type_s_indices_;
         bool is_last_type_l = false;
 
-        for(util::ssize i = text.size()-1; i > -1; i--) {
+        type_s_indices_.push_back(text.size()-1);
+        for(util::ssize i = text.size()-2; i > -1; i--) {
             // collect all type s suffix indices
-            bool is_current_type_l = util::get_type_rtl_dynamic(text, i, is_last_type_l);
+            bool is_current_type_l = util::get_type_rtl_dynamic(text.slice(0,text.size()-1), i, is_last_type_l);
             if(!is_current_type_l){
                 type_s_indices_.push_back(i);
             }
@@ -178,19 +191,27 @@ public:
         util::span<sa_index> type_s_indices = util::span<sa_index>(type_s_indices_);
         // initial length (offset) for u-chains is 0 (0 common prefix characters)
         sa_index length = 0;
-        // fill chain_stack initially with length 1- u-Chains
-        refine_uChain(attr, all_indices, length);
+        // fill chain_stack initially with length 1- u-Chains of type s indices
+        refine_uChain(attr, type_s_indices, length);
+
+        // initialize last chain character value
+        util::character last_char = 0;
 
         // begin main loop:
         while(attr.chain_stack.size() > 0) {
+            attr.isa.print();
+            std::cout << std::endl;
+            // top & pop = get first element of stack and remove it from stack
             std::pair<sa_index, sa_index> current_chain = attr.chain_stack.top();
             attr.chain_stack.pop();
+            // chain_index is the right-most index of a u-Chain
             sa_index chain_index = current_chain.first;
+            // length is the length of the u-Chain (common prefix)
             sa_index length = current_chain.second;
-            util::character current_char = text[current_chain.first];
+            // get current character (u-Chain beginning)
+            util::character current_char = text[chain_index];
 
             // before anything happens with type s u-Chain elements, rank type l suffixes for same character (or smaller)
-            //TODO: do not run through ALL first m_list elements (only those that are still possible)
             for(size_t i = 0; i<=current_char; i++){
                 for(size_t j = 0; j <=i; j++) {
                     rank_type_l_list(i,j,attr);
@@ -231,13 +252,26 @@ public:
             util::span<pair_si<sa_index>> sorting_induced = util::span<pair_si<sa_index>>(sorting_induced_);
             util::span<sa_index> to_be_refined = util::span<sa_index>(to_be_refined_);
 
-            easy_induced_sort(text, attr.isa, sorting_induced);
+            easy_induced_sort(attr, sorting_induced);
             // only refine uChain if elements are left!
             if(to_be_refined.size() > 0) {
                 refine_uChain(attr, to_be_refined, length);
             }
+
+            // set last character to current
+            last_char = current_char;
         }
 
+
+        // After chain_stack is empty, rank all remaining type-l-lists:
+        size_t max_char = alphabet.max_character_value();
+        for(size_t i = 0; i<=max_char; i++){
+            for(size_t j = 0; j <=i; j++) {
+                rank_type_l_list(i,j,attr);
+            }
+        }
+        std::cout << "last isa: " << std::endl;
+        attr.isa.print();
         // Here, hard coded isa2sa inplace conversion is used. Optimize later (try 2 other options)
         util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
 
@@ -245,16 +279,16 @@ public:
 };
 
 
-
 // TODO: Should later differentiate between different ranking scenarios
 // in case of sorting repetition sequences no REAL rank is set.
-// There is missing a third argument for that.
 // Argument type_l: if called for a uChain element (either for singleton or for easy_induced_sort) false
 // else (if called for element of a type_l_list) true
 template <typename sa_index>
 void assign_rank(sa_index index, bool type_l, m_suf_sort_attr<sa_index>& attr) {
+    // set rank for index element (main functionality)
     attr.isa.set_rank(index);
-    // if suffix at index-1 (left neighbor) is type l
+
+    // check if suffix at index-1 (left neighbor) is type l (secondary functionality)
     if(index != 0 && util::get_type_rtl_dynamic(attr.text, (index-1), type_l)) {
         util::character alpha = attr.text[index-1];
         util::character beta = attr.text[index];
@@ -269,26 +303,63 @@ void assign_rank(sa_index index, bool type_l, m_suf_sort_attr<sa_index>& attr) {
             attr.isa.set_link(last_tail, new_tail);
         }
         else {
-            attr.m_list.set_head(new_tail);
+            attr.m_list.set_head(new_tail, alpha, beta);
         }
 
         // set attr.isa to END symbol at new_tail
-        attr.isa.set_END(new_tail);
+        // attr.isa.set_END(new_tail);
     }
 }
 
 template <typename sa_index>
-void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr attr) {
+void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr) {
     // check if list is empty
-    if(!attr.m_list[{i,j}].exists()) {
+    if(!attr.m_list.exists(i,j)) {
         return;
     }
     else {
-        pair_si<sa_index> head_tail = attr.m_list[{i,j}];
-        sa_index current_element = attr.isa.get_link(head_tail.first);
-        while(current_element != END<sa_index>) {
-            //follow the u-Chain
+        sa_index current_idx = attr.m_list.get_head(i,j);
+        sa_index next_idx = attr.isa.get(current_idx);
+        // rank current element
+        assign_rank(current_idx, true, attr);
+
+        while(true) {
+            // follow the chain
+            current_idx = next_idx;
+
+            // check if this is a singleton l_list and break if that's the case
+            if(current_idx == END<sa_index>) {
+                break;
+            }
+
+            next_idx = attr.isa.get(current_idx);
+            // rank current element
+            assign_rank(current_idx, true, attr);
         }
+//------------------------------------------------------------------
+
+        // // follow the l_list
+        // while(true) {
+        //
+        //     // if l_list is singleton rank it!
+        //     if(attr.isa.is_END(current_idx)) {
+        //         assign_rank(current_idx, true, attr);
+        //         continue;
+        //     }
+        //
+        //     next_idx = attr.isa.get(current_idx);
+        //     assign_rank(current_idx, true, attr);
+        //
+        //     if(attr.isa.is_END(current_idx)) {
+        //         break;
+        //     }
+        //     // follow list if isa[current_idx] != END
+        //     current_idx = next_idx
+        // }
+
+        //------------------------------------------------------------------
+
+        attr.m_list.set_empty(i,j);
     }
 
 }
