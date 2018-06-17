@@ -318,7 +318,7 @@ TEST(DivSufSort, preInduce) {
 }
 
 TEST(DivSufSort, inducing) {
-        util::string text = "caabaccaabacaa\0"_s;
+    util::string text = "caabaccaabacaa\0"_s;
     auto output = util::make_container<std::size_t>(text.size());
     util::alphabet alphabet =
         util::apply_effective_alphabet(text.slice(0, text.size() - 1));
@@ -381,13 +381,13 @@ TEST(DivSufSort, inducing) {
     dss::insert_rms_into_correct_pos(rms_count, bkts,
                                      alphabet.max_character_value(), output);
 
-                                     
     std::cout << "Induce s-suffixes" << std::endl;
-    dss::induce_s_suffixes(text, sa_type_container, bkts, output, alphabet.max_character_value());
-    
+    dss::induce_s_suffixes(text, sa_type_container, bkts, output,
+                           alphabet.max_character_value());
+
     size_t correct_pos;
-    for(size_t pos=0; pos < output.size(); ++pos) {
-        if((output[pos] & dss::NEGATIVE_MASK) > 0) {
+    for (size_t pos = 0; pos < output.size(); ++pos) {
+        if ((output[pos] & dss::NEGATIVE_MASK) > 0) {
             correct_pos = output[pos] ^ dss::NEGATIVE_MASK;
         } else {
             correct_pos = output[pos];
@@ -395,11 +395,11 @@ TEST(DivSufSort, inducing) {
         std::cout << correct_pos << " ";
     }
     std::cout << std::endl;
-    
+
     std::cout << "Induce l-suffixes" << std::endl;
     dss::induce_l_suffixes(text, bkts, output);
-    
-    for(size_t pos=0; pos < output.size(); ++pos) {
+
+    for (size_t pos = 0; pos < output.size(); ++pos) {
         std::cout << output[pos] << " ";
     }
     std::cout << std::endl;

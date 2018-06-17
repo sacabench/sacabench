@@ -729,7 +729,7 @@ public:
                 bkts.s_buckets[s_bkt_index] = right_border_s;
                 // Compute bucket index for current rms-bucket
                 s_bkt_index = bkts.get_rms_bucket_index(c0, c1);
-                std::cout <<     "Inserting rms-suffixes into correct position. "
+                std::cout << "Inserting rms-suffixes into correct position. "
                              "Starting at "
                           << right_border_rms << ", ending at "
                           << bkts.s_buckets[s_bkt_index] << std::endl;
@@ -837,7 +837,6 @@ public:
         // std::cout << counted << " s-types have been counted." << std::endl;
         return counted;
     }
-
 
     /**
      * Computes the bucket sizes for l-, s- and rms-suffixes.
@@ -952,23 +951,36 @@ public:
             size_t interval_end =
                 buckets.s_buckets[buckets.get_rms_bucket_index(c0 - 1, c0)];
             std::cout << "____________________________________" << std::endl;
-            std::cout << "Currently inducing in interval <" << interval_start << "," << interval_end << ">" << std::endl;
+            std::cout << "Currently inducing in interval <" << interval_start
+                      << "," << interval_end << ">" << std::endl;
             // induce positions for each suffix in range
             for (size_t i = interval_start; i >= interval_end; --i) {
                 if ((sa[i] & NEGATIVE_MASK) == 0) {
                     // entry is not negative -> induce predecessor
-                    std::cout << "Using index " << sa[i] << " at pos " << i << " for inducing" << std::endl;
+                    std::cout << "Using index " << sa[i] << " at pos " << i
+                              << " for inducing" << std::endl;
                     // insert suffix i-1 at rightmost free index of
                     // associated S-bucket
                     size_t destination_bucket = buckets.get_s_bucket_index(
-                        input[sa[i] - 1], input[sa[i]]);                    
-                    std::cout << "Check if index " << sa[i]-2 << " is l-type" << std::endl;
-                    if(sa_types<sa_index>::is_l_type(sa[i]-2, suffix_types)) {
-                        // Check if index is used to induce in current step (induce s-suffixes)
-                        std::cout << "Index " << sa[i]-2 << " is l-type -> negate index of " << sa[i]-1 << " inserted at pos " << buckets.s_buckets[destination_bucket] << " instead" << std::endl;
-                        sa[buckets.s_buckets[destination_bucket]--] = (sa[i]-1) ^ NEGATIVE_MASK;
+                        input[sa[i] - 1], input[sa[i]]);
+                    std::cout << "Check if index " << sa[i] - 2 << " is l-type"
+                              << std::endl;
+                    if (sa_types<sa_index>::is_l_type(sa[i] - 2,
+                                                      suffix_types)) {
+                        // Check if index is used to induce in current step
+                        // (induce s-suffixes)
+                        std::cout << "Index " << sa[i] - 2
+                                  << " is l-type -> negate index of "
+                                  << sa[i] - 1 << " inserted at pos "
+                                  << buckets.s_buckets[destination_bucket]
+                                  << " instead" << std::endl;
+                        sa[buckets.s_buckets[destination_bucket]--] =
+                            (sa[i] - 1) ^ NEGATIVE_MASK;
                     } else {
-                        std::cout << "Inserted index " << sa[i]-1 << " at position " << buckets.s_buckets[destination_bucket] << std::endl;
+                        std::cout << "Inserted index " << sa[i] - 1
+                                  << " at position "
+                                  << buckets.s_buckets[destination_bucket]
+                                  << std::endl;
                         sa[buckets.s_buckets[destination_bucket]--] = sa[i] - 1;
                     }
                 }
@@ -985,7 +997,9 @@ public:
         // if predecessor is S-suffix
         if (input[input.size() - 2] < input[input.size() - 1]) {
             sa[0] |= NEGATIVE_MASK;
-            std::cout << "Negated index of sentinel because predecessor is s-suffix." << std::endl;
+            std::cout
+                << "Negated index of sentinel because predecessor is s-suffix."
+                << std::endl;
         }
     }
 
@@ -997,22 +1011,30 @@ public:
                                            << (sizeof(sa_index) * 8 - 1);
 
         for (size_t i = 0; i < sa.size(); ++i) {
-            if(sa[i] == 0) { continue; }
+            if (sa[i] == 0) {
+                continue;
+            }
             if ((sa[i] & NEGATIVE_MASK) > 0) {
                 // entry is negative: sa[i]-1 already induced -> remove flag
                 sa[i] ^= NEGATIVE_MASK;
-                std::cout << "Index " << sa[i]-1 << " already induced -> skip" << std::endl;
+                std::cout << "Index " << sa[i] - 1 << " already induced -> skip"
+                          << std::endl;
             } else {
-                std::cout << "Using index " << sa[i] << " at pos " << i << " for inducing" << std::endl;
+                std::cout << "Using index " << sa[i] << " at pos " << i
+                          << " for inducing" << std::endl;
                 // predecessor has yet to be induced
-                size_t insert_position = buckets.l_buckets[input[sa[i]-1]]++;
-                sa[insert_position] = sa[i]-1;
-                if (sa[i]-1 > 0 && input[sa[i]-2] < input[sa[i]-1]) {
-                    std::cout << "Index " << sa[i]-2 << " is s-suffix -> inserted negated index " << sa[i]-1 << " at pos " << insert_position << std::endl;
+                size_t insert_position = buckets.l_buckets[input[sa[i] - 1]]++;
+                sa[insert_position] = sa[i] - 1;
+                if (sa[i] - 1 > 0 && input[sa[i] - 2] < input[sa[i] - 1]) {
+                    std::cout << "Index " << sa[i] - 2
+                              << " is s-suffix -> inserted negated index "
+                              << sa[i] - 1 << " at pos " << insert_position
+                              << std::endl;
                     // predecessor of induced index is S-suffix
                     sa[insert_position] |= NEGATIVE_MASK;
                 } else {
-                    std::cout << "Inserted index " << sa[i]-1 << " at pos " << insert_position << std::endl;
+                    std::cout << "Inserted index " << sa[i] - 1 << " at pos "
+                              << insert_position << std::endl;
                 }
             }
         }
