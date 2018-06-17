@@ -16,6 +16,7 @@
 #include "alphabet.hpp"
 #include "bits.hpp"
 #include "container.hpp"
+#include "macros.hpp"
 #include "read_text.hpp"
 #include "sa_check.hpp"
 #include "span.hpp"
@@ -318,8 +319,7 @@ private:
 template <typename Algorithm>
 class concrete_saca : saca {
 public:
-    concrete_saca(const std::string& name, const std::string& description)
-        : saca(name, description) {}
+    concrete_saca() : saca(Algorithm::NAME, Algorithm::DESCRIPTION) {}
 
 protected:
     virtual abstract_sa_ptr
@@ -350,10 +350,9 @@ private:
     }
 }; // class concrete_saca
 
-#define SACA_REGISTER(saca_name, saca_description, saca_impl)                  \
-    static const auto _saca_algo_##saca_impl##_register =                      \
-        ::sacabench::util::concrete_saca<saca_impl>(saca_name,                 \
-                                                    saca_description);
+#define SACA_REGISTER(...)                                                     \
+    static const auto GENSYM(_saca_algo_register_) =                           \
+        ::sacabench::util::concrete_saca<__VA_ARGS__>();
 
 } // namespace sacabench::util
 /******************************************************************************/

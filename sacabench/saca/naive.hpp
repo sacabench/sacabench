@@ -25,6 +25,10 @@ namespace sacabench::naive {
 
 struct naive {
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Naiv";
+    static constexpr char const* DESCRIPTION =
+        "Naiver Algorithmus. Sortiert Suffixe durch paarweise "
+        "Stringvergleiche.";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,

@@ -16,6 +16,10 @@ using namespace sacabench::util;
 class sais {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "SAIS";
+    static constexpr char const* DESCRIPTION =
+        "Suffix Array Induced Sorting by Nong, Zhang and Chan";
+
     static const size_t L_Type = 0;
     static const size_t S_Type = 1;
 
