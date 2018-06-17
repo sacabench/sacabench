@@ -35,7 +35,7 @@ SACA_REGISTER("Deep-Shallow", "Deep Shallow SACA by Manzini and Ferragina",
 
 using saca_bucket_pointer_refinement =
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement;
-SACA_REGISTER("Bucket-Pointer Refinement",
+SACA_REGISTER("BPR",
               "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann",
               saca_bucket_pointer_refinement)
 
