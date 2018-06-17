@@ -45,9 +45,10 @@ namespace sacabench::nzSufSort {
                 /*if there are more s-type-positions than l-type-positions
                   revert the characters in t*/
                 bool is_text_reverted = false;  
+                util::container<util::character> tmp_text;
                 if (count_s_type_pos > text.size()/2) {
                     //TODO: Text kann nicht überschrieben werden
-                    auto tmp_text = util::make_container<util::character>(text.size());
+                    tmp_text = util::make_container<util::character>(text.size());
                     for (size_t i = 0; i < text.size(); i++) { tmp_text[i] = text[i]; }
                     for (size_t i = 0; i < text.size(); i++) { tmp_text[i] = alphabet.max_character_value()-text[i]+1; }
                     text = tmp_text;
@@ -115,35 +116,7 @@ namespace sacabench::nzSufSort {
                 for (size_t i = 0; i < sa_12.size(); i++) {
                     isa_12[sa_12[i]] = i;
                 }
-                //TODO: Zum Testen
-                {
-                    size_t count_s_type_pos_tmp = 0;
-                    bool s_type_tmp = true;
-                    util::character last_char_tmp = SENTINEL;
-                    for (size_t i = text.size(); i > 0; i--) {
-                        if (text[i-1] > last_char_tmp) { s_type_tmp = false; }
-                        else if (text[i-1] < last_char_tmp) { s_type_tmp = true; }
-                        
-                        if (s_type_tmp) { count_s_type_pos_tmp++; }
-                        last_char_tmp = text[i-1];
-                    }
-                    std::cout << "s: "<< count_s_type_pos_tmp << std::endl;
-                }
                 util::induce_sa_dc<size_t>(t_0, isa_12, t_0);
-                //TODO: Zum Testen
-                {
-                    size_t count_s_type_pos_tmp = 0;
-                    bool s_type_tmp = true;
-                    util::character last_char_tmp = SENTINEL;
-                    for (size_t i = text.size(); i > 0; i--) {
-                        if (text[i-1] > last_char_tmp) { s_type_tmp = false; }
-                        else if (text[i-1] < last_char_tmp) { s_type_tmp = true; }
-                        
-                        if (s_type_tmp) { count_s_type_pos_tmp++; }
-                        last_char_tmp = text[i-1];
-                    }
-                    std::cout << "s: "<< count_s_type_pos_tmp << std::endl;
-                }
                 util::span<sa_index> sa_0 = t_0;
                 
                 /* positions in sa_0 are multiplied by 3 so divide by 3 */
@@ -256,8 +229,6 @@ namespace sacabench::nzSufSort {
                     }
                     if (curr_pos_sa_12-1 == h) { break; }
                     
-                    std::cout << "curr_pos_sa_0-1: " << curr_pos_sa_0-1 << ", curr_pos_sa_12-1: " << curr_pos_sa_12-1 << std::endl;
-                    
                     util::string_span t_0;
                     util::string_span t_12;
                     
@@ -293,8 +264,6 @@ namespace sacabench::nzSufSort {
                     // evaluating it if `eq` is not true causes out-of-bounds errors.
                     const bool lesser_suf = out_sa[out_sa[curr_pos_sa_0-1]+t_0.size()-1] >   // greater because sa_0 and sa_12 are stored from right to left
                             out_sa[out_sa[curr_pos_sa_12-1]+t_12.size()-1];
-                    
-                    std::cout << "less_than: " << less_than << ", eq: " << eq << ", lesser_suf: " << lesser_suf << std::endl;
                     
                     if (less_than || (eq && lesser_suf)) {
                         out_sa[(curr_pos_sa_0--)-1] = pos_in_merged_sa++; 
@@ -652,7 +621,6 @@ namespace sacabench::nzSufSort {
                     else if (text[i-1] < last_char) { s_type = true; }
                     
                     if (s_type) {
-                        std::cout << i-1 << std::endl;
                         if (mod == 0) { mod_0[count_mod_0++] = i-1; }
                         else if (mod == 1) { mod_1[count_mod_1++] = i-1; }
                         else { mod_2[count_mod_2++] = i-1; }
@@ -761,6 +729,7 @@ namespace sacabench::nzSufSort {
                 last_t = retrieve_s_string<C>(text, out_sa[start_pos_p_0], 3);
                 last_i = start_pos_p_0+1;
                 for (size_t i = start_pos_p_0+1; i > 0; i--) {
+                    if (length_p_0 <= 1) { break; }
                     if (count > length_p_0) { break; }
                     
                     if (text[i-1] > text[i]) { s_type = false; }
