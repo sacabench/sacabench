@@ -230,10 +230,10 @@ private:
         const auto compare_suffix = [&](const sa_index_type a,
                                         const sa_index_type b) {
             // Catch out-of-range errors and return correct sorting result.
-            if (a + common_prefix_length >= input_text.size()) {
-                return !(b + common_prefix_length >= input_text.size());
+            if (static_cast<size_t>(a + common_prefix_length) >= input_text.size()) {
+                return !(static_cast<size_t>(b + common_prefix_length) >= input_text.size());
             }
-            if (b + common_prefix_length >= input_text.size()) {
+            if (static_cast<size_t>(b + common_prefix_length) >= input_text.size()) {
                 return false;
             }
 

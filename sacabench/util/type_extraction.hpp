@@ -16,7 +16,7 @@ namespace sacabench::util {
  * have type b */
 template <typename string_type>
 inline std::tuple<bool, size_t> get_type_ltr_dynamic(const string_type& t_0, size_t index) {
-    if (t_0[index] == util::SENTINEL)
+    if (static_cast<size_t>(t_0[index]) == util::SENTINEL)
         return std::make_tuple(false, 1);
 
     size_t same_char_amount = 0;
