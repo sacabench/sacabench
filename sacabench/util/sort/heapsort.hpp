@@ -22,7 +22,7 @@ namespace sacabench::util::sort {
      * @param node The parent node.
      * @return The left child of node.
      */
-    size_t child_left(const size_t node) {
+    inline size_t child_left(const size_t node) {
         return 2 * (node+1) - 1;
     }
 
@@ -31,7 +31,7 @@ namespace sacabench::util::sort {
      * @param node The parent node.
      * @return The right child of the node.
      */
-    size_t child_right(const size_t node) {
+    inline size_t child_right(const size_t node) {
         return 2 * (node + 1);
     }
 
@@ -47,7 +47,7 @@ namespace sacabench::util::sort {
      * @param node The node to check the max-heap condition for.
      * @param compare_fun The function used for comparison.
      */
-    template<typename T, typename F=std::less<T>> void max_heapify
+    template<typename T, typename F=std::less<T>> inline void max_heapify
             (span<T> data, const size_t heap_size, size_t node, F compare_fun=F()) {
         //TODO: Add assertion: node contained in heap
         //Adapter for "a > b"
@@ -79,7 +79,7 @@ namespace sacabench::util::sort {
      * @param data Span containing all elements to be sorted.
      * @param compare_fun The function to be used when comparing two elements.
      */
-    template<typename T, typename F=std::less<T>> void
+    template<typename T, typename F=std::less<T>> inline void
         build_max_heap(span<T> data, F compare_fun=F()) {
         // +1 to work around size_t being unsigned
         for (size_t i = (data.size() / 2); i != 0; --i) {
@@ -102,7 +102,7 @@ namespace sacabench::util::sort {
      * @param data Span containing all elements to be sorted.
      * @param compare_fun The function to be used when comparing two elements.
      */
-    template<typename T, typename F=std::less<T>> void
+    template<typename T, typename F=std::less<T>> inline void
         heapsort(span<T> data, F compare_fun=F()) {
         build_max_heap(data);
         // Invariant: data[0...heap_size) unsorted,
