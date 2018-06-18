@@ -6,10 +6,10 @@
 
 #pragma once
 
-//#include <util/sa_check.hpp> // FIXME: uncomment, if DCHECK is used.
+#include <util/alphabet.hpp>
+#include <util/assertions.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/alphabet.hpp>
 
 #include "saca_run.hpp"
 
@@ -17,21 +17,22 @@ namespace sacabench::deep_shallow {
 class saca {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Deep-Shallow";
+    static constexpr char const* DESCRIPTION =
+        "Deep Shallow SACA by Manzini and Ferragina";
 
     /// \brief Use Deep Shallow Sorting to construct the suffix array.
     template <typename sa_index_type>
     inline static void construct_sa(util::string_span text,
-                                    util::alphabet const& alphabet,
+                                    const util::alphabet& alphabet,
                                     span<sa_index_type> sa) {
+
+        // Check if `sa_index_type` is suitable.
+        DCHECK(util::assert_text_length<sa_index_type>(text.size(), 0));
 
         // Construct an object of type `saca_run`, which contains the algorithm.
         // This will construct the suffix array in `sa` using deep-shallow.
         saca_run<sa_index_type> r(text, alphabet.size_without_sentinel(), sa);
-
-        // auto result = util::sa_check(sa, text);
-        // DCHECK_MSG(result,
-        //            "Das Suffixarray, welches von Deep-Shallow berechnet
-        //            wurde, " "war nicht korrekt: " << result);
     }
 };
 } // namespace sacabench::deep_shallow

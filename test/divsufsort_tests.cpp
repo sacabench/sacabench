@@ -11,6 +11,7 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include "test/saca.hpp"
 
 using namespace sacabench::saca::divsufsort;
 using namespace sacabench;
@@ -414,4 +415,8 @@ TEST(DivSufSort, inducing) {
         std::cout << output[pos] << " ";
     }
     std::cout << std::endl;
+}
+
+TEST(DivSufSort, CornerCases) {
+    test::saca_corner_cases<dss>();
 }

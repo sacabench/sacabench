@@ -10,5 +10,10 @@ cd sacabench
 mkdir build
 cd build
 cmake ..
+
+# Run tests:
+make check
+
+# Run examples:
 make
 ```

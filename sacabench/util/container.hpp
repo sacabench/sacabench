@@ -18,17 +18,47 @@
 namespace sacabench::util {
 
 template <typename element_type>
+class container;
+
+class allow_container_copy {
+    inline static bool s_allow_copy = false;
+    bool m_last_allow_copy;
+
+    template <typename element_type>
+    friend class container;
+
+public:
+    inline allow_container_copy() {
+        m_last_allow_copy = s_allow_copy;
+        s_allow_copy = true;
+    }
+    inline ~allow_container_copy() { s_allow_copy = m_last_allow_copy; }
+    inline allow_container_copy(allow_container_copy const&) = delete;
+    inline allow_container_copy(allow_container_copy&&) = delete;
+};
+
+template <typename element_type>
 class container {
 private:
     std::unique_ptr<element_type[]> m_allocation;
     size_t m_size = 0;
+
+    // A debug check to catch invalidated spans
+    IF_DEBUG(mutable std::shared_ptr<bool> m_alive_check =
+                 std::make_shared<bool>(true);)
+    inline void invalidate_memory() const {
+        IF_DEBUG(if (m_alive_check) { *m_alive_check = false; })
+    }
+    inline void new_memory_validation() const {
+        IF_DEBUG(m_alive_check = std::make_shared<bool>(true);)
+    }
 
     inline static void copy_check(span<element_type const> other) {
         (void)other;
         IF_DEBUG({
             constexpr bool make_error = false;
 
-            if (!other.empty()) {
+            if (!allow_container_copy::s_allow_copy && !other.empty()) {
                 std::stringstream ss;
 
                 bool possible_trigger = false;
@@ -118,13 +148,21 @@ public:
         std::copy(span.begin(), span.end(), begin());
     }
 
-    inline container(container const& other) { *this = other.as_span(); }
-    inline container& operator=(container const& other) {
+    inline container(container const& other) {
+        invalidate_memory();
         *this = other.as_span();
+        new_memory_validation();
+    }
+    inline container& operator=(container const& other) {
+        invalidate_memory();
+        *this = other.as_span();
+        new_memory_validation();
         return *this;
     }
     inline container(container&& other) = default;
     inline container& operator=(container&& other) = default;
+
+    inline ~container() { invalidate_memory(); }
 
     // Capacity
 
@@ -147,12 +185,16 @@ public:
 
     /// Convert to a span.
     inline operator span<element_type>() {
-        return span<element_type>(data(), size());
+        auto r = span<element_type>(data(), size());
+        IF_DEBUG(r.register_alive_check(m_alive_check));
+        return r;
     }
 
     /// Convert to a const span.
     inline operator span<element_type const>() const {
-        return span<element_type const>(data(), size());
+        auto r = span<element_type const>(data(), size());
+        IF_DEBUG(r.register_alive_check(m_alive_check));
+        return r;
     }
 
     /// Explicit copy operation.

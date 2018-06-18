@@ -27,7 +27,7 @@ TEST(DC, induce) {
     sacabench::util::induce_sa_dc<unsigned char>(t_0, isa_12, sa_0);
     
     //expected values for induced SA with DC
-    auto expected = sacabench::util::container<size_t> {4, 3, 1, 2, 0};
+    auto expected = sacabench::util::container<size_t> {3*4, 3*3, 3*1, 3*2, 3*0};
     
     //compare results with expected values
     ASSERT_EQ(sa_0[0], expected[0]);

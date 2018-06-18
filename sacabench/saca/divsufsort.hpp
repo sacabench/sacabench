@@ -229,7 +229,7 @@ public:
         // partial_isa contains isa for relative_indices; in out_sa from
         // rms_count to 2*rms_count (safe, because at most half of suffixes
         // rms-type)
-        rms_suffixes rms_suf = {
+        rms_suffixes<sa_index> rms_suf = {
             /*.text=*/text, /*.relative_indices=*/
             out_sa.slice(0, rms_count),
             /*.absolute_indices=*/
@@ -238,13 +238,15 @@ public:
 
         // Initialize buckets: alphabet_size slots for l-buckets,
         // alphabet_size² for s-buckets
+
+        auto s_bkt = util::make_container<std::size_t>(
+            pow(alphabet.max_character_value() + 1, 2));
+        auto l_bkt =
+            util::make_container<std::size_t>(alphabet.max_character_value() + 1);
+
         buckets<sa_index> bkts = {
             /*.alphabet_size=*/alphabet.max_character_value() + 1,
-            /*.l_buckets=*/
-            util::make_container<sa_index>(alphabet.max_character_value() +
-                                           1), /*.s_buckets=*/
-            util::make_container<sa_index>(
-                pow(alphabet.max_character_value() + 1, 2))};
+            /*.l_buckets=*/l_bkt,/*.s_buckets=*/s_bkt};
 
         std::cout << std::endl;
         std::cout << "Computing bucket sizes." << std::endl;
