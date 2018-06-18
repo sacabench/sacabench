@@ -22,6 +22,7 @@ bool file_exist_check(std::string const& path) {
 }
 
 std::int32_t main(std::int32_t argc, char const** argv) {
+    int late_fail = 0;
     using namespace sacabench;
 
     CLI::App app{"CLI for SACABench."};
@@ -191,7 +192,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     check_sa_phase.log("check_result", res);
                     if (res != util::sa_check_result::ok) {
                         std::cerr << "ERROR: SA check failed" << std::endl;
-                        return 1;
+                        late_fail = 1;
                     } else {
                         std::cerr << "SA check OK" << std::endl;
                     }
@@ -232,7 +233,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
-    return 0;
+    return late_fail;
 }
 
 /******************************************************************************/
