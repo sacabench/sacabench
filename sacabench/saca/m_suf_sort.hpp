@@ -18,7 +18,7 @@
 #include <util/type_extraction.hpp>
 #include <util/signed_size_type.hpp>
 
-#include<iostream>
+//#include<iostream>
 #include <vector>
 #include <stack>
 #include <utility>
@@ -199,8 +199,6 @@ public:
 
         // begin main loop:
         while(attr.chain_stack.size() > 0) {
-            attr.isa.print();
-            std::cout << std::endl;
             // top & pop = get first element of stack and remove it from stack
             std::pair<sa_index, sa_index> current_chain = attr.chain_stack.top();
             attr.chain_stack.pop();
@@ -214,7 +212,9 @@ public:
             // before anything happens with type s u-Chain elements, rank type l suffixes for same character (or smaller)
             for(size_t i = 0; i<=current_char; i++){
                 for(size_t j = 0; j <=i; j++) {
-                    rank_type_l_list(i,j,attr);
+                    while(attr.m_list.exists(i,j)) {
+                        rank_type_l_list(i,j,attr);
+                    }
                 }
             }
 
@@ -267,11 +267,13 @@ public:
         size_t max_char = alphabet.max_character_value();
         for(size_t i = 0; i<=max_char; i++){
             for(size_t j = 0; j <=i; j++) {
-                rank_type_l_list(i,j,attr);
+                // repeat bc following the list could abrouptly end in case of direct repetition
+                //(start again = continue for same i,j)
+                while(attr.m_list.exists(i,j)) {
+                    rank_type_l_list(i,j,attr);
+                }
             }
         }
-        std::cout << "last isa: " << std::endl;
-        attr.isa.print();
         // Here, hard coded isa2sa inplace conversion is used. Optimize later (try 2 other options)
         util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
 
@@ -293,16 +295,37 @@ void assign_rank(sa_index index, bool type_l, m_suf_sort_attr<sa_index>& attr) {
         util::character alpha = attr.text[index-1];
         util::character beta = attr.text[index];
         sa_index new_tail = index-1;
+
         // if list for alpha, beta exists
         if(attr.m_list.exists(alpha,beta)) {
-            // save last tail index
-            sa_index last_tail = attr.m_list.get_tail(alpha,beta);
-            // set new tail to currently found new type l element at index-1
-            attr.m_list.set_tail(new_tail, alpha, beta);
-            // link last and new tail (last tail leads to new tail)
-            attr.isa.set_link(last_tail, new_tail);
+            // check for direct repetition bc else linking would overwrite rank
+            // is index < index(sentinel)-1? (char gamma after (alpha, beta) != sentinel)
+            if(index < attr.text.size()-2) {
+                util::character gamma = attr.text[index+1];
+                if(type_l && (alpha == beta) && (beta == gamma)) {
+                    // make new list bc new_tail is new head of list after this element is ranked
+                    attr.m_list.set_head(new_tail, alpha, beta);
+                }
+                else {
+                    // save last tail index
+                    sa_index last_tail = attr.m_list.get_tail(alpha,beta);
+                    // set new tail to currently found new type l element at index-1
+                    attr.m_list.set_tail(new_tail, alpha, beta);
+                    // link last and new tail (last tail leads to new tail)
+                    attr.isa.set_link(last_tail, new_tail);
+                }
+            }
+            else {
+                // save last tail index
+                sa_index last_tail = attr.m_list.get_tail(alpha,beta);
+                // set new tail to currently found new type l element at index-1
+                attr.m_list.set_tail(new_tail, alpha, beta);
+                // link last and new tail (last tail leads to new tail)
+                attr.isa.set_link(last_tail, new_tail);
+            }
         }
         else {
+            // make new list bc it does not exist yet
             attr.m_list.set_head(new_tail, alpha, beta);
         }
 
@@ -318,48 +341,25 @@ void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr) {
         return;
     }
     else {
+        sa_index last_idx = attr.m_list.get_tail(i,j);
         sa_index current_idx = attr.m_list.get_head(i,j);
         sa_index next_idx = attr.isa.get(current_idx);
         // rank current element
         assign_rank(current_idx, true, attr);
 
-        while(true) {
+        while(current_idx != last_idx) {
             // follow the chain
             current_idx = next_idx;
-
-            // check if this is a singleton l_list and break if that's the case
-            if(current_idx == END<sa_index>) {
-                break;
-            }
 
             next_idx = attr.isa.get(current_idx);
             // rank current element
             assign_rank(current_idx, true, attr);
         }
-//------------------------------------------------------------------
-
-        // // follow the l_list
-        // while(true) {
-        //
-        //     // if l_list is singleton rank it!
-        //     if(attr.isa.is_END(current_idx)) {
-        //         assign_rank(current_idx, true, attr);
-        //         continue;
-        //     }
-        //
-        //     next_idx = attr.isa.get(current_idx);
-        //     assign_rank(current_idx, true, attr);
-        //
-        //     if(attr.isa.is_END(current_idx)) {
-        //         break;
-        //     }
-        //     // follow list if isa[current_idx] != END
-        //     current_idx = next_idx
-        // }
-
-        //------------------------------------------------------------------
-
-        attr.m_list.set_empty(i,j);
+        // check if no new tail has been attached (if so, do not delete!)
+        if((current_idx == last_idx) && (last_idx == attr.m_list.get_tail(i,j))) {
+            // delete list after all elements of it have been ranked
+            attr.m_list.set_empty(i,j);
+        }
     }
 
 }
