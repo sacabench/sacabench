@@ -202,11 +202,9 @@ struct compare_suffix_ranks {
 private:
     util::span<sa_index> partial_isa;
 };
-
 template <typename sa_index>
-class divsufsort {
+class divsufsort_tmp {
 public:
-    static const std::size_t EXTRA_SENTINELS = 1;
     static constexpr sa_index NEGATIVE_MASK = size_t(1)
                                               << (sizeof(sa_index) * 8 - 1);
 
@@ -239,10 +237,10 @@ public:
         // Initialize buckets: alphabet_size slots for l-buckets,
         // alphabet_size² for s-buckets
 
-        auto s_bkt = util::make_container<std::size_t>(
+        auto s_bkt = util::make_container<sa_index>(
             pow(alphabet.max_character_value() + 1, 2));
         auto l_bkt =
-            util::make_container<std::size_t>(alphabet.max_character_value() + 1);
+            util::make_container<sa_index>(alphabet.max_character_value() + 1);
 
         buckets<sa_index> bkts = {
             /*.alphabet_size=*/alphabet.max_character_value() + 1,
@@ -1032,4 +1030,23 @@ public:
         }
     }
 };
+
+
+
+class divsufsort {
+public:
+    static const std::size_t EXTRA_SENTINELS = 1;
+
+    static constexpr char const* NAME = "DSS";
+    static constexpr char const* DESCRIPTION =
+        "DivSufSort (Y. Mori) without repetition detection";
+
+    template<typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alphabet,
+                             util::span<sa_index> out_sa) {
+     divsufsort_tmp<sa_index>::construct_sa(text, alphabet, out_sa);
+    }
+};
+
 } // namespace sacabench::saca::divsufsort

@@ -15,7 +15,7 @@
 
 using namespace sacabench::saca::divsufsort;
 using namespace sacabench;
-using dss = divsufsort<std::size_t>;
+using dss = divsufsort_tmp<std::size_t>;
 
 TEST(DivSufSort, extractRms) {
     util::string text = "caabaccaabacaa\0"_s;
@@ -418,5 +418,5 @@ TEST(DivSufSort, inducing) {
 }
 
 TEST(DivSufSort, CornerCases) {
-    test::saca_corner_cases<dss>();
+    test::saca_corner_cases<sacabench::saca::divsufsort::divsufsort>();
 }
