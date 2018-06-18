@@ -9,8 +9,8 @@
 
 #include <saca/nzSufSort.hpp>
 
-using namespace sacabench::nzSufSort;
+using namespace sacabench::nzsufsort;
 
-TEST(nzSufSort, test) {
-    test::saca_corner_cases<nzSufSort>();
+TEST(nzsufsort, test) {
+    test::saca_corner_cases<nzsufsort>();
 }
