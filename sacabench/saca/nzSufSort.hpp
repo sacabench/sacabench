@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2018 Nico Bertram <nico.bertram@tu-dortmund.de>
+ * Copyright (C) 2018 Johannes Bahne <johannes.bahne@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -29,8 +30,6 @@ namespace sacabench::nzSufSort {
                                      util::alphabet const& alphabet,
                                      util::span<sa_index> out_sa) {
                 const util::character SENTINEL = 0;
-                                         
-                std::cout << "Running nzSufSort" << std::endl;
                 
                 // count number of s-type-positions in text
                 size_t count_s_type_pos = 1;
@@ -41,6 +40,7 @@ namespace sacabench::nzSufSort {
                     
                     if (s_type) { count_s_type_pos++; }
                 }
+                std::cout << "count_s_type_pos: " << count_s_type_pos << std::endl;
                 
                 /*if there are more s-type-positions than l-type-positions
                   revert the characters in t*/
@@ -77,7 +77,7 @@ namespace sacabench::nzSufSort {
                 auto comp = [&](size_t i, size_t j) {
                     util::string_span t_1 = retrieve_s_string<util::character>(text, i, 3);
                     util::string_span t_2 = retrieve_s_string<util::character>(text, j, 3);
-                    return t_1 < t_2;
+                    return comp_z_strings(t_1, t_2);
                 };
                 std::sort(p_0.begin(), p_0.end(), comp);
                 std::sort(p_12.begin(), p_12.end(), comp);
@@ -97,11 +97,11 @@ namespace sacabench::nzSufSort {
                 //TODO
                 util::span<sa_index> tmp_out_sa = out_sa.slice(count_s_type_pos+mod_0, 2*count_s_type_pos);
                 
-                util::container<sa_index> tmp_t_12 = t_12.slice(0,t_12.size()); //just until the lightweight_dc3 is not working
+                /*util::container<sa_index> tmp_t_12 = t_12.slice(0,t_12.size()); //just until the lightweight_dc3 is not working
                 
                 auto u_1 = util::make_container<sa_index>(t_12.size());
                 auto v_1 = util::make_container<sa_index>(t_12.size());
-                lightweight_dc3(tmp_t_12, u_1, v_1, tmp_out_sa);
+                lightweight_dc3<sa_index>(tmp_t_12, u_1, v_1);*/
                 
                 naive_sa(t_12, tmp_out_sa);
                 for (size_t i = 0; i < t_12.size(); i++) {
@@ -130,18 +130,6 @@ namespace sacabench::nzSufSort {
                 util::span<sa_index> p_1 = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1);
                 util::span<sa_index> p_2 = out_sa.slice(count_s_type_pos+mod_0+mod_1, count_s_type_pos+mod_0+mod_1+mod_2);
                 
-                //TODO: Zum Testen
-                size_t count_s_type_pos_tmp = 0;
-                    bool s_type_tmp = true;
-                    util::character last_char_tmp = SENTINEL;
-                    for (size_t i = text.size(); i > 0; i--) {
-                        if (text[i-1] > last_char_tmp) { s_type_tmp = false; }
-                        else if (text[i-1] < last_char_tmp) { s_type_tmp = true; }
-                        
-                        if (s_type_tmp) { count_s_type_pos_tmp++; }
-                        last_char_tmp = text[i-1];
-                    }
-                    std::cout << "s: "<< count_s_type_pos_tmp << std::endl;
                 calculate_position_arrays(text, p_0, p_12, p_0, p_1, p_2, count_s_type_pos);
                 
                 for (size_t i = 0; i < sa_0.size(); i++) {
@@ -245,18 +233,6 @@ namespace sacabench::nzSufSort {
                         t_0 = retrieve_s_string<util::character>(text, out_sa[curr_pos_sa_0-1], 2);
                         t_12 = retrieve_s_string<util::character>(text, out_sa[curr_pos_sa_12-1], 2);
                     }
-                    
-                    // shorter strings have higher priority
-                    auto comp_z_strings = [](util::string_span t_0, util::string_span t_12) {
-                        size_t min_length;
-                        if (t_0.size() <= t_12.size()) { min_length = t_0.size(); }
-                        else { min_length = t_12.size(); }
-                        
-                        util::string_span t_0_slice = t_0.slice(0, min_length);
-                        util::string_span t_12_slice = t_12.slice(0, min_length);
-                        
-                        return t_0_slice < t_12_slice || (t_0_slice == t_12_slice && t_0.size() > t_12.size());
-                    };
                     
                     const bool less_than = comp_z_strings(t_0, t_12);
                     const bool eq = util::as_equal(comp_z_strings)(t_0, t_12);
@@ -392,8 +368,12 @@ namespace sacabench::nzSufSort {
         private:
             //TODO: Naive SACA for testing purposes until the lightweight DC3 is finished
             template<typename sa_index, typename T, typename H>
-            static void lightweight_dc3(T& text, H& u, H& v,
-                             util::span<sa_index> out_sa) {
+            static void lightweight_dc3(T& text, H& u, H& v) {
+                //end of recursion if text.size() < 3
+                if (text.size() < 3) {
+                    naive_sa(text, v);
+                    return;
+                }
                 
                 //position of first index i mod 3 = 0;
                 size_t end_pos_of_12 = 2*u.size()/3;
@@ -432,7 +412,6 @@ namespace sacabench::nzSufSort {
                     std::cout << u[i] << " " ;
                 }std::cout << std::endl;
                 
-                bool rekursion = false;
                 size_t rank = 1;
                 //Determine lexicographical names of triplets beginning in i mod 3 != 0;
                 //if triplets are the same, they will get the same rank and the bool rekursion
@@ -447,7 +426,7 @@ namespace sacabench::nzSufSort {
                             if(index_2 < text.size()-3){
                                 if(text[index_1]!=text[index_2] || text[index_1+1]!=text[index_2+1] || text[index_1+2]!=text[index_2+2]){
                                     ++rank;
-                                }else rekursion = true; //tripletes are the same
+                                } //tripletes are the same
                             }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
                         }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
                     }else ++rank; //last element 
@@ -466,7 +445,7 @@ namespace sacabench::nzSufSort {
                             if(index_2 < text.size()-3){
                                 if(text[index_1]!=text[index_2] || text[index_1+1]!=text[index_2+1] || text[index_1+2]!=text[index_2+2]){
                                     ++rank;
-                                }else rekursion = true; //tripletes are the same
+                                } //tripletes are the same
                             }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
                         }else ++rank; //if one of the triplets would be out of bounce, they can't be the same
                     }else ++rank; //last element 
@@ -477,11 +456,14 @@ namespace sacabench::nzSufSort {
                     std::cout << v[i] << " " ;
                 }std::cout << std::endl;
                 
+                //position of first index i mod 3 = 0;
+                size_t end_pos_of_0 = u.size()/3 + (u.size() % 3 > 0);
+                
                 //Store lexicographical names in correct positions of text as:
-                //[---i%3=1---||---i%3=2---||---i%3=0---]
-                counter_0 = end_pos_of_12;
-                size_t counter_1 = 0;
-                size_t counter_2 = end_pos_of_12/2 + ((end_pos_of_12 % 2)!=0);
+                //[---i%3=0---||---i%3=1---||---i%3=2---]
+                counter_0 = 0;
+                size_t counter_1 = end_pos_of_0;
+                size_t counter_2 = 2*u.size()/3 + (u.size() % 3 > 0); 
                 for(size_t i = 0; i < v.size(); ++i){
                     if(i % 3 == 0){
                         text[counter_0++] = v[i];
@@ -494,17 +476,100 @@ namespace sacabench::nzSufSort {
                 std::cout << "new text: " << text << std::endl;
                 
                 //unfortunately it's not working, if I pass the spans directly
-                auto u_1 = util::span<sa_index>(u).slice(0,end_pos_of_12);
-                auto v_1 = util::span<sa_index>(v).slice(0,end_pos_of_12);
-                auto text_1 = text.slice(0,end_pos_of_12);
+                auto u_1 = util::span<sa_index>(u).slice(end_pos_of_0, u.size());
+                auto v_1 = util::span<sa_index>(v).slice(end_pos_of_0, v.size());
+                auto text_1 = text.slice(end_pos_of_0,text.size());
+                
                 //Rekursion
-                if(rekursion){
-                    lightweight_dc3(text_1, u_1, v_1, out_sa);
-                    std::cout << "Mit Rekursion" << std::endl;
-                }
+                //lightweight_dc3(text_1, u_1, v_1);
+                naive_sa(text_1, v_1);
                 
                 //Next step: Induce SA_0 with SA_12
+                for (size_t i = 0; i < u_1.size(); i++) { u_1[v_1[i]] = i; }
                 
+                auto text_0 = text.slice(0, end_pos_of_0);
+                auto v_0 = util::span<sa_index>(v).slice(0, end_pos_of_0);
+                util::induce_sa_dc<sa_index>(text_0, u_1, v_0);
+                
+                /* positions in sa_0 are multiplied by 3 so divide by 3 */
+                for (size_t i = 0; i < v_0.size(); i++) { v_0[i] = v_0[i]/3; }
+                
+                std::cout << "sa_0: " << v_0 << std::endl;
+                std::cout << "sa_12: " << v_1 << std::endl;
+                
+                /* calculate isa_0 into u_0 */
+                auto u_0 = util::span<sa_index>(u).slice(0, end_pos_of_0);
+                for (size_t i = 0; i < u_0.size(); i++) { u_0[v_0[i]] = i; }
+                
+                /* merge sa_0 and sa_12 by calculating positions in merged sa */
+                const size_t start_pos_mod_2 = text_1.size()/2 + (text_1.size() % 2 == 1);
+                size_t count_sa_0 = 0;
+                size_t count_sa_12 = 0;
+                size_t position = 0;
+                while (count_sa_0 < v_0.size() && count_sa_12 < v_1.size()) {
+                    auto pos_in_text_0 = v_0[count_sa_0];
+                    auto pos_in_text_1 = v_1[count_sa_12];
+                    auto char_text_0 = text_0[pos_in_text_0];
+                    auto char_text_1 = text_1[pos_in_text_1];
+                    
+                    const bool less_than = char_text_0 < char_text_1;
+                    const bool eq = char_text_0 == char_text_1;
+                    
+                    bool lesser_suf = false;
+                    if (pos_in_text_1 % 3 == 1) {
+                        if (pos_in_text_0 < u_1.size() && start_pos_mod_2+pos_in_text_1 < u_1.size()) {
+                            lesser_suf = u_1[pos_in_text_0] < u_1[start_pos_mod_2+pos_in_text_1];
+                        }
+                        else if (pos_in_text_0 == u_1.size()) {
+                            lesser_suf = true;
+                        }
+                    }
+                    else {
+                        if (start_pos_mod_2+pos_in_text_0 < u_1.size() && pos_in_text_1+1 < u_1.size()) {
+                            lesser_suf = u_1[start_pos_mod_2+pos_in_text_0] < u_1[pos_in_text_1+1];
+                        }
+                        else if (start_pos_mod_2+pos_in_text_0 == u_1.size()) {
+                            lesser_suf = true;
+                        }
+                    }
+                        
+                    if (less_than || (eq && lesser_suf)) {
+                        v_0[count_sa_0++] = position++;
+                    } 
+                    else {
+                        v_1[count_sa_12++] = position++;
+                    }
+                }
+                while (count_sa_0 < v_0.size()) {
+                    v_0[count_sa_0++] = position++;
+                }
+                while (count_sa_12 < v_1.size()) {
+                    v_1[count_sa_12++] = position++;
+                }
+                std::cout << "sa_0: " << v_0 << std::endl;
+                std::cout << "sa_12: " << v_1 << std::endl;
+                
+                /* update isa_0 and isa_12 with positions in sa_0 and sa_12 to calculate isa_012 */
+                for (size_t i = 0; i < u_0.size(); i++) { u_0[i] = v_0[u_0[i]]; }
+                for (size_t i = 0; i < u_1.size(); i++) { u_1[i] = v_1[u_1[i]]; }
+                
+                /* compute sa_012 by traversing isa_012 */
+                for (size_t i = 0; i < v.size(); i++) { v[u[i]] = i; }
+                std::cout << "sa_012: " << v << std::endl; 
+                
+                /* compute sa by equation */
+                //TODO: Funktioniert noch nicht
+                size_t m_0 = text_0.size();
+                size_t m_1 = start_pos_mod_2;
+                size_t m_2 = text.size();
+                for (size_t i = 0; i < v.size(); i++) {
+                    if (0 <= v[i] && v[i] < m_0) { v[i] = 3*v[i]; }
+                    else if (m_0 <= v[i] && v[i] < m_1) {
+                        v[i] = 3*(v[i]-m_0)+1;
+                    }
+                    else { v[i] = 3*(v[i]-m_1)+2; }
+                }
+                std::cout << "sa: " << v << std::endl; 
             }
             
             template<typename sa_index>
@@ -592,19 +657,6 @@ namespace sacabench::nzSufSort {
                     const util::span<sa_index> mod_0, const util::span<sa_index> mod_1, 
                     const util::span<sa_index> mod_2, size_t count_s_type_pos) {
                 const util::character SENTINEL = 0;        
-                
-                //TODO: Zum Testen
-                    size_t count_s_type_pos_tmp = 0;
-                    bool s_type_tmp = true;
-                    util::character last_char_tmp = SENTINEL;
-                    for (size_t i = text.size(); i > 0; i--) {
-                        if (text[i-1] > last_char_tmp) { s_type_tmp = false; }
-                        else if (text[i-1] < last_char_tmp) { s_type_tmp = true; }
-                        
-                        if (s_type_tmp) { count_s_type_pos_tmp++; }
-                        last_char_tmp = text[i-1];
-                    }
-                    std::cout << "s: "<< count_s_type_pos_tmp << std::endl;
                         
                 // 
                 size_t mod = (count_s_type_pos+3-1) % 3;  
@@ -709,7 +761,7 @@ namespace sacabench::nzSufSort {
                         auto curr_t = retrieve_s_string<C>(text, out_sa[i-1], 3);
                         if (!last_t.empty()) {
                             out_sa[out_sa[last_i-1]] = rank;
-                            if (last_t < curr_t) { rank++; }
+                            if (comp_z_strings(last_t, curr_t)) { rank++; }
                         }
                         last_t = curr_t;
                         last_i = i;
@@ -739,7 +791,7 @@ namespace sacabench::nzSufSort {
                         auto curr_t = retrieve_s_string<C>(text, out_sa[i-1], 3);
                         
                         out_sa[out_sa[last_i-1]] = rank;
-                        if (last_t < curr_t) { rank++; }
+                        if (comp_z_strings(last_t, curr_t)) { rank++; }
                         
                         last_t = curr_t;
                         last_i = i;
@@ -919,6 +971,18 @@ namespace sacabench::nzSufSort {
                     a[i] = a[a.size()-1-i];
                     a[a.size()-1-i] = tmp;
                 }
+            }
+            
+            //shorter strings have higher priority
+            static bool comp_z_strings (util::string_span t_0, util::string_span t_12) {
+                size_t min_length;
+                if (t_0.size() <= t_12.size()) { min_length = t_0.size(); }
+                else { min_length = t_12.size(); }
+                
+                util::string_span t_0_slice = t_0.slice(0, min_length);
+                util::string_span t_12_slice = t_12.slice(0, min_length);
+                
+                return t_0_slice < t_12_slice || (t_0_slice == t_12_slice && t_0.size() > t_12.size());
             }
     }; // class nzSufSort
 
