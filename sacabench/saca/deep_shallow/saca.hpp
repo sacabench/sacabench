@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <util/span.hpp>
-#include <util/string.hpp>
 #include <util/alphabet.hpp>
 #include <util/assertions.hpp>
+#include <util/span.hpp>
+#include <util/string.hpp>
 
 #include "saca_run.hpp"
 
