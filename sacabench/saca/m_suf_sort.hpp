@@ -94,7 +94,7 @@ public:
     static constexpr char const* DESCRIPTION = "mSufSort";
 
     template <typename sa_index>
-    static void construct_sa(util::string_span text, util::alphabet const& alphabet,
+    static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
         // TODO: Check if sa_index type fits for text.size() and extra bits
         // Important: NO extra sentinel added. Catch all text[n] reads!!
