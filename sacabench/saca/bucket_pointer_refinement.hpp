@@ -22,6 +22,9 @@ namespace sacabench::bucket_pointer_refinement {
 class bucket_pointer_refinement {
     public:
         static constexpr size_t EXTRA_SENTINELS = 0;
+        static constexpr char const* NAME = "BPR";
+        static constexpr char const* DESCRIPTION =
+            "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann";
 
         /**\brief Performs a simplified version of the bucket pointer refinement
          * algorithm described by Klaus-Bernd Schürmann and Jens Stoye in "An

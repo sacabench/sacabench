@@ -4,3 +4,6 @@
 [submodule "external/tudostats"]
 	path = external/tudostats
 	url = https://github.com/tudocomp/tudostats.git
+[submodule "external/CLI11"]
+	path = external/CLI11
+	url = https://github.com/CLIUtils/CLI11.git

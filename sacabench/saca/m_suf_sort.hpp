@@ -90,6 +90,8 @@ public:
 struct m_suf_sort2 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "mSufSort";
+    static constexpr char const* DESCRIPTION = "mSufSort";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const& alphabet,

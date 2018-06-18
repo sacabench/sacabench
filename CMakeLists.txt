@@ -4,9 +4,10 @@
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
 ################################################################################
 
-if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source builds are not allowed. "
-    "Create a sub-directory and call cmake ..")
+    "Please remove ${CMAKE_BINARY_DIR}/CMakeCache.txt and the ${CMAKE_BINARY_DIR}/CMakeFiles/ directory. "
+    "Then create a sub-directory and call `cmake ..`")
 endif()
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
@@ -31,9 +32,19 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
+IF (WIN32)
+
+set(SACA_BENCH_FLAGS "/std:c++17")
+set(SACA_BENCH_DEBUG_FLAGS "")
+set(SACA_BENCH_RELEASE_FLAGS "")
+
+ELSE()
+
 set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra;-Werror=return-type")
 set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb;-DDEBUG")
 set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG")
+
+ENDIF()
 
 # Add custom cmake extensions
 include(cmakemodules/git_submodule_subdirectories.cmake)
@@ -42,6 +53,7 @@ set(BUILD_GMOCK OFF CACHE BOOL "")
 set(BUILD_GTEST ON CACHE BOOL "")
 git_submodule_subdirectory(external/gtest)
 git_submodule_subdirectory(external/tudostats)
+git_submodule_subdirectory(external/CLI11)
 add_subdirectory(sacabench)
 add_subdirectory(test)
 

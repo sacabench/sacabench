@@ -17,6 +17,9 @@ namespace sacabench::gsaca {
     public:
 
         static constexpr size_t EXTRA_SENTINELS = 1;
+        static constexpr char const* NAME = "GSACA";
+        static constexpr char const* DESCRIPTION =
+            "Computes a suffix array with the algorithm gsaca by Uwe Baier.";
 
         /**
          * \brief Calculates a suffix array for the given text with the gsaca algorithm.

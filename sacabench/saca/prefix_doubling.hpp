@@ -501,6 +501,10 @@ struct prefix_doubling_impl {
 
 struct prefix_doubling {
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Doubling";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of Naive Prefix Doubling by R. Dementiev, J. "
+        "Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -512,6 +516,10 @@ struct prefix_doubling {
 
 struct prefix_doubling_discarding {
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Discarding";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of Naive Doubling with Discarding by R. "
+        "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,

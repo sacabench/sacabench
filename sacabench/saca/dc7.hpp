@@ -18,6 +18,10 @@ namespace sacabench::dc7 {
 class dc7 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "DC7";
+    static constexpr char const* DESCRIPTION =
+        "Difference Cover Modulo 7 SACA";
+
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
@@ -142,7 +146,7 @@ private:
      * \tparam rec identifies, if this method is in a recursion.
      * \tparam C Type of input characters
      * \tparam T Type of input Text
-     * 
+     *
      * This method constructs the suffix array by using the method
      * "difference cover". The difference cover is {1,2,4}.
      */
