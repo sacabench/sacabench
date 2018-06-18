@@ -19,11 +19,15 @@
 #include <util/compare.hpp>
 
 
-namespace sacabench::nzSufSort {
+namespace sacabench::nzsufsort {
 
-    class nzSufSort {
+    class nzsufsort {
         public:    
             static constexpr size_t EXTRA_SENTINELS = 1;
+            static constexpr char const* NAME = "nzSufSort";
+            static constexpr char const* DESCRIPTION =
+                "Optimal lightweight SACA by G. Nong and S. Zhang";
+
 
             template<typename sa_index>
             static void construct_sa(util::string_span text,
@@ -82,7 +86,7 @@ namespace sacabench::nzSufSort {
                 util::span<sa_index> t_12 = out_sa.slice(mod_0, count_s_type_pos);
                 
                 //calculate SA(t_12) by calling the lightweight variant of DC3
-                /*TODO: calculate first t_12, then call lightweight_dc3 with 3 spans 
+                /*TODO: calculate t_12 first, then call lightweight_dc3 with 3 spans 
                   each of size n/3. Then calculate t_0. */
                 auto u_1 = util::make_container<sa_index>(t_12.size());
                 auto v_1 = util::make_container<sa_index>(t_12.size());
@@ -320,7 +324,6 @@ namespace sacabench::nzSufSort {
             }
           
         private:
-            //TODO: Naive SACA for testing purposes until the lightweight DC3 is finished
             template<typename sa_index, typename T, typename H>
             static void lightweight_dc3(T& text, H& u, H& v) {
                 //end of recursion if text.size() < 3 
@@ -862,6 +865,6 @@ namespace sacabench::nzSufSort {
                 
                 return t_0_slice < t_12_slice || (t_0_slice == t_12_slice && t_0.size() > t_12.size());
             }
-    }; // class nzSufSort
+    }; // class nzsufsort
 
-} // namespace sacabench::nzSufSort
+} // namespace sacabench::nzsufsort

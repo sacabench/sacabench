@@ -75,6 +75,9 @@ SACA_REGISTER("SACA-K", "Constant-Space SA-Algorithm based on SAIS", sacak);
 using saca_dc3 = sacabench::dc3::dc3;
 SACA_REGISTER("DC3", "Difference Cover Modulo 3 SACA ", saca_dc3)
 
+using saca_nzsfsort = sacabench::nzsufsort::nzsufsort;
+SACA_REGISTER("nzSufSort", "Optimal lightweight SACA by G. Nong and S. Zhang", saca_nzsfsort)
+
 } // namespace sacabench::saca
 
 /******************************************************************************/
