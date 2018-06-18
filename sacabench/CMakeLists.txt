@@ -25,6 +25,7 @@ add_executable(sacabench
 target_link_libraries(sacabench
   saca_bench_lib
   tudocomp_stat
+  CLI11
 )
 
 target_compile_options(sacabench PUBLIC

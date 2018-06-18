@@ -53,6 +53,7 @@ set(BUILD_GMOCK OFF CACHE BOOL "")
 set(BUILD_GTEST ON CACHE BOOL "")
 git_submodule_subdirectory(external/gtest)
 git_submodule_subdirectory(external/tudostats)
+git_submodule_subdirectory(external/CLI11)
 add_subdirectory(sacabench)
 add_subdirectory(test)
 
