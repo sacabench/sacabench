@@ -18,6 +18,7 @@
 #include "saca/sais.hpp"
 #include "saca/dc7.hpp"
 #include "saca/dc3.hpp"
+#include "saca/sacak.hpp"
 
 #include "util/saca.hpp"
 
@@ -67,6 +68,10 @@ SACA_REGISTER("qsufsort",
 using saca_naive = sacabench::naive::naive;
 SACA_REGISTER("Naiv", "Naiver Algorithmus. Sortiert Suffixe direkt.",
               saca_naive)
+
+using sacak = sacabench::sacak::sacak;
+SACA_REGISTER("SACA-K", "Constant-Space SA-Algorithm based on SAIS", sacak);
+
 using saca_dc3 = sacabench::dc3::dc3;
 SACA_REGISTER("DC3", "Difference Cover Modulo 3 SACA ", saca_dc3)
 

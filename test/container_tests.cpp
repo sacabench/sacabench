@@ -68,3 +68,14 @@ IF_DEBUG(TEST(Container, overflow_check) {
         c[0] = true;
     });
 })
+
+IF_DEBUG(TEST(Container, memory_invalidation_check) {
+    ASSERT_ANY_THROW({
+        span<uint8_t> s;
+        {
+            container<uint8_t> c = make_container<uint8_t>(10);
+            s = c;
+        }
+        s[0] = 1;
+    });
+})
