@@ -297,6 +297,10 @@ private:
 class qsufsort {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "qsufsort";
+    static constexpr char const* DESCRIPTION =
+        "Improved Version of N. Larssons and K. SADAKANES qsufsort";
+
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
@@ -310,6 +314,9 @@ public:
 class qsufsort_naive {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "Naive qsufsort";
+    static constexpr char const* DESCRIPTION =
+        "Naive Version of N. Larssons and K. SADAKANES qsufsort";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
