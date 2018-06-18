@@ -6,6 +6,9 @@ SACA_REGISTER("saca/deep_shallow/saca.hpp"
 SACA_REGISTER("saca/bucket_pointer_refinement.hpp"
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement)
 
+SACA_REGISTER("saca/m_suf_sort.hpp"
+    sacabench::m_suf_sort::m_suf_sort2)
+
 SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_doubling)
 
