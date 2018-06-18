@@ -14,8 +14,8 @@ namespace sacabench::util {
 
 /** Returns a type b (L=1, S=0) and a number n so that the next n characters
  * have type b */
-inline std::tuple<bool, size_t> get_type_ltr_dynamic(string_span t_0,
-                                                     size_t index) {
+template <typename string_type>
+inline std::tuple<bool, size_t> get_type_ltr_dynamic(const string_type& t_0, size_t index) {
     if (t_0[index] == util::SENTINEL)
         return std::make_tuple(false, 1);
 
@@ -43,7 +43,8 @@ inline std::tuple<bool, size_t> get_type_ltr_dynamic(string_span t_0,
  * \param index index of the character
  * \param right_type type of the character on the right of the current index
  */
-inline bool get_type_rtl_dynamic(string_span t_0, size_t index,
+template <typename string_type>
+inline bool get_type_rtl_dynamic(string_type t_0, size_t index,
                                  bool right_type) {
     // sentinel is never included in actual string t_0!!
 

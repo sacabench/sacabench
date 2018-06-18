@@ -229,8 +229,17 @@ private:
                             const size_t common_prefix_length) {
         const auto compare_suffix = [&](const sa_index_type a,
                                         const sa_index_type b) {
+            // Catch out-of-range errors and return correct sorting result.
+            if (a + common_prefix_length >= input_text.size()) {
+                return !(b + common_prefix_length >= input_text.size());
+            }
+            if (b + common_prefix_length >= input_text.size()) {
+                return false;
+            }
+
             DCHECK_LT(a + common_prefix_length, input_text.size());
             DCHECK_LT(b + common_prefix_length, input_text.size());
+
             const util::string_span as =
                 input_text.slice(a + common_prefix_length);
             const util::string_span bs =
