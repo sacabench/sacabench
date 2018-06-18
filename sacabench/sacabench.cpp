@@ -15,6 +15,12 @@
 #include "util/container.hpp"
 #include "util/saca.hpp"
 
+bool file_exist_check(std::string const& path) {
+    std::ifstream f(path.c_str());
+    bool res = f.good();
+    return res;
+}
+
 std::int32_t main(std::int32_t argc, char const** argv) {
     using namespace sacabench;
 
@@ -39,6 +45,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool out_json = false;
     bool out_binary = false;
     uint8_t out_fixed_bits = 0;
+    bool force_overwrite = false;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
@@ -47,10 +54,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Path to input file, or - for STDIN.")
             ->required();
         auto opt_output =
-            construct
-                .add_option("-o,--output", output_filename,
-                            "Path to SA output file, or - for STDOUT.")
-                ->check(CLI::NonexistentPath);
+            construct.add_option("-o,--output", output_filename,
+                                 "Path to SA output file, or - for STDOUT.");
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         construct.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes Path "
@@ -75,6 +80,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "Elide the header, and output a fixed number of bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
+
+        construct.add_flag(
+            "-f,--force", force_overwrite,
+            "Overwrite existing Files instead of raising an error.");
     }
 
     CLI::App& demo =
@@ -129,6 +138,12 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             (util::character const*)stdin_buf.data(),
                             stdin_buf.size()));
                 } else {
+                    if (!file_exist_check(input_filename)) {
+                        std::cerr << "ERROR: Input File " << input_filename
+                                  << " does not exist." << std::endl;
+                        return 1;
+                    }
+
                     text = std::make_unique<util::text_initializer_from_file>(
                         input_filename);
                 }
@@ -150,7 +165,17 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     if (output_filename == "-") {
                         write_out(std::cout);
                     } else {
-                        std::ofstream out_file(output_filename);
+                        if (!force_overwrite &&
+                            file_exist_check(output_filename)) {
+                            std::cerr << "ERROR: Output File "
+                                      << output_filename
+                                      << " does already exist." << std::endl;
+                            return 1;
+                        }
+                        std::ofstream out_file(output_filename,
+                                               std::ios_base::out |
+                                                   std::ios_base::binary |
+                                                   std::ios_base::trunc);
                         write_out(out_file);
                     }
                 }
@@ -183,7 +208,17 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 if (benchmark_filename == "-") {
                     write_bench(std::cout);
                 } else {
-                    std::ofstream benchmark_file(benchmark_filename);
+                    if (!force_overwrite &&
+                        file_exist_check(benchmark_filename)) {
+                        std::cerr << "ERROR: Benchmark File "
+                                  << benchmark_filename
+                                  << " does already exist." << std::endl;
+                        return 1;
+                    }
+                    std::ofstream benchmark_file(benchmark_filename,
+                                                 std::ios_base::out |
+                                                     std::ios_base::binary |
+                                                     std::ios_base::trunc);
                     write_bench(benchmark_file);
                 }
             }
