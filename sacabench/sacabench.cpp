@@ -15,7 +15,7 @@
 #include "util/container.hpp"
 #include "util/saca.hpp"
 
-bool file_exist_check(std::string const& path, bool force_overwrite) {
+bool file_exist_check(std::string const& path) {
     std::ifstream f(path.c_str());
     bool res = f.good();
     return res;
@@ -45,6 +45,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool out_json = false;
     bool out_binary = false;
     uint8_t out_fixed_bits = 0;
+    bool force_overwrite = false;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
@@ -79,6 +80,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "Elide the header, and output a fixed number of bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
+
+        construct.add_flag(
+            "-f,--force", force_overwrite,
+            "Overwrite existing Files instead of raising an error.");
     }
 
     CLI::App& demo =
@@ -133,7 +138,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             (util::character const*)stdin_buf.data(),
                             stdin_buf.size()));
                 } else {
-                    if (!file_exist_check(input_filename, false)) {
+                    if (!file_exist_check(input_filename)) {
                         std::cerr << "ERROR: Input File " << input_filename
                                   << " does not exist." << std::endl;
                         return 1;
@@ -160,7 +165,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     if (output_filename == "-") {
                         write_out(std::cout);
                     } else {
-                        if (file_exist_check(output_filename, false)) {
+                        if (!force_overwrite &&
+                            file_exist_check(output_filename)) {
                             std::cerr << "ERROR: Output File "
                                       << output_filename
                                       << " does already exist." << std::endl;
@@ -202,7 +208,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 if (benchmark_filename == "-") {
                     write_bench(std::cout);
                 } else {
-                    if (file_exist_check(benchmark_filename, false)) {
+                    if (!force_overwrite &&
+                        file_exist_check(benchmark_filename)) {
                         std::cerr << "ERROR: Benchmark File "
                                   << benchmark_filename
                                   << " does already exist." << std::endl;
