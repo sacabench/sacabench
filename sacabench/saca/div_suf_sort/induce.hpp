@@ -25,10 +25,15 @@ namespace sacabench::div_suf_sort {
           sa_index interval_end =
               buckets.s_buckets[buckets.get_rms_bucket_index(c0 - 1, c0)];
           std::cout << "____________________________________" << std::endl;
-          std::cout << "Currently inducing in interval <" << interval_start
-                    << "," << interval_end << ">" << std::endl;
+          std::cout << "Currently inducing in interval <" << interval_end
+                    << "," << interval_start << ">" << std::endl;
           // induce positions for each suffix in range
+          // +1 to allow i reaching 0 (because of unsigned types)
+          if(interval_end == 0) { break;}
           for (sa_index i = interval_start; i >= interval_end; --i) {
+              // Index 0 found - cannot induce anything -> skip
+              if(sa[i] == 0) { continue; }
+              
               if ((sa[i] & NEGATIVE_MASK) == 0) {
                   // entry is not negative -> induce predecessor
                   std::cout << "Using index " << sa[i] << " at pos " << i
@@ -39,7 +44,7 @@ namespace sacabench::div_suf_sort {
                       input[sa[i] - 1], input[sa[i]]);
                   std::cout << "Check if index " << sa[i] - 2 << " is l-type"
                             << std::endl;
-                  if (sa_types<sa_index>::is_l_type(sa[i] - 2,
+                  if (sa[i]-1 > 0 && sa_types<sa_index>::is_l_type(sa[i] - 2,
                                                     suffix_types)) {
                       // Check if index is used to induce in current step
                       // (induce s-suffixes)
@@ -87,6 +92,7 @@ namespace sacabench::div_suf_sort {
 
       for (sa_index i = 0; i < sa.size(); ++i) {
           if (sa[i] == 0) {
+              std::cout << "Skipped index 0 because it has no predecessor" << std::endl;
               continue;
           }
           if ((sa[i] & NEGATIVE_MASK) > 0) {

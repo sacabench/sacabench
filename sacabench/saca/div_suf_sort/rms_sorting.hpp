@@ -48,7 +48,7 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                                      const size_t max_character_value,
                                      buckets<sa_index>& sa_buckets) {
     // Compute RMS-Substrings (tupel with start-/end-position)
-    auto substrings_container = extract_rms_suffixes(rms_suf);
+    auto substrings_container = extract_rms_substrings(rms_suf);
     compare_rms_substrings<sa_index> cmp(rms_suf.text,
                                        substrings_container);
 
@@ -66,22 +66,25 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
           bucket_index = sa_buckets.get_rms_bucket_index(first_letter,
                                                          second_letter);
           interval_begin = sa_buckets.s_buckets[bucket_index];
-          // Interval of indices to sort
-          current_interval = rms_suf.relative_indices.slice(
-              interval_begin, interval_end);
-          // sort current interval/bucket
-          util::sort::introsort<sa_index,
-                                compare_rms_substrings<sa_index>>(
-              current_interval, cmp);
+          if(interval_begin < interval_end) {
+              // Interval of indices to sort
+              current_interval = rms_suf.relative_indices.slice(
+                  interval_begin, interval_end);
+              // sort current interval/bucket
+              util::sort::introsort<sa_index,
+                                    compare_rms_substrings<sa_index>>(
+                  current_interval, cmp);
 
-          // Modify elements in interval if they are the same (MSB set)
-          std::cout
-              << "Checking bucket for unsorted (i.e. same) substrings."
-              << std::endl;
-          set_unsorted_rms_substring_intervals(
-              rms_suf, cmp, interval_begin, interval_end);
-          // Refresh end_index
-          interval_end = interval_begin;
+              // Modify elements in interval if they are the same (MSB set)
+              std::cout
+                  << "Checking bucket for unsorted (i.e. same) substrings."
+                  << std::endl;
+              set_unsorted_rms_substring_intervals(
+                  rms_suf, cmp, interval_begin, interval_end);
+              // Refresh end_index
+              interval_end = interval_begin;
+          }
+          else { std::cout << "Skipping bucket (" << first_letter << "," << second_letter << ")" << std::endl; }
       }
 }
 }
@@ -140,6 +143,10 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                           ++sorted_count;
                       }
                   }
+              }
+              if(sorted_count > 0) {
+                  std::cout << "Sorted interval of length " << sorted_count << " ending at " << 0 << std::endl;
+                  rel_ind[0] = sorted_count | utils<sa_index>::NEGATIVE_MASK;
               }
             }
 
@@ -344,12 +351,12 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                         template <typename sa_index>
                     inline static void
                     sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
-                                            sa_index rms_count, util::container<bool> types,
+                                            sa_index rms_count, util::container<bool>& types,
                                             util::span<sa_index> out_sa) {
                       sa_index correct_pos;
                       auto isa = rms_suf.partial_isa;
                       // Skip last index because of sentinel
-                      for (sa_index pos = rms_suf.text.size() - 1; 0 < pos; --pos) {
+                      for (sa_index pos = rms_suf.text.size()-1; 1 < pos; --pos) {
                           correct_pos = pos - 1;
                           // RMS-Suffix in text found
                           if (sa_types<sa_index>::is_rms_type(correct_pos, types)) {
@@ -377,6 +384,13 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                               // current_pos ^ utils<sa_index>::NEGATIVE_MASK : current_pos;
                           }
                       }
+                      if(sa_types<sa_index>::is_rms_type(0, types)) {
+                        DCHECK_GT(rms_count, 0);
+                          
+                        out_sa[isa[--rms_count]] = 0;
+                        std::cout << "Index " << out_sa[isa[rms_count]]
+                        << " at position " << isa[rms_count] << std::endl;
+                      }
                     }
 
                     /** \brief Sorts all rms-suffixes, according to their order from out_sa[0,
@@ -392,8 +406,9 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                           bkts.get_s_bucket_index(max_character_code, max_character_code);
                       sa_index right_border_s, right_border_rms;
                       bkts.s_buckets[s_bkt_index] =
-                          out_sa.size() - 1; // Last pos for last bkt
+                          out_sa.size() - 1; // Last pos for last bkt (never used)
                       for (size_t c0 = max_character_code - 1; 0 < c0; --c0) {
+                          // new border one pos left of next l-bucket (i.e. for c0+1)
                           right_border_s = bkts.l_buckets[c0 + 1] - 1;
                           for (size_t c1 = max_character_code; c0 < c1; --c1) {
                               s_bkt_index = bkts.get_s_bucket_index(c0, c1);
@@ -406,29 +421,27 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                               s_bkt_index = bkts.get_rms_bucket_index(c0, c1);
                               std::cout << "Inserting rms-suffixes into correct position. "
                                            "Starting at "
-                                        << right_border_rms << ", ending at "
-                                        << bkts.s_buckets[s_bkt_index] << std::endl;
+                                        << right_border_rms << std::endl;
                               // Only insert rms-suffixes if current rms-count is smaller than
                               // computed (right) border for rms-suffixes in (c0,c1)-bucket
-                              for (sa_index sa_pos = right_border_rms;
-                                   bkts.s_buckets[s_bkt_index] < rms_count; --sa_pos) {
+                              for (right_border_s = right_border_rms;
+                                   bkts.s_buckets[s_bkt_index] < rms_count; --right_border_s) {
                                   // Insert all rms-suffixes corresponding to this bucket
                                   // All indices of rms-suffixes contained in corresponding
                                   // order in out_sa[0,rms_count)
-                                  out_sa[sa_pos] = out_sa[--rms_count];
-                                  std::cout << "Inserted index " << out_sa[sa_pos]
-                                            << " at pos " << sa_pos << std::endl;
-                                  --right_border_s;
+                                  out_sa[right_border_s] = out_sa[--rms_count];
+                                  std::cout << "Inserted index " << out_sa[right_border_s]
+                                            << " at pos " << right_border_s << std::endl;
                               }
                           }
                           // Index for s-bucket (c0,c0)
                           s_bkt_index = bkts.get_s_bucket_index(c0, c0);
                           // Contains first position for interval to check in first induce
-                          // step bkts.s_buckets[s_bkt_index] has yet to be altered (i.e.
+                          // step; bkts.s_buckets[s_bkt_index] has yet to be altered (i.e.
                           // contains number of s-suffixes for (c0,c0)-bucket)
                           bkts.s_buckets[bkts.get_rms_bucket_index(c0, c0 + 1)] =
                               right_border_s - bkts.s_buckets[s_bkt_index] + 1;
-                          std::cout << "End border for inducing for " << c0 << "-bucket: "
+                          std::cout << "End border for inducing for (" << c0 << ",*)-bucket: "
                                     << bkts.s_buckets[bkts.get_rms_bucket_index(c0, c0 + 1)]
                                     << std::endl;
                           // Refresh border for (c0,c0)-bucket to point to most right position

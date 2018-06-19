@@ -24,11 +24,12 @@ namespace sacabench::div_suf_sort {
           // TODO: Check wether new bucket borders are correct.
           bucket_index =
               bkts.get_rms_bucket_index(first_letter, second_letter);
+          /*std::cout << "(" << first_letter << "," << second_letter << ")-bucket" << std::endl;*/
           relative_index = --bkts.s_buckets[bucket_index];
           // Set current suffix into correct "bucket" at beginning of sa
           // (i.e. into relative_indices)
-          std::cout << "Inserting " << pos - 1 << " into " << relative_index
-                    << std::endl;
+          /*std::cout << "Inserting " << pos - 1 << " into " << relative_index
+                    << std::endl;*/
           rms_suf.relative_indices[relative_index] = pos - 1;
       }
       current_index = rms_suf.absolute_indices[rms_count - 1];
@@ -38,16 +39,19 @@ namespace sacabench::div_suf_sort {
       // border.
       // TODO: Check wether new bucket borders are correct.
       bucket_index = bkts.get_rms_bucket_index(first_letter, second_letter);
+      
+      /*std::cout << "(" << first_letter << "," << second_letter << ")-bucket" << std::endl;*/
+      
       relative_index = --bkts.s_buckets[bucket_index];
       // Sort last rms-suffix into correct bucket:
-      std::cout << "Inserting " << rms_count - 1 << " into " << relative_index
-                << std::endl;
+      /*std::cout << "Inserting " << rms_count - 1 << " into " << relative_index
+                << std::endl;*/
       rms_suf.relative_indices[relative_index] = rms_count - 1;
     }
 
     template <typename sa_index>
         inline static util::container<std::pair<sa_index, sa_index>>
-        extract_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
+        extract_rms_substrings(rms_suffixes<sa_index>& rms_suf) {
           sa_index rms_count = rms_suf.absolute_indices.size();
           // Create tupel for last rms-substring: from index of last
           // rms-suffix to index of sentinel
@@ -65,8 +69,8 @@ namespace sacabench::div_suf_sort {
 
               substr_start = rms_suf.absolute_indices[current_index];
               substr_end = rms_suf.absolute_indices[current_index + 1] + 1;
-              std::cout << "Creating substring <" << substr_start << ","
-                        << substr_end << ">" << std::endl;
+              /*std::cout << "Creating substring <" << substr_start << ","
+                        << substr_end << ">" << std::endl;*/
               // Create RMS-Substring for rms-suffix from suffix-index of rms
               // and starting index of following rms-suffix + 1
               substring = std::make_pair(substr_start, substr_end);
@@ -76,8 +80,8 @@ namespace sacabench::div_suf_sort {
           // sentinel
           substr_start = rms_suf.absolute_indices[rms_count - 1];
           substr_end = rms_suf.text.size() - 1;
-          std::cout << "Creating substring <" << substr_start << "," << substr_end
-                    << ">" << std::endl;
+          /*std::cout << "Creating substring <" << substr_start << "," << substr_end
+                    << ">" << std::endl;*/
           // Create RMS-Substring for rms-suffix from suffix-index of rms
           // and starting index of following rms-suffix + 1
           substring = std::make_pair(substr_start, substr_end);
@@ -166,18 +170,19 @@ namespace sacabench::div_suf_sort {
                       first_letter = input[current];
                       if (suffix_types[current] == 1) {
                           ++sa_buckets.l_buckets[first_letter];
-                          std::cout << "Current value for " << first_letter
+                          /*std::cout << "Current value for " << first_letter
                                     << "-bucket: " << sa_buckets.l_buckets[first_letter]
-                                    << std::endl;
+                                    << std::endl;*/
                       } else {
                           // Indexing safe because last two indices are always l-type.
                           DCHECK_LT(current, input.size() - 1);
                           second_letter = input[current + 1];
                           // Compute bucket_index regarding current suffix being either
                           // s- or rms-type
-                          // std::cout << "(" << (size_t)first_letter << "," <<
-                          // (size_t)second_letter << ")-bucket" << std::endl;
-                          bucket_index = (sa_types<sa_index>::is_rms_type)
+                           /*std::cout << "(" << first_letter << "," <<
+                           second_letter << ")-bucket" << std::endl;
+                           std::cout << "rms-bucket: " << sa_types<sa_index>::is_rms_type(current, suffix_types) << std::endl;*/
+                          bucket_index = (sa_types<sa_index>::is_rms_type(current, suffix_types))
                                              ? sa_buckets.get_rms_bucket_index(
                                                    first_letter, second_letter)
                                              : sa_buckets.get_s_bucket_index(
@@ -206,8 +211,8 @@ namespace sacabench::div_suf_sort {
                       l_border += l_count;
                       // Save count for current l-bucket for l_border of next l-bucket
                       l_count = sa_buckets.l_buckets[first_letter];
-                      std::cout << "Count of current l-bucket " << first_letter << ": "
-                                << l_count << std::endl;
+                      /*std::cout << "New left border for current bucket-" << first_letter << ": "
+                                << l_border << std::endl;*/
                       // Set left border of current bucket
                       sa_buckets.l_buckets[first_letter] = l_border;
                       // std::cout << "New left border for l-bucket " << (size_t)
@@ -221,18 +226,21 @@ namespace sacabench::div_suf_sort {
                           l_border += sa_buckets.s_buckets[s_bucket_index];
                           // (c0,c0) buckets can be skipped for rms-buckets (because they
                           // don't exist)
-                          if (first_letter == second_letter) {
-                              continue;
+                          if (first_letter != second_letter) {
+                          
+                              // Compute index for current rms-bucket in s_buckets
+                              s_bucket_index = sa_buckets.get_rms_bucket_index(first_letter,
+                                                                               second_letter);
+                              // Add current count for rms-bucket to l-border of next bucket
+                              l_border += sa_buckets.s_buckets[s_bucket_index];
+                              // Compute new relative right border for rms-bucket
+                              //std::cout << "Count before: " << rms_relative_count << " | ";
+                              rms_relative_count += sa_buckets.s_buckets[s_bucket_index];
+                              /*std::cout << "Count after: " << rms_relative_count << " | ";
+                              std::cout << "Added: " << sa_buckets.s_buckets[s_bucket_index] << std::endl;*/
+                              // Set new relative right border for rms-bucket
+                              sa_buckets.s_buckets[s_bucket_index] = rms_relative_count;
                           }
-                          // Compute index for current rms-bucket in s_buckets
-                          s_bucket_index = sa_buckets.get_rms_bucket_index(first_letter,
-                                                                           second_letter);
-                          // Add current count for rms-bucket to l-border of next bucket
-                          l_border += sa_buckets.s_buckets[s_bucket_index];
-                          // Compute new relative right border for rms-bucket
-                          rms_relative_count += sa_buckets.s_buckets[s_bucket_index];
-                          // Set new relative right border for rms-bucket
-                          sa_buckets.s_buckets[s_bucket_index] = rms_relative_count;
                       }
                   }
                 }

@@ -35,6 +35,7 @@ namespace sacabench::div_suf_sort {
         std::cout << "text size: " << text.size() << std::endl;
         // Create container for l/s types
         auto sa_type_container = util::make_container<bool>(text.size());
+        // auto sa_types = util::span<bool>(sa_type_container);
 
         // Compute l/s types for given text; TODO: Replace with version from
         // 'extract_types.hpp' after RTL-Insertion was merged.
@@ -70,9 +71,9 @@ namespace sacabench::div_suf_sort {
         std::cout << "Computing bucket sizes." << std::endl;
         compute_buckets<sa_index>(text, alphabet.max_character_value(), sa_type_container,
                         bkts);
-
+        if(rms_count > 0) {
         std::cout << std::endl;
-        std::cout << "Inserting rms-suffixes into buckets" << std::endl;
+        std::cout << "Inserting rms-suffixes into buckets." << std::endl;
         insert_into_buckets<sa_index>(rms_suf, bkts);
 
         std::cout << std::endl;
@@ -99,12 +100,18 @@ namespace sacabench::div_suf_sort {
         insert_rms_into_correct_pos<sa_index>(rms_count, bkts,
                                     alphabet.max_character_value(), out_sa);
 
+        }
         std::cout << "Induce s-suffixes" << std::endl;
         induce_s_suffixes<sa_index>(text, sa_type_container, bkts, out_sa,
                           alphabet.max_character_value());
-
+                          
         std::cout << "Induce l-suffixes" << std::endl;
         induce_l_suffixes<sa_index>(text, bkts, out_sa);
+        
+        for(sa_index i = 0; i < text.size(); ++i) {
+            std::cout << out_sa[i] << " ";
+        }
+        std::cout << std::endl;
         }
     }
     };

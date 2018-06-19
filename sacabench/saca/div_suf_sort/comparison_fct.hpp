@@ -84,6 +84,7 @@ namespace sacabench::div_suf_sort {
     };
 
 
+    //FIXME
     template <typename sa_index>
     struct compare_suffix_ranks {
         sa_index depth;
