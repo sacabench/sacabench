@@ -52,20 +52,20 @@ public:
                  compare_to_index = compare_to_begin + 2;
 
         for (sa_index pos = 2; pos < max_pos; ++pos) {
-            std::cout << "Current index :" << pos << std::endl;
+            /*std::cout << "Current index :" << pos << std::endl;
             std::cout << "Comparing " << (size_t)input[elem_index] << " to "
-                      << (size_t)input[compare_to_index] << std::endl;
+                      << (size_t)input[compare_to_index] << std::endl;*/
             if (input[elem_index] == input[compare_to_index]) {
                 ++elem_index;
                 ++compare_to_index;
             } else {
-                std::cout << "Symbol " << (size_t)input[elem_index]
+                /*std::cout << "Symbol " << (size_t)input[elem_index]
                           << " differs from " << (size_t)input[compare_to_index]
-                          << std::endl;
+                          << std::endl;*/
                 return input[elem_index] < input[compare_to_index];
             }
         }
-        std::cout << "Substrings have been the same until now." << std::endl;
+        /*std::cout << "Substrings have been the same until now." << std::endl;*/
         // If one substring is shorter than the other and they are the same
         // until now:
         elem_size =
@@ -124,11 +124,11 @@ struct compare_suffix_ranks {
         }
         // Neither index "out of bounds":
         // Ranks of compared substrings decide order
-        std::cout << "returns " << partial_isa[elem_at_depth] << " < "
+        /*std::cout << "returns " << partial_isa[elem_at_depth] << " < "
                   << partial_isa[compare_to_at_depth] << ": "
                   << (partial_isa[elem_at_depth] <
                       partial_isa[compare_to_at_depth])
-                  << std::endl;
+                  << std::endl;*/
         return partial_isa[elem_at_depth] < partial_isa[compare_to_at_depth];
     }
 
