@@ -45,7 +45,7 @@ public:
     void set_rank(sa_index index) {
         isa[index] = global_rank | NEG_BIT<sa_index>;
         // if rank is set, increase global rank
-        global_rank++;
+        ++global_rank;
     }
     sa_index get_rank(sa_index index) {
         const auto rank = isa[index] & END<sa_index>;
@@ -112,7 +112,7 @@ public:
         // !! Warning: this HAS to be changed when only type S suffixes should be on stack !!
         util::container<sa_index> all_indices_ = util::make_container<sa_index>(text.size());
         util::span<sa_index> all_indices = util::span<sa_index>(all_indices_);
-        for(sa_index i = 0; i < text.size(); i++) {
+        for(sa_index i = 0; i < text.size(); ++i) {
             all_indices[i] = i;
         }
         // initial length (offset) for u-chains is 0 (0 common prefix characters)
@@ -250,8 +250,8 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
          util::character next_element;
          util::character current_element = text[new_chain_IDs[0] + length];
 
-         for(sa_index i = 1; i < new_chain_IDs.size(); i++) {
-             const sa_index current_ID = new_chain_IDs[i-1];
+         for(sa_index i = 1; i < new_chain_IDs.size(); ++i) {
+             const sa_index current_ID = new_chain_IDs[i-static_cast<sa_index>(1)];
              next_element = text[new_chain_IDs[i] + length];
 
              // no matter what, we first link the last element:
@@ -261,7 +261,7 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
              if(current_element != next_element) {
 
                  // this element marks the end of a chain, push the new chain on stack
-                 std::pair<sa_index, sa_index> new_chain (current_ID, length + 1);
+                 std::pair<sa_index, sa_index> new_chain (current_ID, length + static_cast<sa_index>(1));
                  cstack.push(new_chain);
 
                  // next link should be set to END to mark the beginning of a new chain
@@ -275,7 +275,7 @@ void refine_uChain(util::string_span text, special_bits<sa_index>& isa,
          }
          //last element is automatically beginning of the (lexikographically) smallest chain
          isa.set_link(new_chain_IDs[new_chain_IDs.size() - 1], last_ID);
-         std::pair<sa_index, sa_index> new_chain (new_chain_IDs[new_chain_IDs.size() - 1], length + 1);
+         std::pair<sa_index, sa_index> new_chain (new_chain_IDs[new_chain_IDs.size() - 1], length + static_cast<sa_index>(1));
          cstack.push(new_chain);
 }
 
