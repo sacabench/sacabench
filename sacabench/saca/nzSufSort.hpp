@@ -328,9 +328,21 @@ namespace sacabench::nzsufsort {
             static void lightweight_dc3(T& text, H& u, H& v) {
                 //end of recursion if text.size() < 3 
                 if (text.size() < 3) {
-                    auto text_tmp = text.slice(0, text.size());
-                    auto v_tmp = v.slice(0, v.size());
-                    naive_sa(text_tmp, v_tmp);
+                    if (text.size() == 1) {
+                        v[0] = 0;
+                    }
+                    else if (text.size() == 2) {
+                        auto t_1 = text.slice(0,2);
+                        auto t_2 = text.slice(1,2);
+                        if (t_1 < t_2) {
+                            v[0] = 0;
+                            v[1] = 1;
+                        }
+                        else {
+                            v[0] = 1;
+                            v[1] = 0;
+                        }
+                    }
                     return;
                 }
                 
@@ -480,21 +492,6 @@ namespace sacabench::nzsufsort {
                     }
                     else { v[i] = 3*(v[i]-m_1)+2; }
                 }
-            }
-            
-            template<typename sa_index>
-            static void naive_sa(util::span<sa_index> text,
-                             util::span<sa_index> out_sa) {
-
-                // Fill SA with all index positions
-                for (size_t i = 0; i < out_sa.size(); i++) {
-                    out_sa[i] = i;
-                }
-
-                // Construct a SA by sorting according
-                // to the suffix starting at that index.
-                util::sort::std_sort(
-                    out_sa, util::compare_key([&](size_t i) { return text.slice(i); }));
             }
             
             template<typename T, typename sa_index>
