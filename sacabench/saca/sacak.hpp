@@ -240,8 +240,7 @@ namespace sacabench::sacak {
                 bool diff = false;
 
                 util::ssize current_LMS = sa[i];
-                // FIXME: this can never be true:
-                if (static_cast<size_t>(sa[i]) < 0) continue;
+                if (sa[i] < static_cast<sa_index>(0)) continue;
 
                 for (size_t j = 0; j < t_0.size(); j++) {
 
