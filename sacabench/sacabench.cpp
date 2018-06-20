@@ -90,6 +90,25 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     CLI::App& demo =
         *app.add_subcommand("demo", "Run all Algorithms on an example string.");
 
+    CLI::App& batch =
+        *app.add_subcommand("batch", "Measure runtime and memory usage for all algorithms.");
+    size_t input_bytes = 0;
+    {
+        batch
+            .add_option("input", input_filename,
+                        "Path to input file, or - for STDIN.")
+            ->required();
+        batch.add_flag("-c,--check", check_sa, "Check the constructed SA.");
+        batch.add_option("-b,--benchmark", benchmark_filename,
+                             "Record benchmark and output as JSON. Takes Path "
+                             "to output file, or - for STDOUT");
+        batch.add_flag(
+            "-f,--force", force_overwrite,
+            "Overwrite existing Files instead of raising an error.");
+        batch.add_option("-s,--size", input_bytes,
+                "Trim the input file to size s");
+    }
+
     CLI11_PARSE(app, argc, argv);
 
     // Handle CLI arguments
