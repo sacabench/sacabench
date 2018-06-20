@@ -201,31 +201,37 @@ public:
     }
 
     generate(operator<, unsigned char);
+    generate(operator<, unsigned short int);
     generate(operator<, unsigned int);
     generate(operator<, unsigned long int);
     generate(operator<, unsigned long long int);
 
     generate(operator<=, unsigned char);
+    generate(operator<=, unsigned short int);
     generate(operator<=, unsigned int);
     generate(operator<=, unsigned long int);
     generate(operator<=, unsigned long long int);
 
     generate(operator>, unsigned char);
+    generate(operator>, unsigned short int);
     generate(operator>, unsigned int);
     generate(operator>, unsigned long int);
     generate(operator>, unsigned long long int);
 
     generate(operator>=, unsigned char);
+    generate(operator>=, unsigned short int);
     generate(operator>=, unsigned int);
     generate(operator>=, unsigned long int);
     generate(operator>=, unsigned long long int);
 
     generate(operator==, unsigned char);
+    generate(operator==, unsigned short int);
     generate(operator==, unsigned int);
     generate(operator==, unsigned long int);
     generate(operator==, unsigned long long int);
 
     generate(operator!=, unsigned char);
+    generate(operator!=, unsigned short int);
     generate(operator!=, unsigned int);
     generate(operator!=, unsigned long int);
     generate(operator!=, unsigned long long int);
