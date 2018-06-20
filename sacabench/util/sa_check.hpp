@@ -113,7 +113,7 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
     });
 
     for (size_t i = 0; i < N; ++i) {
-        if (P[i].text_pos != i) {
+        if (P[i].text_pos != static_cast<sa_index_type>(i)) {
             return sa_check_result::not_a_permutation;
         }
     }

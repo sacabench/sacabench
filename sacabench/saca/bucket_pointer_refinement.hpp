@@ -188,13 +188,13 @@ private:
 
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
-        auto sort_key = [=](sa_index suffix) {
+        auto sort_key = [=](size_t suffix) {
             if (suffix >= bptr.size() - offset) {
-                return (sa_index)0;
+                return static_cast<size_t>(0);
             } else {
                 // Add 1 to sort key in order to prevent collision with
                 // sentinel.
-                return bptr[suffix + offset] + 1;
+                return static_cast<size_t>(bptr[suffix + offset]) + 1;
             }
         };
 
@@ -265,7 +265,7 @@ private:
         // from right to left: Calculate codes in order to determine
         // bucket borders
         while (start_of_bucket < bucket.size()) {
-            end_of_bucket = bptr[bucket[start_of_bucket]] - bucket_start;
+            end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) - bucket_start;
             // Sort sub-buckets recursively
             refine_single_bucket<sa_index>(
                 offset + step_size, step_size, bptr,

@@ -62,7 +62,7 @@ RTL returns the amount of LMS substrings indices found
 */
 template <typename string_type, typename sa_index>
 inline static size_t insert_lms_rtl(const string_type t_0, span<sa_index> sa) {
-    
+
     bool last_type = true;
     size_t amount = 1;
     size_t sa_pointer = 1;
@@ -104,12 +104,12 @@ inline static size_t insert_lms_rtl(const string_type t_0, span<sa_index> sa) {
 
 template <typename string_type, typename sa_index>
 inline bool is_LMS(const string_type& t, sa_index index) {
-    
+
     bool last_type = true;
     size_t amount = 1;
     size_t sa_pointer = 1;
 
-    if (index <= 0 || t.size() <= index || t[index] >= t[index - 1] || std::get<0>(util::get_type_ltr_dynamic(t,index))) 
+    if (index <= 0 || t.size() <= index || t[index] >= t[index - 1] || std::get<0>(util::get_type_ltr_dynamic(t,index)))
     {
         return false;
     }
@@ -129,9 +129,9 @@ inline size_t extract_sorted_lms(string_type &t, span<sa_index> sa) {
 
     for (size_t i = 0; i < sa.size(); i++) {
 
-        if (sa[i] != 0 && sa[i] != -1 &&
-            t[sa[i]] < t[sa[i] - 1] && // character before is L-Type
-            (t[sa[i]] == util::SENTINEL ||
+        if (static_cast<size_t>(sa[i]) != 0 && sa[i] != static_cast<sa_index>(-1) &&
+            t[sa[i]] < t[static_cast<size_t>(sa[i]) - 1] && // character before is L-Type
+            (static_cast<size_t>(t[sa[i]]) == util::SENTINEL ||
              (!std::get<0>(get_type_ltr_dynamic(
                  t, sa[i]))))) // character itself is S-Type (inefficient!)
         {
@@ -158,7 +158,7 @@ inline static void recover_lms_after_recursion(string_type &t, span<sa_index> sa
 
     for (ssize i = sa.size() - 1; i >= 0; i--)
     {
-        if (sa[i] == -1)
+        if (sa[i] == static_cast<sa_index>(-1))
             sa_counter++;
         else {
             sa[i + sa_counter] = sa[i];
@@ -177,13 +177,13 @@ inline static void recover_lms_after_recursion(string_type &t, span<sa_index> sa
 
     for (ssize i = t.size() - 1; i >= 0; i--)
     {
-        bool current_type = (t[i] != util::SENTINEL && get_type_rtl_dynamic(t, i, last_type));
+        bool current_type = (static_cast<size_t>(t[i]) != util::SENTINEL && get_type_rtl_dynamic(t, i, last_type));
 
         if (!last_type && current_type) {
 
             for (size_t j = 0; j + sa_pointer < sa.size(); j++)
             {
-                if (sa[j + sa_pointer] == sa_counter)
+                if (static_cast<size_t>(sa[j + sa_pointer]) == sa_counter)
                 {
                     sa[j] = i + 1;
                     sa_counter--;
