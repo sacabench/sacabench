@@ -93,12 +93,14 @@ public:
     //! move constructor
     constexpr UIntPair(UIntPair&&) = default;
 
+    static_assert(sizeof(unsigned int) * 8 == 32, "make sure unsigned int is uint32_t");
+
     //! const from a simple 32-bit unsigned integer
-    constexpr UIntPair(const uint32_t& a) // NOLINT
+    constexpr UIntPair(const unsigned int& a) // NOLINT
         : low_(a), high_(0) {}
 
     //! const from a simple 32-bit signed integer
-    constexpr UIntPair(const int32_t& a) // NOLINT
+    constexpr UIntPair(const signed int& a) // NOLINT
         : low_(a), high_(0) {
         if (a >= 0)
             low_ = a;
@@ -114,12 +116,16 @@ public:
         assert((a >> (low_bits + high_bits)) == 0);
     }
 
-    //! construct from an 64-bit signed integer
+    //! construct from an 32-bit or 64-bit signed integer
     constexpr UIntPair(const unsigned long& a) // NOLINT
         : UIntPair(static_cast<unsigned long long>(a)) {}
 
+    //! construct from an 32-bit or 64-bit signed integer
+    constexpr UIntPair(const signed long& a) // NOLINT
+        : UIntPair(static_cast<signed long long>(a)) {}
+
     //! construct from an 64-bit signed integer
-    constexpr UIntPair(const int64_t& a) // NOLINT
+    constexpr UIntPair(const signed long long& a) // NOLINT
         : UIntPair(static_cast<unsigned long long>(a)) {}
 
     //! copy assignment operator
@@ -127,18 +133,45 @@ public:
     //! move assignment operator
     constexpr UIntPair& operator=(UIntPair&&) = default;
 
+private:
     //! return the number as an uint64 (unsigned long long)
     constexpr uint64_t ull() const {
         return ((uint64_t)high_) << low_bits | (uint64_t)low_;
     }
 
-    //! implicit cast to an unsigned long long
-    constexpr operator uint64_t() const { return ull(); }
 
     //! return the number as a uint64_t
     constexpr uint64_t u64() const {
         return ((uint64_t)high_) << low_bits | (uint64_t)low_;
     }
+
+public:
+    //! less-than comparison operator
+    friend constexpr bool operator<(const unsigned long int& lhs,
+                                    const UIntPair<High>& rhs) {
+        return lhs < static_cast<unsigned long int>(rhs);
+    }
+
+    //! less-than comparison operator
+    friend constexpr bool operator<(const UIntPair<High>& lhs,
+                                    const unsigned long int& rhs) {
+        return static_cast<unsigned long int>(lhs) < rhs;
+    }
+
+    //! less-than comparison operator
+    friend constexpr bool operator<(const unsigned long long int& lhs,
+                                    const UIntPair<High>& rhs) {
+        return lhs < static_cast<unsigned long long int>(rhs);
+    }
+
+    //! less-than comparison operator
+    friend constexpr bool operator<(const UIntPair<High>& lhs,
+                                    const unsigned long long int& rhs) {
+        return static_cast<unsigned long long int>(lhs) < rhs;
+    }
+
+    //! implicit cast to an unsigned long long
+    constexpr operator uint64_t() const { return ull(); }
 
     //! prefix increment operator (directly manipulates the integer parts)
     UIntPair& operator++() {
@@ -204,9 +237,6 @@ public:
     bool operator<(const UIntPair& b) const {
         return (high_ < b.high_) || (high_ == b.high_ && low_ < b.low_);
     }
-
-    //! less-than comparison operator
-    bool operator<(const uint64_t& b) const { return ull() < b; }
 
     //! less-or-equal comparison operator
     bool operator<=(const UIntPair& b) const {
