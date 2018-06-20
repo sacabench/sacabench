@@ -251,6 +251,20 @@ public:
         return *this;
     }
 
+    //! suffix increment operator (directly manipulates the integer parts)
+    UIntPair operator++(int) {
+        auto copy = *this;
+        ++(*this)
+        copy
+    }
+
+    //! suffix decrement operator (directly manipulates the integer parts)
+    UIntPair operator--(int) {
+        auto copy = *this;
+        --(*this);
+        copy
+    }
+
     //! addition operator (uses 64-bit arithmetic)
     UIntPair& operator+=(const UIntPair& b) {
         uint64_t add = low_ + uint64_t(b.low_);
