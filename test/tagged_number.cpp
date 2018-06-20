@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include <util/tagged_number.hpp>
+#include <util/container.hpp>
 
 using namespace sacabench::util;
 
@@ -25,6 +26,11 @@ TEST(tagged_number, simple) {
 
     ASSERT_EQ(b + c, d);
     ASSERT_EQ(b * c, c);
+
+    // ASSERT_EQ(a, 0);
+    // ASSERT_EQ(b, 1);
+    // ASSERT_EQ(c, 2);
+    // ASSERT_EQ(d, 3);
 }
 
 TEST(tagged_number, bits) {
@@ -38,4 +44,24 @@ TEST(tagged_number, bits) {
 
     a.set<1>(true);
     ASSERT_NE(a.number(), 20u);
+}
+
+TEST(tagged_number, cast) {
+    auto array = make_container<size_t>(10);
+    for(size_t i = 0; i < 10; ++i) {
+        array[i] = i;
+    }
+
+    auto s = cast_to_tagged_numbers<size_t, 1>(array);
+
+    for(size_t i = 0; i < 10; ++i) {
+        ASSERT_EQ(s[i].number(), i);
+        ASSERT_EQ(s[i].get<0>(), false);
+        s[i].set<0>(true);
+    }
+
+    for(size_t i = 0; i < 10; ++i) {
+        ASSERT_EQ(s[i].number(), i);
+        ASSERT_EQ(s[i].get<0>(), true);
+    }
 }

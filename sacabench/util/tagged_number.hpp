@@ -9,6 +9,7 @@
 
 #include <util/assertions.hpp>
 #include <util/bits.hpp>
+#include <util/span.hpp>
 
 namespace sacabench::util {
 
@@ -49,29 +50,28 @@ public:
 
     template <uchar i>
     constexpr inline void set(bool v) {
-        // This is all ones.
+        // This is all 1s.
         constexpr sa_index ones = static_cast<sa_index>(-1);
 
-        // This is 0000100000 with a 1 only at the correct position.
+        // This is 0000100000, with a 1 only at the correct position.
         constexpr sa_index mask = BITMASK<i>;
 
-        // This updates the memory to contain 0 at the position i.
-        memory = memory & ~mask;
-
-        // The right hand side is only a 1 at position 1.
-        memory = memory | ((v * ones) & mask);
+        //                         |-------------------| This sets the bit to 1,
+        //                                               if v is true.
+        memory = (memory & ~mask) | ((v * ones) & mask);
+        //       |--------------|   This part sets the bit in `memory` to 0.
     }
 
-    constexpr inline bool operator<(const tagged_number& rhs) const {
-        return number() < rhs.number();
+    constexpr inline bool operator<(const sa_index& rhs) const {
+        return number() < rhs;
     }
 
-    constexpr inline bool operator==(const tagged_number& rhs) const {
-        return number() == rhs.number();
+    constexpr inline bool operator==(const sa_index& rhs) const {
+        return number() == rhs;
     }
 
-    constexpr inline bool operator>(const tagged_number& rhs) const {
-        return number() > rhs.number();
+    constexpr inline bool operator>(const sa_index& rhs) const {
+        return number() > rhs;
     }
 
     constexpr inline void operator++() {
@@ -84,21 +84,31 @@ public:
         --memory;
     }
 
-    constexpr inline tagged_number operator+(const tagged_number& rhs) {
-        return tagged_number(number() + rhs.number());
+    constexpr inline tagged_number operator+(const sa_index& rhs) {
+        return tagged_number(number() + rhs);
     }
 
-    constexpr inline tagged_number operator-(const tagged_number& rhs) {
+    constexpr inline tagged_number operator-(const sa_index& rhs) {
         DCHECK_GE(number(), rhs.number());
-        return tagged_number(number() - rhs.number());
+        return tagged_number(number() - rhs);
     }
 
-    constexpr inline tagged_number operator*(const tagged_number& rhs) {
-        return tagged_number(number() * rhs.number());
+    constexpr inline tagged_number operator*(const sa_index& rhs) {
+        return tagged_number(number() * rhs);
     }
 
-    constexpr inline tagged_number operator/(const tagged_number& rhs) {
-        return tagged_number(number() / rhs.number());
+    constexpr inline tagged_number operator/(const sa_index& rhs) {
+        return tagged_number(number() / rhs);
     }
 };
+
+template<typename T, unsigned char N>
+inline span<tagged_number<T, N>> cast_to_tagged_numbers(span<T> array) {
+    // Since tagged_number is basically a T, it can be safely cast.
+    auto* ptr = reinterpret_cast<tagged_number<T, N>*>(array.data());
+
+    // Since tagged_number<T> is the same size as T, the size is equal.
+    return span(ptr, array.size());
+}
+
 } // namespace sacabench::util
