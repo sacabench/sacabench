@@ -12,7 +12,6 @@
 #include <util/compare.hpp>
 #include <util/container.hpp>
 #include <util/sort/bucketsort.hpp>
-#include <util/sort/std_sort.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -196,9 +195,10 @@ private:
         std::fill(right_bounds.begin(), right_bounds.end(), false);
 
         size_t current_bucket_position;
-        bool bucket_refined = false;
+        size_t sub_buckets;
 
         do {
+            sub_buckets = 0;
             // sort_key maps a suffix s_i to the bucket identifier of suffix
             // s_{i+offset}. If no such suffix exists, it's assumed to be $.
             auto sort_key = [=](size_t suffix) {
@@ -239,17 +239,13 @@ private:
                     // pointers, bptr can not be updated instantly.
                     right_bounds[current_bucket_position] = true;
                     recent_code = current_code;
-                    bucket_refined = true;
+                    ++sub_buckets;
                 }
             } while (current_bucket_position > 0);
 
             // increase offset for next level
             offset += step_size;
-
-            if (!bucket_refined) {
-                std::cout << "not refined" << std::endl;
-            }
-        } while (!bucket_refined);
+        } while (sub_buckets < 2);
 
         current_bucket_position = bucket.size();
         // the key of the rightmost sub bucket is the rightmost index
