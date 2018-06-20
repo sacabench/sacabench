@@ -24,15 +24,15 @@
 
 #define generate(OP, MACROTYPE)                                                \
     /** less-than comparison operator */                                       \
-    friend constexpr bool OP(const MACROTYPE& lhs,                             \
-                             const UIntPair<High>& rhs) {                      \
-        return lhs < static_cast<unsigned long long>(rhs);                     \
+    friend constexpr bool operator OP(const MACROTYPE& lhs,                    \
+                                      const UIntPair<High>& rhs) {             \
+        return lhs OP static_cast<unsigned long long>(rhs);                    \
     }                                                                          \
                                                                                \
     /** less-than comparison operator */                                       \
-    friend constexpr bool OP(const UIntPair<High>& lhs,                        \
-                             const MACROTYPE& rhs) {                           \
-        return static_cast<unsigned long long>(lhs) < rhs;                     \
+    friend constexpr bool operator OP(const UIntPair<High>& lhs,               \
+                                      const MACROTYPE& rhs) {                  \
+        return static_cast<unsigned long long>(lhs) OP rhs;                    \
     }
 
 namespace sacabench::util {
@@ -200,41 +200,41 @@ public:
                static_cast<unsigned long long int>(rhs);
     }
 
-    generate(operator<, unsigned char);
-    generate(operator<, unsigned short int);
-    generate(operator<, unsigned int);
-    generate(operator<, unsigned long int);
-    generate(operator<, unsigned long long int);
+    generate(<, unsigned char);
+    generate(<, unsigned short int);
+    generate(<, unsigned int);
+    generate(<, unsigned long int);
+    generate(<, unsigned long long int);
 
-    generate(operator<=, unsigned char);
-    generate(operator<=, unsigned short int);
-    generate(operator<=, unsigned int);
-    generate(operator<=, unsigned long int);
-    generate(operator<=, unsigned long long int);
+    generate(<=, unsigned char);
+    generate(<=, unsigned short int);
+    generate(<=, unsigned int);
+    generate(<=, unsigned long int);
+    generate(<=, unsigned long long int);
 
-    generate(operator>, unsigned char);
-    generate(operator>, unsigned short int);
-    generate(operator>, unsigned int);
-    generate(operator>, unsigned long int);
-    generate(operator>, unsigned long long int);
+    generate(>, unsigned char);
+    generate(>, unsigned short int);
+    generate(>, unsigned int);
+    generate(>, unsigned long int);
+    generate(>, unsigned long long int);
 
-    generate(operator>=, unsigned char);
-    generate(operator>=, unsigned short int);
-    generate(operator>=, unsigned int);
-    generate(operator>=, unsigned long int);
-    generate(operator>=, unsigned long long int);
+    generate(>=, unsigned char);
+    generate(>=, unsigned short int);
+    generate(>=, unsigned int);
+    generate(>=, unsigned long int);
+    generate(>=, unsigned long long int);
 
-    generate(operator==, unsigned char);
-    generate(operator==, unsigned short int);
-    generate(operator==, unsigned int);
-    generate(operator==, unsigned long int);
-    generate(operator==, unsigned long long int);
+    generate(==, unsigned char);
+    generate(==, unsigned short int);
+    generate(==, unsigned int);
+    generate(==, unsigned long int);
+    generate(==, unsigned long long int);
 
-    generate(operator!=, unsigned char);
-    generate(operator!=, unsigned short int);
-    generate(operator!=, unsigned int);
-    generate(operator!=, unsigned long int);
-    generate(operator!=, unsigned long long int);
+    generate(!=, unsigned char);
+    generate(!=, unsigned short int);
+    generate(!=, unsigned int);
+    generate(!=, unsigned long int);
+    generate(!=, unsigned long long int);
 
     //! implicit cast to an unsigned long long
     constexpr operator uint64_t() const { return ull(); }
