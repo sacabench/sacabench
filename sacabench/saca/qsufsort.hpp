@@ -34,8 +34,8 @@ public:
     compare_ranks(util::container<sa_index>& _V, size_t& _h) : V(_V), h(_h) {}
 
     bool operator()(const sa_index& a, const sa_index& b) const {
-        bool a_out_of_bound = a + h >= V.size();
-        bool b_out_of_bound = b + h >= V.size();
+        bool a_out_of_bound = static_cast<size_t>(a) + h >= V.size();
+        bool b_out_of_bound = static_cast<size_t>(b) + h >= V.size();
         if (a_out_of_bound && b_out_of_bound) {
             return false;
         } else if (a_out_of_bound) {
@@ -43,7 +43,7 @@ public:
         } else if (b_out_of_bound) {
             return false;
         }
-        return (V[a + h] < V[b + h]);
+        return (V[static_cast<size_t>(a) + h] < V[static_cast<size_t>(b) + h]);
     }
     const util::container<sa_index>& V;
     const size_t& h;
@@ -58,8 +58,8 @@ public:
         : V(_V.make_copy()), h(_h) {}
 
     bool operator()(const sa_index& a, const sa_index& b) const {
-        bool a_out_of_bound = a + h >= V.size();
-        bool b_out_of_bound = b + h >= V.size();
+        bool a_out_of_bound = static_cast<size_t>(a) + h >= V.size();
+        bool b_out_of_bound = static_cast<size_t>(b) + h >= V.size();
         if (a_out_of_bound && b_out_of_bound) {
             return false;
         } else if (a_out_of_bound) {
@@ -67,7 +67,7 @@ public:
         } else if (b_out_of_bound) {
             return false;
         }
-        return (V[a + h] < V[b + h]);
+        return (V[static_cast<size_t>(a) + h] < V[static_cast<size_t>(b) + h]);
     }
     const util::container<sa_index> V;
     const size_t h;
@@ -202,9 +202,9 @@ private:
 
             // check if number in out_sa is negative
             // if negative the group number is simply the index
-            dif = (bool(out_sa[i + 1] & NEGATIVE_MASK) ? i + 1
+            dif = (bool(out_sa[i + 1] & NEGATIVE_MASK) ? static_cast<sa_index>(i + 1)
                                                        : isa[out_sa[i + 1]]) -
-                  (bool(out_sa[i] & NEGATIVE_MASK) ? i : isa[out_sa[i]]);
+                  (bool(out_sa[i] & NEGATIVE_MASK) ? static_cast<sa_index>(i) : isa[out_sa[i]]);
 
             // if difference between neighbours is 1, they are sorted elements
             if (dif == 1) {
@@ -227,7 +227,7 @@ private:
                                       util::container<sa_index>& isa,
                                       key_func& cmp, sa_index start,
                                       sa_index end) {
-        auto out_sa = full_array.slice(start, end + 1);
+        auto out_sa = full_array.slice(start, end + static_cast<sa_index>(1));
         size_t n = out_sa.size();
         const auto equal = util::as_equal(cmp);
         // recursion termination
@@ -297,6 +297,10 @@ private:
 class qsufsort {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "qsufsort";
+    static constexpr char const* DESCRIPTION =
+        "Improved Version of N. Larssons and K. SADAKANES qsufsort";
+
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
@@ -310,6 +314,9 @@ public:
 class qsufsort_naive {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "Naive qsufsort";
+    static constexpr char const* DESCRIPTION =
+        "Naive Version of N. Larssons and K. SADAKANES qsufsort";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -363,7 +370,7 @@ public:
 
                     // sort unsorted group
                     util::sort::ternary_quicksort::ternary_quicksort(
-                        out_sa.slice(counter, counter + L[counter]),
+                        out_sa.slice(counter, static_cast<size_t>(counter) + L[counter]),
                         compare_function);
                     // update ranks within group
                     update_group_ranks(out_sa, V, compare_function, counter,
@@ -438,7 +445,7 @@ private:
     template <typename sa_index, typename key_func>
     static void update_group_ranks(util::span<sa_index> out_sa,
                                    util::container<sa_index>& V, key_func& cmp,
-                                   sa_index start, sa_index end) {
+                                   size_t start, size_t end) {
 
         const auto less = cmp;
         const auto equal = util::as_equal(cmp);

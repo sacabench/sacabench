@@ -80,7 +80,7 @@ void isa2sa_inplace2(span<T> isa) {
     constexpr T END = ((T)(-1)) >> 1;
     constexpr T NEG_BIT = ((T)1) << (bits_of<T> - 1);
 
-    for (T i = 0; i < isa.size(); i++) {
+    for (T i = 0; i < isa.size(); ++i) {
         //if entry is a rank
         if ((isa[i] & NEG_BIT) > 0) {
             T start = i;

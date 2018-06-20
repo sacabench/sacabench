@@ -60,16 +60,16 @@ private:
     High high_;
 
     //! return highest value storable in lower part, also used as a mask.
-    static unsigned low_max() { return std::numeric_limits<Low>::max(); }
+    constexpr static unsigned low_max() { return std::numeric_limits<Low>::max(); }
 
     //! number of bits in the lower integer part, used a bit shift value.
-    static constexpr size_t low_bits = 8 * sizeof(Low);
+    constexpr static size_t low_bits = 8 * sizeof(Low);
 
     //! return highest value storable in higher part, also used as a mask.
-    static unsigned high_max() { return std::numeric_limits<High>::max(); }
+    constexpr static unsigned high_max() { return std::numeric_limits<High>::max(); }
 
     //! number of bits in the higher integer part, used a bit shift value.
-    static constexpr size_t high_bits = 8 * sizeof(High);
+    constexpr static size_t high_bits = 8 * sizeof(High);
 
 public:
     //! number of binary digits (bits) in UIntPair
@@ -83,22 +83,22 @@ public:
     static_assert(digits / 8 == bytes, "digit and bytes ratio is wrong");
 
     //! empty constructor, does not even initialize to zero!
-    UIntPair() = default;
+    constexpr UIntPair() = default;
 
     //! construct unit pair from lower and higher parts.
-    UIntPair(const Low& l, const High& h) : low_(l), high_(h) {}
+    constexpr UIntPair(const Low& l, const High& h) : low_(l), high_(h) {}
 
     //! copy constructor
-    UIntPair(const UIntPair&) = default;
+    constexpr UIntPair(const UIntPair&) = default;
     //! move constructor
-    UIntPair(UIntPair&&) = default;
+    constexpr UIntPair(UIntPair&&) = default;
 
     //! const from a simple 32-bit unsigned integer
-    UIntPair(const uint32_t& a) // NOLINT
+    constexpr UIntPair(const uint32_t& a) // NOLINT
         : low_(a), high_(0) {}
 
     //! const from a simple 32-bit signed integer
-    UIntPair(const int32_t& a) // NOLINT
+    constexpr UIntPair(const int32_t& a) // NOLINT
         : low_(a), high_(0) {
         if (a >= 0)
             low_ = a;
@@ -107,7 +107,7 @@ public:
     }
 
     //! construct from an 64-bit unsigned integer
-    UIntPair(const unsigned long long& a) // NOLINT
+    constexpr UIntPair(const unsigned long long& a) // NOLINT
         : low_((Low)(a & low_max())),
           high_((High)((a >> low_bits) & high_max())) {
         // check for overflow
@@ -115,28 +115,28 @@ public:
     }
 
     //! construct from an 64-bit signed integer
-    UIntPair(const unsigned long& a) // NOLINT
+    constexpr UIntPair(const unsigned long& a) // NOLINT
         : UIntPair(static_cast<unsigned long long>(a)) {}
 
     //! construct from an 64-bit signed integer
-    UIntPair(const int64_t& a) // NOLINT
+    constexpr UIntPair(const int64_t& a) // NOLINT
         : UIntPair(static_cast<unsigned long long>(a)) {}
 
     //! copy assignment operator
-    UIntPair& operator=(const UIntPair&) = default;
+    constexpr UIntPair& operator=(const UIntPair&) = default;
     //! move assignment operator
-    UIntPair& operator=(UIntPair&&) = default;
+    constexpr UIntPair& operator=(UIntPair&&) = default;
 
     //! return the number as an uint64 (unsigned long long)
-    uint64_t ull() const {
+    constexpr uint64_t ull() const {
         return ((uint64_t)high_) << low_bits | (uint64_t)low_;
     }
 
     //! implicit cast to an unsigned long long
-    operator uint64_t() const { return ull(); }
+    constexpr operator uint64_t() const { return ull(); }
 
     //! return the number as a uint64_t
-    uint64_t u64() const {
+    constexpr uint64_t u64() const {
         return ((uint64_t)high_) << low_bits | (uint64_t)low_;
     }
 
@@ -229,13 +229,13 @@ public:
     }
 
     //! return an UIntPair instance containing the smallest value possible
-    static UIntPair min() {
+    static constexpr UIntPair min() {
         return UIntPair(std::numeric_limits<Low>::min(),
                         std::numeric_limits<High>::min());
     }
 
     //! return an UIntPair instance containing the largest value possible
-    static UIntPair max() {
+    static constexpr UIntPair max() {
         return UIntPair(std::numeric_limits<Low>::max(),
                         std::numeric_limits<High>::max());
     }
@@ -269,13 +269,13 @@ public:
     static const bool is_specialized = true;
 
     //! return an UIntPair instance containing the smallest value possible
-    static UIntPair min() { return UIntPair::min(); }
+    static constexpr UIntPair min() { return UIntPair::min(); }
 
     //! return an UIntPair instance containing the largest value possible
-    static UIntPair max() { return UIntPair::max(); }
+    static constexpr UIntPair max() { return UIntPair::max(); }
 
     //! return an UIntPair instance containing the smallest value possible
-    static UIntPair lowest() { return min(); }
+    static constexpr UIntPair lowest() { return min(); }
 
     //! unit_pair types are unsigned
     static const bool is_signed = false;

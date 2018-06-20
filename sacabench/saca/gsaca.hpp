@@ -17,6 +17,9 @@ namespace sacabench::gsaca {
     public:
 
         static constexpr size_t EXTRA_SENTINELS = 1;
+        static constexpr char const* NAME = "GSACA";
+        static constexpr char const* DESCRIPTION =
+            "Computes a suffix array with the algorithm gsaca by Uwe Baier.";
 
         /**
          * \brief Calculates a suffix array for the given text with the gsaca algorithm.
@@ -423,7 +426,7 @@ namespace sacabench::gsaca {
             for (size_t index = 0; index < number_of_chars; index++) {
 
                 // Get predeseccor char of the char at current index.
-                size_t index_of_predecessor_char = out_sa[index] - 1;
+                size_t index_of_predecessor_char = out_sa[index] - static_cast<sa_index>(1);
                 while (index_of_predecessor_char < number_of_chars) {
 
                     // Calcualte suffix_rank as the number of suffixes in lower groups.
@@ -437,7 +440,9 @@ namespace sacabench::gsaca {
                     }
 
                     // Get position of start of current group.
-                    size_t start_of_group = out_sa[suffix_rank]++;
+                    size_t start_of_group = out_sa[suffix_rank];
+                    out_sa[suffix_rank] += static_cast<sa_index>(1);
+                    
                     // Move suffix at front of its group.
                     out_sa[start_of_group] = index_of_predecessor_char;
 

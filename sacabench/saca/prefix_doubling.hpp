@@ -105,14 +105,14 @@ struct prefix_doubling_impl {
 
     /// Sets the extra bit in `v`, and returns the changed value.
     inline static name_type marked(name_type v) {
-        v |= unique_mask();
+        v = v | unique_mask();
         DCHECK(is_marked(v));
         return v;
     }
 
     /// Unsets the extra bit in `v`, and returns the changed value.
     inline static name_type unmarked(name_type v) {
-        v &= ~unique_mask();
+        v = v & ~unique_mask();
         DCHECK(!is_marked(v));
         return v;
     }
@@ -339,7 +339,7 @@ struct prefix_doubling_impl {
 
         if (j + 1 < U.size()) {
             auto i2 = U[j + 1].second;
-            if (i2 == i1 + k_length) {
+            if (i2 == i1 + static_cast<sa_index>(k_length)) {
                 c2 = unmarked(U[j + 1].first);
             }
         }
@@ -463,8 +463,8 @@ struct prefix_doubling_impl {
                     IF_DEBUG({
                         auto c1 = c1c2i1.first[0];
                         auto i1 = c1c2i1.second;
-                        DCHECK_EQ(c1, c);
-                        DCHECK_EQ(i1, i);
+                        DCHECK_EQ(static_cast<size_t>(c1), static_cast<size_t>(c));
+                        DCHECK_EQ(static_cast<size_t>(i1), static_cast<size_t>(i));
                     })
 
                     supf.append_s(c1c2i1);
@@ -501,6 +501,10 @@ struct prefix_doubling_impl {
 
 struct prefix_doubling {
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Doubling";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of Naive Prefix Doubling by R. Dementiev, J. "
+        "Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -512,6 +516,10 @@ struct prefix_doubling {
 
 struct prefix_doubling_discarding {
     static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Discarding";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of Naive Doubling with Discarding by R. "
+        "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,

@@ -101,7 +101,7 @@ public:
     void set_rank(sa_index index) {
         isa[index] = global_rank | NEG_BIT<sa_index>;
         // if rank is set, increase global rank
-        global_rank++;
+        ++global_rank;
     }
     sa_index get_rank(sa_index index) {
         const auto rank = isa[index] & END<sa_index>;
@@ -163,9 +163,11 @@ struct m_suf_sort_attr {
 struct m_suf_sort2 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "mSufSort";
+    static constexpr char const* DESCRIPTION = "mSufSort";
 
     template <typename sa_index>
-    static void construct_sa(util::string_span text,
+    static inline void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
         // TODO: Check if sa_index type fits for text.size() and extra bits
@@ -298,7 +300,7 @@ public:
 // Argument type_l: if called for a uChain element (either for singleton or for
 // easy_induced_sort) false else (if called for element of a type_l_list) true
 template <typename sa_index>
-void assign_rank(sa_index index, bool type_l, m_suf_sort_attr<sa_index>& attr) {
+inline void assign_rank(size_t index, bool type_l, m_suf_sort_attr<sa_index>& attr) {
     // set rank for index element (main functionality)
     attr.isa.set_rank(index);
 
@@ -349,7 +351,7 @@ void assign_rank(sa_index index, bool type_l, m_suf_sort_attr<sa_index>& attr) {
 }
 
 template <typename sa_index>
-void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr) {
+inline void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr) {
     // check if list is empty
     if (!attr.m_list.exists(i, j)) {
         return;
@@ -433,7 +435,7 @@ private:
 // function that sorts new_chain_IDs and then re-links new uChains in isa and
 // pushes new uChain tuples on stack
 template <typename sa_index>
-void refine_uChain(m_suf_sort_attr<sa_index>& attr,
+inline void refine_uChain(m_suf_sort_attr<sa_index>& attr,
                    util::span<sa_index> new_chain_IDs, sa_index length) {
 
     compare_uChain_elements comparator(length, attr.text);
@@ -446,8 +448,8 @@ void refine_uChain(m_suf_sort_attr<sa_index>& attr,
     util::character next_element;
     util::character current_element = attr.text[new_chain_IDs[0] + length];
 
-    for (sa_index i = 1; i < new_chain_IDs.size(); i++) {
-        const sa_index current_ID = new_chain_IDs[i - 1];
+    for (sa_index i = 1; i < new_chain_IDs.size(); ++i) {
+        const sa_index current_ID = new_chain_IDs[static_cast<size_t>(i) - 1];
         next_element = attr.text[new_chain_IDs[i] + length];
 
         // no matter what, we first link the last element:
@@ -458,7 +460,7 @@ void refine_uChain(m_suf_sort_attr<sa_index>& attr,
 
             // this element marks the end of a chain, push the new chain on
             // stack
-            std::pair<sa_index, sa_index> new_chain(current_ID, length + 1);
+            std::pair<sa_index, sa_index> new_chain(current_ID, static_cast<size_t>(length) + 1);
             attr.chain_stack.push(new_chain);
 
             // next link should be set to END to mark the beginning of a new
@@ -474,13 +476,13 @@ void refine_uChain(m_suf_sort_attr<sa_index>& attr,
     // smallest chain
     attr.isa.set_link(new_chain_IDs[new_chain_IDs.size() - 1], last_ID);
     std::pair<sa_index, sa_index> new_chain(
-        new_chain_IDs[new_chain_IDs.size() - 1], length + 1);
+        new_chain_IDs[new_chain_IDs.size() - 1], static_cast<size_t>(length) + 1);
     attr.chain_stack.push(new_chain);
 }
 
 // function to sort a set of suffix indices
 template <typename sa_index>
-void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
+inline void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
                        util::span<pair_si<sa_index>> to_be_ranked) {
     // sort elements after their sortkey:
     compare_sortkey<sa_index> comparator(attr.text);

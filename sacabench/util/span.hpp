@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include "macros.hpp"
 #include <util/assertions.hpp>
 
 namespace sacabench::util {
@@ -25,6 +26,19 @@ class span {
 private:
     T* m_ptr;
     size_t m_size;
+
+    // A debug check to catch invalidated spans
+    IF_DEBUG(mutable std::shared_ptr<bool> m_alive_check;)
+public:
+    IF_DEBUG(inline void register_alive_check(std::shared_ptr<bool> ptr)
+                 const { m_alive_check = ptr; })
+private:
+    inline void check_invalidated() const {
+        IF_DEBUG(if (m_alive_check) {
+            DCHECK_MSG(*m_alive_check,
+                       "The container this span points at no longer exists.");
+        })
+    }
 
 public:
     /// Special value that means "the end of the slice".
@@ -59,10 +73,16 @@ public:
     // Iterators
 
     /// Iterator to the begin of the slice.
-    inline constexpr T* begin() const noexcept { return data(); }
+    inline T* begin() const {
+        check_invalidated();
+        return data();
+    }
 
     /// Iterator to the end of the slice.
-    inline constexpr T* end() const noexcept { return data() + size(); }
+    inline T* end() const {
+        check_invalidated();
+        return data() + size();
+    }
 
     // Capacity
 
@@ -76,6 +96,7 @@ public:
 
     /// Index operator.
     inline T& operator[](size_t n) const {
+        check_invalidated();
         DCHECK_MSG(n < size(), "Trying to index at position "
                                    << n << " for span of size " << size());
         return *(data() + n);
@@ -83,6 +104,7 @@ public:
 
     /// Method with the same semantic as the index operator.
     inline T& at(size_t n) const {
+        check_invalidated();
         DCHECK_MSG(n < size(), "Trying to index at position "
                                    << n << " for span of size " << size());
         return *(data() + n);
@@ -90,21 +112,27 @@ public:
 
     /// The first element of the slice.
     inline T& front() const {
+        check_invalidated();
         DCHECK_MSG(size() != 0, "Call of front() with size() == 0");
         return *data();
     }
 
     /// The last element of the slice.
     inline T& back() const {
+        check_invalidated();
         DCHECK_MSG(size() != 0, "Call of back() with size() == 0");
         return *(data() + size() - 1);
     }
 
     /// Pointer to the beginning of the slice.
-    inline constexpr T* data() const noexcept { return m_ptr; }
+    inline T* data() const {
+        check_invalidated();
+        return m_ptr;
+    }
 
     /// Convert to a read-only span.
     inline constexpr operator span<T const>() const {
+        check_invalidated();
         return span<T const>(data(), size());
     }
 
@@ -112,13 +140,16 @@ public:
     ///
     /// Leaving off the last parameter creates a suffix-slice.
     inline span<T> slice(size_t from = 0, size_t to = npos) const {
+        check_invalidated();
         if (to == npos) {
             to = size();
         }
         DCHECK_MSG(0 <= from && from <= to && to <= size(),
                    "Slice with out-of-bound values "
                        << from << ".." << to << " for span of size " << size());
-        return span<T>(data() + from, to - from);
+        auto r = span<T>(data() + from, to - from);
+        IF_DEBUG(r.register_alive_check(m_alive_check));
+        return r;
     }
 
     inline friend bool operator==(span<T> const& lhs, span<T> const& rhs) {
