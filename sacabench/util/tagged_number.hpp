@@ -25,7 +25,8 @@ private:
     constexpr static sa_index MAX = static_cast<sa_index>(-1) >> extra_bits;
 
     template <uchar i>
-    constexpr static sa_index BITMASK = static_cast<sa_index>(1) << (bits_of<sa_index> - 1 - i);
+    constexpr static sa_index BITMASK = static_cast<sa_index>(1)
+                                        << (bits_of<sa_index> - 1 - i);
 
 public:
     constexpr inline tagged_number() : memory(0) {
