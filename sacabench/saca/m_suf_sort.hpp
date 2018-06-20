@@ -275,7 +275,8 @@ public:
             }
 
             // set last character to current
-            last_char = current_char;
+            // TODO: Unused variable
+            // last_char = current_char;
         }
 
         // After chain_stack is empty, rank all remaining type-l-lists:
