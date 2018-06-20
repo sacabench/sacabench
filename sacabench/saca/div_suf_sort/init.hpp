@@ -153,7 +153,7 @@ inline static void compute_buckets(util::string_span input,
                                    util::container<bool>& suffix_types,
                                    buckets<sa_index>& sa_buckets) {
     count_buckets(input, suffix_types, sa_buckets);
-    prefix_sum(max_character_value, sa_buckets);
+    prefix_sum(input, max_character_value, sa_buckets);
 }
 
 template <typename sa_index>
@@ -197,7 +197,7 @@ inline static void count_buckets(util::string_span input,
 }
 
 template <typename sa_index>
-inline static void prefix_sum(const size_t max_character_value,
+inline static void prefix_sum(util::string_span input, const size_t max_character_value,
                               buckets<sa_index>& sa_buckets) {
     // l_count starts at one because of sentinel (skipped in loop)
     sa_index l_count = 1, rms_relative_count = 0, l_border = 0;
@@ -211,9 +211,10 @@ inline static void prefix_sum(const size_t max_character_value,
         l_border += l_count;
         // Save count for current l-bucket for l_border of next l-bucket
         l_count = sa_buckets.l_buckets[first_letter];
-        /*std::cout << "New left border for current bucket-" << first_letter <<
+        DCHECK_LE(l_border+l_count, input.size());
+        std::cout << "New left border for current bucket-" << first_letter <<
            ": "
-                  << l_border << std::endl;*/
+                  << l_border << std::endl;
         // Set left border of current bucket
         sa_buckets.l_buckets[first_letter] = l_border;
         // std::cout << "New left border for l-bucket " << (size_t)

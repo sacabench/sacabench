@@ -89,14 +89,13 @@ inline static void induce_l_suffixes(util::string_span input,
                                      util::span<sa_index> sa) {
     // bit mask: 1000...000
     constexpr sa_index NEGATIVE_MASK = size_t(1) << (sizeof(sa_index) * 8 - 1);
-
+    sa_index insert_position;
     for (sa_index i = 0; i < sa.size(); ++i) {
         if (sa[i] == 0) {
             std::cout << "Skipped index 0 because it has no predecessor"
                       << std::endl;
-            continue;
         }
-        if ((sa[i] & NEGATIVE_MASK) > 0) {
+        else if ((sa[i] & NEGATIVE_MASK) > 0) {
             // entry is negative: sa[i]-1 already induced -> remove flag
             sa[i] ^= NEGATIVE_MASK;
             std::cout << "Index " << sa[i] - 1 << " already induced -> skip"
@@ -105,7 +104,8 @@ inline static void induce_l_suffixes(util::string_span input,
             std::cout << "Using index " << sa[i] << " at pos " << i
                       << " for inducing" << std::endl;
             // predecessor has yet to be induced
-            sa_index insert_position = buckets.l_buckets[input[sa[i] - 1]]++;
+            insert_position = buckets.l_buckets[input[sa[i] - 1]]++;
+            DCHECK_LT(insert_position, input.size());
             sa[insert_position] = sa[i] - 1;
             if (sa[i] - 1 > 0 && input[sa[i] - 2] < input[sa[i] - 1]) {
                 std::cout << "Index " << sa[i] - 2

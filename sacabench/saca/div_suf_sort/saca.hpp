@@ -114,7 +114,9 @@ public:
             for (sa_index i = 0; i < text.size(); ++i) {
                 std::cout << out_sa[i] << " ";
             }
-            std::cout << std::endl;
+            for(size_t i=0; i<20; ++i) {
+                std::cout << std::endl;
+            }
         }
     }
 };
