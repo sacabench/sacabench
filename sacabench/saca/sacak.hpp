@@ -127,7 +127,7 @@ namespace sacabench::sacak {
 
             util::ssize name = 0;
             util::ssize previous_LMS = -1;
-            for (util::ssize i = 0; i < lms_amount; i++) {
+            for (util::ssize i = 0; i < static_cast<util::ssize>(lms_amount); i++) {
                 bool diff = false;
 
                 util::ssize current_LMS = sa[i];
@@ -236,7 +236,7 @@ namespace sacabench::sacak {
 
             util::ssize name = 0;
             util::ssize previous_LMS = -1;
-            for (util::ssize i = 0; i < lms_amount; i++) { // max n/2 iterations
+            for (util::ssize i = 0; i < static_cast<util::ssize>(lms_amount); i++) { // max n/2 iterations
                 bool diff = false;
 
                 util::ssize current_LMS = sa[i];
