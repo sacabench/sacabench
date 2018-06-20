@@ -22,17 +22,22 @@
 #include <limits>
 #include <ostream>
 
-#define generate(OP, MACROTYPE)                                                \
-    /** less-than comparison operator */                                       \
+#define generate_relop(OP, MACROTYPE)                                          \
     friend constexpr bool operator OP(const MACROTYPE& lhs,                    \
                                       const UIntPair<High>& rhs) {             \
         return lhs OP static_cast<unsigned long long>(rhs);                    \
     }                                                                          \
                                                                                \
-    /** less-than comparison operator */                                       \
     friend constexpr bool operator OP(const UIntPair<High>& lhs,               \
                                       const MACROTYPE& rhs) {                  \
         return static_cast<unsigned long long>(lhs) OP rhs;                    \
+    }
+
+#define generate_relop_this(OP)                                                \
+    friend constexpr bool operator OP(const UIntPair<High>& lhs,               \
+                                      const UIntPair<High>& rhs) {             \
+        return static_cast<unsigned long long int>(lhs)                        \
+            OP static_cast<unsigned long long int>(rhs);                       \
     }
 
 namespace sacabench::util {
@@ -163,78 +168,47 @@ private:
     }
 
 public:
-    //! less-than comparison operator
-    friend constexpr bool operator<(const UIntPair<High>& lhs,
-                                    const UIntPair<High>& rhs) {
-        return static_cast<unsigned long long int>(lhs) <
-               static_cast<unsigned long long int>(rhs);
-    }
-    //! less-than comparison operator
-    friend constexpr bool operator<=(const UIntPair<High>& lhs,
-                                     const UIntPair<High>& rhs) {
-        return static_cast<unsigned long long int>(lhs) <=
-               static_cast<unsigned long long int>(rhs);
-    }
-    //! less-than comparison operator
-    friend constexpr bool operator>(const UIntPair<High>& lhs,
-                                    const UIntPair<High>& rhs) {
-        return static_cast<unsigned long long int>(lhs) >
-               static_cast<unsigned long long int>(rhs);
-    }
-    //! less-than comparison operator
-    friend constexpr bool operator>=(const UIntPair<High>& lhs,
-                                     const UIntPair<High>& rhs) {
-        return static_cast<unsigned long long int>(lhs) >=
-               static_cast<unsigned long long int>(rhs);
-    }
-    //! less-than comparison operator
-    friend constexpr bool operator==(const UIntPair<High>& lhs,
-                                     const UIntPair<High>& rhs) {
-        return static_cast<unsigned long long int>(lhs) ==
-               static_cast<unsigned long long int>(rhs);
-    }
-    //! less-than comparison operator
-    friend constexpr bool operator!=(const UIntPair<High>& lhs,
-                                     const UIntPair<High>& rhs) {
-        return static_cast<unsigned long long int>(lhs) !=
-               static_cast<unsigned long long int>(rhs);
-    }
+    generate_relop_this(<);
+    generate_relop(<, unsigned char);
+    generate_relop(<, unsigned short int);
+    generate_relop(<, unsigned int);
+    generate_relop(<, unsigned long int);
+    generate_relop(<, unsigned long long int);
 
-    generate(<, unsigned char);
-    generate(<, unsigned short int);
-    generate(<, unsigned int);
-    generate(<, unsigned long int);
-    generate(<, unsigned long long int);
+    generate_relop_this(<=);
+    generate_relop(<=, unsigned char);
+    generate_relop(<=, unsigned short int);
+    generate_relop(<=, unsigned int);
+    generate_relop(<=, unsigned long int);
+    generate_relop(<=, unsigned long long int);
 
-    generate(<=, unsigned char);
-    generate(<=, unsigned short int);
-    generate(<=, unsigned int);
-    generate(<=, unsigned long int);
-    generate(<=, unsigned long long int);
+    generate_relop_this(>);
+    generate_relop(>, unsigned char);
+    generate_relop(>, unsigned short int);
+    generate_relop(>, unsigned int);
+    generate_relop(>, unsigned long int);
+    generate_relop(>, unsigned long long int);
 
-    generate(>, unsigned char);
-    generate(>, unsigned short int);
-    generate(>, unsigned int);
-    generate(>, unsigned long int);
-    generate(>, unsigned long long int);
+    generate_relop_this(>=);
+    generate_relop(>=, unsigned char);
+    generate_relop(>=, unsigned short int);
+    generate_relop(>=, unsigned int);
+    generate_relop(>=, unsigned long int);
+    generate_relop(>=, unsigned long long int);
 
-    generate(>=, unsigned char);
-    generate(>=, unsigned short int);
-    generate(>=, unsigned int);
-    generate(>=, unsigned long int);
-    generate(>=, unsigned long long int);
+    generate_relop_this(==);
+    generate_relop(==, unsigned char);
+    generate_relop(==, unsigned short int);
+    generate_relop(==, unsigned int);
+    generate_relop(==, unsigned long int);
+    generate_relop(==, unsigned long long int);
 
-    generate(==, unsigned char);
-    generate(==, unsigned short int);
-    generate(==, unsigned int);
-    generate(==, unsigned long int);
-    generate(==, unsigned long long int);
-
-    generate(!=, unsigned char);
-    generate(!=, unsigned short int);
-    generate(!=, unsigned int);
-    generate(!=, unsigned long int);
-    generate(!=, unsigned long long int);
+    generate_relop_this(!=);
+    generate_relop(!=, unsigned char);
+    generate_relop(!=, unsigned short int);
+    generate_relop(!=, unsigned int);
+    generate_relop(!=, unsigned long int);
+    generate_relop(!=, unsigned long long int);
 
     //! implicit cast to an unsigned long long
     constexpr operator uint64_t() const { return ull(); }
