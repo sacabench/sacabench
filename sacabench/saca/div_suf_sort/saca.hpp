@@ -84,12 +84,14 @@ public:
                 std::cout << std::endl;
                 std::cout << "Computing partial ISA." << std::endl;
                 // Compute ISA
+                util::container<sa_index> rel_ind_ctr = rms_suf.relative_indices;
+
                 compute_initial_isa<sa_index>(rms_suf.relative_indices,
                                               rms_suf.partial_isa);
 
                 std::cout << std::endl;
                 std::cout << "Sorting rms-suffixes" << std::endl;
-                sort_rms_suffixes<sa_index>(rms_suf);
+                sort_rms_suffixes<sa_index>(rel_ind_ctr, rms_suf);
 
                 std::cout
                     << "Retrieving order of rms-suffixes at beginning of SA."

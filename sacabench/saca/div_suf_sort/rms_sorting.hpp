@@ -47,8 +47,8 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
         std::cout << rms_suf.relative_indices[pos] << " ";
     }
     std::cout << std::endl;
-                                           
-                                           
+
+
     // Compute RMS-Substrings (tupel with start-/end-position)
     auto substrings_container = extract_rms_substrings(rms_suf);
     compare_rms_substrings<sa_index> cmp(rms_suf.text, substrings_container);
@@ -168,92 +168,88 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
  uniquely sorted.
 */
 template <typename sa_index>
-inline static bool recompute_isa(util::span<sa_index> rel_ind,
+inline static bool recompute_isa(util::span<sa_index> rel_ind_ctr,
+                                 util::span<sa_index> rel_ind,
                                  util::span<sa_index> isa,
-                                 compare_suffix_ranks<sa_index> cmp) {    
-    std::cout << "rel_ind (size " << rel_ind.size() << "): ";
-    for(sa_index pos = 0; pos < rel_ind.size(); ++pos) {
-        std::cout << rel_ind[pos] << " ";
-    }
-    std::cout << std::endl;
-    
-    std::cout << "last element to be refreshed." << std::endl;
+                                 compare_suffix_ranks<sa_index> cmp) {
+
+    DCHECK_EQ(rel_ind.size(), isa.size());
+    std::cout << "rel_ind (size " << rel_ind.size() << "): " << rel_ind << std::endl;
+
     sa_index sorted_count=0, unsorted_count=0, rank = rel_ind.size()-1;
     sa_index elem, predec;
     bool sorted = true;
     // Iterate over complete rms-suffix indices to recompute ranks.
 
-    
+
     for(sa_index pos = rel_ind.size(); 1 < pos; --pos) {
-        elem = pos-1; 
+        elem = pos-1;
         predec = pos-2;
     // Either this index or predecessor has negated index (i.e. sorted)
     // -> skip
         if ((rel_ind[elem] & utils<sa_index>::NEGATIVE_MASK) > 0) {
+            DCHECK_EQ(unsorted_count, 0);
             std::cout << "Index is negated." << std::endl;
             ++sorted_count;
-            if(unsorted_count == 0) {
-                // New sorted interval directly behind this one -> increase sorted length at this pos
-                rel_ind[elem] = sorted_count ^ utils<sa_index>::NEGATIVE_MASK;
-                --rank;
-            }
-            else if(unsorted_count > 0) {
-                // Unsorted interval ended: Refresh rank and unsorted counter
-                // Rank decreased by amount of unsorted indices + 1 (this index)
-                rank -= (unsorted_count+1);
-                unsorted_count = 0;
-            }
+            // New sorted interval directly behind this one -> increase sorted length at this pos
+            rel_ind[elem] = sorted_count | utils<sa_index>::NEGATIVE_MASK;
+            DCHECK_EQ(isa[rel_ind_ctr[elem]], rank);
+            --rank;
         }
         else if((rel_ind[predec] & utils<sa_index>::NEGATIVE_MASK) > 0) {
             std::cout << "Predecessor is negated." << std::endl;
                 std::cout << "Gave index " << rel_ind[elem] << " rank " << rank
                       << std::endl;
-            // Predecessor is in sorted interval -> set rank for index at pos-1
+            // Predecessor is in sorted interval -> set rank for index at elem
             if(unsorted_count == 0) {
                 isa[rel_ind[elem]] = rank--;
                 //Already compared it to its predecessor
                 ++sorted_count;
-                /*
-                // Can unsorted_count > 0 occur here?
-                rank -= unsorted_count;
-                unsorted_count = 0;*/
             } else if(unsorted_count > 0) {
-                /*  This case only occurs, when an unsorted interval is directly 
+                /*  This case only occurs, when an unsorted interval is directly
                     behind the beginning of a sorted interval, i.e. elem is unsorted
                 */
+                std::cout << "Unsorted interval ended at position " << elem
+                          << std::endl;
+                // Still part of unsorted interval
                 isa[rel_ind[elem]] = rank;
-                ++unsorted_count;
+                rank -= (++unsorted_count);
+                std::cout << "new rank: " << rank << std::endl;
+                unsorted_count = 0;
             }
-            
         }
         // Check if current position is sorted uniquely to its predecessor
         // if(cmp(predec, elem) > 0) {
         // If sorted: predecessor is smaller than current index
         else if (cmp(rel_ind[predec], rel_ind[elem]) > 0) {
             if (unsorted_count > 0) {
-                std::cout << "Unsorted interval ended at position " << pos-1
+                std::cout << "Unsorted interval ended at position " << elem
                           << std::endl;
                 // Still part of unsorted interval
                 isa[rel_ind[elem]] = rank;
                 std::cout << "Gave index " << rel_ind[elem] << " rank " << rank
                       << std::endl;
-                rank -= (unsorted_count+1);
+                rank -= (++unsorted_count);
                 std::cout << "new rank: " << rank << std::endl;
                 // Reset unsorted count (sorted interval started)
                 unsorted_count = 0;
-            } else { 
-                ++sorted_count;
+            } else {
                 std::cout << "Gave index " << rel_ind[elem] << " rank " << rank
                       << std::endl;
                 isa[rel_ind[elem]] = rank--;
             }
+            ++sorted_count;
         } else {
             // Still unsorted:
             if (sorted_count > 0) {
                 // There was an interval of sorted elements
-                rel_ind[pos] = sorted_count ^ utils<sa_index>::NEGATIVE_MASK;
+                rel_ind[pos] = sorted_count | utils<sa_index>::NEGATIVE_MASK;
+                DCHECK_EQ((rel_ind[pos] ^ utils<sa_index>::NEGATIVE_MASK), sorted_count);
                 std::cout << "Sorted interval of length " << sorted_count
-                          << " ended at position " << pos << std::endl;
+                          << " ended at position " << pos << " with rank " << rank << std::endl;
+                // Reduce rank because elem was still sorted
+                DCHECK_EQ(isa[rel_ind_ctr[pos]], rank+1);
+                //rank--;
                 // Reset sorted count (unsorted interval started)
                 sorted_count = 0;
             }
@@ -264,13 +260,14 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
             sorted = false;
         }
     }
-    
+
     sa_index ref = rel_ind[0];
     if((ref & utils<sa_index>::NEGATIVE_MASK) > 0) {
-        ref ^= utils<sa_index>::NEGATIVE_MASK; 
+        ref ^= utils<sa_index>::NEGATIVE_MASK;
         // Has already been sorted earlier, i.e. has rank 0
         if(sorted_count > 0) {
-            rel_ind[ref] = (++sorted_count) ^ utils<sa_index>::NEGATIVE_MASK;
+            std::cout << "last element to be refreshed (interval size)." << std::endl;
+            rel_ind[ref] = (++sorted_count) | utils<sa_index>::NEGATIVE_MASK;
         }
         return sorted;
     }
@@ -290,7 +287,7 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
         // lowest possible rank for first index if part of sorted interval
         isa[ref] = 0;
         // Set rel. index to negated length of sorted interval
-        rel_ind[0] = (++sorted_count) ^ utils<sa_index>::NEGATIVE_MASK;
+        rel_ind[0] = (++sorted_count) | utils<sa_index>::NEGATIVE_MASK;
         std::cout << "First index of interval is part of sorted interval "
                      "of length "
                   << sorted_count << std::endl;
@@ -302,7 +299,7 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
 // One iteration for sorting rms-suffixes
 template <typename sa_index>
 inline static void
-sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
+sort_rms_suffixes_internal(util::span<sa_index> rel_ind_ctr, rms_suffixes<sa_index>& rms_suf,
                            compare_suffix_ranks<sa_index> cmp) {
     sa_index interval_begin = 0, interval_end = 0, current_index;
     // indicator wether unsorted interval was found (to sort)
@@ -348,18 +345,13 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             unsorted = false;
             // Refresh ranks for complete isa
             std::cout << "Recomputing ranks." << std::endl;
-            recompute_isa(rel_ind, isa,
-                          cmp); // isa.slice(interval_begin, interval_end)
-            /*for(sa_index pos = 0; pos < isa.size(); ++pos) {
-                std::cout << isa[pos] << " ";
-            }
-            std::cout << std::endl;*/
+            recompute_isa(rel_ind_ctr, rel_ind, isa, cmp);
         }
     }
 }
 
 template <typename sa_index>
-inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
+inline static void sort_rms_suffixes(util::span<sa_index> rel_ind_ctr, rms_suffixes<sa_index>& rms_suf) {
     sa_index pos;
     compare_suffix_ranks<sa_index> cmp(rms_suf.partial_isa, 0);
     bool unsorted = true;
@@ -375,7 +367,7 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
         std::cout << "Iteration " << iter + 1 << " | Calling internal sorting."
                   << std::endl;
         // Sort rms-suffixes
-        sort_rms_suffixes_internal(rms_suf, cmp);
+        sort_rms_suffixes_internal(rel_ind_ctr, rms_suf, cmp);
         std::cout << "Internal sorting finished" << std::endl;
         std::cout << "__________________________" << std::endl;
 
@@ -430,13 +422,9 @@ inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
     sa_index correct_pos;
     std::cout << "initial rms-count " << rms_count << std::endl;
     auto isa = rms_suf.partial_isa;
-    
-    std::cout << "isa: ";
-    for(sa_index i = 0; i < isa.size(); ++i) {
-        std::cout << isa[i] << " ";
-    }
-    std::cout << std::endl;
-    
+
+    std::cout << "isa: " << isa << std::endl;
+
     // Skip last index because of sentinel
     for (sa_index pos = rms_suf.text.size() - 1; 1 < pos; --pos) {
         correct_pos = pos - 1;
