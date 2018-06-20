@@ -73,7 +73,7 @@ namespace sacabench::util {
 
 template <typename integer_type>
 bool can_represent_all_values(uint64_t distinct_values) {
-    return std::numeric_limits<integer_type>::max() >= (distinct_values - 1);
+    return static_cast<uint64_t>(std::numeric_limits<integer_type>::max()) >= (distinct_values - 1);
 }
 
 /// \brief Call this function once at the start of your SACA to check if the

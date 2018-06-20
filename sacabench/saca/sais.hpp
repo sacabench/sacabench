@@ -127,7 +127,7 @@ public:
         // the first half of the SA
         ssize n1 = 0;
         for (size_t i = 0; i < s.size(); i++) {
-            if (is_LMS(p_1, SA[i]) == 1) {
+            if (is_LMS(p_1, SA[i]) == 1 || s.size() == 1) {
                 SA[n1++] = SA[i];
             }
         }
@@ -227,7 +227,8 @@ public:
         container<ssize> SA = make_container<ssize>(text.size());
         run_saca<string_span>(text, SA, alphabet.max_character_value());
         for (size_t i = 0; i < text.size(); i++) {
-            out_sa[i] = SA[i];
+            DCHECK_LE(static_cast<size_t>(SA[i]), std::numeric_limits<sa_index>::max());
+            out_sa[i] = static_cast<sa_index>(SA[i]);
         }
     }
 };
