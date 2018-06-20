@@ -214,7 +214,7 @@ private:
             // sort the given bucket by using sort_key for each suffix
             // TODO: use compare_key wrapper
             util::sort::ternary_quicksort::ternary_quicksort(
-                    bucket, util::compare_key(sort_key));
+                bucket, util::compare_key(sort_key));
 
             /* As a consequence of sorting, bucket pointers might have changed.
              * We have to update the bucket pointers for further use.
@@ -245,7 +245,7 @@ private:
 
             // increase offset for next level
             offset += step_size;
-            
+
             if (!bucket_refined) {
                 std::cout << "not refined" << std::endl;
             }
@@ -277,11 +277,11 @@ private:
         // from right to left: Calculate codes in order to determine
         // bucket borders
         while (start_of_bucket < bucket.size()) {
-            end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) - bucket_start;
+            end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) -
+                            bucket_start;
             // Sort sub-buckets recursively
             refine_single_bucket<sa_index>(
-                offset, step_size, bptr,
-                start_of_bucket + bucket_start,
+                offset, step_size, bptr, start_of_bucket + bucket_start,
                 bucket.slice(start_of_bucket, ++end_of_bucket));
             // jump to the first index of the following sub bucket
             start_of_bucket = end_of_bucket;
