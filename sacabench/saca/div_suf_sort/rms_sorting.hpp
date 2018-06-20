@@ -178,7 +178,6 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
     std::cout << std::endl;
     
     std::cout << "last element to be refreshed." << std::endl;
-    sa_index ref = rel_ind[0];
     sa_index sorted_count=0, unsorted_count=0, rank = rel_ind.size()-1;
     sa_index elem, predec;
     bool sorted = true;
@@ -192,6 +191,7 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
     // -> skip
         if ((rel_ind[elem] & utils<sa_index>::NEGATIVE_MASK) > 0) {
             std::cout << "Index is negated." << std::endl;
+            ++sorted_count;
             if(unsorted_count == 0) {
                 // New sorted interval directly behind this one -> increase sorted length at this pos
                 rel_ind[elem] = sorted_count ^ utils<sa_index>::NEGATIVE_MASK;
@@ -203,7 +203,6 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
                 rank -= (unsorted_count+1);
                 unsorted_count = 0;
             }
-            ++sorted_count;
         }
         else if((rel_ind[predec] & utils<sa_index>::NEGATIVE_MASK) > 0) {
             std::cout << "Predecessor is negated." << std::endl;
@@ -266,13 +265,20 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
         }
     }
     
+    sa_index ref = rel_ind[0];
+    if((ref & utils<sa_index>::NEGATIVE_MASK) > 0) {
+        ref ^= utils<sa_index>::NEGATIVE_MASK; 
+        // Has already been sorted earlier, i.e. has rank 0
+        if(sorted_count > 0) {
+            rel_ind[ref] = (++sorted_count) ^ utils<sa_index>::NEGATIVE_MASK;
+        }
+        return sorted;
+    }
     // first element in unsorted interval
-    if(unsorted_count > 0) {
+    else if(unsorted_count > 0) {
         std::cout << "unsorted." << std::endl;
         // Set rank of current (unsorted) interval; rel_ind doesn't change
-        if((ref & utils<sa_index>::NEGATIVE_MASK) == 0) {
-            isa[ref] = rank;
-        }
+        isa[ref] = rank;
         std::cout << "First index of interval is part of unsorted interval "
                      "with rank "
                   << rank << std::endl;
@@ -282,7 +288,7 @@ inline static bool recompute_isa(util::span<sa_index> rel_ind,
     else {
         std::cout << "sorted." << std::endl;
         // lowest possible rank for first index if part of sorted interval
-        if ((ref & utils<sa_index>::NEGATIVE_MASK) == 0) { isa[ref] = 0; }
+        isa[ref] = 0;
         // Set rel. index to negated length of sorted interval
         rel_ind[0] = (++sorted_count) ^ utils<sa_index>::NEGATIVE_MASK;
         std::cout << "First index of interval is part of sorted interval "
@@ -361,7 +367,8 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
     // At most that many iterations (if we have to consider last suffix (or
     // later))
     sa_index max_iterations =
-        util::floor_log2(rms_suf.relative_indices.size()) + 1;
+        rms_suf.relative_indices.size();
+        //util::floor_log2(rms_suf.relative_indices.size()) + 1;
     // while(unsorted) {
     for (sa_index iter = 0; iter < max_iterations + 1; ++iter) {
         std::cout << "__________________________" << std::endl;
