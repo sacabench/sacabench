@@ -254,15 +254,15 @@ public:
     //! suffix increment operator (directly manipulates the integer parts)
     UIntPair operator++(int) {
         auto copy = *this;
-        ++(*this)
-        copy
+        ++(*this);
+        return copy;
     }
 
     //! suffix decrement operator (directly manipulates the integer parts)
     UIntPair operator--(int) {
         auto copy = *this;
         --(*this);
-        copy
+        return copy;
     }
 
     //! addition operator (uses 64-bit arithmetic)
