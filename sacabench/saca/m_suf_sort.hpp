@@ -205,7 +205,8 @@ public:
         refine_uChain(attr, type_s_indices, length);
 
         // initialize last chain character value
-        util::character last_char = 0;
+        // TODO: Unused variable
+        // util::character last_char = 0;
 
         // begin main loop:
         while (attr.chain_stack.size() > 0) {
