@@ -90,6 +90,21 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     CLI::App& demo =
         *app.add_subcommand("demo", "Run all Algorithms on an example string.");
 
+    CLI::App& batch = *app.add_subcommand(
+        "batch", "Measure runtime and memory usage for all algorithms.");
+    {
+        batch
+            .add_option("input", input_filename,
+                        "Path to input file, or - for STDIN.")
+            ->required();
+        batch.add_flag("-c,--check", check_sa, "Check the constructed SA.");
+        batch.add_option("-b,--benchmark", benchmark_filename,
+                         "Record benchmark and output as JSON. Takes Path "
+                         "to output file, or - for STDOUT");
+        batch.add_flag("-f,--force", force_overwrite,
+                       "Overwrite existing Files instead of raising an error.");
+    }
+
     CLI11_PARSE(app, argc, argv);
 
     // Handle CLI arguments
@@ -230,6 +245,81 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         for (const auto& a : saca_list) {
             std::cout << "Running " << a->name() << "..." << std::endl;
             a->run_example();
+        }
+    }
+
+    if (batch) {
+        std::cout << "Loading input..." << std::endl;
+        std::unique_ptr<util::text_initializer> text;
+        std::string stdin_buf;
+
+        if (input_filename == "-") {
+            stdin_buf =
+                std::string(std::istreambuf_iterator<char>(std::cin), {});
+            text = std::make_unique<util::text_initializer_from_span>(
+                util::string_span((util::character const*)stdin_buf.data(),
+                                  stdin_buf.size()));
+        } else {
+            if (!file_exist_check(input_filename)) {
+                std::cerr << "ERROR: Input File " << input_filename
+                          << " does not exist." << std::endl;
+                return 1;
+            }
+
+            text = std::make_unique<util::text_initializer_from_file>(
+                input_filename);
+        }
+
+        nlohmann::json stat_array = nlohmann::json::array();
+
+        for (const auto& algo : saca_list) {
+            tdc::StatPhase root(algo->name().data());
+            {
+                std::cout << "Running " << algo->name() << "..." << std::endl;
+                auto sa = algo->construct_sa(*text);
+
+                if (check_sa) {
+                    tdc::StatPhase check_sa_phase("SA Checker");
+
+                    // Read the string in again
+                    auto s = util::string(text->text_size());
+                    text->initializer(s);
+
+                    // Run the SA checker, and print the result
+                    auto res = sa->check(s);
+                    check_sa_phase.log("check_result", res);
+                    if (res != util::sa_check_result::ok) {
+                        std::cerr << "ERROR: SA check failed" << std::endl;
+                        late_fail = 1;
+                    } else {
+                        std::cerr << "SA check OK" << std::endl;
+                    }
+                }
+                root.log("algorithm_name", algo->name());
+            }
+            stat_array.push_back(root.to_json());
+        }
+
+        if (benchmark_filename.size() > 0) {
+            auto write_bench = [&](std::ostream& out) {
+                // auto j = stat_array.to_json();
+                out << stat_array.dump(4) << std::endl;
+            };
+
+            if (benchmark_filename == "-") {
+                write_bench(std::cout);
+            } else {
+                if (!force_overwrite && file_exist_check(benchmark_filename)) {
+                    std::cerr << "ERROR: Benchmark File " << benchmark_filename
+                              << " does already exist." << std::endl;
+                    return 1;
+                }
+                std::ofstream benchmark_file(benchmark_filename,
+                                             std::ios_base::out |
+                                                 std::ios_base::binary |
+                                                 std::ios_base::trunc);
+                write_bench(benchmark_file);
+            }
         }
     }
 
