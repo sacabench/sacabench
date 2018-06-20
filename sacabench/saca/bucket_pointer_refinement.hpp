@@ -196,6 +196,7 @@ private:
         std::fill(right_bounds.begin(), right_bounds.end(), false);
 
         size_t current_bucket_position;
+        bool bucket_refined = false;
 
         do {
             // sort_key maps a suffix s_i to the bucket identifier of suffix
@@ -238,16 +239,17 @@ private:
                     // pointers, bptr can not be updated instantly.
                     right_bounds[current_bucket_position] = true;
                     recent_code = current_code;
+                    bucket_refined = true;
                 }
             } while (current_bucket_position > 0);
 
             // increase offset for next level
             offset += step_size;
             
-            if (std::all_of(right_bounds.begin(), right_bounds.end(), [](bool b) { return !b; })) {
+            if (!bucket_refined) {
                 std::cout << "not refined" << std::endl;
             }
-        } while (std::all_of(right_bounds.begin(), right_bounds.end(), [](bool b) { return !b; }));
+        } while (!bucket_refined);
 
         current_bucket_position = bucket.size();
         // the key of the rightmost sub bucket is the rightmost index
