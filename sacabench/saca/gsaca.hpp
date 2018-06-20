@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/signed_size_type.hpp>
+
+#include <tudocomp_stat/StatPhase.hpp>
 
 namespace sacabench::gsaca {
 
@@ -42,10 +45,14 @@ namespace sacabench::gsaca {
                 return;
             }
 
+            tdc::StatPhase gsaca("Preparation");
+
             // Setup needed values and build initial group structure.
             gsaca_values values = gsaca_values<sa_index>();
             size_t number_of_chars = text_with_sentinels.size();
             build_initial_structures(text_with_sentinels, alphabet, out_sa, values, number_of_chars);
+
+            gsaca.split("Phase 1");
 
             // Process groups in descending order. A group is defined through its start and end.
             size_t group_start_temp = 0;
@@ -81,6 +88,8 @@ namespace sacabench::gsaca {
                 out_sa[group_end_temp] = group_start_temp;
             }
 
+            gsaca.split("Phase 2");
+
             sort_suffixes(out_sa, values, number_of_chars);
         }
 
@@ -99,7 +108,7 @@ namespace sacabench::gsaca {
         template<typename sa_index>
         struct gsaca_values {
             sacabench::util::container<sa_index> ISA;
-            sacabench::util::container<sa_index> PREV;
+            sacabench::util::container<util::ssize> PREV;
             sacabench::util::container<sa_index> GLINK;
             sacabench::util::container<sa_index> GSIZE;
             size_t group_start = 0;
@@ -120,18 +129,18 @@ namespace sacabench::gsaca {
             values.ISA = sacabench::util::make_container<sa_index>(number_of_chars);
             values.GLINK = sacabench::util::make_container<sa_index>(number_of_chars);
             values.GSIZE = sacabench::util::make_container<sa_index>(number_of_chars);
-            values.PREV = sacabench::util::make_container<sa_index>(number_of_chars);
+            values.PREV = sacabench::util::make_container<util::ssize>(number_of_chars);
             for (size_t index = 0; index < number_of_chars; index++) {
                 values.PREV[index] = -1;
             }
 
             // Setup helper lists to count occurring chars and to calculate the cumulative count of chars.
-            auto chars_count = sacabench::util::make_container<sa_index>(alphabet.size_with_sentinel());
-            auto chars_cumulative = sacabench::util::make_container<sa_index>(alphabet.size_with_sentinel());
+            auto chars_count = sacabench::util::make_container<size_t>(alphabet.size_with_sentinel());
+            auto chars_cumulative = sacabench::util::make_container<size_t>(alphabet.size_with_sentinel());
 
             // Count occurences of each char in word.
             for (sacabench::util::character current_char : text) {
-                chars_count[current_char]++;
+                ++chars_count[current_char];
             }
 
             // Build cumulative counts of all chars and set up GSIZE.
@@ -291,6 +300,7 @@ namespace sacabench::gsaca {
                     // Check if the current suffix has a valid prev pointer to another index.
                     auto current_suffix = out_sa[index];
                     auto previous_element = values.PREV[current_suffix];
+                    // WICHTIG!!!!!!
                     if (previous_element != sa_index(-1)) {
                         // Case 1: There exists a valid prev pointer.
 
