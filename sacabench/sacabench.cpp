@@ -107,7 +107,26 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool out_json = output_json_filename.size() != 0;
     bool out_binary = output_binary_filename.size() != 0;
     bool out_benchmark = benchmark_filename.size() != 0;
-    bool in_file = input_filename.size() != 0;
+    auto check_out_filename = [&](std::string const& filename,
+                                  std::string const& name) {
+        if (!force_overwrite && filename.size() != 0 && filename != "-" &&
+            file_exist_check(filename)) {
+            std::cerr << "ERROR: " << name << " file " << filename
+                      << " does already exist." << std::endl;
+            return true;
+        }
+        return false;
+    };
+    auto check_in_filename = [&](std::string const& filename,
+                                 std::string const& name) {
+        if (filename.size() != 0 && filename != "-" &&
+            !file_exist_check(filename)) {
+            std::cerr << "ERROR: " << name << " file " << filename
+                      << " does not exist." << std::endl;
+            return true;
+        }
+        return false;
+    };
 
     // Handle CLI arguments
     auto& saca_list = util::saca_list::get();
@@ -142,6 +161,18 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             implemented_algos();
             return 1;
         }
+        if (check_out_filename(output_json_filename, "Json output")) {
+            return 1;
+        }
+        if (check_out_filename(output_binary_filename, "Binary output")) {
+            return 1;
+        }
+        if (check_out_filename(benchmark_filename, "Benchmark")) {
+            return 1;
+        }
+        if (check_in_filename(input_filename, "Input")) {
+            return 1;
+        }
         {
             tdc::StatPhase root("CLI");
             {
@@ -156,12 +187,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             (util::character const*)stdin_buf.data(),
                             stdin_buf.size()));
                 } else {
-                    if (!file_exist_check(input_filename)) {
-                        std::cerr << "ERROR: Input File " << input_filename
-                                  << " does not exist." << std::endl;
-                        return 1;
-                    }
-
                     text = std::make_unique<util::text_initializer_from_file>(
                         input_filename);
                 }
@@ -174,32 +199,25 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     auto handle_output_opt = [&](std::string const& opt,
                                                  auto write_out) {
                         if (opt.size() == 0) {
-                            return 0;
+                            return;
                         }
 
                         if (opt == "-") {
                             write_out(std::cout);
                         } else {
-                            if (!force_overwrite && file_exist_check(opt)) {
-                                std::cerr << "ERROR: Output File " << opt
-                                          << " does already exist."
-                                          << std::endl;
-                                return 1;
-                            }
                             std::ofstream out_file(opt,
                                                    std::ios_base::out |
                                                        std::ios_base::binary |
                                                        std::ios_base::trunc);
                             write_out(out_file);
                         }
-                        return 0;
                     };
 
-                    late_fail |= handle_output_opt(
+                    handle_output_opt(
                         output_json_filename,
                         [&](std::ostream& stream) { sa->write_json(stream); });
 
-                    late_fail |= handle_output_opt(
+                    handle_output_opt(
                         output_binary_filename, [&](std::ostream& stream) {
                             sa->write_binary(stream, out_fixed_bits);
                         });
@@ -224,7 +242,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 root.log("algorithm_name", algo->name());
             }
 
-            if (benchmark_filename.size() > 0) {
+            if (out_benchmark) {
                 auto write_bench = [&](std::ostream& out) {
                     auto j = root.to_json();
                     out << j.dump(4) << std::endl;
@@ -233,13 +251,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 if (benchmark_filename == "-") {
                     write_bench(std::cout);
                 } else {
-                    if (!force_overwrite &&
-                        file_exist_check(benchmark_filename)) {
-                        std::cerr << "ERROR: Benchmark File "
-                                  << benchmark_filename
-                                  << " does already exist." << std::endl;
-                        return 1;
-                    }
                     std::ofstream benchmark_file(benchmark_filename,
                                                  std::ios_base::out |
                                                      std::ios_base::binary |
@@ -258,6 +269,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     if (batch) {
+        if (check_out_filename(benchmark_filename, "Benchmark")) {
+            return 1;
+        }
+        if (check_in_filename(input_filename, "Input")) {
+            return 1;
+        }
+
         std::cout << "Loading input..." << std::endl;
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
@@ -269,12 +287,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 util::string_span((util::character const*)stdin_buf.data(),
                                   stdin_buf.size()));
         } else {
-            if (!file_exist_check(input_filename)) {
-                std::cerr << "ERROR: Input File " << input_filename
-                          << " does not exist." << std::endl;
-                return 1;
-            }
-
             text = std::make_unique<util::text_initializer_from_file>(
                 input_filename);
         }
@@ -309,7 +321,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             stat_array.push_back(root.to_json());
         }
 
-        if (benchmark_filename.size() > 0) {
+        if (out_benchmark) {
             auto write_bench = [&](std::ostream& out) {
                 // auto j = stat_array.to_json();
                 out << stat_array.dump(4) << std::endl;
@@ -318,11 +330,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             if (benchmark_filename == "-") {
                 write_bench(std::cout);
             } else {
-                if (!force_overwrite && file_exist_check(benchmark_filename)) {
-                    std::cerr << "ERROR: Benchmark File " << benchmark_filename
-                              << " does already exist." << std::endl;
-                    return 1;
-                }
                 std::ofstream benchmark_file(benchmark_filename,
                                              std::ios_base::out |
                                                  std::ios_base::binary |
