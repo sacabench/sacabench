@@ -51,7 +51,7 @@ public:
         sa_index elem_index = elem_begin + 2,
                  compare_to_index = compare_to_begin + 2;
 
-        for (sa_index pos = 2; pos < max_pos; ++pos) {
+        for (sa_index pos = 2; pos <= max_pos; ++pos) {
             /*std::cout << "Current index :" << pos << std::endl;
             std::cout << "Comparing " << (size_t)input[elem_index] << " to "
                       << (size_t)input[compare_to_index] << std::endl;*/

@@ -167,7 +167,7 @@ inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind_ctr,
     std::cout << "rel_ind (size " << rel_ind.size() << "): " << rel_ind << std::endl;
     std::cout << "isa: " << isa << std::endl;
     
-    sa_index current, next, tmp, sorted_begin=0, unsorted_begin=0, rank=0;
+    sa_index current, next, sorted_begin=0, unsorted_begin=0, rank=0;
     
     bool is_sorted = true, current_sorted = false;
     
