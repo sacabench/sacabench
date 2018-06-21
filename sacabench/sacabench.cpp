@@ -69,9 +69,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "describing the number of bits used for each integer. Takes path "
             "to output file, or - for STDOUT.");
 
-        opt_json->excludes(opt_binary);
-        opt_binary->excludes(opt_json);
-
         auto opt_fixed_bits = construct.add_option(
             "-F,--fixed", out_fixed_bits,
             "Elide the header, and output a fixed number of bits per SA entry");
