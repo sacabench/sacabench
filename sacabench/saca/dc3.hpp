@@ -185,7 +185,9 @@ private:
     template <typename sa_index, bool rec, typename C, typename S>
     static void construct_sa_dc3(S& text,
                                  util::span<sa_index> out_sa) {
-
+        
+        //--------------------------------Phase 1------------------------------//
+        
         // empty container which will contain indices of triplet
         // at positions i mod 3 != 0
         auto triplets_12 =
@@ -227,6 +229,9 @@ private:
                                                      sa_12);
         }
 
+        
+        //--------------------------------Phase 2------------------------------//
+        
         // empty isa_12 which should be filled correctly with method
         // determine_isa
         auto isa_12 = sacabench::util::make_container<size_t>(0);
@@ -273,6 +278,7 @@ private:
             isa_12 = sacabench::util::make_container<size_t>(t_12.size());
 
             // TODO: stop copying the values
+            util::allow_container_copy guard;
             isa_12 = t_12;
             determine_isa(isa_12, sa_12);
 
@@ -305,6 +311,9 @@ private:
         // triplets beginning in positions i mod 3 != 0
         sacabench::util::induce_sa_dc<C>(t_0, isa_12, sa_0);
 
+        
+        //--------------------------------Phase 3------------------------------//
+        
         // temporary suffix array, because we had to add a dummy triplet
         // This dummy triplet has to be deleted before merging
         auto tmp_out_sa = sacabench::util::container<size_t>(out_sa.size() + 1);
