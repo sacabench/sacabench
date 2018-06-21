@@ -44,9 +44,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string algorithm = "";
     std::string benchmark_filename = "";
     bool check_sa = false;
-    uint8_t out_fixed_bits = 0;
+    uint32_t out_fixed_bits = 0;
     bool force_overwrite = false;
-    uint8_t sa_minimum_bits = 32;
+    uint32_t sa_minimum_bits = 32;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
