@@ -39,12 +39,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     CLI::App& construct = *app.add_subcommand("construct", "Construct a SA.");
     std::string input_filename = "";
-    std::string output_filename = "";
+    std::string output_json_filename = "";
+    std::string output_binary_filename = "";
     std::string algorithm = "";
     std::string benchmark_filename = "";
     bool check_sa = false;
-    bool out_json = false;
-    bool out_binary = false;
     uint8_t out_fixed_bits = 0;
     bool force_overwrite = false;
     {
@@ -54,26 +53,23 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             .add_option("input", input_filename,
                         "Path to input file, or - for STDIN.")
             ->required();
-        auto opt_output =
-            construct.add_option("-o,--output", output_filename,
-                                 "Path to SA output file, or - for STDOUT.");
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         construct.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes Path "
                              "to output file, or - for STDOUT");
 
-        auto opt_json = construct.add_flag("-J,--json", out_json,
-                                           "Output SA as JSON array.");
-        auto opt_binary = construct.add_flag(
-            "-B,--binary", out_binary,
+        auto opt_json = construct.add_option(
+            "-J,--json", output_json_filename,
+            "Output SA as JSON array. Takes path to output "
+            "file, or - for STDOUT.");
+        auto opt_binary = construct.add_option(
+            "-B,--binary", output_binary_filename,
             "Output SA as binary array of unsigned integers, with a 1 Byte "
             "header "
-            "describing the number of bits used for each integer.");
+            "describing the number of bits used for each integer. Takes path "
+            "to output file, or - for STDOUT.");
 
-        opt_json->needs(opt_output);
         opt_json->excludes(opt_binary);
-
-        opt_binary->needs(opt_output);
         opt_binary->excludes(opt_json);
 
         auto opt_fixed_bits = construct.add_option(
@@ -106,6 +102,12 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     CLI11_PARSE(app, argc, argv);
+
+    // Check early if file exists
+    bool out_json = output_json_filename.size() != 0;
+    bool out_binary = output_binary_filename.size() != 0;
+    bool out_benchmark = benchmark_filename.size() != 0;
+    bool in_file = input_filename.size() != 0;
 
     // Handle CLI arguments
     auto& saca_list = util::saca_list::get();
@@ -166,34 +168,41 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
                 auto sa = algo->construct_sa(*text);
 
-                if (output_filename.size() != 0) {
+                if (out_json | out_binary) {
                     tdc::StatPhase check_sa_phase("Output SA");
 
-                    auto write_out = [&](std::ostream& out_stream) {
-                        if (out_json) {
-                            sa->write_json(out_stream);
+                    auto handle_output_opt = [&](std::string const& opt,
+                                                 auto write_out) {
+                        if (opt.size() == 0) {
+                            return 0;
                         }
-                        if (out_binary) {
-                            sa->write_binary(out_stream, out_fixed_bits);
+
+                        if (opt == "-") {
+                            write_out(std::cout);
+                        } else {
+                            if (!force_overwrite && file_exist_check(opt)) {
+                                std::cerr << "ERROR: Output File " << opt
+                                          << " does already exist."
+                                          << std::endl;
+                                return 1;
+                            }
+                            std::ofstream out_file(opt,
+                                                   std::ios_base::out |
+                                                       std::ios_base::binary |
+                                                       std::ios_base::trunc);
+                            write_out(out_file);
                         }
+                        return 0;
                     };
 
-                    if (output_filename == "-") {
-                        write_out(std::cout);
-                    } else {
-                        if (!force_overwrite &&
-                            file_exist_check(output_filename)) {
-                            std::cerr << "ERROR: Output File "
-                                      << output_filename
-                                      << " does already exist." << std::endl;
-                            return 1;
-                        }
-                        std::ofstream out_file(output_filename,
-                                               std::ios_base::out |
-                                                   std::ios_base::binary |
-                                                   std::ios_base::trunc);
-                        write_out(out_file);
-                    }
+                    late_fail |= handle_output_opt(
+                        output_json_filename,
+                        [&](std::ostream& stream) { sa->write_json(stream); });
+
+                    late_fail |= handle_output_opt(
+                        output_binary_filename, [&](std::ostream& stream) {
+                            sa->write_binary(stream, out_fixed_bits);
+                        });
                 }
                 if (check_sa) {
                     tdc::StatPhase check_sa_phase("SA Checker");
