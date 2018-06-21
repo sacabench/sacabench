@@ -189,8 +189,10 @@ inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind_ctr,
             std::cout << "Skipped " << current << " indices (sorted interval). Increased rank by "<< current << std::endl;
             
             // Check if current position has correct rank (should always be true)
-            std::cout << "Index " << rel_ind_ctr[pos] << " , rank " << rank << std::endl;
-            DCHECK_EQ(isa[rel_ind_ctr[pos]], rank);
+            std::cout << "(ctr)Index " << rel_ind_ctr[pos] << " , rank " << rank << std::endl;
+            sa_index tmp_index = (rel_ind_ctr[pos] | utils<sa_index>::NEGATIVE_MASK)
+            ^ utils<sa_index>::NEGATIVE_MASK;
+            DCHECK_EQ(isa[tmp_index], rank);
             
             // Counter ++pos in loop header
             pos += current-1;
@@ -223,29 +225,37 @@ inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind_ctr,
                     current_sorted = false;
                     unsorted_begin = pos;
                     // Set length for (previous) sorted interval
-                    rel_ind[sorted_begin] = (pos - sorted_begin) ^ 
-                    utils<sa_index>::NEGATIVE_MASK;
-                    std::cout << "Set sorted interval size at pos " << sorted_begin << 
-                    " to " << rel_ind[sorted_begin] << std::endl;
+                    // If two unsorted intervals follow each other - skip this
+                    // operation
+                    if(pos - sorted_begin > 0) {
+                        rel_ind[sorted_begin] = (pos - sorted_begin) ^ 
+                        utils<sa_index>::NEGATIVE_MASK;
+                        std::cout << "Set sorted interval size at pos " << 
+                        sorted_begin << 
+                        " to " << rel_ind[sorted_begin] << " (size "<< 
+                        (pos - sorted_begin) << ")" << std::endl;
+                    }
                 }
                 ++rank;
-            } else {
+            } else {  
+                // Set correct rank for sorted element
+
                 // (current, next) sorted correctly
                 if(!current_sorted) {
-                    std::cout << "Set rank of index " << current << 
-                            " to " << rank << std::endl;
-                            isa[current] = rank;
+                    // isa[current] = rank;
                     current_sorted = true;
                     // Unsorted intervals could have only occured until now, if
                     // pos > 0
                     // Condition needed, because current_sorted ininitialized with
                     // false (0)
                     if(pos > 0) {
+                    
+                        std::cout << "Sorted interval starting at pos " << 
+                        pos+1 << std::endl;
                         // sorted interval always starts after(!) current pos
                         // Only exception: pos 0 (doesn't matter, because sorted_begin
                         // was initialized correctly)
                         sorted_begin = pos+1;
-                        std::cout << "Set sorted_begin to " << pos << std::endl;
                         // Unsorted interval ended.
                         // Set rank for all elements in unsorted interval 
                         // (from unsorted_begin to current)
@@ -254,13 +264,18 @@ inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind_ctr,
                             " to " << rank << std::endl;
                             isa[rel_ind[i]] = rank;
                         }               
+                    } else {                
+                        std::cout << "Set rank of index " << current << 
+                        " to " << rank << std::endl;
+                        isa[current] = rank;
+                        std::cout << "Sorted interval starting at pos " << pos 
+                        << std::endl;
                     }
                     ++rank;
                 }
-                else {
-                    // Set correct rank for sorted element
+                else {                
                     std::cout << "Set rank of index " << current << 
-                        " to " << rank << std::endl;
+                    " to " << rank << std::endl;
                     isa[current] = rank++;
                 }
             }
