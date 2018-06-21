@@ -69,12 +69,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "describing the number of bits used for each integer. Takes path "
             "to output file, or - for STDOUT.");
 
-        auto opt_fixed_bits =
-            construct
-                .add_option("-F,--fixed", out_fixed_bits,
-                            "Elide the header, and output a fixed number of "
-                            "bits per SA entry")
-                ->check(CLI::Range(1, 64));
+        auto opt_fixed_bits = construct.add_option(
+            "-F,--fixed", out_fixed_bits,
+            "Elide the header, and output a fixed number of "
+            "bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
 
@@ -82,12 +80,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "-f,--force", force_overwrite,
             "Overwrite existing Files instead of raising an error.");
 
-        construct
-            .add_option("-m,--minimum_sa_bits", sa_minimum_bits,
-                        "The lower bound of bits to use per SA entry during "
-                        "construction",
-                        32)
-            ->check(CLI::Range(1, 64));
+        construct.add_option(
+            "-m,--minimum_sa_bits", sa_minimum_bits,
+            "The lower bound of bits to use per SA entry during "
+            "construction",
+            32);
     }
 
     CLI::App& demo =
@@ -106,12 +103,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                          "to output file, or - for STDOUT");
         batch.add_flag("-f,--force", force_overwrite,
                        "Overwrite existing Files instead of raising an error.");
-        batch
-            .add_option("-m,--minimum_sa_bits", sa_minimum_bits,
-                        "The lower bound of bits to use per SA entry during "
-                        "construction",
-                        32)
-            ->check(CLI::Range(1, 64));
+        batch.add_option("-m,--minimum_sa_bits", sa_minimum_bits,
+                         "The lower bound of bits to use per SA entry during "
+                         "construction",
+                         32);
     }
 
     CLI11_PARSE(app, argc, argv);
