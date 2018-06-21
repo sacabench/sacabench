@@ -60,7 +60,7 @@ extract_rms_substrings(rms_suffixes<sa_index>& rms_suf) {
         rms_suf.text.size() - 1);
     auto substrings_container =
         util::make_container<std::pair<sa_index, sa_index>>(rms_count);
-    std::cout << substrings_container.end() << std::endl;
+    /*std::cout << substrings_container.end() << std::endl;*/
     substrings_container[substrings_container.size() - 1] = substring;
 
     sa_index substr_start, substr_end;
@@ -120,7 +120,7 @@ inline static void get_types_tmp(util::string_span text,
     DCHECK_EQ(text.size(), types.size());
     // Last index always l-type suffix
     types[text.size() - 1] = 1;
-    std::cout << 1 << " ";
+    /*std::cout << 1 << " ";*/
     for (sa_index prev_pos = text.size() - 1; prev_pos > 0; --prev_pos) {
 
         if (text[prev_pos - 1] == text[prev_pos]) {
@@ -129,9 +129,9 @@ inline static void get_types_tmp(util::string_span text,
             // S == 0, L == 1
             types[prev_pos - 1] = (text[prev_pos - 1] < text[prev_pos]) ? 0 : 1;
         }
-        std::cout << types[prev_pos - 1] << " ";
+        /*std::cout << types[prev_pos - 1] << " ";*/
     }
-    std::cout << std::endl;
+    /*std::cout << std::endl;*/
 }
 
 /**
@@ -212,9 +212,9 @@ inline static void prefix_sum(util::string_span input, const size_t max_characte
         // Save count for current l-bucket for l_border of next l-bucket
         l_count = sa_buckets.l_buckets[first_letter];
         DCHECK_LE(l_border+l_count, input.size());
-        std::cout << "New left border for current bucket-" << first_letter <<
+        /*std::cout << "New left border for current bucket-" << first_letter <<
            ": "
-                  << l_border << std::endl;
+                  << l_border << std::endl;*/
         // Set left border of current bucket
         sa_buckets.l_buckets[first_letter] = l_border;
         // std::cout << "New left border for l-bucket " << (size_t)

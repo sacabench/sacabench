@@ -19,7 +19,7 @@
 
 using namespace sacabench::div_suf_sort;
 using namespace sacabench;
-/*
+
 TEST(DivSufSort, CornerCases) {
     test::saca_corner_cases<sacabench::div_suf_sort::div_suf_sort>();
-}*/
+}

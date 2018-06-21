@@ -31,7 +31,7 @@ public:
             out_sa[0] = 0;
         } else {
             DCHECK_EQ(text.size(), out_sa.size());
-            std::cout << "text size: " << text.size() << std::endl;
+            /*std::cout << "text size: " << text.size() << std::endl;*/
             // Create container for l/s types
             auto sa_type_container = util::make_container<bool>(text.size());
             // auto sa_types = util::span<bool>(sa_type_container);
@@ -66,59 +66,52 @@ public:
                 /*.alphabet_size=*/alphabet.max_character_value() + 1,
                 /*.l_buckets=*/l_bkt, /*.s_buckets=*/s_bkt};
 
-            std::cout << std::endl;
-            std::cout << "Computing bucket sizes." << std::endl;
+            /*std::cout << std::endl;
+            std::cout << "Computing bucket sizes." << std::endl;*/
             compute_buckets<sa_index>(text, alphabet.max_character_value(),
                                       sa_type_container, bkts);
             if (rms_count > 0) {
-                std::cout << std::endl;
+                /*std::cout << std::endl;
                 std::cout << "Inserting rms-suffixes into buckets."
-                          << std::endl;
+                          << std::endl;*/
                 insert_into_buckets<sa_index>(rms_suf, bkts);
 
-                std::cout << std::endl;
-                std::cout << "Sorting RMS-Substrings." << std::endl;
+                /*std::cout << std::endl;
+                std::cout << "Sorting RMS-Substrings." << std::endl;*/
                 sort_rms_substrings<sa_index>(
                     rms_suf, alphabet.max_character_value(), bkts);
 
-                std::cout << std::endl;
-                std::cout << "Computing partial ISA." << std::endl;
+                /*std::cout << std::endl;
+                std::cout << "Computing partial ISA." << std::endl;*/
                 // Compute ISA
-                util::container<sa_index> rel_ind_ctr = rms_suf.relative_indices;
 
                 compute_initial_isa<sa_index>(rms_suf.relative_indices,
                                               rms_suf.partial_isa);
 
-                std::cout << std::endl;
-                std::cout << "Sorting rms-suffixes" << std::endl;
-                sort_rms_suffixes<sa_index>(rel_ind_ctr, rms_suf);
+                /*std::cout << std::endl;
+                std::cout << "Sorting rms-suffixes" << std::endl;*/
+                sort_rms_suffixes<sa_index>(rms_suf);
 
-                std::cout
+                /*std::cout
                     << "Retrieving order of rms-suffixes at beginning of SA."
-                    << std::endl;
+                    << std::endl;*/
                 sort_rms_indices_to_order<sa_index>(rms_suf, rms_count,
                                                     sa_type_container, out_sa);
 
-                std::cout
+                /*std::cout
                     << "Placing rms-suffixes into correct text position. Also "
                        "adjusting bucket borders for induce step."
-                    << std::endl;
+                    << std::endl;*/
                 insert_rms_into_correct_pos<sa_index>(
                     rms_count, bkts, alphabet.max_character_value(), out_sa);
             }
-            std::cout << "Induce s-suffixes" << std::endl;
+            
+            /*std::cout << "Induce s-suffixes" << std::endl;*/
             induce_s_suffixes<sa_index>(text, sa_type_container, bkts, out_sa,
                                         alphabet.max_character_value());
 
-            std::cout << "Induce l-suffixes" << std::endl;
+            /*std::cout << "Induce l-suffixes" << std::endl;*/
             induce_l_suffixes<sa_index>(text, bkts, out_sa);
-
-            for (sa_index i = 0; i < text.size(); ++i) {
-                std::cout << out_sa[i] << " ";
-            }
-            for(size_t i=0; i<20; ++i) {
-                std::cout << std::endl;
-            }
         }
     }
 };

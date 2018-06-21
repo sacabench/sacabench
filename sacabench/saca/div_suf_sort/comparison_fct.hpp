@@ -17,7 +17,7 @@ public:
         const util::string_span text,
         util::container<std::pair<sa_index, sa_index>>& substrings)
         : input(text), substrings(substrings) {
-        std::cout << "Initializing rms-substrings compare fct." << std::endl;
+        /*std::cout << "Initializing rms-substrings compare fct." << std::endl;*/
     }
 
     inline bool operator()(const sa_index& elem,
@@ -91,7 +91,7 @@ struct compare_suffix_ranks {
     inline compare_suffix_ranks(util::span<sa_index> partial_isa,
                                 sa_index depth)
         : depth(depth), partial_isa(partial_isa) {
-        std::cout << "Initializing suffix ranks compare fct." << std::endl;
+        /*std::cout << "Initializing suffix ranks compare fct." << std::endl;*/
     }
 
     inline bool operator()(const sa_index& elem,
@@ -100,8 +100,8 @@ struct compare_suffix_ranks {
         // type)
         const size_t elem_at_depth = elem + pow(2, depth);
         const size_t compare_to_at_depth = compare_to + pow(2, depth);
-        std::cout << "elem: " << elem_at_depth
-                  << ", compare_to: " << compare_to_at_depth << std::endl;
+        /*std::cout << "elem: " << elem_at_depth
+                  << ", compare_to: " << compare_to_at_depth << std::endl;*/
         const bool elem_too_large = elem_at_depth >= partial_isa.size();
         const bool compare_to_too_large =
             compare_to_at_depth >= partial_isa.size();
@@ -111,14 +111,14 @@ struct compare_suffix_ranks {
                 // Both "out of bounds" -> bigger index means string ends
                 // earlier (i.e. smaller)
                 // TODO: Check if this condition always holds.
-                std::cout << "Both indices out of bounds." << std::endl;
+                /*std::cout << "Both indices out of bounds." << std::endl;*/
                 return elem_at_depth > compare_to_at_depth;
             }
-            std::cout << "elem out of bounds" << std::endl;
+            /*std::cout << "elem out of bounds" << std::endl;*/
             // Only first suffix (substring) ends "behind" sentinel
             return true;
         } else if (compare_to_too_large) {
-            std::cout << "compare_to out of bounds" << std::endl;
+            /*std::cout << "compare_to out of bounds" << std::endl;*/
             // Only second suffix (substring) ends "behind" sentinel
             return false;
         }
