@@ -58,10 +58,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                              "Record benchmark and output as JSON. Takes Path "
                              "to output file, or - for STDOUT");
 
-        auto opt_json = construct.add_option(
-            "-J,--json", output_json_filename,
-            "Output SA as JSON array. Takes path to output "
-            "file, or - for STDOUT.");
+        construct.add_option("-J,--json", output_json_filename,
+                             "Output SA as JSON array. Takes path to output "
+                             "file, or - for STDOUT.");
         auto opt_binary = construct.add_option(
             "-B,--binary", output_binary_filename,
             "Output SA as binary array of unsigned integers, with a 1 Byte "
