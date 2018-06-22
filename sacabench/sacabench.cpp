@@ -44,8 +44,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string algorithm = "";
     std::string benchmark_filename = "";
     bool check_sa = false;
-    uint8_t out_fixed_bits = 0;
+    uint32_t out_fixed_bits = 0;
     bool force_overwrite = false;
+    uint32_t sa_minimum_bits = 32;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
@@ -70,13 +71,20 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
         auto opt_fixed_bits = construct.add_option(
             "-F,--fixed", out_fixed_bits,
-            "Elide the header, and output a fixed number of bits per SA entry");
+            "Elide the header, and output a fixed number of "
+            "bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
 
         construct.add_flag(
             "-f,--force", force_overwrite,
             "Overwrite existing Files instead of raising an error.");
+
+        construct.add_option(
+            "-m,--minimum_sa_bits", sa_minimum_bits,
+            "The lower bound of bits to use per SA entry during "
+            "construction",
+            32);
     }
 
     CLI::App& demo =
@@ -95,6 +103,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                          "to output file, or - for STDOUT");
         batch.add_flag("-f,--force", force_overwrite,
                        "Overwrite existing Files instead of raising an error.");
+        batch.add_option("-m,--minimum_sa_bits", sa_minimum_bits,
+                         "The lower bound of bits to use per SA entry during "
+                         "construction",
+                         32);
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -187,7 +199,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         input_filename);
                 }
 
-                auto sa = algo->construct_sa(*text);
+                auto sa = algo->construct_sa(*text, sa_minimum_bits);
 
                 if (out_json | out_binary) {
                     tdc::StatPhase check_sa_phase("Output SA");
@@ -293,7 +305,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             tdc::StatPhase root(algo->name().data());
             {
                 std::cout << "Running " << algo->name() << "..." << std::endl;
-                auto sa = algo->construct_sa(*text);
+                auto sa = algo->construct_sa(*text, sa_minimum_bits);
 
                 if (check_sa) {
                     tdc::StatPhase check_sa_phase("SA Checker");
