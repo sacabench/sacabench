@@ -220,7 +220,14 @@ inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind,
         }
     }
 
-    if(current_sorted) {
+    current = rel_ind[rel_ind.size()-1];
+    if((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
+        if(current_sorted) {
+            rel_ind[sorted_begin] = (rel_ind.size() - sorted_begin) | 
+            utils<sa_index>::NEGATIVE_MASK;
+        }
+    }
+    else if(current_sorted) {
         rel_ind[sorted_begin] = (rel_ind.size() - sorted_begin) | 
         utils<sa_index>::NEGATIVE_MASK;
     } else {
