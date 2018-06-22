@@ -16,12 +16,10 @@ public:
     inline compare_rms_substrings(
         const util::string_span text,
         util::container<std::pair<sa_index, sa_index>>& substrings)
-        : input(text), substrings(substrings) {
-        /*std::cout << "Initializing rms-substrings compare fct." << std::endl;*/
-    }
+        : input(text), substrings(substrings) {}
 
-    inline bool operator()(const sa_index& elem,
-                           const sa_index& compare_to) const {
+    inline bool operator()(const size_t& elem,
+                           const size_t& compare_to) const {
         // DCHECK_NE(elem, compare_to);
         if (elem == compare_to) {
             return false;
@@ -41,31 +39,26 @@ public:
             DCHECK_EQ(elem_too_large, false);
             return false;
         }
-        sa_index elem_size =
+        size_t elem_size =
             std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]) + 1;
-        sa_index compare_to_size = std::get<1>(substrings[compare_to]) -
+        size_t compare_to_size = std::get<1>(substrings[compare_to]) -
                                    std::get<0>(substrings[compare_to]) + 1;
-        sa_index max_pos = std::min(elem_size, compare_to_size);
-        sa_index elem_begin = std::get<0>(substrings[elem]);
-        sa_index compare_to_begin = std::get<0>(substrings[compare_to]);
-        sa_index elem_index = elem_begin + 2,
+        size_t max_pos = std::min(elem_size, compare_to_size);
+        size_t elem_begin = std::get<0>(substrings[elem]);
+        size_t compare_to_begin = std::get<0>(substrings[compare_to]);
+        size_t elem_index = elem_begin + 2,
                  compare_to_index = compare_to_begin + 2;
 
-        for (sa_index pos = 2; pos <= max_pos; ++pos) {
-            /*std::cout << "Current index :" << pos << std::endl;
-            std::cout << "Comparing " << (size_t)input[elem_index] << " to "
-                      << (size_t)input[compare_to_index] << std::endl;*/
+        // Starting at character 2 because first two chars have been sorted 
+        // already (sorting buckets, i.e. both elements from same buckets)
+        for (size_t pos = 2; pos <= max_pos; ++pos) {
             if (input[elem_index] == input[compare_to_index]) {
                 ++elem_index;
                 ++compare_to_index;
             } else {
-                /*std::cout << "Symbol " << (size_t)input[elem_index]
-                          << " differs from " << (size_t)input[compare_to_index]
-                          << std::endl;*/
                 return input[elem_index] < input[compare_to_index];
             }
         }
-        /*std::cout << "Substrings have been the same until now." << std::endl;*/
         // If one substring is shorter than the other and they are the same
         // until now:
         elem_size =
@@ -86,22 +79,19 @@ private:
 // FIXME
 template <typename sa_index>
 struct compare_suffix_ranks {
-    sa_index depth;
+    size_t depth;
 
     inline compare_suffix_ranks(util::span<sa_index> partial_isa,
-                                sa_index depth)
+                                size_t depth)
         : depth(depth), partial_isa(partial_isa) {
-        /*std::cout << "Initializing suffix ranks compare fct." << std::endl;*/
     }
 
-    inline bool operator()(const sa_index& elem,
-                           const sa_index& compare_to) const {
+    inline bool operator()(const size_t& elem,
+                           const size_t& compare_to) const {
         // Could cause overflow if depth is too big (especially for sa_index
         // type)
         const size_t elem_at_depth = elem + pow(2, depth);
         const size_t compare_to_at_depth = compare_to + pow(2, depth);
-        /*std::cout << "elem: " << elem_at_depth
-                  << ", compare_to: " << compare_to_at_depth << std::endl;*/
         const bool elem_too_large = elem_at_depth >= partial_isa.size();
         const bool compare_to_too_large =
             compare_to_at_depth >= partial_isa.size();
@@ -110,25 +100,16 @@ struct compare_suffix_ranks {
             if (compare_to_too_large) {
                 // Both "out of bounds" -> bigger index means string ends
                 // earlier (i.e. smaller)
-                // TODO: Check if this condition always holds.
-                /*std::cout << "Both indices out of bounds." << std::endl;*/
                 return elem_at_depth > compare_to_at_depth;
             }
-            /*std::cout << "elem out of bounds" << std::endl;*/
             // Only first suffix (substring) ends "behind" sentinel
             return true;
         } else if (compare_to_too_large) {
-            /*std::cout << "compare_to out of bounds" << std::endl;*/
             // Only second suffix (substring) ends "behind" sentinel
             return false;
         }
         // Neither index "out of bounds":
         // Ranks of compared substrings decide order
-        /*std::cout << "returns " << partial_isa[elem_at_depth] << " < "
-                  << partial_isa[compare_to_at_depth] << ": "
-                  << (partial_isa[elem_at_depth] <
-                      partial_isa[compare_to_at_depth])
-                  << std::endl;*/
         return partial_isa[elem_at_depth] < partial_isa[compare_to_at_depth];
     }
 
