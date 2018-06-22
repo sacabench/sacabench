@@ -80,3 +80,39 @@ extract_details<-function(json_name)
 
 #datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
 #                   stringsAsFactors = FALSE)
+
+plot_benchmark_multi<-function(algorithm_names, runtimes, mems)
+{
+  par(mfrow=c(1,1),mai=c(1,1,1,2), oma = c(0,0,0,2))
+  plot(runtimes, mems, col = 2:(length(runtimes)+1), pch = 19, 
+       xlab = "Laufzeiten in Sekunden", 
+       ylab = "max. Speicherverbrauch in KB", 
+       main = "Speicher- & Laufzeitmessungen")
+  #text(runtimes, mems, labels=algorithm_names, 
+  #     col = 2:(length(runtimes)+1), adj=c(0.3,-0.35))
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
+      mai=c(1,1,1,1), new = TRUE)
+  legend("right",  legend = algorithm_names, col = 2:(length(runtimes)+1), 
+         inset = c(-0.15,0), pch = 19, xpd = TRUE, bty = "n")
+}
+
+plot_benchmark_multi_2<-function(algorithm_names, runtimes, mems)
+{
+  par(mfrow=c(2,1),mai=c(0, 1, 0.6, 0))
+  barplot(runtimes,beside=TRUE,col = 2:(length(runtimes)+1), ylab = "Laufzeit in Sekunden", names.arg = algorithm_names,main = "Speicher- & Laufzeitmessungen")
+  barplot(mems,beside=TRUE, col = 2:(length(runtimes)+1), add = FALSE, ylab = "max. Speicherverbrauch in KB", ylim = c(max(mems),0))
+  #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
+  #    mai=c(1,1,1,1), new = TRUE)
+  #legend("right",  legend = algorithm_names, col = 2:(length(runtimes)+1), 
+  #       inset = c(-0.125,0), pch = 19, xpd = TRUE, bty = "n")
+}
+
+
+example_plot_multi <-function(){
+  names = c("DC3", "DC7", "BPR", "nzSufSort", "mSufSort", "DivSufSort", "G-Saka", "SAIS")
+  runtimes = c(200,300,200,500,600,100,50,10)
+  mems = c(80000,10000,8000,10000,40000,50000,60000, 10000)
+  
+  plot_benchmark_multi(names, runtimes, mems)
+  plot_benchmark_multi_2(names, runtimes, mems)
+}
