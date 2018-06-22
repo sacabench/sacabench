@@ -31,7 +31,7 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems)
   
   #Plots for peak memory usage in each phase
   barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = "in KB")
-  title("Memory Usage", line=1)
+  title("Memory peak", line=1)
   
   #Header and Footer
   mtext(algorithm_name, side=3, outer=TRUE, line=-2,cex = 2)
@@ -85,9 +85,9 @@ plot_benchmark_multi<-function(algorithm_names, runtimes, mems)
 {
   par(mfrow=c(1,1),mai=c(1,1,1,2), oma = c(0,0,0,2))
   plot(runtimes, mems, col = 2:(length(runtimes)+1), pch = 19, 
-       xlab = "Laufzeiten in Sekunden", 
-       ylab = "max. Speicherverbrauch in KB", 
-       main = "Speicher- & Laufzeitmessungen")
+       xlab = "Runtimes in seconds", 
+       ylab = "Memory Peak in KB", 
+       main = "Memory & runtime measurements (logarithmic scale)", log = "xy")
   #text(runtimes, mems, labels=algorithm_names, 
   #     col = 2:(length(runtimes)+1), adj=c(0.3,-0.35))
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
@@ -99,8 +99,8 @@ plot_benchmark_multi<-function(algorithm_names, runtimes, mems)
 plot_benchmark_multi_2<-function(algorithm_names, runtimes, mems)
 {
   par(mfrow=c(2,1),mai=c(0, 1, 0.6, 0))
-  barplot(runtimes,beside=TRUE,col = 2:(length(runtimes)+1), ylab = "Laufzeit in Sekunden", names.arg = algorithm_names,main = "Speicher- & Laufzeitmessungen")
-  barplot(mems,beside=TRUE, col = 2:(length(runtimes)+1), add = FALSE, ylab = "max. Speicherverbrauch in KB", ylim = c(max(mems),0))
+  barplot(runtimes,beside=TRUE,col = 2:(length(runtimes)+1), ylab = "Runtime in seconds", names.arg = algorithm_names,main = "Memory & runtime measurements")
+  barplot(mems,beside=TRUE, col = 2:(length(runtimes)+1), add = FALSE, ylab = "Memory peak in KB", ylim = c(max(mems),0))
   #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
   #    mai=c(1,1,1,1), new = TRUE)
   #legend("right",  legend = algorithm_names, col = 2:(length(runtimes)+1), 
@@ -111,7 +111,7 @@ plot_benchmark_multi_2<-function(algorithm_names, runtimes, mems)
 example_plot_multi <-function(){
   names = c("DC3", "DC7", "BPR", "nzSufSort", "mSufSort", "DivSufSort", "G-Saka", "SAIS")
   runtimes = c(200,300,200,500,600,100,50,10)
-  mems = c(80000,10000,8000,10000,40000,50000,60000, 10000)
+  mems = c(75000,10000,8000,10000,40000,50000,60000, 10000)
   
   plot_benchmark_multi(names, runtimes, mems)
   plot_benchmark_multi_2(names, runtimes, mems)
