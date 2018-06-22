@@ -266,7 +266,6 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
         // if unsorted interval contains more than one element (after
         // interval_end has been set)
         if (unsorted > 0 && interval_end > interval_begin) {
-            auto slice_to_sort = rel_ind.slice(interval_begin, interval_end);
             util::sort::introsort<sa_index, compare_suffix_ranks<sa_index>>(
                 rel_ind.slice(interval_begin, interval_end), cmp);
             // Reset indicator
@@ -297,13 +296,13 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
         unsorted = false;
         // Check if still unsorted:
         pos = 0;
-        sa_index ref;
+        //sa_index ref;
         while (pos < rel_ind.size()) {
             // Negated length of sorted interval
             if ((rel_ind[pos] & utils<sa_index>::NEGATIVE_MASK) > 0) {
                 // Negated index at pos
-                ref = (rel_ind[pos] ^ utils<sa_index>::NEGATIVE_MASK);
-                DCHECK_NE(ref, sa_index(0));
+                /*ref = (rel_ind[pos] ^ utils<sa_index>::NEGATIVE_MASK);
+                DCHECK_NE(ref, sa_index(0));*/
                 pos += (rel_ind[pos] ^ utils<sa_index>::NEGATIVE_MASK);
             } else {
                 // interval beginning with non-negated index found ->
