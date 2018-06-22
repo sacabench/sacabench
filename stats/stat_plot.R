@@ -21,22 +21,24 @@ extract_stats <-function(json_name)
 
 plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems)
 {
-  par(mfrow=c(1,2),mai=c(0.5,1,1,1))
+  par(mfrow=c(1,2),mai=c(0.7,1,1,1))
   
   #Plots for runtimes in each phase
   barplot(runtimes[1],beside=FALSE,col = 2, ylab = "in seconds")
-  barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,col = 3:(length(runtimes)+2), add = TRUE)
+  barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
+          col = 3:(length(runtimes)+2), add = TRUE)
   title("Runtime", line=1)
-  #legend("right", legend = phase_names, col = 2:(length(runtimes)+1), pch = 15)
-  #TODO: One Legend for both barplots at bottom
   
   #Plots for peak memory usage in each phase
-  barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = "in MB")
-  legend("right", legend = phase_names, col = 2:(length(mems)+1), pch = 15)
+  barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = "in KB")
   title("Memory Usage", line=1)
   
-  #Header for algorithm name
+  #Header and Footer
   mtext(algorithm_name, side=3, outer=TRUE, line=-2,cex = 2)
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
+      mai=c(1,1,1,1), new = TRUE)
+  legend("bottom", legend = phase_names, inset = c(0,-0.1), 
+         col = 2:(length(mems)+1), pch = 15, xpd = TRUE, horiz = TRUE)
 }
 
 extract_details<-function(json_name)
@@ -59,7 +61,8 @@ extract_details<-function(json_name)
   
   for(i in 2:length(phases)){
     phase_names = cbind(phase_names, phases[[i]]$title)
-    phase_runtimes = rbind(phase_runtimes, phases[[i]]$timeEnd-phases[[i]]$timeStart)
+    phase_runtimes = rbind(phase_runtimes, 
+                           phases[[i]]$timeEnd-phases[[i]]$timeStart)
     phase_mems  = rbind(phase_mems, phases[[i]]$memPeak)
   }
   
@@ -68,10 +71,12 @@ extract_details<-function(json_name)
   phase_mems = rbind(max_mem, phase_mems)
   
   #plot
-  plot_benchmark_single(algorithm_name, phase_names, phase_runtimes, phase_mems)
+  plot_benchmark_single(algorithm_name, phase_names, 
+                        phase_runtimes, phase_mems)
 }
 
 #testList= list(name="a",x=1,y=2)
 #testList2= list(name="b",x=2,y=1)
 
-#datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),stringsAsFactors = FALSE)
+#datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
+#                   stringsAsFactors = FALSE)
