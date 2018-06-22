@@ -40,9 +40,9 @@ public:
             return false;
         }
         size_t elem_size =
-            std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]) + 1;
+            std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]) + sa_index(1);
         size_t compare_to_size = std::get<1>(substrings[compare_to]) -
-                                   std::get<0>(substrings[compare_to]) + 1;
+                                   std::get<0>(substrings[compare_to]) + sa_index(1);
         size_t max_pos = std::min(elem_size, compare_to_size);
         size_t elem_begin = std::get<0>(substrings[elem]);
         size_t compare_to_begin = std::get<0>(substrings[compare_to]);

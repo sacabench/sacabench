@@ -60,7 +60,7 @@ extract_rms_substrings(rms_suffixes<sa_index>& rms_suf) {
          ++current_index) {
 
         substr_start = rms_suf.absolute_indices[current_index];
-        substr_end = rms_suf.absolute_indices[current_index + 1] + 1;
+        substr_end = rms_suf.absolute_indices[current_index + 1] + sa_index(1);
         // Create RMS-Substring for rms-suffix from suffix-index of rms
         // and starting index of following rms-suffix + 1
         substring = std::make_pair(substr_start, substr_end);
@@ -90,7 +90,7 @@ extract_rms_suffixes(util::string_span text,
     size_t right_border = out_sa.size();
     // Insert rms-suffixes from right to left
     for (size_t current = text.size() - 1; current > 0; --current) {
-        if (sa_types<sa_index>::is_rms_type(current - 1, sa_types_container)) {
+        if (sa_types::is_rms_type(current - 1, sa_types_container)) {
             // Adjust border to new entry (rms-suffix)
             out_sa[--right_border] = current - 1;
         }
@@ -159,7 +159,7 @@ inline static void count_buckets(util::string_span input,
             // Compute bucket_index regarding current suffix being either
             // s- or rms-type
             bucket_index =
-                (sa_types<sa_index>::is_rms_type(current, suffix_types))
+                (sa_types::is_rms_type(current, suffix_types))
                     ? sa_buckets.get_rms_bucket_index(first_letter,
                                                       second_letter)
                     : sa_buckets.get_s_bucket_index(first_letter,

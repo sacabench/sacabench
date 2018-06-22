@@ -13,24 +13,24 @@ struct utils {
                                                   << (sizeof(sa_index) * 8 - 1);
 };
 
-    template <typename sa_index>
+    //template <typename sa_index>
     struct sa_types {
         enum class s_type { l, s, rms };
 
-        inline static bool is_l_type(sa_index suffix,
+        inline static bool is_l_type(size_t suffix,
                                      util::span<bool> suffix_types) {
             DCHECK_LT(suffix, suffix_types.size());
             return suffix_types[suffix] == 1;
         }
 
-        inline static bool is_s_type(sa_index suffix,
+        inline static bool is_s_type(size_t suffix,
                                      util::span<bool> suffix_types) {
             // Last suffix must be l-type
             DCHECK_LT(suffix, suffix_types.size() - 1);
             return suffix_types[suffix] == 0 && suffix_types[suffix + 1] == 0;
         }
 
-        inline static bool is_rms_type(sa_index suffix,
+        inline static bool is_rms_type(size_t suffix,
                                        util::span<bool> suffix_types) {
             // Last suffix must be l-type
             DCHECK_LT(suffix, suffix_types.size() - 1);

@@ -23,7 +23,7 @@ inline static void set_unsorted_rms_substring_intervals(
         compare_to = rms_suf.relative_indices[pos];
         // None of the substrings is smaller than the other (i.e. the same)
         if (!(cmp(elem, compare_to) || cmp(compare_to, elem))) {
-            rms_suf.relative_indices[pos] |= utils<sa_index>::NEGATIVE_MASK;
+            rms_suf.relative_indices[pos] = rms_suf.relative_indices[pos] | utils<sa_index>::NEGATIVE_MASK;
         }
     }
 }
@@ -76,7 +76,7 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
     size_t sorted_count = 0, unsorted_count = 0;
     size_t rank = rel_ind.size() - 1;
     DCHECK_EQ(rel_ind.size(), isa.size());
-    for (sa_index pos = rel_ind.size(); 0 < pos; --pos) {
+    for (size_t pos = rel_ind.size(); 0 < pos; --pos) {
         // Current index has been negated
         if ((rel_ind[pos - 1] & utils<sa_index>::NEGATIVE_MASK) > 0) {
             if (sorted_count > 0) {
@@ -85,7 +85,7 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
                 // Reset sorted count
                 sorted_count = 0;
             }
-            rel_ind[pos - 1] ^= utils<sa_index>::NEGATIVE_MASK;
+            rel_ind[pos - 1] = rel_ind[pos - 1] ^ utils<sa_index>::NEGATIVE_MASK;
             isa[rel_ind[pos - 1]] = rank;
             ++unsorted_count;
 
@@ -339,11 +339,11 @@ inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
     for (size_t pos = rms_suf.text.size() - 1; 1 < pos; --pos) {
         correct_pos = pos - 1;
         // RMS-Suffix in text found
-        if (sa_types<sa_index>::is_rms_type(correct_pos, types)) {
+        if (sa_types::is_rms_type(correct_pos, types)) {
 
             // If predecessor of correct_pos is l-type: negate, because not
             // considered in first induce step
-            if (sa_types<sa_index>::is_l_type(correct_pos - 1, types)) {
+            if (sa_types::is_l_type(correct_pos - 1, types)) {
                 out_sa[isa[--rms_count]] =
                     correct_pos ^ utils<sa_index>::NEGATIVE_MASK;
             } else {
@@ -352,7 +352,7 @@ inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
             }
         }
     }
-    if (sa_types<sa_index>::is_rms_type(0, types)) {
+    if (sa_types::is_rms_type(0, types)) {
         DCHECK_GT(rms_count, 0);
 
         out_sa[isa[--rms_count]] = 0;
@@ -375,7 +375,7 @@ inline static void insert_rms_into_correct_pos(size_t rms_count,
         out_sa.size() - 1; // Last pos for last bkt (never used)
     for (size_t c0 = max_character_code - 1; 0 < c0; --c0) {
         // new border one pos left of next l-bucket (i.e. for c0+1)
-        right_border_s = bkts.l_buckets[c0 + 1] - 1;
+        right_border_s = bkts.l_buckets[c0 + 1] - sa_index(1);
         for (size_t c1 = max_character_code; c0 < c1; --c1) {
             s_bkt_index = bkts.get_s_bucket_index(c0, c1);
             right_border_rms = right_border_s - bkts.s_buckets[s_bkt_index];
