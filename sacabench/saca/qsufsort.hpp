@@ -14,6 +14,9 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
+
 namespace sacabench::qsufsort {
 
 // Compare function for inital sorting
@@ -107,6 +110,8 @@ public:
                              util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
+        tdc::StatPhase qss("Initialization");
+        {
         size_t n = text.size();
         // check if n is too big
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1));
@@ -124,6 +129,7 @@ public:
         size_t h = 0;
         // for are more readible while condition
         bool is_sorted = false;
+        qss.split("First sorting");
         // comparing function for inital sort according to first character
         auto compare_first_char_function = compare_first_character(text);
         // Sort according to first character
@@ -138,6 +144,7 @@ public:
 
         while (!is_sorted) {
 
+            qss.split("Prefix Doubling Phase");
             size_t counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
@@ -165,8 +172,10 @@ public:
             h = h * 2;
             is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);
         }
+        qss.split("ISA to SA");
         // transform isa to sa
         util::isa2sa_simple_scan(util::span<sa_index>(isa), out_sa);
+        }//StatPhase
     } // construct_sa
 
 private:
@@ -299,7 +308,7 @@ public:
     static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "qsufsort";
     static constexpr char const* DESCRIPTION =
-        "Improved Version of N. Larssons and K. SADAKANES qsufsort";
+        "Improved Version of N. Larssons and K. Sadakanes qsufsort";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -316,13 +325,15 @@ public:
     static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "Naive qsufsort";
     static constexpr char const* DESCRIPTION =
-        "Naive Version of N. Larssons and K. SADAKANES qsufsort";
+        "Naive Version of N. Larssons and K. Sadakanes qsufsort";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
+        tdc::StatPhase qssn("Initialization");
+        {
         size_t n = text.size();
 
         // catch trivial cases
@@ -341,6 +352,7 @@ public:
         size_t h = 0;
         // for are more readible while condition
         bool is_sorted = false;
+        qssn.split("First Sorting");
         // comparing function for inital sort according to first character
         auto compare_first_char_function = compare_first_character(text);
         // Sort according to first character
@@ -351,7 +363,7 @@ public:
         // since we sorted accoring to first letter, increment h
         ++h;
         while (!is_sorted) {
-
+            qssn.split("Prefix Doubling Phase");
             // comparing function, which compares the (i+h)-th ranks
             auto compare_function = compare_ranks_naive(V, h);
 
@@ -384,6 +396,7 @@ public:
             // prefix doubling
             h = h * 2;
             is_sorted = (size_t(-L[0]) == n);
+        }
         }
     } // construct_sa
 private:
