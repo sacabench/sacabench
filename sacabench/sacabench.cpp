@@ -46,6 +46,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool out_json = false;
     bool out_binary = false;
     uint8_t out_fixed_bits = 0;
+    std::string prefix_size = "";
     bool force_overwrite = false;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
@@ -81,6 +82,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "Elide the header, and output a fixed number of bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
+        
+        construct.add_option("-p,--prefix", prefix_size, "calculate SA of prefix of input.");
 
         construct.add_flag(
             "-f,--force", force_overwrite,
@@ -130,14 +133,46 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             {
                 std::unique_ptr<util::text_initializer> text;
                 std::string stdin_buf;
+                size_t prefix = -1;
 
+                if (prefix_size.size() > 0) {
+                    try {
+                        uint32_t unit_factor;
+                        size_t input_prefix;
+                        if (prefix_size[prefix_size.size()-1] == 'K') { 
+                            std::string number_part = prefix_size.substr(
+                                0,prefix_size.size()-1);
+                            input_prefix = std::stoi(number_part);
+                            unit_factor = 1000; 
+                        }
+                        else if (prefix_size[prefix_size.size()-1] == 'M') { 
+                            std::string number_part = prefix_size.substr(
+                                0,prefix_size.size()-1);
+                            input_prefix = std::stoi(number_part);
+                            unit_factor = 1000000; 
+                        }
+                        else {
+                            std::string number_part = prefix_size.substr(
+                                0,prefix_size.size());
+                            input_prefix = std::stoi(number_part);
+                            unit_factor = 1;
+                        }
+                        prefix = input_prefix * unit_factor;
+                    }
+                    catch (const std::invalid_argument& ia) {
+                        std::cerr << "ERROR: input prefix is not a " 
+                                "valid prefix value." << std::endl;
+                        return 1;
+                    }
+                }
+                
                 if (input_filename == "-") {
                     stdin_buf = std::string(
                         std::istreambuf_iterator<char>(std::cin), {});
                     text = std::make_unique<util::text_initializer_from_span>(
                         util::string_span(
                             (util::character const*)stdin_buf.data(),
-                            stdin_buf.size()));
+                            stdin_buf.size()), prefix);
                 } else {
                     if (!file_exist_check(input_filename)) {
                         std::cerr << "ERROR: Input File " << input_filename
@@ -146,7 +181,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     }
 
                     text = std::make_unique<util::text_initializer_from_file>(
-                        input_filename);
+                        input_filename, prefix);
                 }
 
                 auto sa = algo->construct_sa(*text);
@@ -184,7 +219,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     tdc::StatPhase check_sa_phase("SA Checker");
 
                     // Read the string in again
-                    auto s = util::string(text->text_size());
+                    size_t text_size = std::min(text->prefix_size(), text->text_size());
+                    auto s = util::string(text_size);
                     text->initializer(s);
 
                     // Run the SA checker, and print the result

@@ -118,6 +118,8 @@ public:
 
 /// A type that represents a input text before any allocation.
 struct text_initializer {
+    /// Getter for the prefix size
+    virtual size_t prefix_size() const = 0;
     /// Size of the text. In bytes, without any sentinel values.
     virtual size_t text_size() const = 0;
 
@@ -132,10 +134,13 @@ struct text_initializer {
 /// A `text_initializer` that initializes with a `string_span`.
 class text_initializer_from_span : public text_initializer {
     string_span m_text;
+    size_t prefix;
 
 public:
-    inline text_initializer_from_span(string_span text) : m_text(text) {}
-
+    inline text_initializer_from_span(string_span text, size_t prefix_length = -1) : m_text(text), prefix(prefix_length) {}
+    
+    virtual inline size_t prefix_size() const { return prefix; }
+    
     virtual inline size_t text_size() const override { return m_text.size(); }
 
     virtual inline void initializer(span<character> s) const override {
@@ -149,10 +154,13 @@ public:
 /// A `text_initializer` that initializes with the content of a file.
 class text_initializer_from_file : public text_initializer {
     read_text_context m_ctx;
+    size_t prefix;
 
 public:
-    inline text_initializer_from_file(std::string const& file_path)
-        : m_ctx(file_path) {}
+    inline text_initializer_from_file(std::string const& file_path, size_t prefix_length = -1)
+        : m_ctx(file_path), prefix(prefix_length) {}
+        
+    virtual inline size_t prefix_size() const { return prefix; }
 
     virtual inline size_t text_size() const override { return m_ctx.size; }
 
@@ -172,7 +180,7 @@ prepare_and_construct_sa(text_initializer const& text_init) {
     uniform_sa<sa_index> ret;
     {
         size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
-        size_t text_size = text_init.text_size();
+        size_t text_size = std::min(text_init.prefix_size(), text_init.text_size());
 
         container<sa_index> output;
         string text_with_sentinels;
