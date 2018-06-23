@@ -15,7 +15,6 @@
 #include <util/saca.hpp>
 
 namespace test {
-
 /// Helper function to run a SA construction algorithm
 /// on a number of short test strings.
 ///
@@ -139,7 +138,6 @@ void saca_corner_cases_single_type(bool print_cases) {
          "💕🐰🐹💉🎳 🍂🐤💺🍗 🔷🍹🕁🏀🐴 👻💞💂🌇📋 👴🔛📚🔭📙 👣📆"
          "🏭🎠👠🏈 👧🌹🌉🔋🎅🔟 🎴🍮🍶👹🍋📐🌕🐂 🍆🔄🌉🍫🍶 🐝🌚🔫🏄"
          " 👙🎊📢🎄💘."_s);
-
 }
 
 /// Helper function to run a SA construction algorithm
