@@ -35,7 +35,7 @@ namespace sacabench::util {
          * This function reads the content of a text file at the given path bytewise.
          */
         inline void read_text(span<character> out_text) const {
-            //DCHECK_EQ(out_text.size(), this->size);
+            DCHECK_LE(out_text.size(), this->size);
 
             file.seekg(0, std::ios::beg); // set the pointer to the beginning
             file.read( (char*) out_text.data(), out_text.size());

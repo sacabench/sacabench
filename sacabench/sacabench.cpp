@@ -200,13 +200,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             std::string number_part = prefix_size.substr(
                                 0,prefix_size.size()-1);
                             input_prefix = std::stoi(number_part);
-                            unit_factor = 1000; 
+                            unit_factor = 1024; 
                         }
                         else if (prefix_size[prefix_size.size()-1] == 'M') { 
                             std::string number_part = prefix_size.substr(
                                 0,prefix_size.size()-1);
                             input_prefix = std::stoi(number_part);
-                            unit_factor = 1000000; 
+                            unit_factor = 1024*1024; 
                         }
                         else {
                             std::string number_part = prefix_size.substr(
@@ -231,12 +231,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             (util::character const*)stdin_buf.data(),
                             stdin_buf.size()), prefix);
                 } else {
-                    if (!file_exist_check(input_filename)) {
-                        std::cerr << "ERROR: Input File " << input_filename
-                                  << " does not exist." << std::endl;
-                        return 1;
-                    }
-
                     text = std::make_unique<util::text_initializer_from_file>(
                         input_filename, prefix);
                 }
@@ -276,7 +270,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     tdc::StatPhase check_sa_phase("SA Checker");
 
                     // Read the string in again
-                    size_t text_size = std::min(text->prefix_size(), text->text_size());
+                    size_t text_size = text->text_size();
                     auto s = util::string(text_size);
                     text->initializer(s);
 
@@ -340,13 +334,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     std::string number_part = prefix_size.substr(
                         0,prefix_size.size()-1);
                     input_prefix = std::stoi(number_part);
-                    unit_factor = 1000; 
+                    unit_factor = 1024; 
                 }
                 else if (prefix_size[prefix_size.size()-1] == 'M') { 
                     std::string number_part = prefix_size.substr(
                         0,prefix_size.size()-1);
                     input_prefix = std::stoi(number_part);
-                    unit_factor = 1000000; 
+                    unit_factor = 1024*1024; 
                 }
                 else {
                     std::string number_part = prefix_size.substr(
@@ -386,7 +380,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     tdc::StatPhase check_sa_phase("SA Checker");
 
                     // Read the string in again
-                    size_t text_size = std::min(text->prefix_size(), text->text_size());
+                    size_t text_size = text->text_size();
                     auto s = util::string(text_size);
                     text->initializer(s);
 

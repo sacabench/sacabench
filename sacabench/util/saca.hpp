@@ -120,7 +120,9 @@ public:
 struct text_initializer {
     /// Getter for the prefix size
     virtual size_t prefix_size() const = 0;
-    /// Size of the text. In bytes, without any sentinel values.
+    // Getter for the original text size
+    virtual size_t original_text_size() const = 0;
+    /// Size of the allocated text. In bytes, without any sentinel values.
     virtual size_t text_size() const = 0;
 
     /// Initializer function, that writes the text to the passed
@@ -137,11 +139,15 @@ class text_initializer_from_span : public text_initializer {
     size_t prefix;
 
 public:
-    inline text_initializer_from_span(string_span text, size_t prefix_length = -1) : m_text(text), prefix(prefix_length) {}
+    inline text_initializer_from_span(string_span text, size_t prefix_length = -1) : m_text(text), 
+        prefix(prefix_length) {}
     
     virtual inline size_t prefix_size() const { return prefix; }
     
-    virtual inline size_t text_size() const override { return m_text.size(); }
+    virtual inline size_t original_text_size() const { return m_text.size(); }
+    
+    virtual inline size_t text_size() const override { return std::min(
+        prefix_size(), original_text_size()); }
 
     virtual inline void initializer(span<character> s) const override {
         DCHECK_EQ(s.size(), m_text.size());
@@ -161,8 +167,11 @@ public:
         : m_ctx(file_path), prefix(prefix_length) {}
         
     virtual inline size_t prefix_size() const { return prefix; }
+    
+    virtual inline size_t original_text_size() const { return m_ctx.size; };
 
-    virtual inline size_t text_size() const override { return m_ctx.size; }
+    virtual inline size_t text_size() const override { return std::min(
+        prefix_size(), original_text_size()); }
 
     virtual inline void initializer(span<character> s) const override {
         m_ctx.read_text(s);
@@ -180,7 +189,7 @@ prepare_and_construct_sa(text_initializer const& text_init) {
     uniform_sa<sa_index> ret;
     {
         size_t extra_sentinels = Algorithm::EXTRA_SENTINELS;
-        size_t text_size = std::min(text_init.prefix_size(), text_init.text_size());
+        size_t text_size = text_init.text_size();
 
         container<sa_index> output;
         string text_with_sentinels;
