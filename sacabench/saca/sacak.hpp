@@ -47,7 +47,7 @@ namespace sacabench::sacak {
 
             for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
             {
-                if (sa[i - 1] != 0 && sa[i - 1] != -1) {
+                if (static_cast<size_t>(sa[i - 1]) != 0 && sa[i - 1] != static_cast<sa_index>(-1)) {
                     size_t c = t[sa[i - 1]]; // The character c itself is already his
                                              // bkt index (-1)
                     sa[bkt[c].position] = sa[i - 1];
@@ -67,11 +67,11 @@ namespace sacabench::sacak {
             for (size_t i = 0; i < t.size(); i++) // LTR Iteration of SA
             {
 
-                if (sa[i] != 0 && sa[i] != -1 &&
-                    t[sa[i] - 1] >= t[sa[i]]) // check if t[sa[i]-1] is L-Type
+                if (static_cast<size_t>(sa[i]) != 0 && sa[i] != static_cast<sa_index>(-1) &&
+                    t[static_cast<size_t>(sa[i]) - 1] >= t[sa[i]]) // check if t[sa[i]-1] is L-Type
                 {
-                    size_t c = t[sa[i] - 1];
-                    sa[bkt[c].position] = sa[i] - 1;
+                    size_t c = t[static_cast<size_t>(sa[i]) - 1];
+                    sa[bkt[c].position] = sa[i] - static_cast<sa_index>(1);
                     bkt[c].position++;
                 }
             }
@@ -89,14 +89,14 @@ namespace sacabench::sacak {
 
             for (size_t i = t.size(); i > 0; i--) // RTL Iteration of SA
             {
-                size_t ind = sa[i - 1];
+                sa_index ind = sa[i - 1];
 
-                if (ind != -1 && ind != 0 && ind != t.size() - 1 &&
-                    !std::get<0>(util::get_type_ltr_dynamic<string_type>(t, ind - 1))) // check if t[ind - 1] is S-Type (inefficient!)
+                if (ind != static_cast<sa_index>(-1) && ind != static_cast<sa_index>(0) && ind != static_cast<sa_index>(t.size() - 1) &&
+                    !std::get<0>(util::get_type_ltr_dynamic<string_type>(t, ind - static_cast<sa_index>(1)))) // check if t[ind - 1] is S-Type (inefficient!)
                 {
 
-                    size_t c = t[ind - 1]; // The character c itself is already his bkt index (-1)
-                    sa[bkt[c].position] = sa[i - 1] - 1;
+                    size_t c = t[ind - static_cast<sa_index>(1)]; // The character c itself is already his bkt index (-1)
+                    sa[bkt[c].position] = static_cast<size_t>(sa[i - 1]) - 1;
                     bkt[c].position--;
                 }
             }
@@ -127,7 +127,7 @@ namespace sacabench::sacak {
 
             util::ssize name = 0;
             util::ssize previous_LMS = -1;
-            for (util::ssize i = 0; i < lms_amount; i++) {
+            for (sa_index i = 0; i < lms_amount; ++i) {
                 bool diff = false;
 
                 util::ssize current_LMS = sa[i];
@@ -167,7 +167,7 @@ namespace sacabench::sacak {
             size_t null_counter = 0;
             for (size_t i = sa.size() - 1; i >= lms_amount; i--)
             {
-                if (sa[i] != -1)
+                if (sa[i] != static_cast<sa_index>(-1))
                 {
                     sa[i + null_counter] = sa[i];
                     sa[i] = -1;
@@ -236,11 +236,12 @@ namespace sacabench::sacak {
 
             util::ssize name = 0;
             util::ssize previous_LMS = -1;
-            for (util::ssize i = 0; i < lms_amount; i++) { // max n/2 iterations
+
+            for (sa_index i = 0; i < lms_amount; ++i) { // max n/2 iterations
                 bool diff = false;
 
                 util::ssize current_LMS = sa[i];
-                if (sa[i] < 0) continue;
+                if (sa[i] < static_cast<sa_index>(0)) continue;
 
                 for (size_t j = 0; j < t_0.size(); j++) {
 
@@ -278,7 +279,7 @@ namespace sacabench::sacak {
             size_t null_counter = 0;
             for (size_t i = sa.size() - 1; i >= lms_amount; i--)
             {
-                if (sa[i] != -1)
+                if (sa[i] != static_cast<sa_index>(-1))
                 {
                     sa[i + null_counter] = sa[i];
                     sa[i] = -1;

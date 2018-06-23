@@ -123,7 +123,7 @@ private:
     }
 
     inline bool try_induced_sort(const span<sa_index_type> bucket,
-                                 const size_t common_prefix_length) {
+                                 const sa_index_type common_prefix_length) {
         // Try every suffix index, which is to be sorted
         for (const sa_index_type& si : bucket) {
 
@@ -149,10 +149,10 @@ private:
                     // Get the bucket bounds for the already sorted suffix.
                     const auto left_bucket_bound =
                         bd.start_of_bucket(input_text[leftmost_suffix],
-                                           input_text[leftmost_suffix + 1]);
+                                           input_text[leftmost_suffix + static_cast<sa_index_type>(1)]);
                     const auto right_bucket_bound =
                         bd.end_of_bucket(input_text[leftmost_suffix],
-                                         input_text[leftmost_suffix + 1]);
+                                         input_text[leftmost_suffix + static_cast<sa_index_type>(1)]);
 
                     // Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
@@ -179,11 +179,11 @@ private:
                     // we're looking for, then add it to the ringbuffer at the
                     // correct location.
                     const auto look_at = [&](const size_t dist) {
-                        const size_t left = sorted_bucket - dist;
-                        const size_t right = sorted_bucket + dist;
+                        const size_t left = static_cast<size_t>(sorted_bucket) - dist;
+                        const size_t right = static_cast<size_t>(sorted_bucket) + dist;
 
                         // Check if `left` overflowed.
-                        if (sorted_bucket >= dist) {
+                        if (static_cast<size_t>(sorted_bucket) >= dist) {
                             // Check, if `left` is still in the bucket we're
                             // searching.
                             if (left >= left_bucket_bound) {
@@ -226,11 +226,20 @@ private:
 
     /// \brief Use ternary quicksort to sort the bucket.
     inline void simple_sort(span<sa_index_type> bucket,
-                            const size_t common_prefix_length) {
+                            const sa_index_type common_prefix_length) {
         const auto compare_suffix = [&](const sa_index_type a,
                                         const sa_index_type b) {
+            // Catch out-of-range errors and return correct sorting result.
+            if (static_cast<size_t>(a + common_prefix_length) >= input_text.size()) {
+                return !(static_cast<size_t>(b + common_prefix_length) >= input_text.size());
+            }
+            if (static_cast<size_t>(b + common_prefix_length) >= input_text.size()) {
+                return false;
+            }
+
             DCHECK_LT(a + common_prefix_length, input_text.size());
             DCHECK_LT(b + common_prefix_length, input_text.size());
+
             const util::string_span as =
                 input_text.slice(a + common_prefix_length);
             const util::string_span bs =
@@ -248,7 +257,7 @@ private:
             const auto alpha = unsorted_bucket.first;
             const auto beta = unsorted_bucket.second;
 
-            if (bd.size_of_bucket(alpha, beta) < 2) {
+            if (bd.size_of_bucket(alpha, beta) < static_cast<sa_index_type>(2)) {
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {

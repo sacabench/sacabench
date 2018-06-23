@@ -147,7 +147,9 @@ public:
         DCHECK_MSG(0 <= from && from <= to && to <= size(),
                    "Slice with out-of-bound values "
                        << from << ".." << to << " for span of size " << size());
-        return span<T>(data() + from, to - from);
+        auto r = span<T>(data() + from, to - from);
+        IF_DEBUG(r.register_alive_check(m_alive_check));
+        return r;
     }
 
     inline friend bool operator==(span<T> const& lhs, span<T> const& rhs) {

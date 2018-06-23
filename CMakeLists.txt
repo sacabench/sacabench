@@ -32,6 +32,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
+option(SACA_WERROR "Turn GCC warnings into errors")
+
 IF (WIN32)
 
 set(SACA_BENCH_FLAGS "/std:c++17")
@@ -39,8 +41,10 @@ set(SACA_BENCH_DEBUG_FLAGS "")
 set(SACA_BENCH_RELEASE_FLAGS "")
 
 ELSE()
-
-set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wextra;-Werror=return-type")
+set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wpedantic;-Wextra;-Werror=return-type")
+if (SACA_WERROR)
+    set(SACA_BENCH_FLAGS "${SACA_BENCH_FLAGS};-Werror")
+endif()
 set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb;-DDEBUG")
 set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG")
 
@@ -53,6 +57,7 @@ set(BUILD_GMOCK OFF CACHE BOOL "")
 set(BUILD_GTEST ON CACHE BOOL "")
 git_submodule_subdirectory(external/gtest)
 git_submodule_subdirectory(external/tudostats)
+git_submodule_subdirectory(external/CLI11)
 add_subdirectory(sacabench)
 add_subdirectory(test)
 

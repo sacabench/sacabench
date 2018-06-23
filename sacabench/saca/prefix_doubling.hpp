@@ -105,14 +105,14 @@ struct prefix_doubling_impl {
 
     /// Sets the extra bit in `v`, and returns the changed value.
     inline static name_type marked(name_type v) {
-        v |= unique_mask();
+        v = v | unique_mask();
         DCHECK(is_marked(v));
         return v;
     }
 
     /// Unsets the extra bit in `v`, and returns the changed value.
     inline static name_type unmarked(name_type v) {
-        v &= ~unique_mask();
+        v = v & ~unique_mask();
         DCHECK(!is_marked(v));
         return v;
     }
@@ -144,6 +144,7 @@ struct prefix_doubling_impl {
 
     /// Naive variant, roughly identical to description in Paper
     static void doubling(util::string_span text, util::span<sa_index> out_sa) {
+        tdc::StatPhase phase("Initialization");
         size_t const N = text.size();
 
         // To simplify some of the logic below,
@@ -173,23 +174,36 @@ struct prefix_doubling_impl {
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
         for (size_t k = 1;; k++) {
-            DCHECK_LE(k, util::ceil_log2(N));
+            phase.split("Iteration");
 
+            DCHECK_LE(k, util::ceil_log2(N));
             size_t const k_length = 1ull << k;
+
+            phase.log("current_iteration", k);
+            phase.log("prefix_size", k_length);
+
+            // tdc::StatPhase loop_phase("Sort S");
 
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(S.slice());
 
+            // loop_phase.split("Rename S tuples");
+
             // Rename the S tuples into P
             bool only_unique = name(S, P);
 
+            // loop_phase.split("Check unique");
+
             // The algorithm terminates if P only contains unique values
             if (only_unique) {
+                phase.split("Write out result");
                 for (size_t i = 0; i < N; i++) {
                     out_sa[i] = P[i].second;
                 }
                 return;
             }
+
+            // loop_phase.split("Sort P tuples");
 
             // Sort P by its i position mapped to the tuple
             // (i % (2**k), i / (2**k), implemented as a single
@@ -200,6 +214,8 @@ struct prefix_doubling_impl {
                     auto const anti_k = util::bits_of<size_t> - k;
                     return (i << anti_k) | (i >> k);
                 }));
+
+            // loop_phase.split("Pair names");
 
             for (size_t j = 0; j < N; j++) {
                 size_t const i1 = P[j].second;
@@ -339,7 +355,7 @@ struct prefix_doubling_impl {
 
         if (j + 1 < U.size()) {
             auto i2 = U[j + 1].second;
-            if (i2 == i1 + k_length) {
+            if (i2 == i1 + static_cast<sa_index>(k_length)) {
                 c2 = unmarked(U[j + 1].first);
             }
         }
@@ -389,6 +405,7 @@ struct prefix_doubling_impl {
     /// Doubling with discarding
     static void doubling_discarding(util::string_span text,
                                     util::span<sa_index> out_sa) {
+        tdc::StatPhase phase("Initialization");
         size_t const N = text.size();
 
         // To simplify some of the logic below,
@@ -421,7 +438,16 @@ struct prefix_doubling_impl {
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
         for (size_t k = 1;; k++) {
+            phase.split("Iteration");
+
             DCHECK_LE(k, util::ceil_log2(N));
+            size_t const k_length = 1ull << k;
+
+            phase.log("current_iteration", k);
+            phase.log("prefix_size", k_length);
+            phase.log("fully_discarded", supf.F().size());
+            phase.log("partially_discarded", supf.P().size());
+            phase.log("remaining", supf.U().size());
 
             // Mark all not unique names in U by setting their extra bit.
             mark_not_unique(supf.U());
@@ -463,8 +489,10 @@ struct prefix_doubling_impl {
                     IF_DEBUG({
                         auto c1 = c1c2i1.first[0];
                         auto i1 = c1c2i1.second;
-                        DCHECK_EQ(c1, c);
-                        DCHECK_EQ(i1, i);
+                        DCHECK_EQ(static_cast<size_t>(c1),
+                                  static_cast<size_t>(c));
+                        DCHECK_EQ(static_cast<size_t>(i1),
+                                  static_cast<size_t>(i));
                     })
 
                     supf.append_s(c1c2i1);
@@ -475,6 +503,7 @@ struct prefix_doubling_impl {
             // If S is empty, the algorithm terminates, and
             // F contains names for unique prefixes.
             if (supf.S().empty()) {
+                phase.split("Write out result");
                 auto F = supf.F();
 
                 // Sort the F tuples lexicographical
