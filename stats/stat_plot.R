@@ -7,6 +7,7 @@
 # ******************************************************************************/
  
 library("rjson")
+library("RColorBrewer")
 
 extract_stats <-function(json_name)
 {
@@ -76,10 +77,10 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems)
 }
 
 plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarithmic, 
-                               label_runtime, label_mem, label_main)
+                               label_runtime, label_mem, label_main, cols)
 {
   par(mfrow=c(1,1),mai=c(1,1,1,2), oma = c(0,0,0,2))
-  plot(runtimes, mems, col = 2:(length(runtimes)+1), pch = 19, 
+  plot(runtimes, mems, col = cols, pch = 19, 
        xlab = label_runtime, 
        ylab = label_mem, 
        main = label_main, log = logarithmic, xaxt = "n", yaxt="n")
@@ -92,22 +93,24 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
   #     col = 2:(length(runtimes)+1), adj=c(0.3,-0.35))
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
       mai=c(1,1,1,1), new = TRUE)
-  legend("right",  legend = algorithm_names, col = 2:(length(runtimes)+1), 
-         inset = c(-0.15,0), pch = 19, xpd = TRUE, bty = "n")
+  legend("right",  legend = algorithm_names, col = cols, 
+         inset = c(-0.2,0), pch = 19, xpd = TRUE, bty = "n")
 }
 
 plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
-                                 label_runtime, label_mem, label_main)
+                                 label_runtime, label_mem, label_main, cols)
 {
-  par(mfrow=c(2,1),mai=c(0.4, 1, 0.3, 0))
-  barplot(runtimes,beside=TRUE,col = 2:(length(runtimes)+1),
+  par(mfrow=c(2,1),mai=c(1, 1, 0.3, 0))
+  barplot(runtimes,beside=TRUE,col = cols,
           ylab = label_runtime, yaxt="n", names.arg = algorithm_names,
-          main = "Memory & runtime measurements")
+          main = "Memory & runtime measurements", las = 2)
   axis(2,at=seq(0,max(runtimes), by = max(runtimes)/10),
        labels=format(seq(0,max(runtimes), by = max(runtimes)/10),
                      scientific=FALSE))
   
-  barplot(mems,beside=TRUE, col = 2:(length(runtimes)+1),
+  
+  par(mai=c(0.3, 1, 0.3, 0))
+  barplot(mems,beside=TRUE, col = cols,
           add = FALSE, ylab = label_mem, ylim = c(max(mems),0),  yaxt="n")
   axis(2,at=seq(0,max(mems), by = max(mems)/10),
        labels=format(seq(0,max(mems),by = max(mems)/10),scientific=FALSE))
@@ -157,20 +160,23 @@ calculate_paretofront<-function(x)
 
 example_plot_multi <-function(){
   names = c("DC3", "DC7", "BPR", "nzSufSort", "mSufSort", "DivSufSort",
-            "G-Saka", "SAIS", "no algo")
-  runtimes = c(200,300,200,500,50,100,15,10, 1)
-  mems = c(75000,10000,8000,10000,9400,50000,9500, 10000, 100000)
+            "GSAKA", "Deep-Shallow", "SAKA-K", "SADS", "SAIS", "gsa-is",
+            "SAIS-light", "qSufSort")
+  runtimes = c(200,300,200,500,50,100,15,10, 1, 1000,250,100,300,600)
   
-  pareto = T
+  mems = c(75000,10000,8000,10000,9400,50000,9500, 10000, 100000,
+           150000,12000,15000,90000,120000)
+  
+  pareto = F
   logarithmic = F
   
   label_runtime = "Runtime in seconds"
   label_mem = "Memory peak in KB"
   label_main = "Memory & runtime measurements"
   
-  
+  n <- length(names)
   plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
-                         label_mem, label_main)
+                         label_mem, label_main, getDistinctColors(n))
   
   if(logarithmic){
     label_main = paste(label_main, "(logarithmic scale)", sep = " ")
@@ -203,12 +209,29 @@ example_plot_multi <-function(){
     mems = mems / 1000
     label_mem = "Memory peak in MB"
   }
-  
+  n <- length(names)
   plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
-                       label_runtime, label_mem, label_main)
+                       label_runtime, label_mem,
+                       label_main, getDistinctColors(n))
 }
 
-
+getDistinctColors <- function(n) {
+  qual_col_pals <- brewer.pal.info[brewer.pal.info$category == 'qual',]
+  col_vector <- unique (unlist(mapply(brewer.pal,
+                                      qual_col_pals$maxcolors,
+                                      rownames(qual_col_pals))));
+  stopifnot (n <= length(col_vector));
+  xxx <- col2rgb(col_vector);
+  dist_mat <- as.matrix(dist(t(xxx)));
+  diag(dist_mat) <- 1e10;
+  while (length(col_vector) > n) {
+    minv <- apply (dist_mat,1,function(x)min(x));
+    idx <- which(minv==min(minv))[1];
+    dist_mat <- dist_mat[-idx, -idx];
+    col_vector <- col_vector[-idx]
+  }
+  return(col_vector)
+}
 #testList= list(name="a",x=1,y=2)
 #testList2= list(name="b",x=2,y=1)
 
