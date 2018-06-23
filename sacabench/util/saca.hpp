@@ -118,7 +118,11 @@ public:
 
 /// A type that represents a input text before any allocation.
 struct text_initializer {
-    /// Size of the text. In bytes, without any sentinel values.
+    /// Getter for the prefix size
+    virtual size_t prefix_size() const = 0;
+    // Getter for the original text size
+    virtual size_t original_text_size() const = 0;
+    /// Size of the allocated text. In bytes, without any sentinel values.
     virtual size_t text_size() const = 0;
 
     /// Initializer function, that writes the text to the passed
@@ -132,11 +136,18 @@ struct text_initializer {
 /// A `text_initializer` that initializes with a `string_span`.
 class text_initializer_from_span : public text_initializer {
     string_span m_text;
+    size_t prefix;
 
 public:
-    inline text_initializer_from_span(string_span text) : m_text(text) {}
-
-    virtual inline size_t text_size() const override { return m_text.size(); }
+    inline text_initializer_from_span(string_span text, size_t prefix_length = -1) : m_text(text), 
+        prefix(prefix_length) {}
+    
+    virtual inline size_t prefix_size() const { return prefix; }
+    
+    virtual inline size_t original_text_size() const { return m_text.size(); }
+    
+    virtual inline size_t text_size() const override { return std::min(
+        prefix_size(), original_text_size()); }
 
     virtual inline void initializer(span<character> s) const override {
         DCHECK_EQ(s.size(), m_text.size());
@@ -149,12 +160,18 @@ public:
 /// A `text_initializer` that initializes with the content of a file.
 class text_initializer_from_file : public text_initializer {
     read_text_context m_ctx;
+    size_t prefix;
 
 public:
-    inline text_initializer_from_file(std::string const& file_path)
-        : m_ctx(file_path) {}
+    inline text_initializer_from_file(std::string const& file_path, size_t prefix_length = -1)
+        : m_ctx(file_path), prefix(prefix_length) {}
+        
+    virtual inline size_t prefix_size() const { return prefix; }
+    
+    virtual inline size_t original_text_size() const { return m_ctx.size; };
 
-    virtual inline size_t text_size() const override { return m_ctx.size; }
+    virtual inline size_t text_size() const override { return std::min(
+        prefix_size(), original_text_size()); }
 
     virtual inline void initializer(span<character> s) const override {
         m_ctx.read_text(s);
