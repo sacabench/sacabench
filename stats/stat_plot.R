@@ -19,28 +19,6 @@ extract_stats <-function(json_name)
   return(list(name=name,time=runtime,memory=mem))
 }
 
-plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems)
-{
-  par(mfrow=c(1,2),mai=c(0.7,1,1,1))
-  
-  #Plots for runtimes in each phase
-  barplot(runtimes[1],beside=FALSE,col = 2, ylab = "in seconds")
-  barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
-          col = 3:(length(runtimes)+2), add = TRUE)
-  title("Runtime", line=1)
-  
-  #Plots for peak memory usage in each phase
-  barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = "in KB")
-  title("Memory peak", line=1)
-  
-  #Header and Footer
-  mtext(algorithm_name, side=3, outer=TRUE, line=-2,cex = 2)
-  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
-      mai=c(1,1,1,1), new = TRUE)
-  legend("bottom", legend = phase_names, inset = c(0,-0.1), 
-         col = 2:(length(mems)+1), pch = 15, xpd = TRUE, horiz = TRUE)
-}
-
 extract_details<-function(json_name)
 {
   data= fromJSON(file=json_name,simplify = TRUE)
@@ -75,19 +53,41 @@ extract_details<-function(json_name)
                         phase_runtimes, phase_mems)
 }
 
-#testList= list(name="a",x=1,y=2)
-#testList2= list(name="b",x=2,y=1)
+plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems)
+{
+  par(mfrow=c(1,2),mai=c(0.7,1,1,1))
+  
+  #Plots for runtimes in each phase
+  barplot(runtimes[1],beside=FALSE,col = 2, ylab = "in seconds")
+  barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
+          col = 3:(length(runtimes)+2), add = TRUE)
+  title("Runtime", line=1)
+  
+  #Plots for peak memory usage in each phase
+  barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = "in KB")
+  title("Memory peak", line=1)
+  
+  #Header and Footer
+  mtext(algorithm_name, side=3, outer=TRUE, line=-2,cex = 2)
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
+      mai=c(1,1,1,1), new = TRUE)
+  legend("bottom", legend = phase_names, inset = c(0,-0.1), 
+         col = 2:(length(mems)+1), pch = 15, xpd = TRUE, horiz = TRUE)
+}
 
-#datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
-#                   stringsAsFactors = FALSE)
-
-plot_benchmark_multi<-function(algorithm_names, runtimes, mems)
+plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarithmic, 
+                               label_runtime, label_mem, label_main)
 {
   par(mfrow=c(1,1),mai=c(1,1,1,2), oma = c(0,0,0,2))
   plot(runtimes, mems, col = 2:(length(runtimes)+1), pch = 19, 
-       xlab = "Runtimes in seconds", 
-       ylab = "Memory Peak in KB", 
-       main = "Memory & runtime measurements (logarithmic scale)", log = "xy")
+       xlab = label_runtime, 
+       ylab = label_mem, 
+       main = label_main, log = logarithmic, xaxt = "n", yaxt="n")
+  axis(1,at=seq(0,max(runtimes), by = max(runtimes)/20),
+       labels=format(seq(0,max(runtimes), 
+                         by = max(runtimes)/20),scientific=FALSE))
+  axis(2,at=seq(0,max(mems), by = max(mems)/10),
+       labels=format(seq(0,max(mems), by = max(mems)/10),scientific=FALSE))
   #text(runtimes, mems, labels=algorithm_names, 
   #     col = 2:(length(runtimes)+1), adj=c(0.3,-0.35))
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
@@ -96,23 +96,121 @@ plot_benchmark_multi<-function(algorithm_names, runtimes, mems)
          inset = c(-0.15,0), pch = 19, xpd = TRUE, bty = "n")
 }
 
-plot_benchmark_multi_2<-function(algorithm_names, runtimes, mems)
+plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
+                                 label_runtime, label_mem, label_main)
 {
-  par(mfrow=c(2,1),mai=c(0, 1, 0.6, 0))
-  barplot(runtimes,beside=TRUE,col = 2:(length(runtimes)+1), ylab = "Runtime in seconds", names.arg = algorithm_names,main = "Memory & runtime measurements")
-  barplot(mems,beside=TRUE, col = 2:(length(runtimes)+1), add = FALSE, ylab = "Memory peak in KB", ylim = c(max(mems),0))
+  par(mfrow=c(2,1),mai=c(0.4, 1, 0.3, 0))
+  barplot(runtimes,beside=TRUE,col = 2:(length(runtimes)+1),
+          ylab = label_runtime, yaxt="n", names.arg = algorithm_names,
+          main = "Memory & runtime measurements")
+  axis(2,at=seq(0,max(runtimes), by = max(runtimes)/10),
+       labels=format(seq(0,max(runtimes), by = max(runtimes)/10),
+                     scientific=FALSE))
+  
+  barplot(mems,beside=TRUE, col = 2:(length(runtimes)+1),
+          add = FALSE, ylab = label_mem, ylim = c(max(mems),0),  yaxt="n")
+  axis(2,at=seq(0,max(mems), by = max(mems)/10),
+       labels=format(seq(0,max(mems),by = max(mems)/10),scientific=FALSE))
+  
   #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
   #    mai=c(1,1,1,1), new = TRUE)
   #legend("right",  legend = algorithm_names, col = 2:(length(runtimes)+1), 
   #       inset = c(-0.125,0), pch = 19, xpd = TRUE, bty = "n")
 }
 
+pareto_optimal = function(x,y){
+  dif = x-y
+  better= sum(any(dif<0))
+  
+  #there is no better one
+  if(better==0) 
+  {
+    return(FALSE)
+  }
+  #at least one better (dominating or incomparable)
+  return(TRUE)
+}
+
+calculate_paretofront<-function(x)
+{
+  n=dim(x)[1]
+  result =rep(FALSE, n)
+  for(index in 1:n)
+  {
+    for(other_index in 1:n)
+    {
+      if(other_index!=index)
+      {
+        if(!pareto_optimal(x[index,],x[other_index,]))
+        {
+          break
+        }
+      }
+      if(other_index==n)
+      {
+        result[index]=TRUE
+      }
+    }
+  }
+  return(result)
+}
 
 example_plot_multi <-function(){
-  names = c("DC3", "DC7", "BPR", "nzSufSort", "mSufSort", "DivSufSort", "G-Saka", "SAIS")
-  runtimes = c(200,300,200,500,600,100,50,10)
-  mems = c(75000,10000,8000,10000,40000,50000,60000, 10000)
+  names = c("DC3", "DC7", "BPR", "nzSufSort", "mSufSort", "DivSufSort",
+            "G-Saka", "SAIS", "no algo")
+  runtimes = c(200,300,200,500,50,100,15,10, 1)
+  mems = c(75000,10000,8000,10000,9400,50000,9500, 10000, 100000)
   
-  plot_benchmark_multi(names, runtimes, mems)
-  plot_benchmark_multi_2(names, runtimes, mems)
+  pareto = T
+  logarithmic = F
+  
+  label_runtime = "Runtime in seconds"
+  label_mem = "Memory peak in KB"
+  label_main = "Memory & runtime measurements"
+  
+  
+  plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
+                         label_mem, label_main)
+  
+  if(logarithmic){
+    label_main = paste(label_main, "(logarithmic scale)", sep = " ")
+    logarithmic = "xy"
+  }else{
+    logarithmic = ""
+  }
+  
+  if(pareto){
+    algo_data = cbind(mems, runtimes)
+    
+    is_pareto = calculate_paretofront(algo_data)
+    pareto_inidices = which(is_pareto)
+    
+    names = names[pareto_inidices]
+    runtimes = runtimes[pareto_inidices]
+    mems = mems[pareto_inidices]
+    
+    label_main = paste(label_main, "- Paretofront", sep = " ")
+  }
+  
+  #If values are too big -> next unit
+  too_long = min(runtimes) > 60
+  too_big  = min(mems) > 10000 
+  if(too_long){
+    runtimes = runtimes/60
+    label_runtime = "Runtime in minutes"
+  }
+  if(too_big){
+    mems = mems / 1000
+    label_mem = "Memory peak in MB"
+  }
+  
+  plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
+                       label_runtime, label_mem, label_main)
 }
+
+
+#testList= list(name="a",x=1,y=2)
+#testList2= list(name="b",x=2,y=1)
+
+#datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
+#                   stringsAsFactors = FALSE)
