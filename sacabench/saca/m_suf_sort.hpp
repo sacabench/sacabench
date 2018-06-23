@@ -48,13 +48,13 @@ public:
     }
     void set_head(sa_index head_index, util::character alpha,
                   util::character beta) {
-        DCHECK((head_index | NEG_BIT<sa_index>) != head_index);
+        DCHECK_NE((head_index | NEG_BIT<sa_index>), head_index);
         pair_si<sa_index> head_tail = std::make_pair(head_index, head_index);
         tupel_list[{alpha, beta}] = head_tail;
     }
     void set_tail(sa_index tail_index, util::character alpha,
                   util::character beta) {
-        DCHECK((tail_index | NEG_BIT<sa_index>) != tail_index);
+        DCHECK_NE((tail_index | NEG_BIT<sa_index>), tail_index);
         tupel_list[{alpha, beta}].second = tail_index;
     }
     sa_index get_tail(util::character alpha, util::character beta) {
@@ -205,7 +205,8 @@ public:
         refine_uChain(attr, type_s_indices, length);
 
         // initialize last chain character value
-        util::character last_char = 0;
+        // TODO: Unused variable
+        // util::character last_char = 0;
 
         // begin main loop:
         while (attr.chain_stack.size() > 0) {
@@ -274,7 +275,8 @@ public:
             }
 
             // set last character to current
-            last_char = current_char;
+            // TODO: Unused variable
+            // last_char = current_char;
         }
 
         // After chain_stack is empty, rank all remaining type-l-lists:
