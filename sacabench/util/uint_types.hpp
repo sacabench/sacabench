@@ -22,6 +22,24 @@
 #include <limits>
 #include <ostream>
 
+#define generate_relop(OP, MACROTYPE)                                          \
+    friend constexpr bool operator OP(const MACROTYPE& lhs,                    \
+                                      const UIntPair<High>& rhs) {             \
+        return lhs OP static_cast<unsigned long long>(rhs);                    \
+    }                                                                          \
+                                                                               \
+    friend constexpr bool operator OP(const UIntPair<High>& lhs,               \
+                                      const MACROTYPE& rhs) {                  \
+        return static_cast<unsigned long long>(lhs) OP rhs;                    \
+    }
+
+#define generate_relop_this(OP)                                                \
+    friend constexpr bool operator OP(const UIntPair<High>& lhs,               \
+                                      const UIntPair<High>& rhs) {             \
+        return static_cast<unsigned long long int>(lhs)                        \
+            OP static_cast<unsigned long long int>(rhs);                       \
+    }
+
 namespace sacabench::util {
 
 /*!
@@ -60,13 +78,17 @@ private:
     High high_;
 
     //! return highest value storable in lower part, also used as a mask.
-    constexpr static unsigned low_max() { return std::numeric_limits<Low>::max(); }
+    constexpr static unsigned low_max() {
+        return std::numeric_limits<Low>::max();
+    }
 
     //! number of bits in the lower integer part, used a bit shift value.
     constexpr static size_t low_bits = 8 * sizeof(Low);
 
     //! return highest value storable in higher part, also used as a mask.
-    constexpr static unsigned high_max() { return std::numeric_limits<High>::max(); }
+    constexpr static unsigned high_max() {
+        return std::numeric_limits<High>::max();
+    }
 
     //! number of bits in the higher integer part, used a bit shift value.
     constexpr static size_t high_bits = 8 * sizeof(High);
@@ -93,12 +115,15 @@ public:
     //! move constructor
     constexpr UIntPair(UIntPair&&) = default;
 
+    static_assert(sizeof(unsigned int) * 8 == 32,
+                  "make sure unsigned int is uint32_t");
+
     //! const from a simple 32-bit unsigned integer
-    constexpr UIntPair(const uint32_t& a) // NOLINT
+    constexpr UIntPair(const unsigned int& a) // NOLINT
         : low_(a), high_(0) {}
 
     //! const from a simple 32-bit signed integer
-    constexpr UIntPair(const int32_t& a) // NOLINT
+    constexpr UIntPair(const signed int& a) // NOLINT
         : low_(a), high_(0) {
         if (a >= 0)
             low_ = a;
@@ -110,16 +135,18 @@ public:
     constexpr UIntPair(const unsigned long long& a) // NOLINT
         : low_((Low)(a & low_max())),
           high_((High)((a >> low_bits) & high_max())) {
-        // check for overflow
-        assert((a >> (low_bits + high_bits)) == 0);
     }
 
-    //! construct from an 64-bit signed integer
+    //! construct from an 32-bit or 64-bit signed integer
     constexpr UIntPair(const unsigned long& a) // NOLINT
         : UIntPair(static_cast<unsigned long long>(a)) {}
 
+    //! construct from an 32-bit or 64-bit signed integer
+    constexpr UIntPair(const signed long& a) // NOLINT
+        : UIntPair(static_cast<signed long long>(a)) {}
+
     //! construct from an 64-bit signed integer
-    constexpr UIntPair(const int64_t& a) // NOLINT
+    constexpr UIntPair(const signed long long& a) // NOLINT
         : UIntPair(static_cast<unsigned long long>(a)) {}
 
     //! copy assignment operator
@@ -127,18 +154,62 @@ public:
     //! move assignment operator
     constexpr UIntPair& operator=(UIntPair&&) = default;
 
+private:
     //! return the number as an uint64 (unsigned long long)
     constexpr uint64_t ull() const {
         return ((uint64_t)high_) << low_bits | (uint64_t)low_;
     }
 
-    //! implicit cast to an unsigned long long
-    constexpr operator uint64_t() const { return ull(); }
-
     //! return the number as a uint64_t
     constexpr uint64_t u64() const {
         return ((uint64_t)high_) << low_bits | (uint64_t)low_;
     }
+
+public:
+    generate_relop_this(<);
+    generate_relop(<, unsigned char);
+    generate_relop(<, unsigned short int);
+    generate_relop(<, unsigned int);
+    generate_relop(<, unsigned long int);
+    generate_relop(<, unsigned long long int);
+
+    generate_relop_this(<=);
+    generate_relop(<=, unsigned char);
+    generate_relop(<=, unsigned short int);
+    generate_relop(<=, unsigned int);
+    generate_relop(<=, unsigned long int);
+    generate_relop(<=, unsigned long long int);
+
+    generate_relop_this(>);
+    generate_relop(>, unsigned char);
+    generate_relop(>, unsigned short int);
+    generate_relop(>, unsigned int);
+    generate_relop(>, unsigned long int);
+    generate_relop(>, unsigned long long int);
+
+    generate_relop_this(>=);
+    generate_relop(>=, unsigned char);
+    generate_relop(>=, unsigned short int);
+    generate_relop(>=, unsigned int);
+    generate_relop(>=, unsigned long int);
+    generate_relop(>=, unsigned long long int);
+
+    generate_relop_this(==);
+    generate_relop(==, unsigned char);
+    generate_relop(==, unsigned short int);
+    generate_relop(==, unsigned int);
+    generate_relop(==, unsigned long int);
+    generate_relop(==, unsigned long long int);
+
+    generate_relop_this(!=);
+    generate_relop(!=, unsigned char);
+    generate_relop(!=, unsigned short int);
+    generate_relop(!=, unsigned int);
+    generate_relop(!=, unsigned long int);
+    generate_relop(!=, unsigned long long int);
+
+    //! implicit cast to an unsigned long long
+    constexpr operator uint64_t() const { return ull(); }
 
     //! prefix increment operator (directly manipulates the integer parts)
     UIntPair& operator++() {
@@ -156,6 +227,20 @@ public:
         else
             --low_;
         return *this;
+    }
+
+    //! suffix increment operator (directly manipulates the integer parts)
+    UIntPair operator++(int) {
+        auto copy = *this;
+        ++(*this);
+        return copy;
+    }
+
+    //! suffix decrement operator (directly manipulates the integer parts)
+    UIntPair operator--(int) {
+        auto copy = *this;
+        --(*this);
+        return copy;
     }
 
     //! addition operator (uses 64-bit arithmetic)
@@ -190,39 +275,6 @@ public:
             (High)(high_ - b.high_ + ((sub >> low_bits) & high_max())));
     }
 
-    //! equality checking operator
-    bool operator==(const UIntPair& b) const {
-        return (low_ == b.low_) && (high_ == b.high_);
-    }
-
-    //! inequality checking operator
-    bool operator!=(const UIntPair& b) const {
-        return (low_ != b.low_) || (high_ != b.high_);
-    }
-
-    //! less-than comparison operator
-    bool operator<(const UIntPair& b) const {
-        return (high_ < b.high_) || (high_ == b.high_ && low_ < b.low_);
-    }
-
-    //! less-than comparison operator
-    bool operator<(const uint64_t& b) const { return ull() < b; }
-
-    //! less-or-equal comparison operator
-    bool operator<=(const UIntPair& b) const {
-        return (high_ < b.high_) || (high_ == b.high_ && low_ <= b.low_);
-    }
-
-    //! greater comparison operator
-    bool operator>(const UIntPair& b) const {
-        return (high_ > b.high_) || (high_ == b.high_ && low_ > b.low_);
-    }
-
-    //! greater-or-equal comparison operator
-    bool operator>=(const UIntPair& b) const {
-        return (high_ > b.high_) || (high_ == b.high_ && low_ >= b.low_);
-    }
-
     //! make a UIntPair outputtable via iostreams, using unsigned long long.
     friend std::ostream& operator<<(std::ostream& os, const UIntPair& a) {
         return os << a.ull();
@@ -255,7 +307,7 @@ using uint48 = UIntPair<uint16_t>;
 static_assert(sizeof(uint40) == 5, "sizeof uint40 is wrong");
 static_assert(sizeof(uint48) == 6, "sizeof uint48 is wrong");
 
-} // namespace util
+} // namespace sacabench::util
 
 namespace std {
 
