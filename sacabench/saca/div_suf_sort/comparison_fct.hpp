@@ -100,7 +100,12 @@ struct compare_suffix_ranks {
             if (compare_to_too_large) {
                 // Both "out of bounds" -> bigger index means string ends
                 // earlier (i.e. smaller)
+                std::cout << "Normally this case never occurs." << std::endl;
+                DCHECK_LT(elem + pow(2, depth-1), partial_isa.size());
+                DCHECK_LT(compare_to + pow(2, depth-1), partial_isa.size());
+                
                 return elem_at_depth > compare_to_at_depth;
+                
             }
             // Only first suffix (substring) ends "behind" sentinel
             return true;

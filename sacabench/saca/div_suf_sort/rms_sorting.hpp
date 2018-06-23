@@ -171,6 +171,8 @@ inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind,
                 }
                 ++rank;
             } else if (cmp(current, next) == 0) {
+                DCHECK_NE(cmp(next, current), true);
+                
                 // (current, next) not sorted correctly -> unsorted interval
                 is_sorted = false;
                 if(current_sorted) {
@@ -235,23 +237,24 @@ inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind,
             isa[rel_ind[i]] = rank;
         }
     }
-    
-    
     return is_sorted;
 }
 
 // One iteration for sorting rms-suffixes
 template <typename sa_index>
-inline static void
+inline static bool
 sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
                            compare_suffix_ranks<sa_index> cmp) {
     size_t interval_begin = 0, interval_end = 0, current_index;
     // indicator wether unsorted interval was found (to sort)
-    bool unsorted = false;
+    bool unsorted = false, current_unsorted = false;
     util::span<sa_index> rel_ind = rms_suf.relative_indices;
     util::span<sa_index> isa = rms_suf.partial_isa;
 
     for (size_t pos = 0; pos < rms_suf.partial_isa.size(); ++pos) {
+
+        // Last index: set interval_end for possible sort up to last element.
+        // May be overwritten, if last element is its own (sorted) bucket
         if(pos == rms_suf.partial_isa.size()-1) {
             interval_end = rms_suf.partial_isa.size();
         }
@@ -263,31 +266,34 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             interval_end = pos;
             // Skip interval of sorted elements (negated length contained in
             // current_index)
-            pos += (current_index ^ utils<sa_index>::NEGATIVE_MASK);
-        } else {
-            if(unsorted == 0 && pos > 0) {
-            interval_begin = pos-1;
-            }
-            unsorted = true;
-        }
+            pos += (current_index ^ utils<sa_index>::NEGATIVE_MASK)-1;
+        } else if(current_unsorted == 0) {
+            if(unsorted == 0) { unsorted = true; }
+            interval_begin = pos;
+            current_unsorted = true;
+        }        
         // if unsorted interval contains more than one element (after
         // interval_end has been set)
-        if (unsorted > 0 && interval_end > interval_begin) {
-            util::sort::introsort<sa_index, compare_suffix_ranks<sa_index>>(
+        // In last iteration interval_end will always be set before this cond.!
+        if (current_unsorted > 0 && interval_end > interval_begin) {
+            util::sort::ternary_quicksort<sa_index, compare_suffix_ranks<sa_index>>(
                 rel_ind.slice(interval_begin, interval_end), cmp);
             // Reset indicator
-            unsorted = false;
-            // Refresh ranks for complete isa
-            recompute_isa_ltr(rel_ind, isa, cmp);
+            current_unsorted = false;
         }
     }
+    // There are still unsorted intervals -> recompute ranks
+    if(unsorted > 0) {
+        // Refresh ranks for complete isa
+        recompute_isa_ltr(rel_ind, isa, cmp);
+    }
+    return unsorted;
 }
 
 template <typename sa_index>
 inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
-    size_t pos;
     compare_suffix_ranks<sa_index> cmp(rms_suf.partial_isa, 0);
-    bool unsorted = true;
+    bool unsorted;
     util::span<sa_index> rel_ind = rms_suf.relative_indices;
     // At most that many iterations (if we have to consider last suffix (or
     // later))
@@ -298,28 +304,7 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
     //util::floor_log2(rms_suf.relative_indices.size()) + 1;
     for (size_t iter = 0; iter < max_iterations + 1; ++iter) {
         // Sort rms-suffixes
-        sort_rms_suffixes_internal(rms_suf, cmp);
-        
-        unsorted = false;
-        // Check if still unsorted:
-        pos = 0;
-        //sa_index ref;
-        while (pos < rel_ind.size()) {
-            // Negated length of sorted interval
-            if ((rel_ind[pos] & utils<sa_index>::NEGATIVE_MASK) > 0) {
-                // Negated index at pos
-                /*ref = (rel_ind[pos] ^ utils<sa_index>::NEGATIVE_MASK);
-                DCHECK_NE(ref, sa_index(0));*/
-                pos += (rel_ind[pos] ^ utils<sa_index>::NEGATIVE_MASK);
-            } else {
-                // interval beginning with non-negated index found ->
-                // unsorted interval
-                unsorted = true;
-                // End inner loop - we know that there are still unsorted
-                // intervals
-                break;
-            }
-        }
+        unsorted = sort_rms_suffixes_internal(rms_suf, cmp);
         // Everything has been sorted - break outer loop
         if (unsorted == 0) {
             break;
@@ -359,7 +344,7 @@ inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
         }
     }
     if (sa_types::is_rms_type(0, types)) {
-        DCHECK_GT(rms_count, 0);
+        DCHECK_EQ(rms_count-1, 0);
 
         out_sa[isa[--rms_count]] = 0;
     }
