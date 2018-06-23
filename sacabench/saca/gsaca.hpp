@@ -95,6 +95,11 @@ namespace sacabench::gsaca {
 
     private:
 
+        template<typename sa_index>
+        inline static sa_index prev_const() {
+            return std::numeric_limits<sa_index>::max();
+        }
+
         /**
          * \brief This struct encapsulates values, which are shared between the helper functions.
          *
@@ -108,7 +113,7 @@ namespace sacabench::gsaca {
         template<typename sa_index>
         struct gsaca_values {
             sacabench::util::container<sa_index> ISA;
-            sacabench::util::container<util::ssize> PREV;
+            sacabench::util::container<sa_index> PREV;
             sacabench::util::container<sa_index> GLINK;
             sacabench::util::container<sa_index> GSIZE;
             size_t group_start = 0;
@@ -129,9 +134,9 @@ namespace sacabench::gsaca {
             values.ISA = sacabench::util::make_container<sa_index>(number_of_chars);
             values.GLINK = sacabench::util::make_container<sa_index>(number_of_chars);
             values.GSIZE = sacabench::util::make_container<sa_index>(number_of_chars);
-            values.PREV = sacabench::util::make_container<util::ssize>(number_of_chars);
+            values.PREV = sacabench::util::make_container<sa_index>(number_of_chars);
             for (size_t index = 0; index < number_of_chars; index++) {
-                values.PREV[index] = -1;
+                values.PREV[index] = prev_const<sa_index>();
             }
 
             // Setup helper lists to count occurring chars and to calculate the cumulative count of chars.
@@ -219,7 +224,7 @@ namespace sacabench::gsaca {
                 size_t selected_index = out_sa[index];
 
                 std::vector<size_t> list_of_remaining_indices;
-                while (values.PREV[selected_index] == -1) {
+                while (values.PREV[selected_index] == prev_const<sa_index>()) {
                     size_t prev = compute_prev_pointer(selected_index, values);
                     if (prev == 0 || values.ISA[prev] < values.group_start) {
                         values.PREV[selected_index] = prev;
@@ -300,8 +305,8 @@ namespace sacabench::gsaca {
                     // Check if the current suffix has a valid prev pointer to another index.
                     auto current_suffix = out_sa[index];
                     auto previous_element = values.PREV[current_suffix];
-                    // WICHTIG!!!!!!
-                    if (previous_element != sa_index(-1)) {
+
+                    if (previous_element != prev_const<sa_index>()) {
                         // Case 1: There exists a valid prev pointer.
 
                         // Check if the previous element is in the same or a smaller group.
@@ -320,7 +325,7 @@ namespace sacabench::gsaca {
                             values.PREV[current_suffix] = values.PREV[previous_element];
 
                             // Mark the prev pointer so it is no longer be checked in the previous comperation.
-                            values.PREV[previous_element] = -1;
+                            values.PREV[previous_element] = prev_const<sa_index>();
                         }
 
                         // Decrement index for next iteration of while loop.

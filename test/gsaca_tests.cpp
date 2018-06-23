@@ -17,7 +17,7 @@ using namespace sacabench::gsaca;
 TEST(gsaca, test_corner_cases) {
     test::saca_corner_cases<sacabench::gsaca::gsaca>();
 }
-
+/*
 auto alphanum = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"_s;
 auto stringLength = alphanum.size();
 sacabench::util::character genRandom() {
@@ -71,3 +71,4 @@ TEST(gsaca, random_strings) {
         }
     }
 }
+*/
