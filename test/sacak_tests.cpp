@@ -127,7 +127,7 @@ void make_sacak(util::string_span &test_text, util::container<sa_index> &sa, boo
         std::cout << "The resulting SA is: [ ";
         for (size_t i = 0; i < sa.size(); i++)
         {
-            int symb = int(sa[i]) == -1 ? -1 : int(sa[i]);
+            int symb = sa[i] == static_cast<sa_index>(-1) ? -1 : sa[i];
             std::cout << symb << " ";
         }
         std::cout << "]" << std::endl;

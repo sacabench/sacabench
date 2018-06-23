@@ -135,8 +135,6 @@ public:
     constexpr UIntPair(const unsigned long long& a) // NOLINT
         : low_((Low)(a & low_max())),
           high_((High)((a >> low_bits) & high_max())) {
-        // check for overflow
-        assert((a >> (low_bits + high_bits)) == 0);
     }
 
     //! construct from an 32-bit or 64-bit signed integer

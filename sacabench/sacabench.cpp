@@ -39,14 +39,14 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     CLI::App& construct = *app.add_subcommand("construct", "Construct a SA.");
     std::string input_filename = "";
-    std::string output_filename = "";
+    std::string output_json_filename = "";
+    std::string output_binary_filename = "";
     std::string algorithm = "";
     std::string benchmark_filename = "";
     bool check_sa = false;
-    bool out_json = false;
-    bool out_binary = false;
-    uint8_t out_fixed_bits = 0;
+    uint32_t out_fixed_bits = 0;
     bool force_overwrite = false;
+    uint32_t sa_minimum_bits = 32;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
@@ -54,37 +54,37 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             .add_option("input", input_filename,
                         "Path to input file, or - for STDIN.")
             ->required();
-        auto opt_output =
-            construct.add_option("-o,--output", output_filename,
-                                 "Path to SA output file, or - for STDOUT.");
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         construct.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes Path "
                              "to output file, or - for STDOUT");
 
-        auto opt_json = construct.add_flag("-J,--json", out_json,
-                                           "Output SA as JSON array.");
-        auto opt_binary = construct.add_flag(
-            "-B,--binary", out_binary,
+        construct.add_option("-J,--json", output_json_filename,
+                             "Output SA as JSON array. Takes path to output "
+                             "file, or - for STDOUT.");
+        auto opt_binary = construct.add_option(
+            "-B,--binary", output_binary_filename,
             "Output SA as binary array of unsigned integers, with a 1 Byte "
             "header "
-            "describing the number of bits used for each integer.");
-
-        opt_json->needs(opt_output);
-        opt_json->excludes(opt_binary);
-
-        opt_binary->needs(opt_output);
-        opt_binary->excludes(opt_json);
+            "describing the number of bits used for each integer. Takes path "
+            "to output file, or - for STDOUT.");
 
         auto opt_fixed_bits = construct.add_option(
             "-F,--fixed", out_fixed_bits,
-            "Elide the header, and output a fixed number of bits per SA entry");
+            "Elide the header, and output a fixed number of "
+            "bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
 
         construct.add_flag(
             "-f,--force", force_overwrite,
             "Overwrite existing Files instead of raising an error.");
+
+        construct.add_option(
+            "-m,--minimum_sa_bits", sa_minimum_bits,
+            "The lower bound of bits to use per SA entry during "
+            "construction",
+            32);
     }
 
     CLI::App& demo =
@@ -103,9 +103,38 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                          "to output file, or - for STDOUT");
         batch.add_flag("-f,--force", force_overwrite,
                        "Overwrite existing Files instead of raising an error.");
+        batch.add_option("-m,--minimum_sa_bits", sa_minimum_bits,
+                         "The lower bound of bits to use per SA entry during "
+                         "construction",
+                         32);
     }
 
     CLI11_PARSE(app, argc, argv);
+
+    // Check early if file exists
+    bool out_json = output_json_filename.size() != 0;
+    bool out_binary = output_binary_filename.size() != 0;
+    bool out_benchmark = benchmark_filename.size() != 0;
+    auto check_out_filename = [&](std::string const& filename,
+                                  std::string const& name) {
+        if (!force_overwrite && filename.size() != 0 && filename != "-" &&
+            file_exist_check(filename)) {
+            std::cerr << "ERROR: " << name << " file " << filename
+                      << " does already exist." << std::endl;
+            return true;
+        }
+        return false;
+    };
+    auto check_in_filename = [&](std::string const& filename,
+                                 std::string const& name) {
+        if (filename.size() != 0 && filename != "-" &&
+            !file_exist_check(filename)) {
+            std::cerr << "ERROR: " << name << " file " << filename
+                      << " does not exist." << std::endl;
+            return true;
+        }
+        return false;
+    };
 
     // Handle CLI arguments
     auto& saca_list = util::saca_list::get();
@@ -140,6 +169,18 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             implemented_algos();
             return 1;
         }
+        if (check_out_filename(output_json_filename, "Json output")) {
+            return 1;
+        }
+        if (check_out_filename(output_binary_filename, "Binary output")) {
+            return 1;
+        }
+        if (check_out_filename(benchmark_filename, "Benchmark")) {
+            return 1;
+        }
+        if (check_in_filename(input_filename, "Input")) {
+            return 1;
+        }
         {
             tdc::StatPhase root("CLI");
             {
@@ -154,46 +195,40 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             (util::character const*)stdin_buf.data(),
                             stdin_buf.size()));
                 } else {
-                    if (!file_exist_check(input_filename)) {
-                        std::cerr << "ERROR: Input File " << input_filename
-                                  << " does not exist." << std::endl;
-                        return 1;
-                    }
-
                     text = std::make_unique<util::text_initializer_from_file>(
                         input_filename);
                 }
 
-                auto sa = algo->construct_sa(*text);
+                auto sa = algo->construct_sa(*text, sa_minimum_bits);
 
-                if (output_filename.size() != 0) {
+                if (out_json | out_binary) {
                     tdc::StatPhase check_sa_phase("Output SA");
 
-                    auto write_out = [&](std::ostream& out_stream) {
-                        if (out_json) {
-                            sa->write_json(out_stream);
+                    auto handle_output_opt = [&](std::string const& opt,
+                                                 auto write_out) {
+                        if (opt.size() == 0) {
+                            return;
                         }
-                        if (out_binary) {
-                            sa->write_binary(out_stream, out_fixed_bits);
+
+                        if (opt == "-") {
+                            write_out(std::cout);
+                        } else {
+                            std::ofstream out_file(opt,
+                                                   std::ios_base::out |
+                                                       std::ios_base::binary |
+                                                       std::ios_base::trunc);
+                            write_out(out_file);
                         }
                     };
 
-                    if (output_filename == "-") {
-                        write_out(std::cout);
-                    } else {
-                        if (!force_overwrite &&
-                            file_exist_check(output_filename)) {
-                            std::cerr << "ERROR: Output File "
-                                      << output_filename
-                                      << " does already exist." << std::endl;
-                            return 1;
-                        }
-                        std::ofstream out_file(output_filename,
-                                               std::ios_base::out |
-                                                   std::ios_base::binary |
-                                                   std::ios_base::trunc);
-                        write_out(out_file);
-                    }
+                    handle_output_opt(
+                        output_json_filename,
+                        [&](std::ostream& stream) { sa->write_json(stream); });
+
+                    handle_output_opt(
+                        output_binary_filename, [&](std::ostream& stream) {
+                            sa->write_binary(stream, out_fixed_bits);
+                        });
                 }
                 if (check_sa) {
                     tdc::StatPhase check_sa_phase("SA Checker");
@@ -215,7 +250,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 root.log("algorithm_name", algo->name());
             }
 
-            if (benchmark_filename.size() > 0) {
+            if (out_benchmark) {
                 auto write_bench = [&](std::ostream& out) {
                     auto j = root.to_json();
                     out << j.dump(4) << std::endl;
@@ -224,13 +259,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 if (benchmark_filename == "-") {
                     write_bench(std::cout);
                 } else {
-                    if (!force_overwrite &&
-                        file_exist_check(benchmark_filename)) {
-                        std::cerr << "ERROR: Benchmark File "
-                                  << benchmark_filename
-                                  << " does already exist." << std::endl;
-                        return 1;
-                    }
                     std::ofstream benchmark_file(benchmark_filename,
                                                  std::ios_base::out |
                                                      std::ios_base::binary |
@@ -249,6 +277,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     if (batch) {
+        if (check_out_filename(benchmark_filename, "Benchmark")) {
+            return 1;
+        }
+        if (check_in_filename(input_filename, "Input")) {
+            return 1;
+        }
+
         std::cout << "Loading input..." << std::endl;
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
@@ -260,12 +295,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 util::string_span((util::character const*)stdin_buf.data(),
                                   stdin_buf.size()));
         } else {
-            if (!file_exist_check(input_filename)) {
-                std::cerr << "ERROR: Input File " << input_filename
-                          << " does not exist." << std::endl;
-                return 1;
-            }
-
             text = std::make_unique<util::text_initializer_from_file>(
                 input_filename);
         }
@@ -276,7 +305,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             tdc::StatPhase root(algo->name().data());
             {
                 std::cout << "Running " << algo->name() << "..." << std::endl;
-                auto sa = algo->construct_sa(*text);
+                auto sa = algo->construct_sa(*text, sa_minimum_bits);
 
                 if (check_sa) {
                     tdc::StatPhase check_sa_phase("SA Checker");
@@ -300,7 +329,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             stat_array.push_back(root.to_json());
         }
 
-        if (benchmark_filename.size() > 0) {
+        if (out_benchmark) {
             auto write_bench = [&](std::ostream& out) {
                 // auto j = stat_array.to_json();
                 out << stat_array.dump(4) << std::endl;
@@ -309,11 +338,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             if (benchmark_filename == "-") {
                 write_bench(std::cout);
             } else {
-                if (!force_overwrite && file_exist_check(benchmark_filename)) {
-                    std::cerr << "ERROR: Benchmark File " << benchmark_filename
-                              << " does already exist." << std::endl;
-                    return 1;
-                }
                 std::ofstream benchmark_file(benchmark_filename,
                                              std::ios_base::out |
                                                  std::ios_base::binary |

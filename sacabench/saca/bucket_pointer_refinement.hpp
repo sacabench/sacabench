@@ -12,7 +12,6 @@
 #include <util/compare.hpp>
 #include <util/container.hpp>
 #include <util/sort/bucketsort.hpp>
-#include <util/sort/std_sort.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -37,37 +36,36 @@ public:
                              util::alphabet const& alphabet,
                              util::span<sa_index> sa) {
         tdc::StatPhase bpr("Phase 1.1");
-        {
-            size_t alphabet_size = alphabet.size_with_sentinel();
 
-            size_t const n = input.size();
-            if (n == 0) { // there's nothing to do
-                return;
-            }
+        size_t alphabet_size = alphabet.size_with_sentinel();
 
-            // TODO: choose appropiate value
-            size_t bucketsort_depth = 2;
-            if (bucketsort_depth > input.size()) {
-                bucketsort_depth = input.size();
-            }
-
-            // Phase 1.1
-            // determine initial buckets with bucketsort
-            auto buckets = util::sort::bucketsort_presort(input, alphabet_size,
-                                                          bucketsort_depth, sa);
-
-            // Phase 1.2
-            // initialize bucket pointers such that each suffix is mapped to the
-            // bucket it's currenly in, indexed by right inclusive bound
-            bpr.split("Phase 1.2");
-            util::container<sa_index> bptr =
-                initialize_bucket_pointers<sa_index>(input, alphabet_size,
-                                                     bucketsort_depth, sa);
-
-            // Phase 2
-            bpr.split("Phase 2");
-            refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
+        size_t const n = input.size();
+        if (n == 0) { // there's nothing to do
+            return;
         }
+
+        // TODO: choose appropiate value
+        size_t bucketsort_depth = 2;
+        if (bucketsort_depth > input.size()) {
+            bucketsort_depth = input.size();
+        }
+
+        // Phase 1.1
+        // determine initial buckets with bucketsort
+        auto buckets = util::sort::bucketsort_presort(input, alphabet_size,
+                bucketsort_depth, sa);
+
+        // Phase 1.2
+        // initialize bucket pointers such that each suffix is mapped to the
+        // bucket it's currenly in, indexed by right inclusive bound
+        bpr.split("Phase 1.2");
+        util::container<sa_index> bptr =
+            initialize_bucket_pointers<sa_index>(input, alphabet_size,
+                    bucketsort_depth, sa);
+
+        // Phase 2
+        bpr.split("Phase 2");
+        refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
     }
 
 private:
@@ -186,31 +184,6 @@ private:
             return;
         }
 
-        // sort_key maps a suffix s_i to the bucket identifier of suffix
-        // s_{i+offset}. If no such suffix exists, it's assumed to be $.
-        auto sort_key = [=](size_t suffix) {
-            if (suffix >= bptr.size() - offset) {
-                return static_cast<size_t>(0);
-            } else {
-                // Add 1 to sort key in order to prevent collision with
-                // sentinel.
-                return static_cast<size_t>(bptr[suffix + offset]) + 1;
-            }
-        };
-
-        // sort the given bucket by using sort_key for each suffix
-        // TODO: use compare_key wrapper
-        util::sort::ternary_quicksort::ternary_quicksort(
-            bucket, util::compare_key(sort_key));
-
-        /* As a consequence of sorting, bucket pointers might have changed.
-         * We have to update the bucket pointers for further use.
-         */
-        size_t current_bucket_position = bucket.size();
-
-        size_t current_code = 0;
-        size_t recent_code = current_code;
-
         /* right_bounds indicates jumps between buckets:
          * right_bounds[i] = false: suffix i and i+1 are in the same bucket
          * right_bounds[i] = true: suffix i and i+1 are in different buckets
@@ -220,24 +193,58 @@ private:
             util::make_container<uint8_t>(bucket.size());
         std::fill(right_bounds.begin(), right_bounds.end(), false);
 
-        // sequentially scan the sa from right to left and calculate prefix
-        // codes of suffixes in order to determine borders between buckets
+        size_t current_bucket_position;
+        size_t sub_buckets;
+
         do {
-            --current_bucket_position;
+            sub_buckets = 0;
+            // sort_key maps a suffix s_i to the bucket identifier of suffix
+            // s_{i+offset}. If no such suffix exists, it's assumed to be $.
+            auto sort_key = [=](size_t suffix) {
+                if (suffix >= bptr.size() - offset) {
+                    return static_cast<size_t>(0);
+                } else {
+                    // Add 1 to sort key in order to prevent collision with
+                    // sentinel.
+                    return static_cast<size_t>(bptr[suffix + offset]) + 1;
+                }
+            };
 
-            // find current prefix code by inspecting
-            // bucket[current_bucket_position]
-            current_code = sort_key(bucket[current_bucket_position]);
+            // sort the given bucket by using sort_key for each suffix
+            // TODO: use compare_key wrapper
+            util::sort::ternary_quicksort::ternary_quicksort(
+                bucket, util::compare_key(sort_key));
 
-            if (current_code != recent_code) {
-                // If the prefix code has changed, we have passed a border
-                // between two buckets. Remember the border for later use.
-                // As the determination of codes is based on the old bucket
-                // pointers, bptr can not be updated instantly.
-                right_bounds[current_bucket_position] = true;
-                recent_code = current_code;
-            }
-        } while (current_bucket_position > 0);
+            /* As a consequence of sorting, bucket pointers might have changed.
+             * We have to update the bucket pointers for further use.
+             */
+            current_bucket_position = bucket.size();
+            size_t current_code = 0;
+            size_t recent_code = current_code;
+
+            // sequentially scan the sa from right to left and calculate prefix
+            // codes of suffixes in order to determine borders between buckets
+            do {
+                --current_bucket_position;
+
+                // find current prefix code by inspecting
+                // bucket[current_bucket_position]
+                current_code = sort_key(bucket[current_bucket_position]);
+
+                if (current_code != recent_code) {
+                    // If the prefix code has changed, we have passed a border
+                    // between two buckets. Remember the border for later use.
+                    // As the determination of codes is based on the old bucket
+                    // pointers, bptr can not be updated instantly.
+                    right_bounds[current_bucket_position] = true;
+                    recent_code = current_code;
+                    ++sub_buckets;
+                }
+            } while (current_bucket_position > 0);
+
+            // increase offset for next level
+            offset += step_size;
+        } while (sub_buckets < 2);
 
         current_bucket_position = bucket.size();
         // the key of the rightmost sub bucket is the rightmost index
@@ -265,11 +272,11 @@ private:
         // from right to left: Calculate codes in order to determine
         // bucket borders
         while (start_of_bucket < bucket.size()) {
-            end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) - bucket_start;
+            end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) -
+                            bucket_start;
             // Sort sub-buckets recursively
             refine_single_bucket<sa_index>(
-                offset + step_size, step_size, bptr,
-                start_of_bucket + bucket_start,
+                offset, step_size, bptr, start_of_bucket + bucket_start,
                 bucket.slice(start_of_bucket, ++end_of_bucket));
             // jump to the first index of the following sub bucket
             start_of_bucket = end_of_bucket;
