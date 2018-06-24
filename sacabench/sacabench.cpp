@@ -170,9 +170,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         implemented_algos();
     }
 
-    if (construct) {
-        nlohmann::json sum_array = nlohmann::json::array();
-        
+    if (construct) {        
         util::saca const* algo = nullptr;
         for (const auto& a : saca_list) {
             if (a->name() == algorithm) {
@@ -199,111 +197,112 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             return 1;
         }
         {
-            tdc::StatPhase root("CLI");
-            {
-                std::unique_ptr<util::text_initializer> text;
-                std::string stdin_buf;
-                size_t prefix = -1;
+            nlohmann::json sum_array = nlohmann::json::array();
+            for (uint32_t i = 0; i < repetition_count; i++) {
+                tdc::StatPhase root("CLI");
+                {
+                    std::unique_ptr<util::text_initializer> text;
+                    std::string stdin_buf;
+                    size_t prefix = -1;
 
-                if (prefix_size.size() > 0) {
-                    try {
-                        uint32_t unit_factor;
-                        size_t input_prefix;
-                        if (prefix_size[prefix_size.size()-1] == 'K') { 
-                            std::string number_part = prefix_size.substr(
-                                0,prefix_size.size()-1);
-                            input_prefix = std::stoi(number_part);
-                            unit_factor = 1024; 
+                    if (prefix_size.size() > 0) {
+                        try {
+                            uint32_t unit_factor;
+                            size_t input_prefix;
+                            if (prefix_size[prefix_size.size()-1] == 'K') { 
+                                std::string number_part = prefix_size.substr(
+                                    0,prefix_size.size()-1);
+                                input_prefix = std::stoi(number_part);
+                                unit_factor = 1024; 
+                            }
+                            else if (prefix_size[prefix_size.size()-1] == 'M') { 
+                                std::string number_part = prefix_size.substr(
+                                    0,prefix_size.size()-1);
+                                input_prefix = std::stoi(number_part);
+                                unit_factor = 1024*1024; 
+                            }
+                            else {
+                                std::string number_part = prefix_size.substr(
+                                    0,prefix_size.size());
+                                input_prefix = std::stoi(number_part);
+                                unit_factor = 1;
+                            }
+                            prefix = input_prefix * unit_factor;
                         }
-                        else if (prefix_size[prefix_size.size()-1] == 'M') { 
-                            std::string number_part = prefix_size.substr(
-                                0,prefix_size.size()-1);
-                            input_prefix = std::stoi(number_part);
-                            unit_factor = 1024*1024; 
+                        catch (const std::invalid_argument& ia) {
+                            std::cerr << "ERROR: input prefix is not a " 
+                                    "valid prefix value." << std::endl;
+                            return 1;
                         }
-                        else {
-                            std::string number_part = prefix_size.substr(
-                                0,prefix_size.size());
-                            input_prefix = std::stoi(number_part);
-                            unit_factor = 1;
-                        }
-                        prefix = input_prefix * unit_factor;
                     }
-                    catch (const std::invalid_argument& ia) {
-                        std::cerr << "ERROR: input prefix is not a " 
-                                "valid prefix value." << std::endl;
-                        return 1;
+                    
+                    if (input_filename == "-") {
+                        stdin_buf = std::string(
+                            std::istreambuf_iterator<char>(std::cin), {});
+                        text = std::make_unique<util::text_initializer_from_span>(
+                            util::string_span(
+                                (util::character const*)stdin_buf.data(),
+                                stdin_buf.size()), prefix);
+                    } else {
+                        text = std::make_unique<util::text_initializer_from_file>(
+                            input_filename, prefix);
                     }
-                }
-                
-                if (input_filename == "-") {
-                    stdin_buf = std::string(
-                        std::istreambuf_iterator<char>(std::cin), {});
-                    text = std::make_unique<util::text_initializer_from_span>(
-                        util::string_span(
-                            (util::character const*)stdin_buf.data(),
-                            stdin_buf.size()), prefix);
-                } else {
-                    text = std::make_unique<util::text_initializer_from_file>(
-                        input_filename, prefix);
-                }
 
-                root.log("algorithm_name", algo->name());
+                    root.log("algorithm_name", algo->name());
 
-                util::saca::abstract_sa_ptr sa;
-                for (uint32_t i = 0; i < repetition_count; i++) { 
-                    sa = algo->construct_sa(*text, sa_minimum_bits);
+     
+                    auto sa = algo->construct_sa(*text, sa_minimum_bits);
+                    
+                    if (out_json | out_binary) {
+                        tdc::StatPhase check_sa_phase("Output SA");
+
+                        auto handle_output_opt = [&](std::string const& opt,
+                                                     auto write_out) {
+                            if (opt.size() == 0) {
+                                return;
+                            }
+
+                            if (opt == "-") {
+                                write_out(std::cout);
+                            } else {
+                                std::ofstream out_file(opt,
+                                                       std::ios_base::out |
+                                                           std::ios_base::binary |
+                                                           std::ios_base::trunc);
+                                write_out(out_file);
+                            }
+                        };
+
+                        handle_output_opt(
+                            output_json_filename,
+                            [&](std::ostream& stream) { sa->write_json(stream); });
+
+                        handle_output_opt(
+                            output_binary_filename, [&](std::ostream& stream) {
+                                sa->write_binary(stream, out_fixed_bits);
+                            });
+                    }
+                    if (check_sa) {
+                        tdc::StatPhase check_sa_phase("SA Checker");
+
+                        // Read the string in again
+                        size_t text_size = text->text_size();
+                        auto s = util::string(text_size);
+                        text->initializer(s);
+
+                        // Run the SA checker, and print the result
+                        auto res = sa->check(s);
+                        check_sa_phase.log("check_result", res);
+                        if (res != util::sa_check_result::ok) {
+                            std::cerr << "ERROR: SA check failed" << std::endl;
+                            late_fail = 1;
+                        } else {
+                            std::cerr << "SA check OK" << std::endl;
+                        }
+                    }
+                    
                     sum_array.push_back(root.to_json());
                 }
-                
-                if (out_json | out_binary) {
-                    tdc::StatPhase check_sa_phase("Output SA");
-
-                    auto handle_output_opt = [&](std::string const& opt,
-                                                 auto write_out) {
-                        if (opt.size() == 0) {
-                            return;
-                        }
-
-                        if (opt == "-") {
-                            write_out(std::cout);
-                        } else {
-                            std::ofstream out_file(opt,
-                                                   std::ios_base::out |
-                                                       std::ios_base::binary |
-                                                       std::ios_base::trunc);
-                            write_out(out_file);
-                        }
-                    };
-
-                    handle_output_opt(
-                        output_json_filename,
-                        [&](std::ostream& stream) { sa->write_json(stream); });
-
-                    handle_output_opt(
-                        output_binary_filename, [&](std::ostream& stream) {
-                            sa->write_binary(stream, out_fixed_bits);
-                        });
-                }
-                if (check_sa) {
-                    tdc::StatPhase check_sa_phase("SA Checker");
-
-                    // Read the string in again
-                    size_t text_size = text->text_size();
-                    auto s = util::string(text_size);
-                    text->initializer(s);
-
-                    // Run the SA checker, and print the result
-                    auto res = sa->check(s);
-                    check_sa_phase.log("check_result", res);
-                    if (res != util::sa_check_result::ok) {
-                        std::cerr << "ERROR: SA check failed" << std::endl;
-                        late_fail = 1;
-                    } else {
-                        std::cerr << "SA check OK" << std::endl;
-                    }
-                }
-
             }
 
             if (out_benchmark) {
