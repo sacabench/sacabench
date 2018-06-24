@@ -77,8 +77,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
-        
-        construct.add_option("-p,--prefix", prefix_size, "calculate SA of prefix of input.");
+
+        construct.add_option("-p,--prefix", prefix_size,
+                             "calculate SA of prefix of input.");
 
         construct.add_flag(
             "-f,--force", force_overwrite,
@@ -91,8 +92,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             32);
         construct.add_option(
             "-r,--repetitions", repetition_count,
-            "The value indicates the number of times the SACA(s) will run. A " 
-            "larger number will possibly yield more accurate results", 
+            "The value indicates the number of times the SACA(s) will run. A "
+            "larger number will possibly yield more accurate results",
             1);
     }
 
@@ -116,11 +117,12 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                          "The lower bound of bits to use per SA entry during "
                          "construction",
                          32);
-        batch.add_option("-p,--prefix", prefix_size, "calculate SA of prefix of input.");
+        batch.add_option("-p,--prefix", prefix_size,
+                         "calculate SA of prefix of input.");
         batch.add_option(
             "-r,--repetitions", repetition_count,
-            "The value indicates the number of times the SACA(s) will run. A " 
-            "larger number will possibly yield more accurate results", 
+            "The value indicates the number of times the SACA(s) will run. A "
+            "larger number will possibly yield more accurate results",
             1);
     }
 
@@ -170,7 +172,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         implemented_algos();
     }
 
-    if (construct) {        
+    if (construct) {
         util::saca const* algo = nullptr;
         for (const auto& a : saca_list) {
             if (a->name() == algorithm) {
@@ -209,50 +211,49 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         try {
                             uint32_t unit_factor;
                             size_t input_prefix;
-                            if (prefix_size[prefix_size.size()-1] == 'K') { 
+                            if (prefix_size[prefix_size.size() - 1] == 'K') {
                                 std::string number_part = prefix_size.substr(
-                                    0,prefix_size.size()-1);
+                                    0, prefix_size.size() - 1);
                                 input_prefix = std::stoi(number_part);
-                                unit_factor = 1024; 
-                            }
-                            else if (prefix_size[prefix_size.size()-1] == 'M') { 
+                                unit_factor = 1024;
+                            } else if (prefix_size[prefix_size.size() - 1] ==
+                                       'M') {
                                 std::string number_part = prefix_size.substr(
-                                    0,prefix_size.size()-1);
+                                    0, prefix_size.size() - 1);
                                 input_prefix = std::stoi(number_part);
-                                unit_factor = 1024*1024; 
-                            }
-                            else {
-                                std::string number_part = prefix_size.substr(
-                                    0,prefix_size.size());
+                                unit_factor = 1024 * 1024;
+                            } else {
+                                std::string number_part =
+                                    prefix_size.substr(0, prefix_size.size());
                                 input_prefix = std::stoi(number_part);
                                 unit_factor = 1;
                             }
                             prefix = input_prefix * unit_factor;
-                        }
-                        catch (const std::invalid_argument& ia) {
-                            std::cerr << "ERROR: input prefix is not a " 
-                                    "valid prefix value." << std::endl;
+                        } catch (const std::invalid_argument& ia) {
+                            std::cerr << "ERROR: input prefix is not a "
+                                         "valid prefix value."
+                                      << std::endl;
                             return 1;
                         }
                     }
-                    
+
                     if (input_filename == "-") {
                         stdin_buf = std::string(
                             std::istreambuf_iterator<char>(std::cin), {});
-                        text = std::make_unique<util::text_initializer_from_span>(
-                            util::string_span(
-                                (util::character const*)stdin_buf.data(),
-                                stdin_buf.size()), prefix);
+                        text =
+                            std::make_unique<util::text_initializer_from_span>(
+                                util::string_span(
+                                    (util::character const*)stdin_buf.data(),
+                                    stdin_buf.size()),
+                                prefix);
                     } else {
-                        text = std::make_unique<util::text_initializer_from_file>(
-                            input_filename, prefix);
+                        text =
+                            std::make_unique<util::text_initializer_from_file>(
+                                input_filename, prefix);
                     }
 
-                    root.log("algorithm_name", algo->name());
-
-     
                     auto sa = algo->construct_sa(*text, sa_minimum_bits);
-                    
+
                     if (out_json | out_binary) {
                         tdc::StatPhase check_sa_phase("Output SA");
 
@@ -265,17 +266,18 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             if (opt == "-") {
                                 write_out(std::cout);
                             } else {
-                                std::ofstream out_file(opt,
-                                                       std::ios_base::out |
-                                                           std::ios_base::binary |
-                                                           std::ios_base::trunc);
+                                std::ofstream out_file(
+                                    opt, std::ios_base::out |
+                                             std::ios_base::binary |
+                                             std::ios_base::trunc);
                                 write_out(out_file);
                             }
                         };
 
-                        handle_output_opt(
-                            output_json_filename,
-                            [&](std::ostream& stream) { sa->write_json(stream); });
+                        handle_output_opt(output_json_filename,
+                                          [&](std::ostream& stream) {
+                                              sa->write_json(stream);
+                                          });
 
                         handle_output_opt(
                             output_binary_filename, [&](std::ostream& stream) {
@@ -300,14 +302,14 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             std::cerr << "SA check OK" << std::endl;
                         }
                     }
-                    
-                    sum_array.push_back(root.to_json());
                 }
+                root.log("algorithm_name", algo->name());
+                sum_array.push_back(root.to_json());
             }
 
             if (out_benchmark) {
                 auto write_bench = [&](std::ostream& out) {
-                    //auto j = root.to_json();
+                    // auto j = root.to_json();
                     auto j = sum_array;
                     out << j.dump(4) << std::endl;
                 };
@@ -349,29 +351,27 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             try {
                 uint32_t unit_factor;
                 size_t input_prefix;
-                if (prefix_size[prefix_size.size()-1] == 'K') { 
-                    std::string number_part = prefix_size.substr(
-                        0,prefix_size.size()-1);
+                if (prefix_size[prefix_size.size() - 1] == 'K') {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size() - 1);
                     input_prefix = std::stoi(number_part);
-                    unit_factor = 1024; 
-                }
-                else if (prefix_size[prefix_size.size()-1] == 'M') { 
-                    std::string number_part = prefix_size.substr(
-                        0,prefix_size.size()-1);
+                    unit_factor = 1024;
+                } else if (prefix_size[prefix_size.size() - 1] == 'M') {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size() - 1);
                     input_prefix = std::stoi(number_part);
-                    unit_factor = 1024*1024; 
-                }
-                else {
-                    std::string number_part = prefix_size.substr(
-                        0,prefix_size.size());
+                    unit_factor = 1024 * 1024;
+                } else {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size());
                     input_prefix = std::stoi(number_part);
                     unit_factor = 1;
                 }
                 prefix = input_prefix * unit_factor;
-            }
-            catch (const std::invalid_argument& ia) {
-                std::cerr << "ERROR: input prefix is not a " 
-                        "valid prefix value." << std::endl;
+            } catch (const std::invalid_argument& ia) {
+                std::cerr << "ERROR: input prefix is not a "
+                             "valid prefix value."
+                          << std::endl;
                 return 1;
             }
         }
@@ -381,7 +381,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 std::string(std::istreambuf_iterator<char>(std::cin), {});
             text = std::make_unique<util::text_initializer_from_span>(
                 util::string_span((util::character const*)stdin_buf.data(),
-                                  stdin_buf.size()), prefix);
+                                  stdin_buf.size()),
+                prefix);
         } else {
             text = std::make_unique<util::text_initializer_from_file>(
                 input_filename, prefix);
@@ -393,10 +394,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             for (uint32_t i = 0; i < repetition_count; i++) {
                 tdc::StatPhase root(algo->name().data());
                 {
-                    root.log("algorithm_name", algo->name());
-                
-                    std::cout << "Running " << algo->name() << " (" << (i+1) << "/" << repetition_count << ")" << std::endl;
-                    
+                    std::cout << "Running " << algo->name() << " (" << (i + 1)
+                              << "/" << repetition_count << ")" << std::endl;
+
                     auto sa = algo->construct_sa(*text, sa_minimum_bits);
 
                     if (check_sa) {
@@ -417,8 +417,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             std::cerr << "SA check OK" << std::endl;
                         }
                     }
-                    stat_array.push_back(root.to_json());
                 }
+                root.log("algorithm_name", algo->name());
+                stat_array.push_back(root.to_json());
             }
         }
 
