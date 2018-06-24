@@ -142,7 +142,7 @@ bucketsort_presort(const string_span input,
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
-        code += input[index + depth - 1];
+        code += input[static_cast<size_t>(index) + depth - 1];
         bucket& current_bucket = buckets[code];
         sa[current_bucket.position] = index;
         ++current_bucket.position;

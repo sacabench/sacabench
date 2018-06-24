@@ -275,11 +275,18 @@ public:
     /// Run the SACA on some text.
     ///
     /// It selects a suitable `sa_index` type automatically.
-    inline abstract_sa_ptr construct_sa(text_initializer const& text) const {
-        // TODO: Select suitable `sa_index` type automatically,
-        // or offer an API for selecting it.
-
-        return construct_sa_64(text);
+    inline abstract_sa_ptr
+    construct_sa(text_initializer const& text,
+                 size_t minimum_sa_bit_width) const {
+        if (minimum_sa_bit_width <= 32) {
+            return construct_sa_32(text);
+        } else if (minimum_sa_bit_width <= 40) {
+            return construct_sa_40(text);
+        } else if (minimum_sa_bit_width <= 48) {
+            return construct_sa_48(text);
+        } else {
+            return construct_sa_64(text);
+        }
     }
 
     /// Run the SACA on the example string `"hello world"`.
@@ -297,15 +304,15 @@ protected:
     /// Runs the SACA with a 32 bit `sa_index` type.
     virtual abstract_sa_ptr
     construct_sa_32(text_initializer const& text) const = 0;
-    /*
-    // TODO: Commented out because of compile errors with the uint4X types.
+
     /// Runs the SACA with a 40 bit `sa_index` type.
     virtual abstract_sa_ptr
     construct_sa_40(text_initializer const& text) const = 0;
+
     /// Runs the SACA with a 48 bit `sa_index` type.
     virtual abstract_sa_ptr
     construct_sa_48(text_initializer const& text) const = 0;
-    */
+
     /// Runs the SACA with a 64 bit `sa_index` type.
     virtual abstract_sa_ptr
     construct_sa_64(text_initializer const& text) const = 0;
@@ -326,8 +333,7 @@ protected:
     construct_sa_32(text_initializer const& text) const override {
         return construct_sa_helper<uint32_t>(text);
     }
-    /*
-    // TODO: Commented out because of compile errors with the uint4X types.
+
     virtual abstract_sa_ptr
     construct_sa_40(text_initializer const& text) const override {
         return construct_sa_helper<util::uint40>(text);
@@ -336,7 +342,7 @@ protected:
     construct_sa_48(text_initializer const& text) const override {
         return construct_sa_helper<util::uint48>(text);
     }
-    */
+
     virtual abstract_sa_ptr
     construct_sa_64(text_initializer const& text) const override {
         return construct_sa_helper<uint64_t>(text);

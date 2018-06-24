@@ -28,8 +28,8 @@ public:
 
     // This returns true, if a < b.
     inline bool operator()(const index_type& a, const index_type& b) const {
-        const bool a_is_too_short = depth + a >= input_text.size();
-        const bool b_is_too_short = depth + b >= input_text.size();
+        const bool a_is_too_short = static_cast<size_t>(depth + a) >= input_text.size();
+        const bool b_is_too_short = static_cast<size_t>(depth + b) >= input_text.size();
 
         if (a_is_too_short) {
             if (b_is_too_short) {
@@ -110,7 +110,7 @@ inline void multikey_quicksort_internal(
 
     // Sort the equal partition by the next character.
     ++key_func.depth;
-    if (abort_at_depth.has_value() && key_func.depth >= abort_at_depth) {
+    if (abort_at_depth.has_value() && key_func.depth >= static_cast<const index_type>(abort_at_depth.value())) {
         fn(equal);
     } else {
         multikey_quicksort_internal(equal, key_func, abort_at_depth, fn);
