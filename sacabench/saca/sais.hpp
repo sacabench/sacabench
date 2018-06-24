@@ -11,6 +11,8 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 namespace sacabench::sais {
 using namespace sacabench::util;
 class sais {
@@ -100,12 +102,16 @@ public:
 
     template <typename T>
     static void run_saca(T s, span<ssize> SA, size_t K) {
+        tdc::StatPhase sais("Main Phase");
+
         container<size_t> t = make_container<size_t>(s.size());
         container<size_t> p_1 = make_container<size_t>(s.size());
         container<size_t> buckets = make_container<size_t>(K + 1);
 
+        sais.split("Compute Types / Classify Characters");
         compute_types(t, p_1, s);
 
+        sais.split("Vorbereitung der Induzierung");
         generate_buckets(s, buckets, K, true);
         // Initialize each entry in SA with -1
         for (size_t i = 0; i < s.size(); i++) {
@@ -119,6 +125,7 @@ public:
             }
         }
 
+        sais.split("LMS-Induzierung");
         // sort LMS substrings
         induce_L_Types(s, buckets, K, false, SA, t);
         induce_S_Types(s, buckets, K, true, SA, t);
@@ -138,7 +145,8 @@ public:
             SA[i] = -1;
         }
 
-        // The given names correspond to the buckets the LMS are sorted ssizeo.
+        sais.split("Naming of LMS");
+        // The given names correspond to the buckets the LMS are sorted into.
         // To find the names, the strings have to be compared by its type and
         // lexicographical value per char
         ssize name = 0;
@@ -180,22 +188,18 @@ public:
             }
         }
 
-        // if there are more names than LMS, we have duplicates and have to
-        // recurse
-
-        container<size_t> s1 = make_container<size_t>(n1);
-        for (size_t i = s.size() - n1; i < s.size(); i++) {
-            s1[i - (s.size() - n1)] = SA[i];
-        }
-
+        
+        span<ssize> s1 = SA.slice(s.size() - n1, s.size());
+        
         if (name < n1) {
-            run_saca<span<size_t const>>(s1, SA, name - 1);
+            run_saca<span<ssize const>>(s1, SA, name - 1);
         } else {
             for (ssize i = 0; i < n1; i++) {
                 SA[s1[i]] = i;
             }
         }
 
+        sais.split("Induzierung des finalen SAs");
         // induce the final SA
         generate_buckets(s, buckets, K, true);
         size_t j;
