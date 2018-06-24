@@ -45,6 +45,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string benchmark_filename = "";
     bool check_sa = false;
     uint32_t out_fixed_bits = 0;
+    std::string prefix_size = "";
     bool force_overwrite = false;
     uint32_t sa_minimum_bits = 32;
     {
@@ -75,6 +76,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "bits per SA entry");
 
         opt_fixed_bits->needs(opt_binary);
+        
+        construct.add_option("-p,--prefix", prefix_size, "calculate SA of prefix of input.");
 
         construct.add_flag(
             "-f,--force", force_overwrite,
@@ -107,6 +110,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                          "The lower bound of bits to use per SA entry during "
                          "construction",
                          32);
+        batch.add_option("-p,--prefix", prefix_size, "calculate SA of prefix of input.");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -186,17 +190,49 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             {
                 std::unique_ptr<util::text_initializer> text;
                 std::string stdin_buf;
+                size_t prefix = -1;
 
+                if (prefix_size.size() > 0) {
+                    try {
+                        uint32_t unit_factor;
+                        size_t input_prefix;
+                        if (prefix_size[prefix_size.size()-1] == 'K') { 
+                            std::string number_part = prefix_size.substr(
+                                0,prefix_size.size()-1);
+                            input_prefix = std::stoi(number_part);
+                            unit_factor = 1024; 
+                        }
+                        else if (prefix_size[prefix_size.size()-1] == 'M') { 
+                            std::string number_part = prefix_size.substr(
+                                0,prefix_size.size()-1);
+                            input_prefix = std::stoi(number_part);
+                            unit_factor = 1024*1024; 
+                        }
+                        else {
+                            std::string number_part = prefix_size.substr(
+                                0,prefix_size.size());
+                            input_prefix = std::stoi(number_part);
+                            unit_factor = 1;
+                        }
+                        prefix = input_prefix * unit_factor;
+                    }
+                    catch (const std::invalid_argument& ia) {
+                        std::cerr << "ERROR: input prefix is not a " 
+                                "valid prefix value." << std::endl;
+                        return 1;
+                    }
+                }
+                
                 if (input_filename == "-") {
                     stdin_buf = std::string(
                         std::istreambuf_iterator<char>(std::cin), {});
                     text = std::make_unique<util::text_initializer_from_span>(
                         util::string_span(
                             (util::character const*)stdin_buf.data(),
-                            stdin_buf.size()));
+                            stdin_buf.size()), prefix);
                 } else {
                     text = std::make_unique<util::text_initializer_from_file>(
-                        input_filename);
+                        input_filename, prefix);
                 }
 
                 auto sa = algo->construct_sa(*text, sa_minimum_bits);
@@ -234,7 +270,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     tdc::StatPhase check_sa_phase("SA Checker");
 
                     // Read the string in again
-                    auto s = util::string(text->text_size());
+                    size_t text_size = text->text_size();
+                    auto s = util::string(text_size);
                     text->initializer(s);
 
                     // Run the SA checker, and print the result
@@ -287,16 +324,48 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << "Loading input..." << std::endl;
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
+        size_t prefix = -1;
+
+        if (prefix_size.size() > 0) {
+            try {
+                uint32_t unit_factor;
+                size_t input_prefix;
+                if (prefix_size[prefix_size.size()-1] == 'K') { 
+                    std::string number_part = prefix_size.substr(
+                        0,prefix_size.size()-1);
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1024; 
+                }
+                else if (prefix_size[prefix_size.size()-1] == 'M') { 
+                    std::string number_part = prefix_size.substr(
+                        0,prefix_size.size()-1);
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1024*1024; 
+                }
+                else {
+                    std::string number_part = prefix_size.substr(
+                        0,prefix_size.size());
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1;
+                }
+                prefix = input_prefix * unit_factor;
+            }
+            catch (const std::invalid_argument& ia) {
+                std::cerr << "ERROR: input prefix is not a " 
+                        "valid prefix value." << std::endl;
+                return 1;
+            }
+        }
 
         if (input_filename == "-") {
             stdin_buf =
                 std::string(std::istreambuf_iterator<char>(std::cin), {});
             text = std::make_unique<util::text_initializer_from_span>(
                 util::string_span((util::character const*)stdin_buf.data(),
-                                  stdin_buf.size()));
+                                  stdin_buf.size()), prefix);
         } else {
             text = std::make_unique<util::text_initializer_from_file>(
-                input_filename);
+                input_filename, prefix);
         }
 
         nlohmann::json stat_array = nlohmann::json::array();
@@ -311,7 +380,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     tdc::StatPhase check_sa_phase("SA Checker");
 
                     // Read the string in again
-                    auto s = util::string(text->text_size());
+                    size_t text_size = text->text_size();
+                    auto s = util::string(text_size);
                     text->initializer(s);
 
                     // Run the SA checker, and print the result
