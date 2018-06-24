@@ -34,7 +34,7 @@ public:
                                     util::span<sa_index> out_sa) {
         // Check if enough bits free for negation.
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
-        
+
         // Contains sentinel only
         if (text.size() == 1) {
             out_sa[0] = 0;

@@ -23,7 +23,8 @@ inline static void set_unsorted_rms_substring_intervals(
         compare_to = rms_suf.relative_indices[pos];
         // None of the substrings is smaller than the other (i.e. the same)
         if (!(cmp(elem, compare_to) || cmp(compare_to, elem))) {
-            rms_suf.relative_indices[pos] = rms_suf.relative_indices[pos] | utils<sa_index>::NEGATIVE_MASK;
+            rms_suf.relative_indices[pos] =
+                rms_suf.relative_indices[pos] | utils<sa_index>::NEGATIVE_MASK;
         }
     }
 }
@@ -32,7 +33,7 @@ template <typename sa_index>
 inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                                        const size_t max_character_value,
                                        buckets<sa_index>& sa_buckets) {
-    
+
     // Compute RMS-Substrings (tupel with start-/end-position)
     auto substrings_container = extract_rms_substrings(rms_suf);
     compare_rms_substrings<sa_index> cmp(rms_suf.text, substrings_container);
@@ -53,13 +54,14 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                 // Interval of indices to sort
                 current_interval = rms_suf.relative_indices.slice(
                     interval_begin, interval_end);
-                if(current_interval.size() > 1) {
+                if (current_interval.size() > 1) {
                     // sort current interval/bucket
                     util::sort::introsort<sa_index,
                                           compare_rms_substrings<sa_index>>(
                         current_interval, cmp);
-                    
-                    // Modify elements in interval if they are the same (MSB set)
+
+                    // Modify elements in interval if they are the same (MSB
+                    // set)
                     set_unsorted_rms_substring_intervals(
                         rms_suf, cmp, interval_begin, interval_end);
                 }
@@ -85,7 +87,8 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
                 // Reset sorted count
                 sorted_count = 0;
             }
-            rel_ind[pos - 1] = rel_ind[pos - 1] ^ utils<sa_index>::NEGATIVE_MASK;
+            rel_ind[pos - 1] =
+                rel_ind[pos - 1] ^ utils<sa_index>::NEGATIVE_MASK;
             isa[rel_ind[pos - 1]] = rank;
             ++unsorted_count;
 
@@ -113,25 +116,25 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
     if (sorted_count > 0) {
         rel_ind[0] = sorted_count | utils<sa_index>::NEGATIVE_MASK;
     }
-    
 }
 
 /*
 CURRENTLY NOT WORKING
 template <typename sa_index>
-inline static bool recompute_interval_isa(util::span<sa_index> rel_ind, 
+inline static bool recompute_interval_isa(util::span<sa_index> rel_ind,
         size_t interval_begin, size_t interval_end, util::span<sa_index> isa,
         compare_suffix_ranks<sa_index> cmp) {
     DCHECK_LT(interval_begin, interval_end);
     DCHECK_LE(interval_end, rel_ind.size());
-    
-    
-    // Variables to check, wether interval is sorted at either the beginning or the end of the interval (to readjust sorted-interval sizes of predecessors/successors)
-    size_t sorted_size_begin=0, sorted_size_end=0;
-    
+
+
+    // Variables to check, wether interval is sorted at either the beginning or
+the end of the interval (to readjust sorted-interval sizes of
+predecessors/successors) size_t sorted_size_begin=0, sorted_size_end=0;
+
     bool current_sorted = true, is_sorted = true;
-    size_t sorted_begin=interval_begin, unsorted_begin=interval_begin, rank = interval_begin;
-    sa_index current, next;
+    size_t sorted_begin=interval_begin, unsorted_begin=interval_begin, rank =
+interval_begin; sa_index current, next;
     //Recompute ranks, skip last element of interval
     for(size_t pos = interval_begin; pos < interval_end-1; ++pos) {
         current = rel_ind[pos];
@@ -141,9 +144,8 @@ inline static bool recompute_interval_isa(util::span<sa_index> rel_ind,
             if(!current_sorted) {
                 sorted_begin = pos+1;
                 current_sorted = true;
-                // Set ranks for unsorted interval (highest rank for each of them)
-                for(size_t i=unsorted_begin; i < pos+1; ++i) {
-                    isa[rel_ind[i]] = rank;
+                // Set ranks for unsorted interval (highest rank for each of
+them) for(size_t i=unsorted_begin; i < pos+1; ++i) { isa[rel_ind[i]] = rank;
                 }
             } else {
                 isa[current] = rank;
@@ -154,15 +156,14 @@ inline static bool recompute_interval_isa(util::span<sa_index> rel_ind,
             if(is_sorted) { is_sorted = false; }
             if(current_sorted) {
                 unsorted_begin = pos;
-                current_sorted = false;            
-                // Correct size, because pos is already part of unsorted interval        
-                if(pos - sorted_begin > 0) {
-                    rel_ind[sorted_begin] = (pos - sorted_begin) ^ 
-                    utils<sa_index>::NEGATIVE_MASK;
-                }/*
-                rel_ind[sorted_begin] = (pos - sorted_begin) | 
+                current_sorted = false;
+                // Correct size, because pos is already part of unsorted
+interval if(pos - sorted_begin > 0) { rel_ind[sorted_begin] = (pos -
+sorted_begin) ^ utils<sa_index>::NEGATIVE_MASK;
+                }
+                rel_ind[sorted_begin] = (pos - sorted_begin) |
                 utils<sa_index>::NEGATIVE_MASK;
-                
+
                 if(sorted_begin == interval_begin) {
                     sorted_size_begin = pos - sorted_begin;
                 }
@@ -173,25 +174,25 @@ inline static bool recompute_interval_isa(util::span<sa_index> rel_ind,
     DCHECK_EQ(rank, interval_end-1);
     // Handle last element of interval
     if(current_sorted) {
-        if(sorted_begin == interval_begin) { 
-            std::cout << "Last sorted interval is first sorted interval." << std::endl;
-            sorted_size_begin = sorted_begin; 
+        if(sorted_begin == interval_begin) {
+            std::cout << "Last sorted interval is first sorted interval." <<
+std::endl; sorted_size_begin = sorted_begin;
         }
         std::cout << "Last sorted interval." << std::endl;
         sorted_size_end = interval_end - sorted_begin;
         isa[rel_ind[interval_end-1]] = rank;
-        rel_ind[sorted_begin] = sorted_size_end | utils<sa_index>::NEGATIVE_MASK;
-    } else {
-        std::cout << "last unsorted interval" << std::endl;
+        rel_ind[sorted_begin] = sorted_size_end |
+utils<sa_index>::NEGATIVE_MASK; } else { std::cout << "last unsorted interval"
+<< std::endl;
         // Part of unsorted interval -> set ranks
         for(size_t i=unsorted_begin; i < interval_end; ++i) {
             isa[rel_ind[i]] = rank;
         }
     }
-    
+
     // Alternatively: Search from beginning, until this interval is found
     size_t length;
-    // Check, wether previous interval is sorted 
+    // Check, wether previous interval is sorted
     if(sorted_size_begin > 0) {
         std::cout << "Sorted interval at beginning." << std::endl;
         sorted_begin = interval_begin;
@@ -201,42 +202,44 @@ inline static bool recompute_interval_isa(util::span<sa_index> rel_ind,
             next = rel_ind[pos];
             if((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
                 length = (current ^ utils<sa_index>::NEGATIVE_MASK);
-                // Either sorted length of preceding sorted interval is increased or we can stop here
-                std::cout << pos-1+length << std::endl;
+                // Either sorted length of preceding sorted interval is
+increased or we can stop here std::cout << pos-1+length << std::endl;
                 if(pos-1+length == sorted_begin) {
-                    // Refresh sorted begin to search for further sorted intervals
+                    // Refresh sorted begin to search for further sorted
+intervals
                     // in front (directly connected to this one)
-                    sorted_begin = pos-1; 
-                    // set sorted size begin to reflect current completely 
+                    sorted_begin = pos-1;
+                    // set sorted size begin to reflect current completely
                     // sorted interval
                     sorted_size_begin += length;
-                    rel_ind[pos-1] = sorted_size_begin | utils<sa_index>::NEGATIVE_MASK;
-                } else { 
-                    std::cout << "This maybe shouldn't have occured." << std::endl;
-                    break; 
+                    rel_ind[pos-1] = sorted_size_begin |
+utils<sa_index>::NEGATIVE_MASK; } else { std::cout << "This maybe shouldn't have
+occured." << std::endl; break;
                 }
-                
+
             } else if((next & utils<sa_index>::NEGATIVE_MASK) > 0) {
                 // Prev index was beginning of sorted interval.
-                std::cout << "Prev index was beginning of sorted interval." << std::endl;
+                std::cout << "Prev index was beginning of sorted interval." <<
+std::endl;
             }
-            // There is an unsorted interval before a sorted interval "indicator"
-            else if(isa[current] == isa[next]) { 
-                std::cout << "break me up" << std::endl;
-            break; }
+            // There is an unsorted interval before a sorted interval
+"indicator" else if(isa[current] == isa[next]) { std::cout << "break me up" <<
+std::endl; break; }
         }
     }
-    // There is a sorted interval at the end (not at end of rel_ind) and there is a sorted interval directly after this one.
-    if(sorted_size_end > 0 && interval_end < rel_ind.size() && (rel_ind[interval_end] & utils<sa_index>::NEGATIVE_MASK) > 0) {
+    // There is a sorted interval at the end (not at end of rel_ind) and there
+is a sorted interval directly after this one. if(sorted_size_end > 0 &&
+interval_end < rel_ind.size() && (rel_ind[interval_end] &
+utils<sa_index>::NEGATIVE_MASK) > 0) {
         // Set correct length of last sorted interval in this interval
-        rel_ind[sorted_begin] = sorted_size_end + (rel_ind[interval_end] ^ utils<sa_index>::NEGATIVE_MASK);
+        rel_ind[sorted_begin] = sorted_size_end + (rel_ind[interval_end] ^
+utils<sa_index>::NEGATIVE_MASK);
     }
-    
+
     return is_sorted;
 }
 
 */
-
 
 /** \brief recomputes ranks (isa) for a given interval after it has been
  sorted by sort-rms-suffixes
@@ -253,108 +256,106 @@ inline static bool recompute_interval_isa(util::span<sa_index> rel_ind,
 */
 template <typename sa_index>
 inline static bool recompute_isa_ltr(util::span<sa_index> rel_ind,
-                                 util::span<sa_index> isa,
-                                 compare_suffix_ranks<sa_index> cmp) {
-                                     
+                                     util::span<sa_index> isa,
+                                     compare_suffix_ranks<sa_index> cmp) {
+
     //
     DCHECK_EQ(rel_ind.size(), isa.size());
-    size_t current, next, sorted_begin=0, unsorted_begin=0, rank=0;
-    
+    size_t current, next, sorted_begin = 0, unsorted_begin = 0, rank = 0;
+
     bool is_sorted = true, current_sorted = false;
-    
-    for(size_t pos=0; pos < rel_ind.size()-1; ++pos) {
+
+    for (size_t pos = 0; pos < rel_ind.size() - 1; ++pos) {
         DCHECK_LT(rank, rel_ind.size());
         current = rel_ind[pos];
-        next = rel_ind[pos+1];
-        if((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
+        next = rel_ind[pos + 1];
+        if ((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
             // Not set in this iteration; still needed to be increased
             // Set sorted_begin if this is a new sorted interval beginning
-            if(!current_sorted) {
+            if (!current_sorted) {
                 sorted_begin = pos;
                 current_sorted = true;
             }
             // current contains negated length of sorted interval -> skip
             current ^= utils<sa_index>::NEGATIVE_MASK;
-            
+
             // Counter ++pos in loop header
-            pos += current-1;
+            pos += current - 1;
             rank += current;
         } else {
-            if((next & utils<sa_index>::NEGATIVE_MASK) > 0) {
+            if ((next & utils<sa_index>::NEGATIVE_MASK) > 0) {
                 // Next index is part of sorted interval;
-                if(!current_sorted) {
-                    // Set rank for all elements in unsorted interval 
+                if (!current_sorted) {
+                    // Set rank for all elements in unsorted interval
                     // (from unsorted_begin to current)
-                    for(size_t i = unsorted_begin; i < pos+1; ++i) {
+                    for (size_t i = unsorted_begin; i < pos + 1; ++i) {
                         isa[rel_ind[i]] = rank;
-                    }              
+                    }
                 } else {
                     isa[current] = rank;
                 }
                 ++rank;
             } else if (!cmp(current, next)) {
-                
+
                 // (current, next) not sorted correctly -> unsorted interval
                 is_sorted = false;
-                if(current_sorted) {
+                if (current_sorted) {
                     // Unsorted interval starting at pos
                     current_sorted = false;
                     unsorted_begin = pos;
                     // Set length for (previous) sorted interval
                     // If two unsorted intervals follow each other - skip this
                     // operation
-                    if(pos - sorted_begin > 0) {
-                        rel_ind[sorted_begin] = (pos - sorted_begin) ^ 
-                        utils<sa_index>::NEGATIVE_MASK;
+                    if (pos - sorted_begin > 0) {
+                        rel_ind[sorted_begin] = (pos - sorted_begin) ^
+                                                utils<sa_index>::NEGATIVE_MASK;
                     }
                 }
                 ++rank;
-            } else {  
+            } else {
                 // Set correct rank for sorted element
 
                 // (current, next) sorted correctly
-                if(!current_sorted) {
+                if (!current_sorted) {
                     // isa[current] = rank;
                     current_sorted = true;
                     // Unsorted intervals could have only occured until now, if
                     // pos > 0
-                    // Condition needed, because current_sorted ininitialized with
-                    // false (0)
-                    if(pos > 0) {
+                    // Condition needed, because current_sorted ininitialized
+                    // with false (0)
+                    if (pos > 0) {
                         // sorted interval always starts after(!) current pos
-                        // Only exception: pos 0 (doesn't matter, because sorted_begin
-                        // was initialized correctly)
-                        sorted_begin = pos+1;
+                        // Only exception: pos 0 (doesn't matter, because
+                        // sorted_begin was initialized correctly)
+                        sorted_begin = pos + 1;
                         // Unsorted interval ended.
-                        // Set rank for all elements in unsorted interval 
+                        // Set rank for all elements in unsorted interval
                         // (from unsorted_begin to current)
-                        for(size_t i = unsorted_begin; i < pos+1; ++i) {
+                        for (size_t i = unsorted_begin; i < pos + 1; ++i) {
                             isa[rel_ind[i]] = rank;
-                        }               
-                    } else {                
+                        }
+                    } else {
                         isa[current] = rank;
                     }
                     ++rank;
-                }
-                else {                
+                } else {
                     isa[current] = rank++;
                 }
             }
         }
     }
 
-    current = rel_ind[rel_ind.size()-1];
-    if((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
-        if(current_sorted) {
-            rel_ind[sorted_begin] = (rel_ind.size() - sorted_begin) | 
-            utils<sa_index>::NEGATIVE_MASK;
+    current = rel_ind[rel_ind.size() - 1];
+    if ((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
+        if (current_sorted) {
+            rel_ind[sorted_begin] = (rel_ind.size() - sorted_begin) |
+                                    utils<sa_index>::NEGATIVE_MASK;
         }
-    }
-    else if(current_sorted) {
-        rel_ind[sorted_begin] = (rel_ind.size() - sorted_begin) | 
-        utils<sa_index>::NEGATIVE_MASK;
+    } else if (current_sorted) {
+        rel_ind[sorted_begin] =
+            (rel_ind.size() - sorted_begin) | utils<sa_index>::NEGATIVE_MASK;
     } else {
-        for(size_t i = unsorted_begin; i < rel_ind.size(); ++i) {
+        for (size_t i = unsorted_begin; i < rel_ind.size(); ++i) {
             isa[rel_ind[i]] = rank;
         }
     }
@@ -367,8 +368,8 @@ inline static bool
 sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
                            compare_suffix_ranks<sa_index> cmp) {
     size_t interval_begin = 0, interval_end = 0;
-    
-    sa_index current_index; //next_index;
+
+    sa_index current_index; // next_index;
     // indicator wether unsorted interval was found (to sort)
     bool unsorted = false, current_unsorted = false;
     util::span<sa_index> rel_ind = rms_suf.relative_indices;
@@ -378,7 +379,7 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
 
         // Last index: set interval_end for possible sort up to last element.
         // May be overwritten, if last element is its own (sorted) bucket
-        if(pos == isa.size()-1) {
+        if (pos == isa.size() - 1) {
             interval_end = isa.size();
         }
         // Search for unsorted interval
@@ -392,20 +393,24 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             interval_end = pos;
             // Skip interval of sorted elements (negated length contained in
             // current_index)
-            pos += (current_index ^ utils<sa_index>::NEGATIVE_MASK)-1;
-        } else if(!current_unsorted) {
-            if(unsorted == 0) { unsorted = true; }
+            pos += (current_index ^ utils<sa_index>::NEGATIVE_MASK) - 1;
+        } else if (!current_unsorted) {
+            if (unsorted == 0) {
+                unsorted = true;
+            }
             interval_begin = pos;
             current_unsorted = true;
-        }/* 
-            PROBABLY NOT WORKING
-        
-            else if(pos < isa.size()-1 && (next_index & utils<sa_index>::NEGATIVE_MASK) == 0 &&
-                cmp(current_index, next_index)) {
-            // Rare case where there are two unsorted intervals directly next to each other.
-            // Limit to first interval.
-            interval_end = pos+1;
-        }*/
+        } /*
+             PROBABLY NOT WORKING
+
+             else if(pos < isa.size()-1 && (next_index &
+         utils<sa_index>::NEGATIVE_MASK) == 0 && cmp(current_index, next_index))
+         {
+             // Rare case where there are two unsorted intervals directly next
+         to each other.
+             // Limit to first interval.
+             interval_end = pos+1;
+         }*/
         // if unsorted interval contains more than one element (after
         // interval_end has been set)
         // In last iteration interval_end will always be set before this cond.!
@@ -414,12 +419,12 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
                 rel_ind.slice(interval_begin, interval_end), cmp);
 
             // Refresh ranks for complete isa
-            //recompute_isa_ltr(rel_ind, isa, cmp);
+            // recompute_isa_ltr(rel_ind, isa, cmp);
             // Reset indicator
             current_unsorted = false;
         }
     }
-    if(unsorted) {
+    if (unsorted) {
         recompute_isa_ltr(rel_ind, isa, cmp);
     }
     return unsorted;
@@ -432,11 +437,10 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
     util::span<sa_index> rel_ind = rms_suf.relative_indices;
     // At most that many iterations (if we have to consider last suffix (or
     // later))
-    size_t max_iterations =
-        rms_suf.relative_indices.size();
-    
+    size_t max_iterations = rms_suf.relative_indices.size();
+
     // TODO (optimization): Check if max_iterations can be upper bounded
-    //util::floor_log2(rms_suf.relative_indices.size()) + 1;
+    // util::floor_log2(rms_suf.relative_indices.size()) + 1;
     for (size_t iter = 0; iter < max_iterations + 1; ++iter) {
         // Sort rms-suffixes
         unsorted = sort_rms_suffixes_internal(rms_suf, cmp);
@@ -479,7 +483,7 @@ inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
         }
     }
     if (sa_types::is_rms_type(0, types)) {
-        DCHECK_EQ(rms_count-1, 0);
+        DCHECK_EQ(rms_count - 1, 0);
 
         out_sa[isa[--rms_count]] = 0;
     }

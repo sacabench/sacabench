@@ -37,8 +37,8 @@ induce_s_suffixes(util::string_span input, util::span<bool> suffix_types,
                 // entry is not negative -> induce predecessor
                 // insert suffix i-1 at rightmost free index of
                 // associated S-bucket
-                size_t destination_bucket =
-                    buckets.get_s_bucket_index(input[size_t(sa[i]) - 1], input[sa[i]]);
+                size_t destination_bucket = buckets.get_s_bucket_index(
+                    input[size_t(sa[i]) - 1], input[sa[i]]);
                 if (size_t(sa[i]) - 1 > 0 &&
                     sa_types::is_l_type(size_t(sa[i]) - 2, suffix_types)) {
                     // Check if index is used to induce in current step
@@ -46,11 +46,14 @@ induce_s_suffixes(util::string_span input, util::span<bool> suffix_types,
                     // Prefix/Postfix-operators not supported for uint40
                     sa[buckets.s_buckets[destination_bucket]] =
                         (size_t(sa[i]) - 1) ^ NEGATIVE_MASK;
-                    buckets.s_buckets[destination_bucket] = buckets.s_buckets[destination_bucket]-sa_index(1);
+                    buckets.s_buckets[destination_bucket] =
+                        buckets.s_buckets[destination_bucket] - sa_index(1);
                 } else {
                     // Prefix/Postfix-operators not supported for uint40
-                    sa[buckets.s_buckets[destination_bucket]] = sa[i] - sa_index(1);
-                    buckets.s_buckets[destination_bucket] = buckets.s_buckets[destination_bucket]-sa_index(1);
+                    sa[buckets.s_buckets[destination_bucket]] =
+                        sa[i] - sa_index(1);
+                    buckets.s_buckets[destination_bucket] =
+                        buckets.s_buckets[destination_bucket] - sa_index(1);
                 }
             }
             // toggle flag
@@ -60,7 +63,7 @@ induce_s_suffixes(util::string_span input, util::span<bool> suffix_types,
 
     // "$" is the first index
     sa[0] = input.size() - 1;
-    
+
     // if predecessor is S-suffix
     if (input[input.size() - 2] < input[input.size() - 1]) {
         sa[0] = sa[0] | NEGATIVE_MASK;
@@ -78,17 +81,18 @@ inline static void induce_l_suffixes(util::string_span input,
         // Index 0 has no predecessor -> skip
         if (sa[i] == sa_index(0)) {
             continue;
-        }
-        else if ((sa[i] & NEGATIVE_MASK) > 0) {
+        } else if ((sa[i] & NEGATIVE_MASK) > 0) {
             // entry is negative: sa[i]-1 already induced -> remove flag
             sa[i] = sa[i] ^ NEGATIVE_MASK;
         } else {
             // predecessor has yet to be induced
             insert_position = buckets.l_buckets[input[size_t(sa[i]) - 1]];
-            buckets.l_buckets[input[size_t(sa[i]) - 1]] = buckets.l_buckets[input[size_t(sa[i]) - 1]]+sa_index(1);
+            buckets.l_buckets[input[size_t(sa[i]) - 1]] =
+                buckets.l_buckets[input[size_t(sa[i]) - 1]] + sa_index(1);
             DCHECK_LT(insert_position, input.size());
             sa[insert_position] = sa[i] - sa_index(1);
-            if (size_t(sa[i]) - 1 > 0 && input[size_t(sa[i]) - 2] < input[size_t(sa[i]) - 1]) {
+            if (size_t(sa[i]) - 1 > 0 &&
+                input[size_t(sa[i]) - 2] < input[size_t(sa[i]) - 1]) {
                 // predecessor of induced index is S-suffix
                 sa[insert_position] = sa[insert_position] | NEGATIVE_MASK;
             }

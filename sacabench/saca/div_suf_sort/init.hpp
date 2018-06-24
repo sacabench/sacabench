@@ -158,12 +158,11 @@ inline static void count_buckets(util::string_span input,
             second_letter = input[current + 1];
             // Compute bucket_index regarding current suffix being either
             // s- or rms-type
-            bucket_index =
-                (sa_types::is_rms_type(current, suffix_types))
-                    ? sa_buckets.get_rms_bucket_index(first_letter,
-                                                      second_letter)
-                    : sa_buckets.get_s_bucket_index(first_letter,
-                                                    second_letter);
+            bucket_index = (sa_types::is_rms_type(current, suffix_types))
+                               ? sa_buckets.get_rms_bucket_index(first_letter,
+                                                                 second_letter)
+                               : sa_buckets.get_s_bucket_index(first_letter,
+                                                               second_letter);
 
             // Increase count for bucket at bucket_index by one.
             ++sa_buckets.s_buckets[bucket_index];
@@ -185,7 +184,7 @@ inline static void prefix_sum(const size_t max_character_value,
         l_border += l_count;
         // Save count for current l-bucket for l_border of next l-bucket
         l_count = sa_buckets.l_buckets[first_letter];
-        //DCHECK_LE(l_border+l_count, input.size());
+        // DCHECK_LE(l_border+l_count, input.size());
         // Set left border of current bucket
         sa_buckets.l_buckets[first_letter] = l_border;
         for (size_t second_letter = first_letter;
