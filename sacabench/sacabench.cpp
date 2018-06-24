@@ -308,8 +308,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
             if (out_benchmark) {
                 auto write_bench = [&](std::ostream& out) {
-                    auto j = root.to_json();
-                    //auto j = sum_array;
+                    //auto j = root.to_json();
+                    auto j = sum_array;
                     out << j.dump(4) << std::endl;
                 };
 
