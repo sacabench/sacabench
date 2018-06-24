@@ -10,10 +10,11 @@
    distributed, the copyright notice must be retained and any alterations in
    the code must be clearly marked. No warranty is given regarding the quality
    of this software.*/
-
 #include <limits.h>
+#include "util/signed_size_type.hpp"
+using namespace sacabench::util;
 
-static int *I, /* group array, ultimately suffix array.*/
+static ssize *I, /* group array, ultimately suffix array.*/
     *V,        /* inverse array, ultimately inverse of I.*/
     r,         /* number of symbols aggregated by transform.*/
     h;         /* length of already-sorted prefixes.*/
@@ -27,8 +28,8 @@ static int *I, /* group array, ultimately suffix array.*/
 /* Subroutine for select_sort_split and sort_split. Sets group numbers for a
    group whose lowest position in I is pl and highest position is pm.*/
 
-static void update_group(int* pl, int* pm) {
-    int g;
+static void update_group(ssize* pl, ssize* pm) {
+    ssize g;
 
     g = pm - I; /* group number.*/
     V[*pl] = g; /* update group number of first position.*/
@@ -43,9 +44,9 @@ static void update_group(int* pl, int* pm) {
 /* Quadratic sorting method to use for small subarrays. To be able to update
    group numbers consistently, a variant of selection sorting is used.*/
 
-static void select_sort_split(int* p, int n) {
-    int *pa, *pb, *pi, *pn;
-    int f, v, tmp;
+static void select_sort_split(ssize* p, ssize n) {
+    ssize *pa, *pb, *pi, *pn;
+    ssize f, v, tmp;
 
     pa = p;         /* pa is start of group being picked out.*/
     pn = p + n - 1; /* pn is last position of subarray.*/
@@ -70,9 +71,9 @@ static void select_sort_split(int* p, int n) {
 
 /* Subroutine for sort_split, algorithm by Bentley & McIlroy.*/
 
-static int choose_pivot(int* p, int n) {
-    int *pl, *pm, *pn;
-    int s;
+static ssize choose_pivot(ssize* p, ssize n) {
+    ssize *pl, *pm, *pn;
+    ssize s;
 
     pm = p + (n >> 1); /* small arrays, middle element.*/
     if (n > 7) {
@@ -95,9 +96,9 @@ static int choose_pivot(int* p, int n) {
    Software -- Practice and Experience 23(11), 1249-1265 (November 1993). This
    function is based on Program 7.*/
 
-static void sort_split(int* p, int n) {
-    int *pa, *pb, *pc, *pd, *pl, *pm, *pn;
-    int f, v, s, t, tmp;
+static void sort_split(ssize* p, ssize n) {
+    ssize *pa, *pb, *pc, *pd, *pl, *pm, *pn;
+    ssize f, v, s, t, tmp;
 
     if (n < 7) { /* multi-selection sort smallest arrays.*/
         select_sort_split(p, n);
@@ -156,8 +157,8 @@ static void sort_split(int* p, int n) {
    Output: x is V and p is I after the initial sorting stage of the refined
    suffix sorting algorithm.*/
 
-static void bucketsort(int* x, int* p, int n, int k) {
-    int *pi, i, c, d, g;
+static void bucketsort(ssize* x, ssize* p, ssize n, ssize k) {
+    ssize *pi, i, c, d, g;
 
     for (pi = p; pi < p + k; ++pi)
         *pi = -1; /* mark linked lists empty.*/
@@ -196,9 +197,9 @@ static void bucketsort(int* x, int* p, int n, int k) {
    new alphabet. If j<=n+1, the alphabet is compacted. The global variable r is
    set to the number of old symbols grouped into one. Only x[n] is 0.*/
 
-static int transform(int* x, int* p, int n, int k, int l, int q) {
-    int b, c, d, e, i, j, m, s;
-    int *pi, *pj;
+static ssize transform(ssize* x, ssize* p, ssize n, ssize k, ssize l, ssize q) {
+    ssize b, c, d, e, i, j, m, s;
+    ssize *pi, *pj;
 
     for (s = 0, i = k - l; i; i >>= 1)
         ++s;          /* s is number of bits in old symbol.*/
@@ -254,9 +255,9 @@ static int transform(int* x, int* p, int n, int k, int l, int q) {
    contents of x[n] is disregarded, the n-th symbol being regarded as
    end-of-string smaller than all other symbols.*/
 
-void suffixsort(int* x, int* p, int n, int k, int l) {
-    int *pi, *pk;
-    int i, j, s, sl;
+void suffixsort(ssize* x, ssize* p, ssize n, ssize k, ssize l) {
+    ssize *pi, *pk;
+    ssize i, j, s, sl;
 
     V = x; /* set global values.*/
     I = p;
@@ -298,7 +299,6 @@ void suffixsort(int* x, int* p, int n, int k, int l) {
     for (i = 0; i <= n; ++i) /* reconstruct suffix array from inverse.*/
         I[V[i]] = i;
 }
-using namespace sacabench::util;
 namespace sacabench::qsufsort_ext {
 class qsufsort_ext {
 public:
@@ -312,11 +312,12 @@ public:
                              util::span<sa_index> out_sa) {
         if (text.size() < 2)
             return;
-        int* transform_text = new int[text.size() + 1];
-        int* transform_sa = new int[out_sa.size() + 1];
+        ssize* transform_text = new ssize[text.size() + 1];
+        ssize* transform_sa = new ssize[out_sa.size() + 1];
 
+        //TODO find a way without copying
         for (size_t index = 0; index < text.size(); ++index) {
-            transform_text[index] = (int)text[index];
+            transform_text[index] = (ssize)text[index];
         }
         if (!alphabet.is_effective()) {
             auto new_alphabet = apply_effective_alphabet(string(text));
