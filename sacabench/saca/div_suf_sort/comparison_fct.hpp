@@ -88,6 +88,10 @@ struct compare_suffix_ranks {
 
     inline bool operator()(const size_t& elem,
                            const size_t& compare_to) const {
+        // First check wether "base" ranks are different
+        if(partial_isa[elem] != partial_isa[compare_to]) {
+            return partial_isa[elem] < partial_isa[compare_to];
+        }
         // Could cause overflow if depth is too big (especially for sa_index
         // type)
         const size_t elem_at_depth = elem + pow(2, depth);
@@ -95,7 +99,7 @@ struct compare_suffix_ranks {
         const bool elem_too_large = elem_at_depth >= partial_isa.size();
         const bool compare_to_too_large =
             compare_to_at_depth >= partial_isa.size();
-
+        // Special case if wonky comparisons happen
         if (elem_too_large) {
             if (compare_to_too_large) {
                 // Both "out of bounds" -> bigger index means string ends

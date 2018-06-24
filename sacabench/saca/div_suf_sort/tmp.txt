@@ -1,0 +1,44 @@
+
+inline static bool recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin, size_t interval_end, util::span<sa_index> isa) {
+    DCHECK_LT(interval_begin, interval_end);
+    DCHECK_LE(interval_end, rel_ind.size());
+    
+    
+    // Variables to check, wether interval is sorted at either the beginning or the end of the interval (to readjust sorted-interval sizes of predecessors/successors)
+    size_t sorted_size_begin=0, sorted_size_end=0;
+    
+    bool current_sorted = false;
+    size_t sorted_begin=interval_begin, unsorted_begin=interval_begin, rank = interval_begin;
+    sa_index current, next;
+    //Recompute ranks
+    for(size_t pos = interval_begin; pos < interval_end; ++pos) {
+        current = rel_ind[pos];
+        next = rel_ind[pos+1];
+        // All indices non-negated
+        if(cmp(current, next)) {
+            if(!current_sorted) {
+                sorted_begin = pos+1;
+                current_sorted = true;
+                // Set ranks for unsorted interval (highest rank for each of them)
+                for(size_t i=unsorted_begin; i < pos+1; ++i) {
+                    isa[rel_ind[i]] = rank;
+                }
+            } else {
+                isa[current] = rank;
+            }
+            // Increase rank after this step
+            ++rank;
+        } else {
+            if(current_sorted) {
+                unsorted_begin = pos;
+                current_sorted = 0;
+                rel_ind[sorted_begin] = (pos - sorted_begin) | utils<sa_index>::NEGATIVE_MASK;
+                
+                
+                if(sorted_begin == interval_begin) {
+                    sorted_size_begin = pos - sorted_begin;
+                }
+            }
+        }
+    }
+}
