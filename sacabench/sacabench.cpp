@@ -390,6 +390,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         nlohmann::json stat_array = nlohmann::json::array();
 
         for (const auto& algo : saca_list) {
+            nlohmann::json alg_array = nlohmann::json::array();
+            
             for (uint32_t i = 0; i < repetition_count; i++) {
                 tdc::StatPhase root(algo->name().data());
                 {
@@ -417,9 +419,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             std::cerr << "SA check OK" << std::endl;
                         }
                     }
-                    stat_array.push_back(root.to_json());
+                    alg_array.push_back(root.to_json());
                 }
             }
+            stat_array.push_back(alg_array);
         }
 
         if (out_benchmark) {
