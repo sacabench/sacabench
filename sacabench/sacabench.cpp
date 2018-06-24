@@ -448,10 +448,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
-    if(plot){
+    if(plot && out_benchmark){
             std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename + "'  ..//stats/stat_plot.R test.Rout"; 
-            std::cout << r_command << std::endl;
-            system(r_command.c_str());
+            int i = system(r_command.c_str());
+            (void)i; //suppress  warning
     }
         
     return late_fail;

@@ -6,6 +6,9 @@
 # * All rights reserved. Published under the BSD-3 license in the LICENSE file.
 # ******************************************************************************/
  
+
+install.packages("rjson")
+install.packages("RColorBrewer")
 library("rjson")
 library("RColorBrewer")
 
