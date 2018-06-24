@@ -47,6 +47,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     uint32_t out_fixed_bits = 0;
     bool force_overwrite = false;
     uint32_t sa_minimum_bits = 32;
+    uint32_t repetition_count = 1;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
@@ -85,6 +86,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The lower bound of bits to use per SA entry during "
             "construction",
             32);
+        construct.add_option(
+            "-r,--repetitions", repetition_count,
+            "The value indicates the number of times the SACA(s) will run. A " 
+            "larger number will possibly yield more accurate results", 
+            1);
     }
 
     CLI::App& demo =
@@ -107,6 +113,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                          "The lower bound of bits to use per SA entry during "
                          "construction",
                          32);
+        batch.add_option(
+            "-r,--repetitions", repetition_count,
+            "The value indicates the number of times the SACA(s) will run. A " 
+            "larger number will possibly yield more accurate results", 
+            1);
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -156,6 +167,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     if (construct) {
+        nlohmann::json sum_array = nlohmann::json::array();
+        
         util::saca const* algo = nullptr;
         for (const auto& a : saca_list) {
             if (a->name() == algorithm) {
@@ -199,8 +212,14 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         input_filename);
                 }
 
-                auto sa = algo->construct_sa(*text, sa_minimum_bits);
+                root.log("algorithm_name", algo->name());
 
+                util::saca::abstract_sa_ptr sa;
+                for (uint32_t i = 0; i < repetition_count; i++) { 
+                    sa = algo->construct_sa(*text, sa_minimum_bits);
+                    sum_array.push_back(root.to_json());
+                }
+                
                 if (out_json | out_binary) {
                     tdc::StatPhase check_sa_phase("Output SA");
 
@@ -247,12 +266,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         std::cerr << "SA check OK" << std::endl;
                     }
                 }
-                root.log("algorithm_name", algo->name());
+
             }
 
             if (out_benchmark) {
                 auto write_bench = [&](std::ostream& out) {
                     auto j = root.to_json();
+                    //auto j = sum_array;
                     out << j.dump(4) << std::endl;
                 };
 
@@ -304,8 +324,15 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         for (const auto& algo : saca_list) {
             tdc::StatPhase root(algo->name().data());
             {
-                std::cout << "Running " << algo->name() << "..." << std::endl;
-                auto sa = algo->construct_sa(*text, sa_minimum_bits);
+                root.log("algorithm_name", algo->name());
+            
+                std::cout << "Running " << algo->name() << " " << repetition_count << " " << (repetition_count == 1 ? "time ..." : "times ...") << std::endl;
+                
+                util::saca::abstract_sa_ptr sa;
+                for (uint32_t i = 0; i < repetition_count; i++) {
+                    sa = algo->construct_sa(*text, sa_minimum_bits);
+                    stat_array.push_back(root.to_json());
+                }
 
                 if (check_sa) {
                     tdc::StatPhase check_sa_phase("SA Checker");
@@ -324,9 +351,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         std::cerr << "SA check OK" << std::endl;
                     }
                 }
-                root.log("algorithm_name", algo->name());
+
             }
-            stat_array.push_back(root.to_json());
         }
 
         if (out_benchmark) {
