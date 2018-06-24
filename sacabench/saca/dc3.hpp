@@ -22,7 +22,7 @@ namespace sacabench::dc3 {
 
 class dc3 {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 3;
     static constexpr char const* NAME = "DC3";
     static constexpr char const* DESCRIPTION =
         "Difference Cover Modulo 3 SACA";
@@ -30,22 +30,8 @@ public:
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        if (text.size() != 0) {
-            // temporary copy text and add 3 Sentinals until feature is added
-            auto modified_text =
-                sacabench::util::make_container<sacabench::util::character>(
-                    text.size() + 3);
-
-            for (size_t i = 0; i < text.size(); ++i) {
-                modified_text[i] = text[i];
-            }
-            modified_text[modified_text.size() - 3] = '\0';
-            modified_text[modified_text.size() - 2] = '\0';
-            modified_text[modified_text.size() - 1] = '\0';
-
             construct_sa_dc3<sa_index, false, sacabench::util::character>(
-                modified_text, out_sa);
-        }
+                text, out_sa.slice(3,out_sa.size()));
     }
 
 private:
@@ -342,7 +328,7 @@ private:
     // implementation of get_substring method with type of character not in
     // recursion
     static const sacabench::util::span<const sacabench::util::character>
-    get_substring(const sacabench::util::span<sacabench::util::character> t,
+    get_substring(const sacabench::util::string_span t,
                   const sacabench::util::character* ptr, size_t n) {
         // Suppress unused variable warnings:
         (void)t;
