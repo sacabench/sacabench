@@ -196,7 +196,7 @@ namespace sacabench::nzsufsort {
                     
                     bool t_12_is_residue_1 = false;
                     util::string_span check_residue_t_12 = retrieve_s_string<util::character>(text, out_sa[curr_pos_sa_12-1], 1);
-                    size_t end_pos = out_sa[curr_pos_sa_12-1]+check_residue_t_12.size()-1;
+                    size_t end_pos = ((size_t)out_sa[curr_pos_sa_12-1])+check_residue_t_12.size()-1;
                     if (out_sa[end_pos] > h) { t_12_is_residue_1 = true; }
                     
                     if (t_12_is_residue_1) {
@@ -212,8 +212,8 @@ namespace sacabench::nzsufsort {
                     const bool eq = util::as_equal(comp_z_strings)(t_0, t_12);
                     // NB: This is a closure so that we can evaluate it later, because
                     // evaluating it if `eq` is not true causes out-of-bounds errors.
-                    const bool lesser_suf = out_sa[out_sa[curr_pos_sa_0-1]+t_0.size()-1] >   // greater because sa_0 and sa_12 are stored from right to left
-                            out_sa[out_sa[curr_pos_sa_12-1]+t_12.size()-1];
+                    const bool lesser_suf = out_sa[((size_t)out_sa[curr_pos_sa_0-1])+t_0.size()-1] >   // greater because sa_0 and sa_12 are stored from right to left
+                            out_sa[((size_t)out_sa[curr_pos_sa_12-1])+t_12.size()-1];
                     
                     if (less_than || (eq && lesser_suf)) {
                         out_sa[(curr_pos_sa_0--)-1] = pos_in_merged_sa++; 
@@ -433,8 +433,8 @@ namespace sacabench::nzsufsort {
                 size_t count_sa_12 = 0;
                 size_t position = 0;
                 while (count_sa_0 < v_0.size() && count_sa_12 < v_1.size()) {
-                    auto pos_in_text_0 = v_0[count_sa_0];
-                    auto pos_in_text_1 = v_1[count_sa_12];
+                    size_t pos_in_text_0 = v_0[count_sa_0];
+                    size_t pos_in_text_1 = v_1[count_sa_12];
                     auto char_text_0 = text_0[pos_in_text_0];
                     auto char_text_1 = text_1[pos_in_text_1];
                     
@@ -484,11 +484,11 @@ namespace sacabench::nzsufsort {
                 size_t m_0 = text_0.size();
                 size_t m_1 = text_0.size()+text_1.size()/2+(text_1.size() % 2 != 0);
                 for (size_t i = 0; i < v.size(); ++i) {
-                    if (0 <= v[i] && v[i] < m_0) { v[i] = 3*v[i]; }
+                    if (0u <= v[i] && v[i] < m_0) { v[i] = 3*v[i]; }
                     else if (m_0 <= v[i] && v[i] < m_1) {
-                        v[i] = 3*(v[i]-m_0)+1;
+                        v[i] = 3*(((size_t)v[i])-m_0)+1;
                     }
-                    else { v[i] = 3*(v[i]-m_1)+2; }
+                    else { v[i] = 3*(((size_t)v[i])-m_1)+2; }
                 }
             }
             
@@ -534,9 +534,9 @@ namespace sacabench::nzsufsort {
                 
                 /* induction scan */
                 for (size_t i = 0; i < out_sa.size(); ++i) {
-                    if (out_sa[i] != UNDEFINED && out_sa[i] != 0) {
+                    if (out_sa[i] != UNDEFINED && out_sa[i] != 0u) {
                         size_t curr_pos = out_sa[i];
-                        size_t pre_pos = out_sa[i]-1;
+                        size_t pre_pos = ((size_t)out_sa[i])-1u;
                         bool curr_pos_is_s_type = (i < buckets[text[curr_pos]]); // bucket pointer points at l-type-positions 
                         if (text[pre_pos] > text[curr_pos] || (text[pre_pos] == text[curr_pos] && curr_pos_is_s_type)) {
                             auto elem = text[pre_pos];
