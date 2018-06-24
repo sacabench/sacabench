@@ -390,37 +390,35 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         nlohmann::json stat_array = nlohmann::json::array();
 
         for (const auto& algo : saca_list) {
-            tdc::StatPhase root(algo->name().data());
-            {
-                root.log("algorithm_name", algo->name());
-            
-                std::cout << "Running " << algo->name() << " " << repetition_count << " " << (repetition_count == 1 ? "time ..." : "times ...") << std::endl;
+            for (uint32_t i = 0; i < repetition_count; i++) {
+                tdc::StatPhase root(algo->name().data());
+                {
+                    root.log("algorithm_name", algo->name());
                 
-                util::saca::abstract_sa_ptr sa;
-                for (uint32_t i = 0; i < repetition_count; i++) {
-                    sa = algo->construct_sa(*text, sa_minimum_bits);
+                    std::cout << "Running " << algo->name() << " (" << (i+1) << "/" << repetition_count << ")" << std::endl;
+                    
+                    auto sa = algo->construct_sa(*text, sa_minimum_bits);
+
+                    if (check_sa) {
+                        tdc::StatPhase check_sa_phase("SA Checker");
+
+                        // Read the string in again
+                        size_t text_size = text->text_size();
+                        auto s = util::string(text_size);
+                        text->initializer(s);
+
+                        // Run the SA checker, and print the result
+                        auto res = sa->check(s);
+                        check_sa_phase.log("check_result", res);
+                        if (res != util::sa_check_result::ok) {
+                            std::cerr << "ERROR: SA check failed" << std::endl;
+                            late_fail = 1;
+                        } else {
+                            std::cerr << "SA check OK" << std::endl;
+                        }
+                    }
                     stat_array.push_back(root.to_json());
                 }
-
-                if (check_sa) {
-                    tdc::StatPhase check_sa_phase("SA Checker");
-
-                    // Read the string in again
-                    size_t text_size = text->text_size();
-                    auto s = util::string(text_size);
-                    text->initializer(s);
-
-                    // Run the SA checker, and print the result
-                    auto res = sa->check(s);
-                    check_sa_phase.log("check_result", res);
-                    if (res != util::sa_check_result::ok) {
-                        std::cerr << "ERROR: SA check failed" << std::endl;
-                        late_fail = 1;
-                    } else {
-                        std::cerr << "SA check OK" << std::endl;
-                    }
-                }
-
             }
         }
 
