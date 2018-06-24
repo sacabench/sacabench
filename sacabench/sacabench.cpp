@@ -329,7 +329,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     if (demo) {
         for (const auto& a : saca_list) {
-            std::cout << "Running " << a->name() << "..." << std::endl;
+            std::cerr << "Running " << a->name() << "..." << std::endl;
             a->run_example();
         }
     }
@@ -342,7 +342,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             return 1;
         }
 
-        std::cout << "Loading input..." << std::endl;
+        std::cerr << "Loading input..." << std::endl;
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
         size_t prefix = -1;
@@ -396,7 +396,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             for (uint32_t i = 0; i < repetition_count; i++) {
                 tdc::StatPhase root(algo->name().data());
                 {
-                    std::cout << "Running " << algo->name() << " (" << (i + 1)
+                    std::cerr << "Running " << algo->name() << " (" << (i + 1)
                               << "/" << repetition_count << ")" << std::endl;
 
                     auto sa = algo->construct_sa(*text, sa_minimum_bits);
