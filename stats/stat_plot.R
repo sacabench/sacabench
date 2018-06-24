@@ -94,7 +94,7 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
       mai=c(1,1,1,1), new = TRUE)
   legend("right",  legend = algorithm_names, col = cols, 
-         inset = c(-0.2,0), pch = 19, xpd = TRUE, bty = "n")
+         inset = c(-0.3,0), pch = 19, xpd = TRUE, bty = "n")
 }
 
 plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
@@ -237,3 +237,13 @@ getDistinctColors <- function(n) {
 
 #datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
 #                   stringsAsFactors = FALSE)
+
+example_plot_multi()
+
+#for command line:
+#R -e 'install.packages("package", repos="http://cran.us.r-project.org")'
+
+#myscript.r --file myfile.txt
+
+#run following command to execute the script:
+#R CMD BATCH stat_plot.R 
