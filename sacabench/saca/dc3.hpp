@@ -30,8 +30,10 @@ public:
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
+        if (text.size() != 3) {
             construct_sa_dc3<sa_index, false, sacabench::util::character>(
                 text, out_sa.slice(3,out_sa.size()));
+        }
     }
 
 private:
