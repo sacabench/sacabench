@@ -449,7 +449,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     if(plot){
-            std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename + "' /home/jojo/workspace/sacabench/stats/stat_plot.R test.Rout"; 
+            std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename + "'  ..//stats/stat_plot.R test.Rout"; 
             std::cout << r_command << std::endl;
             system(r_command.c_str());
     }
