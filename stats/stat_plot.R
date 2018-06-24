@@ -30,42 +30,70 @@ extract_details<-function(json_name)
   
   #get main entries
   algorithm_name = data$stats[[1]]$value
-  max_mem = algorithm$memPeak
-  runtime_overall = algorithm$timeEnd - algorithm$timeStart
-  
+  max_mem = algorithm$memPeak/1000
+  runtime_overall = (algorithm$timeEnd - algorithm$timeStart)/1000
+
   #get entries for every phase
-  phase_names = phases[[1]]$title
-  phase_runtimes = phases[[1]]$timeEnd-phases[[1]]$timeStart
-  phase_mems  = phases[[1]]$memPeak
-  
-  for(i in 2:length(phases)){
-    phase_names = cbind(phase_names, phases[[i]]$title)
-    phase_runtimes = rbind(phase_runtimes, 
-                           phases[[i]]$timeEnd-phases[[i]]$timeStart)
-    phase_mems  = rbind(phase_mems, phases[[i]]$memPeak)
+  if(length(phases)!=0){
+    
+    phase_names = phases[[1]]$title
+    phase_runtimes = (phases[[1]]$timeEnd-phases[[1]]$timeStart)/1000
+    phase_mems  = phases[[1]]$memPeak/1000
+
+    
+    for(i in 2:length(phases)){
+      phase_names = cbind(phase_names, phases[[i]]$title)
+      phase_runtimes = rbind(phase_runtimes, 
+                             (phases[[i]]$timeEnd-phases[[i]]$timeStart)/1000)
+      phase_mems  = rbind(phase_mems, phases[[i]]$memPeak/1000)
+    }
+    
+    phase_names = cbind("overall", phase_names)
+    phase_runtimes = rbind(runtime_overall, phase_runtimes)
+    phase_mems = rbind(max_mem, phase_mems)
+  }else{
+    phase_names = "overall"
+    phase_runtimes = (data$timeEnd-data$timeStart)/1000
+    phase_mems = data$memPeak/1000
   }
+  label_runtime = "in seconds"
+  label_mem = "in KB"
   
-  phase_names = cbind("overall", phase_names)
-  phase_runtimes = rbind(runtime_overall, phase_runtimes)
-  phase_mems = rbind(max_mem, phase_mems)
+  #If values are too big -> next unit
+  too_long = min(phase_runtimes) > 60
+  too_big  = min(phase_mems) > 10000 
+  
+  if(too_long){
+    phase_runtimes = phase_runtimes/60
+    label_runtime = "in minutes"
+  }
+  if(too_big){
+    phase_mems = phase_mems / 1000
+    label_mem = "in MB"
+  }
   
   #plot
   plot_benchmark_single(algorithm_name, phase_names, 
-                        phase_runtimes, phase_mems)
+                        phase_runtimes, phase_mems, label_runtime, label_mem)
 }
 
-plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems)
+plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
+                                label_runtime, label_mem)
 {
   par(mfrow=c(1,2),mai=c(0.7,1,1,1))
   
   #Plots for runtimes in each phase
-  barplot(runtimes[1],beside=FALSE,col = 2, ylab = "in seconds")
+  barplot(runtimes[1],beside=FALSE,col = 2, ylab = label_runtime,  yaxt="n")
   barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
-          col = 3:(length(runtimes)+2), add = TRUE)
+          col = 3:(length(runtimes)+2), add = TRUE, yaxt="n")
+  axis(2,at=seq(0,max(runtimes), by = round(max(runtimes)/10, digits = 0)),
+       labels=format(seq(0,max(runtimes),by = round(max(runtimes)/10, digits = 0)),scientific=FALSE))
   title("Runtime", line=1)
   
   #Plots for peak memory usage in each phase
-  barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = "in KB")
+  barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = label_mem,  yaxt="n")
+  axis(2,at=seq(0,max(mems), by = round(max(mems)/10, digits = 0)),
+       labels=format(seq(0,max(mems),by = round(max(mems)/10, digits = 0)),scientific=FALSE))
   title("Memory peak", line=1)
   
   #Header and Footer
