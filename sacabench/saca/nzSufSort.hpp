@@ -608,7 +608,7 @@ namespace sacabench::nzsufsort {
                 // Copy p_0 and p_12 in L-type positions in out_sa
                 size_t curr_pos_p_0 = start_p_0+length_p_0;
                 size_t curr_pos_p_12 = start_p_12+length_p_12;
-                size_t start_pos_p_0;
+                size_t start_pos_p_0 = -1;
                 
                 util::character last_char = util::SENTINEL;
                 bool s_type = true;
@@ -632,7 +632,7 @@ namespace sacabench::nzsufsort {
                    them in correct positions in out_sa */
                 size_t rank = 1;
                 util::span<const C> last_t;
-                size_t last_i;
+                size_t last_i = -1;
                 
                 last_char = util::SENTINEL;
                 s_type = true;
@@ -689,7 +689,7 @@ namespace sacabench::nzsufsort {
                 size_t mod = (count_s_type_pos+3-1) % 3;  
                 last_char = util::SENTINEL;
                 s_type = true;
-                size_t last_l_type;
+                size_t last_l_type = -1;
                 
                 util::character last_char_in_l_loop = util::SENTINEL;
                 bool s_type_in_l_loop = true;
