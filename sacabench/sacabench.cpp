@@ -30,11 +30,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     app.set_failure_message(CLI::FailureMessage::help);
 
     CLI::App& list =
-        *app.add_subcommand("list", "List all Implemented Algorithms.");
+        *app.add_subcommand("list", "List all implemented algorithms.");
     bool no_desc;
     {
         list.add_flag("--no-description", no_desc,
-                      "Don't show a description for each Algorithm.");
+                      "Don't show a description for each algorithm.");
     }
 
     CLI::App& construct = *app.add_subcommand("construct", "Construct a SA.");
@@ -50,7 +50,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
     {
-        construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
+        construct.add_option("algorithm", algorithm, "Which algorithm to run.")
             ->required();
         construct
             .add_option("input", input_filename,
@@ -58,7 +58,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             ->required();
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         construct.add_option("-b,--benchmark", benchmark_filename,
-                             "Record benchmark and output as JSON. Takes Path "
+                             "Record benchmark and output as JSON. Takes path "
                              "to output file, or - for STDOUT");
 
         construct.add_option("-J,--json", output_json_filename,
@@ -83,7 +83,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
         construct.add_flag(
             "-f,--force", force_overwrite,
-            "Overwrite existing Files instead of raising an error.");
+            "Overwrite existing files instead of raising an error.");
 
         construct.add_option(
             "-m,--minimum_sa_bits", sa_minimum_bits,
@@ -98,7 +98,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     CLI::App& demo =
-        *app.add_subcommand("demo", "Run all Algorithms on an example string.");
+        *app.add_subcommand("demo", "Run all algorithms on an example string.");
 
     CLI::App& batch = *app.add_subcommand(
         "batch", "Measure runtime and memory usage for all algorithms.");
@@ -109,10 +109,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             ->required();
         batch.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         batch.add_option("-b,--benchmark", benchmark_filename,
-                         "Record benchmark and output as JSON. Takes Path "
+                         "Record benchmark and output as JSON. Takes path "
                          "to output file, or - for STDOUT");
         batch.add_flag("-f,--force", force_overwrite,
-                       "Overwrite existing Files instead of raising an error.");
+                       "Overwrite existing files instead of raising an error.");
         batch.add_option("-m,--minimum_sa_bits", sa_minimum_bits,
                          "The lower bound of bits to use per SA entry during "
                          "construction",
@@ -157,7 +157,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     auto& saca_list = util::saca_list::get();
 
     auto implemented_algos = [&] {
-        std::cout << "Currently implemented Algorithms:" << std::endl;
+        std::cout << "Currently implemented algorithms:" << std::endl;
         for (const auto& a : saca_list) {
             std::cout << "  [" << a->name() << "]" << std::endl;
             if (!no_desc) {
@@ -186,7 +186,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             implemented_algos();
             return 1;
         }
-        if (check_out_filename(output_json_filename, "Json output")) {
+        if (check_out_filename(output_json_filename, "JSON output")) {
             return 1;
         }
         if (check_out_filename(output_binary_filename, "Binary output")) {
