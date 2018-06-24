@@ -419,10 +419,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                             std::cerr << "SA check OK" << std::endl;
                         }
                     }
+                    
+                    root.log("algorithm_name", algo->name());
                     alg_array.push_back(root.to_json());
                 }
-                root.log("algorithm_name", algo->name());
-                stat_array.push_back(root.to_json());
             }
             stat_array.push_back(alg_array);
         }
