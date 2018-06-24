@@ -19,8 +19,7 @@ class dc7 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "DC7";
-    static constexpr char const* DESCRIPTION =
-        "Difference Cover Modulo 7 SACA";
+    static constexpr char const* DESCRIPTION = "Difference Cover Modulo 7 SACA";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
@@ -150,14 +149,14 @@ private:
      * This method constructs the suffix array by using the method
      * "difference cover". The difference cover is {1,2,4}.
      */
-    static void
-    construct_sa_dc7(T text, util::span<sa_index> out_sa) {
+    static void construct_sa_dc7(T& text, util::span<sa_index> out_sa) {
 
         const size_t n = text.size() - 6;
 
+        //--------------------------------Phase 1------------------------------//
+        
         // empty container which will contain indices of triplet
         // at positions i mod 3 != 0
-
         auto tuples_124 = sacabench::util::make_container<size_t>(
             3 * (n) / 7 + 1 - (((n % 7) == 0)) - (((n % 7) == 1)));
 
@@ -165,7 +164,7 @@ private:
         const size_t start_of_pos_2 =
             tuples_124.size() / 3 + ((tuples_124.size() % 3) != 0);
         const size_t start_of_pos_4 = 2 * start_of_pos_2 - (((n % 7) == 2));
-
+        
         // determine positions and calculate the sorted order
         determine_tuples<C>(text, tuples_124);
 
@@ -202,6 +201,8 @@ private:
             construct_sa_dc7<sa_index, true, size_t>(modified_text, sa_124);
         }
 
+        //--------------------------------Phase 2------------------------------//
+        
         // empty isa_124 which should be filled correctly with method
         // determine_isa
         auto isa_124 = sacabench::util::make_container<size_t>(0);
@@ -231,7 +232,11 @@ private:
             isa_124 = sacabench::util::make_container<size_t>(t_124.size());
 
             // TODO: Stop copying this container
-            isa_124 = t_124;
+            {
+                util::allow_container_copy guard;
+
+                isa_124 = t_124;
+            }
             determine_isa(isa_124, sa_124);
         }
 
@@ -316,6 +321,8 @@ private:
             sa_6[i] = sa_6[i] * 7 + 6;
         }
 
+        //--------------------------------Phase 3------------------------------//
+        
         // temporary suffix array, because we had to add a dummy triplet
         // This dummy triplet has to be deleted before merging
         auto tmp_out_sa = sacabench::util::container<size_t>(out_sa.size() + 1);
@@ -472,7 +479,7 @@ private:
 
                 // number of compared characters
                 // Get information of merge_table
-                size_t length;
+                size_t length = 0;
                 switch (comp_1) {
                 case 0:
                     length = std::get<0>(
@@ -503,7 +510,11 @@ private:
                     length = std::get<6>(
                         merge_table[all_sa[comp_2][counters[comp_2]] % 7]);
                     break;
-                default: { break; }
+                default: {
+                    DCHECK_MSG(false,
+                               "This algorithm cannot run into this case!");
+                    break;
+                }
                 }
 
                 // shrink to 0, to fill it again.
@@ -532,8 +543,8 @@ private:
                     const size_t index_2 =
                         all_sa[comp_2][counters[comp_2]] + length;
 
-                    size_t pos_1;
-                    size_t pos_2;
+                    size_t pos_1 = 0;
+                    size_t pos_2 = 0;
 
                     switch (index_1 % 7) {
                     case 1: {
@@ -561,6 +572,8 @@ private:
                         break;
                     }
                     default:
+                        DCHECK_MSG(false,
+                                   "This algorithm cannot run into this case!");
                         break;
                     }
                     if (isa_124[pos_1 + index_1 / 7] <
