@@ -49,6 +49,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool force_overwrite = false;
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
+    bool plot = false;
     {
         construct.add_option("algorithm", algorithm, "Which Algorithm to run.")
             ->required();
@@ -95,6 +96,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
+        
+        construct.add_flag("-z,--plot", plot, "Plot measurements.");
     }
 
     CLI::App& demo =
@@ -124,6 +127,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
+        batch.add_flag("-z,--plot", plot, "Plot measurements.");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -444,6 +448,12 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
+    if(plot){
+            std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename + "' /home/jojo/workspace/sacabench/stats/stat_plot.R test.Rout"; 
+            std::cout << r_command << std::endl;
+            system(r_command.c_str());
+    }
+        
     return late_fail;
 }
 

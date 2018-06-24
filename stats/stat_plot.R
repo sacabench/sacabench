@@ -9,6 +9,11 @@
 library("rjson")
 library("RColorBrewer")
 
+args <- commandArgs(TRUE)
+
+print(args)
+
+
 extract_stats <-function(json_name)
 {
   data= fromJSON(file=json_name,simplify = TRUE)
@@ -22,17 +27,20 @@ extract_stats <-function(json_name)
 
 extract_details<-function(json_name)
 {
-  data= fromJSON(file=json_name,simplify = TRUE)
+  data= fromJSON(file=json_name,simplify = TRUE)[[1]]
+  print(data)
   #Algorithm
   algorithm= data$sub[1][[1]]$sub[[4]]
   #Phases
   phases= algorithm$sub
+  
   
   #get main entries
   algorithm_name = data$stats[[1]]$value
   max_mem = algorithm$memPeak/1000
   runtime_overall = (algorithm$timeEnd - algorithm$timeStart)/1000
 
+  
   #get entries for every phase
   if(length(phases)!=0){
     
@@ -72,6 +80,8 @@ extract_details<-function(json_name)
     label_mem = "in MB"
   }
   
+  print(phase_runtimes)
+  print(phase_mems)
   #plot
   plot_benchmark_single(algorithm_name, phase_names, 
                         phase_runtimes, phase_mems, label_runtime, label_mem)
@@ -83,12 +93,20 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   par(mfrow=c(1,2),mai=c(0.7,1,1,1))
   
   #Plots for runtimes in each phase
-  barplot(runtimes[1],beside=FALSE,col = 2, ylab = label_runtime,  yaxt="n")
-  barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
-          col = 3:(length(runtimes)+2), add = TRUE, yaxt="n")
-  axis(2,at=seq(0,max(runtimes), by = round(max(runtimes)/10, digits = 0)),
-       labels=format(seq(0,max(runtimes),by = round(max(runtimes)/10, digits = 0)),scientific=FALSE))
-  title("Runtime", line=1)
+  if(min(runtimes) < 1){
+    barplot(runtimes[1],beside=FALSE,col = 2, ylab = label_runtime,  yaxt="n")
+    barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
+            col = 3:(length(runtimes)+2), add = TRUE)
+    title("Runtime", line=1)
+  }else{
+    barplot(runtimes[1],beside=FALSE,col = 2, ylab = label_runtime,  yaxt="n")
+    barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
+            col = 3:(length(runtimes)+2), add = TRUE, yaxt="n")
+    axis(2,at=seq(0,max(runtimes), by = ceiling(max(runtimes)/10)),
+         labels=format(seq(0,max(runtimes),by = ceiling(max(runtimes)/10)),scientific=FALSE))
+    title("Runtime", line=1)
+  }
+  
   
   #Plots for peak memory usage in each phase
   barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = label_mem,  yaxt="n")
@@ -265,7 +283,8 @@ getDistinctColors <- function(n) {
 
 #datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
 #                   stringsAsFactors = FALSE)
-
+print(args)
+extract_details(args)
 example_plot_multi()
 
 #for command line:
