@@ -140,8 +140,8 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
                          by = max(runtimes)/20),scientific=FALSE))
   axis(2,at=seq(0,max(mems), by = max(mems)/10),
        labels=format(seq(0,max(mems), by = max(mems)/10),scientific=FALSE))
-  #text(runtimes, mems, labels=algorithm_names, 
-  #     col = 2:(length(runtimes)+1), adj=c(0.3,-0.35))
+  text(runtimes, mems, labels=algorithm_names, 
+       col = cols, adj=c(0.3,-0.35))
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
       mai=c(1,1,1,1), new = TRUE)
   legend("right",  legend = algorithm_names, col = cols, 
@@ -245,7 +245,6 @@ extract_all_stats <- function(json_name){
   
   #names
   algorithm_names = data[[1]][[1]]$stats[[1]]$value
-  
   for(no_algos in 1:length(data)){
     if(no_algos != 1){
       algorithm_names = cbind(algorithm_names, data[[no_algos]][[1]]$stats[[1]]$value)
@@ -257,16 +256,20 @@ extract_all_stats <- function(json_name){
     tmp_runtimes = (algorithm$timeEnd - algorithm$timeStart)
     #mem
     tmp_mems = algorithm$memPeak/1000
-    for(runs in 2:length(data[[1]])){
-      #Algorithm
-      algorithm = data[[no_algos]][[runs]]$sub[[1]]$sub[[4]]
-      
-      #runtime
-      tmp_runtimes = cbind(tmp_runtimes,(algorithm$timeEnd - algorithm$timeStart))
-      
-      #mem
-      tmp_mems = cbind(tmp_mems,algorithm$memPeak/1000)
+    
+    if(length(data[[no_algos]]) >= 2){
+      for(runs in 2:length(data[[no_algos]])){
+        #Algorithm
+        algorithm = data[[no_algos]][[runs]]$sub[[1]]$sub[[4]]
+        
+        #runtime
+        tmp_runtimes = cbind(tmp_runtimes,(algorithm$timeEnd - algorithm$timeStart))
+        
+        #mem
+        tmp_mems = cbind(tmp_mems,algorithm$memPeak/1000)
+      }
     }
+    
     if(no_algos == 1){
       runtimes = mean(tmp_runtimes)
       mems = mean(tmp_mems)
@@ -275,11 +278,12 @@ extract_all_stats <- function(json_name){
       mems = cbind(mems, mean(tmp_mems))
     }
   }
+  
   prepare_plot_data(algorithm_names[1,], runtimes[1,], mems[1,])
 }
 
 prepare_plot_data <- function(names, runtimes, mems){
-  pareto = T
+  pareto = F
   logarithmic = F
   
   label_runtime = "Runtime in milliseconds"
@@ -335,7 +339,7 @@ prepare_plot_data <- function(names, runtimes, mems){
 #                   stringsAsFactors = FALSE)
 print(args)
 extract_details(args)
-#example_plot_multi()
+#extract_all_stats(args)
 
 #for command line:
 #R -e 'install.packages("package", repos="http://cran.us.r-project.org")'
