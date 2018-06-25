@@ -5,12 +5,15 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include "test/saca.hpp"
 
 #include <saca/gsaca.hpp>
+#include <saca/bucket_pointer_refinement.hpp>
+#include <util/string.hpp>
 
 using namespace sacabench::gsaca;
 
 TEST(gsaca, test_corner_cases) {
-    test::saca_corner_cases<gsaca>();
+    test::saca_corner_cases<sacabench::gsaca::gsaca>();
 }
