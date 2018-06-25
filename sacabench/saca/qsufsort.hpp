@@ -16,7 +16,6 @@
 
 #include <tudocomp_stat/StatPhase.hpp>
 
-
 namespace sacabench::qsufsort {
 
 // Compare function for inital sorting
@@ -75,7 +74,7 @@ public:
     const util::container<sa_index> V;
     const size_t h;
 };
-
+static std::vector<int> count_hits = std::vector<int>(1);
 template <typename sa_index>
 class qsufsort_sub {
 public:
@@ -99,20 +98,20 @@ public:
     static void print_isa(T& arr, S& out) {
         std::cout << "V: ";
         for (size_t i = 0; i < arr.size(); i++) {
-            std::cout << (bool(out[i] & NEGATIVE_MASK) ? i : arr[out[i]])
+            std::cout << (bool(out[i] & NEGATIVE_MASK)
+                              ? static_cast<sa_index>(i)
+                              : arr[out[i]])
                       << ", ";
         }
         std::cout << std::endl;
     }
 
-    // template <typename sa_index>
-    static void construct_sa(util::string_span text,
-                             util::alphabet const&,
+    static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
         tdc::StatPhase qss("Initialization");
-        {
         size_t n = text.size();
+        count_hits.resize(n);
         // check if n is too big
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1));
         // catch trivial cases
@@ -144,7 +143,7 @@ public:
 
         while (!is_sorted) {
 
-            qss.split("Prefix Doubling Phase");
+            qss.split("Update group numbers");
             size_t counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
@@ -166,20 +165,20 @@ public:
                     counter = tmp + 1;
                 }
             }
+            qss.split("Update group length");
             // update group sizes
             update_group_length(out_sa, isa);
             // prefix doubling
             h = h * 2;
             is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);
         }
+
         qss.split("ISA to SA");
         // transform isa to sa
         util::isa2sa_simple_scan(util::span<sa_index>(isa), out_sa);
-        }//StatPhase
     } // construct_sa
 
 private:
-    // template <typename sa_index>
     static void init_isa(util::string_span text, util::span<sa_index> out_sa,
                          util::container<sa_index>& isa, size_t h) {
         size_t n = out_sa.size();
@@ -199,7 +198,6 @@ private:
         update_group_length(out_sa, isa);
     }
 
-    // template <typename sa_index>
     static void update_group_length(util::span<sa_index> out_sa,
                                     util::container<sa_index>& isa) {
         size_t n = out_sa.size();
@@ -211,9 +209,11 @@ private:
 
             // check if number in out_sa is negative
             // if negative the group number is simply the index
-            dif = (bool(out_sa[i + 1] & NEGATIVE_MASK) ? static_cast<sa_index>(i + 1)
-                                                       : isa[out_sa[i + 1]]) -
-                  (bool(out_sa[i] & NEGATIVE_MASK) ? static_cast<sa_index>(i) : isa[out_sa[i]]);
+            dif = (bool(out_sa[i + 1] & NEGATIVE_MASK)
+                       ? static_cast<sa_index>(i + 1)
+                       : isa[out_sa[i + 1]]) -
+                  (bool(out_sa[i] & NEGATIVE_MASK) ? static_cast<sa_index>(i)
+                                                   : isa[out_sa[i]]);
 
             // if difference between neighbours is 1, they are sorted elements
             if (dif == 1) {
@@ -230,7 +230,7 @@ private:
         out_sa[0] = NEGATIVE_MASK | (++sorted_counter);
     }
 
-    // template <typename sa_index, typename key_func>
+    // template < typename key_func>
     template <typename key_func>
     static void sort_and_update_group(util::span<sa_index> full_array,
                                       util::container<sa_index>& isa,
@@ -284,7 +284,6 @@ private:
         return;
     }
 
-    // template <typename sa_index>
     static void update_equal_partition_ranks(util::span<sa_index> out_sa,
                                              util::container<sa_index>& isa,
                                              sa_index start, sa_index end) {
@@ -296,8 +295,10 @@ private:
 
             if (bool(out_sa[index] & NEGATIVE_MASK)) {
                 isa[index] = end;
+                count_hits[index] = count_hits[index] + 1;
             } else {
                 isa[out_sa[index]] = end;
+                count_hits[index] = count_hits[index] + 1;
             }
         }
     }
@@ -328,75 +329,75 @@ public:
         "Naive Version of N. Larssons and K. Sadakanes qsufsort";
 
     template <typename sa_index>
-    static void construct_sa(util::string_span text,
-                             util::alphabet const&,
+    static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
         tdc::StatPhase qssn("Initialization");
         {
-        size_t n = text.size();
+            size_t n = text.size();
 
-        // catch trivial cases
-        if (n < 2)
-            return;
+            // catch trivial cases
+            if (n < 2)
+                return;
 
-        // init additional arrays
-        auto V = util::make_container<sa_index>(n);
-        auto L = util::make_container<ssize_t>(n);
+            // init additional arrays
+            auto V = util::make_container<sa_index>(n);
+            auto L = util::make_container<ssize_t>(n);
 
-        // init out_sa (necessary?)
-        for (size_t i = 0; i < n; ++i) {
-            out_sa[i] = i;
-        }
-        // init h (checked prefix length)
-        size_t h = 0;
-        // for are more readible while condition
-        bool is_sorted = false;
-        qssn.split("First Sorting");
-        // comparing function for inital sort according to first character
-        auto compare_first_char_function = compare_first_character(text);
-        // Sort according to first character
-        util::sort::ternary_quicksort::ternary_quicksort(
-            out_sa, compare_first_char_function);
-        // Inital calculation of V and L
-        init_additional_arrays(text, out_sa, V, L, h);
-        // since we sorted accoring to first letter, increment h
-        ++h;
-        while (!is_sorted) {
-            qssn.split("Prefix Doubling Phase");
-            // comparing function, which compares the (i+h)-th ranks
-            auto compare_function = compare_ranks_naive(V, h);
-
-            sa_index counter = 0;
-            // jump through array with group sizes
-            while (counter < out_sa.size()) {
-
-                // Sorted Group
-                if (L[counter] < 0) {
-                    // Skip sorted group
-                    counter -= L[counter];
-                }
-                // unsorted group
-                else {
-                    util::allow_container_copy guard;
-
-                    // sort unsorted group
-                    util::sort::ternary_quicksort::ternary_quicksort(
-                        out_sa.slice(counter, static_cast<size_t>(counter) + L[counter]),
-                        compare_function);
-                    // update ranks within group
-                    update_group_ranks(out_sa, V, compare_function, counter,
-                                       counter + sa_index(L[counter]));
-                    // jump over updates group
-                    counter += L[counter];
-                }
+            // init out_sa (necessary?)
+            for (size_t i = 0; i < n; ++i) {
+                out_sa[i] = i;
             }
-            // finally update group sizes
-            update_L(out_sa, V, L);
-            // prefix doubling
-            h = h * 2;
-            is_sorted = (size_t(-L[0]) == n);
-        }
+            // init h (checked prefix length)
+            size_t h = 0;
+            // for are more readible while condition
+            bool is_sorted = false;
+            qssn.split("First Sorting");
+            // comparing function for inital sort according to first character
+            auto compare_first_char_function = compare_first_character(text);
+            // Sort according to first character
+            util::sort::ternary_quicksort::ternary_quicksort(
+                out_sa, compare_first_char_function);
+            // Inital calculation of V and L
+            init_additional_arrays(text, out_sa, V, L, h);
+            // since we sorted accoring to first letter, increment h
+            ++h;
+            while (!is_sorted) {
+                qssn.split("Prefix Doubling Phase");
+                // comparing function, which compares the (i+h)-th ranks
+                auto compare_function = compare_ranks_naive(V, h);
+
+                sa_index counter = 0;
+                // jump through array with group sizes
+                while (counter < out_sa.size()) {
+
+                    // Sorted Group
+                    if (L[counter] < 0) {
+                        // Skip sorted group
+                        counter -= L[counter];
+                    }
+                    // unsorted group
+                    else {
+                        util::allow_container_copy guard;
+
+                        // sort unsorted group
+                        util::sort::ternary_quicksort::ternary_quicksort(
+                            out_sa.slice(counter, static_cast<size_t>(counter) +
+                                                      L[counter]),
+                            compare_function);
+                        // update ranks within group
+                        update_group_ranks(out_sa, V, compare_function, counter,
+                                           counter + sa_index(L[counter]));
+                        // jump over updates group
+                        counter += L[counter];
+                    }
+                }
+                // finally update group sizes
+                update_L(out_sa, V, L);
+                // prefix doubling
+                h = h * 2;
+                is_sorted = (size_t(-L[0]) == n);
+            }
         }
     } // construct_sa
 private:
@@ -503,9 +504,7 @@ private:
             if (dif == 1) {
                 ++sorted_counter;
                 sorted_group_started = true;
-                /*
-                //not neccessary, just for testing
-                L[i+1]=0;*/
+
             } else {
                 if (sorted_group_started) {
                     L[i + 2] = -sorted_counter;
