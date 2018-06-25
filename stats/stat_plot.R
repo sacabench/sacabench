@@ -14,77 +14,76 @@ library("RColorBrewer")
 
 args <- commandArgs(TRUE)
 
-print(args)
-
-
-extract_stats <-function(json_name)
-{
-  data= fromJSON(file=json_name,simplify = TRUE)
-  name=data$stats[1][[1]]$value
-  algorithm = data$sub[1][[1]]$sub[[4]]
-  runtime=algorithm$timeEnd-algorithm$timeStart
-  mem= algorithm$memPeak
-  
-  return(list(name=name,time=runtime,memory=mem))
-}
-
 extract_details<-function(json_name)
 {
-  data= fromJSON(file=json_name,simplify = TRUE)[[1]]
-  print(data)
-  #Algorithm
-  algorithm= data$sub[1][[1]]$sub[[4]]
-  #Phases
-  phases= algorithm$sub
-  
-  
-  #get main entries
+  data= fromJSON(file=json_name,simplify = TRUE)
   algorithm_name = data$stats[[1]]$value
-  max_mem = algorithm$memPeak/1000
-  runtime_overall = (algorithm$timeEnd - algorithm$timeStart)/1000
-
   
-  #get entries for every phase
-  if(length(phases)!=0){
+  for(run in 1:length(data)){
+    #Algorithm
+    algorithm = data[[run]]$sub[1][[1]]$sub[[4]]
     
-    phase_names = phases[[1]]$title
-    phase_runtimes = (phases[[1]]$timeEnd-phases[[1]]$timeStart)/1000
-    phase_mems  = phases[[1]]$memPeak/1000
-
+    #Phases
+    phases = algorithm$sub
     
-    for(i in 2:length(phases)){
-      phase_names = cbind(phase_names, phases[[i]]$title)
-      phase_runtimes = rbind(phase_runtimes, 
-                             (phases[[i]]$timeEnd-phases[[i]]$timeStart)/1000)
-      phase_mems  = rbind(phase_mems, phases[[i]]$memPeak/1000)
+    #get main entries
+    max_mem = algorithm$memPeak/1000
+    runtime_overall = (algorithm$timeEnd - algorithm$timeStart)
+    
+    #get entries for every phase
+    if(length(phases)!=0){
+      
+      phase_names = phases[[1]]$title
+      tmp_phase_runtimes = (phases[[1]]$timeEnd-phases[[1]]$timeStart)
+      tmp_phase_mems  = phases[[1]]$memPeak/1000
+      
+      
+      for(i in 2:length(phases)){
+        phase_names = cbind(phase_names, phases[[i]]$title)
+        tmp_phase_runtimes = rbind(tmp_phase_runtimes, 
+                               (phases[[i]]$timeEnd-phases[[i]]$timeStart))
+        tmp_phase_mems  = rbind(tmp_phase_mems, phases[[i]]$memPeak/1000)
+      }
+      
+      phase_names = cbind("overall", phase_names)
+      tmp_phase_runtimes = rbind(runtime_overall, tmp_phase_runtimes)
+      tmp_phase_mems = rbind(max_mem, tmp_phase_mems)
+    }else{
+      phase_names = "overall"
+      tmp_phase_runtimes = (data[[run]]$timeEnd-data$timeStart)
+      tmp_phase_mems = data$memPeak/1000
     }
-    
-    phase_names = cbind("overall", phase_names)
-    phase_runtimes = rbind(runtime_overall, phase_runtimes)
-    phase_mems = rbind(max_mem, phase_mems)
-  }else{
-    phase_names = "overall"
-    phase_runtimes = (data$timeEnd-data$timeStart)/1000
-    phase_mems = data$memPeak/1000
+    if(run == 1){
+      phase_runtimes = tmp_phase_runtimes
+      phase_mems = tmp_phase_mems
+    }else{
+      phase_runtimes = cbind(phase_runtimes, tmp_phase_runtimes)
+      phase_mems = cbind(phase_mems, tmp_phase_mems)
+    }
   }
-  label_runtime = "in seconds"
+  
+  if(length(phases)!=0){
+    phase_runtimes = rowMeans(phase_runtimes)
+    phase_mems = rowMeans(phase_mems)
+  }
+  
+  label_runtime = "in milliseconds"
   label_mem = "in KB"
   
   #If values are too big -> next unit
-  too_long = min(phase_runtimes) > 60
   too_big  = min(phase_mems) > 10000 
-  
-  if(too_long){
-    phase_runtimes = phase_runtimes/60
-    label_runtime = "in minutes"
+  if(min(phase_runtimes) > 100){
+    phase_runtimes = phase_runtimes/1000
+    label_runtime = "Runtime in seconds"
+  }else if(min(phase_runtimes)>1000*60){
+    phase_runtimes = phase_runtimes/(1000*60)
+    label_runtime = "Runtime in minutes"
   }
   if(too_big){
     phase_mems = phase_mems / 1000
-    label_mem = "in MB"
+    label_mem = "Memory peak in MB"
   }
   
-  print(phase_runtimes)
-  print(phase_mems)
   #plot
   plot_benchmark_single(algorithm_name, phase_names, 
                         phase_runtimes, phase_mems, label_runtime, label_mem)
@@ -216,52 +215,8 @@ example_plot_multi <-function(){
   mems = c(75000,10000,8000,10000,9400,50000,9500, 10000, 100000,
            150000,12000,15000,90000,120000)
   
-  pareto = F
-  logarithmic = F
+  prepare_plot_data(names, runtimes, mems)
   
-  label_runtime = "Runtime in seconds"
-  label_mem = "Memory peak in KB"
-  label_main = "Memory & runtime measurements"
-  
-  n <- length(names)
-  plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
-                         label_mem, label_main, getDistinctColors(n))
-  
-  if(logarithmic){
-    label_main = paste(label_main, "(logarithmic scale)", sep = " ")
-    logarithmic = "xy"
-  }else{
-    logarithmic = ""
-  }
-  
-  if(pareto){
-    algo_data = cbind(mems, runtimes)
-    
-    is_pareto = calculate_paretofront(algo_data)
-    pareto_inidices = which(is_pareto)
-    
-    names = names[pareto_inidices]
-    runtimes = runtimes[pareto_inidices]
-    mems = mems[pareto_inidices]
-    
-    label_main = paste(label_main, "- Paretofront", sep = " ")
-  }
-  
-  #If values are too big -> next unit
-  too_long = min(runtimes) > 60
-  too_big  = min(mems) > 10000 
-  if(too_long){
-    runtimes = runtimes/60
-    label_runtime = "Runtime in minutes"
-  }
-  if(too_big){
-    mems = mems / 1000
-    label_mem = "Memory peak in MB"
-  }
-  n <- length(names)
-  plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
-                       label_runtime, label_mem,
-                       label_main, getDistinctColors(n))
 }
 
 getDistinctColors <- function(n) {
@@ -281,6 +236,99 @@ getDistinctColors <- function(n) {
   }
   return(col_vector)
 }
+
+extract_all_stats <- function(json_name){
+  data= fromJSON(file=json_name,simplify = TRUE)
+  
+  #names
+  algorithm_names = data[[1]][[1]]$stats[[1]]$value
+  
+  for(no_algos in 1:length(data)){
+    if(no_algos != 1){
+      algorithm_names = cbind(algorithm_names, data[[no_algos]][[1]]$stats[[1]]$value)
+    }
+    #Algorithm
+    algorithm = data[[no_algos]][[1]]$sub[[1]]$sub[[4]]
+    
+    #runtime
+    tmp_runtimes = (algorithm$timeEnd - algorithm$timeStart)
+    #mem
+    tmp_mems = algorithm$memPeak/1000
+    for(runs in 2:length(data[[1]])){
+      #Algorithm
+      algorithm = data[[no_algos]][[runs]]$sub[[1]]$sub[[4]]
+      
+      #runtime
+      tmp_runtimes = cbind(tmp_runtimes,(algorithm$timeEnd - algorithm$timeStart))
+      
+      #mem
+      tmp_mems = cbind(tmp_mems,algorithm$memPeak/1000)
+    }
+    if(no_algos == 1){
+      runtimes = mean(tmp_runtimes)
+      mems = mean(tmp_mems)
+    }else{
+      runtimes = cbind(runtimes, mean(tmp_runtimes))
+      mems = cbind(mems, mean(tmp_mems))
+    }
+  }
+  
+  
+  prepare_plot_data(algorithm_names[1,], runtimes[1,], mems[1,])
+  
+  
+}
+
+prepare_plot_data <- function(names, runtimes, mems){
+  pareto = T
+  logarithmic = F
+  
+  label_runtime = "Runtime in milliseconds"
+  label_mem = "Memory peak in KB"
+  label_main = "Memory & runtime measurements"
+  
+  n <- length(names)
+  plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
+                           label_mem, label_main, getDistinctColors(n))
+  
+  if(logarithmic){
+    label_main = paste(label_main, "(logarithmic scale)", sep = " ")
+    logarithmic = "xy"
+  }else{
+    logarithmic = ""
+  }
+  
+  if(pareto){
+    algo_data = cbind(mems, runtimes)
+    is_pareto = calculate_paretofront(algo_data)
+    pareto_inidices = which(is_pareto)
+    
+    names = names[pareto_inidices]
+    runtimes = runtimes[pareto_inidices]
+    mems = mems[pareto_inidices]
+    
+    label_main = paste(label_main, "- Paretofront", sep = " ")
+  }
+  
+  #If values are too big -> next unit
+  too_big  = min(mems) > 10000 
+  if(min(runtimes) > 100){
+    runtimes = runtimes/1000
+    label_runtime = "Runtime in seconds"
+  }else if(min(runtimes)>1000*60){
+    runtimes = runtimes/(1000*60)
+    label_runtime = "Runtime in minutes"
+  }
+  if(too_big){
+    mems = mems / 1000
+    label_mem = "Memory peak in MB"
+  }
+  n <- length(names)
+  plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
+                               label_runtime, label_mem,
+                               label_main, getDistinctColors(n))
+}
+
 #testList= list(name="a",x=1,y=2)
 #testList2= list(name="b",x=2,y=1)
 
@@ -288,12 +336,7 @@ getDistinctColors <- function(n) {
 #                   stringsAsFactors = FALSE)
 print(args)
 extract_details(args)
-example_plot_multi()
+#example_plot_multi()
 
 #for command line:
 #R -e 'install.packages("package", repos="http://cran.us.r-project.org")'
-
-#myscript.r --file myfile.txt
-
-#run following command to execute the script:
-#R CMD BATCH stat_plot.R 
