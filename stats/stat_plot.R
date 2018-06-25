@@ -16,23 +16,23 @@ args <- commandArgs(TRUE)
 
 extract_details<-function(json_name)
 {
-  data= fromJSON(file=json_name,simplify = TRUE)
-  algorithm_name = data$stats[[1]]$value
-  
+  data = fromJSON(file=json_name,simplify = TRUE)
+  algorithm_name = data[[1]]$stats[[1]]$value
+  print(length(data))
   for(run in 1:length(data)){
     #Algorithm
     algorithm = data[[run]]$sub[1][[1]]$sub[[4]]
     
     #Phases
     phases = algorithm$sub
-    
+    length(phases)
     #get main entries
     max_mem = algorithm$memPeak/1000
     runtime_overall = (algorithm$timeEnd - algorithm$timeStart)
     
     #get entries for every phase
     if(length(phases)!=0){
-      
+      print("komisch")
       phase_names = phases[[1]]$title
       tmp_phase_runtimes = (phases[[1]]$timeEnd-phases[[1]]$timeStart)
       tmp_phase_mems  = phases[[1]]$memPeak/1000
@@ -46,12 +46,14 @@ extract_details<-function(json_name)
       }
       
       phase_names = cbind("overall", phase_names)
-      tmp_phase_runtimes = rbind(runtime_overall, tmp_phase_runtimes)
+      tmp_phase_runtimes = rbind(runtime_overall[1], tmp_phase_runtimes)
       tmp_phase_mems = rbind(max_mem, tmp_phase_mems)
     }else{
       phase_names = "overall"
-      tmp_phase_runtimes = (data[[run]]$timeEnd-data$timeStart)
-      tmp_phase_mems = data$memPeak/1000
+      
+      tmp_phase_runtimes = (algorithm$timeEnd-algorithm$timeStart)
+      print(data[[run]])
+      tmp_phase_mems = algorithm$memPeak/1000
     }
     if(run == 1){
       phase_runtimes = tmp_phase_runtimes
@@ -66,6 +68,7 @@ extract_details<-function(json_name)
     phase_runtimes = rowMeans(phase_runtimes)
     phase_mems = rowMeans(phase_mems)
   }
+  print(phase_runtimes)
   
   label_runtime = "in milliseconds"
   label_mem = "in KB"
@@ -272,11 +275,7 @@ extract_all_stats <- function(json_name){
       mems = cbind(mems, mean(tmp_mems))
     }
   }
-  
-  
   prepare_plot_data(algorithm_names[1,], runtimes[1,], mems[1,])
-  
-  
 }
 
 prepare_plot_data <- function(names, runtimes, mems){
