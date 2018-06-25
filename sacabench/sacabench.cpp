@@ -448,10 +448,18 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
-    if(plot && out_benchmark){
-            std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename + "'  ..//stats/stat_plot.R test.Rout"; 
+    if(plot){
+        std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+        if(batch){
+            r_command += " 1 " + input_filename + " " + prefix_size + "'  ..//stats/stat_plot.R test.Rout"; 
             int i = system(r_command.c_str());
             (void)i; //suppress  warning
+        }
+        else if(out_benchmark){
+            r_command += " 0 " + input_filename + " " + prefix_size + "'  ..//stats/stat_plot.R test.Rout"; 
+            int i = system(r_command.c_str());
+            (void)i; //suppress  warning
+        }
     }
         
     return late_fail;
