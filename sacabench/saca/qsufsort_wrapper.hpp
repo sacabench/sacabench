@@ -12,6 +12,8 @@
    of this software.*/
 #include <limits.h>
 #include "util/signed_size_type.hpp"
+#include <tudocomp_stat/StatPhase.hpp>
+
 using namespace sacabench::util;
 
 static ssize *I, /* group array, ultimately suffix array.*/
@@ -310,6 +312,7 @@ public:
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
+        tdc::StatPhase qss_ext("Transformation");
         if (text.size() < 2)
             return;
         ssize* transform_text = new ssize[text.size() + 1];
@@ -319,6 +322,7 @@ public:
         for (size_t index = 0; index < text.size(); ++index) {
             transform_text[index] = (ssize)text[index];
         }
+        qss_ext.split("Reference implementation");
         if (!alphabet.is_effective()) {
             auto new_alphabet = apply_effective_alphabet(string(text));
             suffixsort(transform_text, transform_sa, text.size(),
