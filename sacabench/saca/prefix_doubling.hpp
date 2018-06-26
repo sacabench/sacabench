@@ -40,6 +40,60 @@ struct prefix_doubling_impl {
     using names_tuple = std::pair<atuple, sa_index>;
     using name_tuple = std::pair<name_type, sa_index>;
 
+    class name_or_names_tuple {
+        std::array<sa_index, 3> m_data;
+    public:
+        inline name_or_names_tuple() = default;
+
+        inline util::span<name_type> names() {
+            return util::span<name_type>(m_data).slice(0, 2);
+        }
+        inline name_type& name() {
+            return m_data[0];
+        }
+        inline sa_index& idx() {
+            return m_data[2];
+        }
+        inline util::span<name_type const> names() const {
+            return util::span<name_type const>(m_data).slice(0, 2);
+        }
+        inline name_type const& name() const {
+            return m_data[0];
+        }
+        inline sa_index const& idx() const {
+            return m_data[2];
+        }
+    };
+
+    class SP {
+        util::container<name_or_names_tuple> m_sp;
+    public:
+        inline SP(size_t N) {
+            m_sp = util::make_container<name_or_names_tuple>(N);
+        }
+        inline size_t size() const { return m_sp.size(); }
+
+        inline util::span<name_type> s_names(size_t i) {
+            return m_sp[i].names();
+        }
+        inline sa_index& s_idx(size_t i) {
+            return m_sp[i].idx();
+        }
+        inline util::span<name_or_names_tuple> s() {
+            return m_sp;
+        }
+
+        inline name_type& p_name(size_t i) {
+            return m_sp[i].name();
+        }
+        inline sa_index& p_idx(size_t i) {
+            return m_sp[i].idx();
+        }
+        inline util::span<name_or_names_tuple> p() {
+            return m_sp;
+        }
+    };
+
     /// Create a unique name for each S tuple,
     /// returning true if all names are unique.
     ///
@@ -79,7 +133,7 @@ struct prefix_doubling_impl {
         bool only_unique = true;
 
         for (size_t i = 0; i < S.size(); i++) {
-            auto const& pair = S[i].first;
+            auto& pair = S[i].first;
             if (pair != last_pair) {
                 name = i + 1;
                 last_pair = pair;
@@ -87,6 +141,27 @@ struct prefix_doubling_impl {
                 only_unique = false;
             }
             P[i] = name_tuple{name, S[i].second};
+        }
+
+        return only_unique;
+    }
+
+    inline static bool name(SP& sp) {
+        name_type name = 0;
+        auto last_pair = atuple{util::SENTINEL, util::SENTINEL};
+        bool only_unique = true;
+
+        for (size_t i = 0; i < sp.size(); i++) {
+            auto const& pair = sp.s_names(i);
+            if (pair != last_pair) {
+                name = i + 1;
+                last_pair[0] = pair[0];
+                last_pair[1] = pair[1];
+            } else {
+                only_unique = false;
+            }
+            sp.p_name(i) = name;
+            sp.p_idx(i) = sp.s_idx(i);
         }
 
         return only_unique;
@@ -160,15 +235,20 @@ struct prefix_doubling_impl {
         // TODO: They are never needed concurrently, so could
         // combine into a single array and interpret either
         // as S or P
-        auto S = util::make_container<names_tuple>(N);
-        auto P = util::make_container<name_tuple>(N);
+        auto sp = SP(N);
 
         // Create the initial S array of character tuples + text
         // position
         for (size_t i = 0; i < N - 1; ++i) {
-            S[i] = names_tuple{atuple{text[i], text[i + 1]}, i};
+            auto tmp = atuple{text[i], text[i + 1]};
+            sp.s_names(i).copy_from(tmp);
+            sp.s_idx(i) = i;
         }
-        S[N - 1] = names_tuple{atuple{text[N - 1], util::SENTINEL}, N - 1};
+        {
+            auto tmp = atuple{text[N - 1], util::SENTINEL};
+            sp.s_names(N - 1).copy_from(tmp);
+            sp.s_idx(N - 1) = N - 1;
+        }
 
         // We iterate up to ceil(log2(N)) times - but because we
         // always have a break condition in the loop body,
@@ -185,12 +265,14 @@ struct prefix_doubling_impl {
             // tdc::StatPhase loop_phase("Sort S");
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(S.slice());
+            sorting_algorithm::sort(sp.s(), [k](auto const& a, auto const& b) {
+                return a.names() < b.names();
+            });
 
             // loop_phase.split("Rename S tuples");
 
             // Rename the S tuples into P
-            bool only_unique = name(S, P);
+            bool only_unique = name(sp);
 
             // loop_phase.split("Check unique");
 
@@ -198,7 +280,7 @@ struct prefix_doubling_impl {
             if (only_unique) {
                 phase.split("Write out result");
                 for (size_t i = 0; i < N; i++) {
-                    out_sa[i] = P[i].second;
+                    out_sa[i] = sp.p_idx(i);
                 }
                 return;
             }
@@ -209,8 +291,8 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                P.slice(), util::compare_key([k](auto value) {
-                    size_t const i = value.second;
+                sp.p(), util::compare_key([k](auto const& value) {
+                    size_t const i = value.idx();
                     auto const anti_k = util::bits_of<size_t> - k;
                     return (i << anti_k) | (i >> k);
                 }));
@@ -218,23 +300,25 @@ struct prefix_doubling_impl {
             // loop_phase.split("Pair names");
 
             for (size_t j = 0; j < N; j++) {
-                size_t const i1 = P[j].second;
+                size_t const i1 = sp.p_idx(j);
 
-                name_type const c1 = P[j].first;
+                name_type const c1 = sp.p_name(j);
                 name_type c2;
 
                 if ((j + 1) >= N) {
                     c2 = util::SENTINEL;
                 } else {
-                    c2 = P[j + 1].first;
+                    c2 = sp.p_name(j + 1);
 
-                    size_t const i2 = P[j + 1].second;
+                    size_t const i2 = sp.p_idx(j + 1);
 
                     if (i2 != (i1 + k_length)) {
                         c2 = util::SENTINEL;
                     }
                 }
-                S[j] = names_tuple{atuple{c1, c2}, i1};
+                auto tmp = atuple{c1, c2};
+                sp.s_names(j).copy_from(tmp);
+                sp.s_idx(j) = i1;
             }
         }
     }
