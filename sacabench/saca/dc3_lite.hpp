@@ -76,7 +76,10 @@ namespace sacabench::dc3_lite {
                 auto comp = [&](size_t i, size_t j) {
                     util::span<C> t_1 = retrieve_triplets<C>(text, i, 3);
                     util::span<C> t_2 = retrieve_triplets<C>(text, j, 3);
-                    return t_1 < t_2;
+                    return t_1 < t_2 
+                        || (t_1 == t_2 && i+3 == text.size()); 
+                                /*If equal the last triplet must have lower
+                                  priority to simulate dummy triplet */
                 };
                 
                 //sort all triplets
@@ -91,7 +94,7 @@ namespace sacabench::dc3_lite {
                     if ((i+1) < u.size()) {
                         util::span<C> t_1 = retrieve_triplets<C>(text, u[i], 3);
                         util::span<C> t_2 = retrieve_triplets<C>(text, u[i+1], 3);
-                        if (t_1 < t_2) { ++rank; }
+                        if (t_1 < t_2 || (t_1 == t_2 && ((size_t)u[i])+3u == text.size())) { ++rank; }
                     }
                 }
                 
@@ -112,7 +115,6 @@ namespace sacabench::dc3_lite {
                         new_text[counter_2++] = out_sa[i];
                     }
                 }
-                std::cout << "new_text: " << new_text << std::endl;
                 
                 //unfortunately it's not working, if I pass the spans directly
                 auto u_1 = util::span<sa_index>(u).slice(end_pos_of_0, u.size());
@@ -130,7 +132,6 @@ namespace sacabench::dc3_lite {
                 
                 //Rekursion
                 lightweight_dc3<sa_index, sa_index>(text_1, text_1, u_1, v_1);
-                std::cout << "sa_12: " << v_1 << std::endl;
                 
                 //copy old value of text_1 back
                 phase.split("Copy text_1 back");
@@ -143,13 +144,10 @@ namespace sacabench::dc3_lite {
                 
                 auto text_0 = new_text.slice(0, end_pos_of_0);
                 auto v_0 = util::span<sa_index>(out_sa).slice(0, end_pos_of_0);
-                std::cout << "text_0: " << text_0 << std::endl;
-                std::cout << "text_1: " << text_1 << std::endl;
                 util::induce_sa_dc<sa_index>(text_0, u_1, v_0);
                 
                 /* positions in sa_0 are multiplied by 3 so divide by 3 */
                 for (size_t i = 0; i < v_0.size(); ++i) { v_0[i] = v_0[i]/3; }
-                std::cout << "sa_0: " << v_0 << std::endl;
                 
                 /* calculate isa_0 into u_0 */
                 phase.split("Calculate ISA_0");
