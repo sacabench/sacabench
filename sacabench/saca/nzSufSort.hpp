@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2018 Nico Bertram <nico.bertram@tu-dortmund.de>
+ * Copyright (C) 2018 Johannes Bahne <johannes.bahne@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -18,6 +19,7 @@
 #include <util/compare.hpp>
 
 #include <saca/dc3_lite.hpp>
+#include <tudocomp_stat/StatPhase.hpp>
 
 
 namespace sacabench::nzsufsort {
@@ -34,6 +36,8 @@ namespace sacabench::nzsufsort {
             static void construct_sa(util::string_span text,
                                      util::alphabet const& alphabet,
                                      util::span<sa_index> out_sa) {
+                tdc::StatPhase phase("Count s-type-positions");
+                
                 // count number of s-type-positions in text
                 size_t count_s_type_pos = 1;
                 bool s_type = true;
@@ -43,12 +47,16 @@ namespace sacabench::nzsufsort {
                     
                     if (s_type) { ++count_s_type_pos; }
                 }
+                phase.log("count_s_type_pos", count_s_type_pos);
+                phase.log("less_s_type_pos_than_l_type_pos", 
+                    count_s_type_pos <= text.size()/2);
                 
                 /*if there are more s-type-positions than l-type-positions
                   revert the characters in t*/
                 bool is_text_reverted = false;  
                 util::container<util::character> tmp_text;
                 if (count_s_type_pos > text.size()/2) {
+                    phase.split("Transform input text");
                     //TODO: Text kann nicht überschrieben werden
                     tmp_text = util::make_container<util::character>(text.size());
                     for (size_t i = 0; i < text.size(); ++i) { tmp_text[i] = text[i]; }
@@ -68,6 +76,7 @@ namespace sacabench::nzsufsort {
                 util::span<sa_index> u = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
                 util::span<sa_index> v = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1);
                 util::span<sa_index> w = out_sa.slice(count_s_type_pos+mod_0+mod_1, count_s_type_pos+mod_0+mod_1+mod_2);
+                phase.split("Calculate position arrays");
                 calculate_position_arrays(text, p_0, p_12, u, v, w, count_s_type_pos);
                 
                 //TODO sort p_0 and p_12 with radix sort
@@ -76,10 +85,12 @@ namespace sacabench::nzsufsort {
                     util::string_span t_2 = retrieve_s_string<util::character>(text, j, 3);
                     return comp_z_strings(t_1, t_2);
                 };
+                phase.split("Sort position arrays");
                 std::sort(p_0.begin(), p_0.end(), comp);
                 std::sort(p_12.begin(), p_12.end(), comp);
                 
                 //calculate t_0 and t_12 in the begin of out_sa
+                phase.split("Calculate reduced texts t_0 and t_12");
                 determine_leq<util::character>(text, out_sa, 0, mod_0, mod_0, count_s_type_pos-mod_0, count_s_type_pos);
                 util::span<sa_index> t_0 = out_sa.slice(0, mod_0);
                 util::span<sa_index> t_12 = out_sa.slice(mod_0, count_s_type_pos);
@@ -87,6 +98,7 @@ namespace sacabench::nzsufsort {
                 //calculate SA(t_12) by calling the lightweight variant of DC3
                 /*TODO: calculate t_12 first, then call lightweight_dc3 with 3 spans 
                   each of size n/3. Then calculate t_0. */
+                phase.split("Call DC3-Lite");
                 auto u_1 = util::make_container<sa_index>(t_12.size());
                 auto v_1 = util::make_container<sa_index>(t_12.size());
                 dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u_1, v_1);
@@ -95,7 +107,8 @@ namespace sacabench::nzsufsort {
                 }
                 util::span<sa_index> sa_12 = t_12;
                 
-                //induce SA(t_0)
+                //induce SA_0
+                phase.split("Induce SA_0");
                 util::span<sa_index> isa_12 = out_sa.slice(count_s_type_pos+mod_0, 2*count_s_type_pos);
                 for (size_t i = 0; i < sa_12.size(); ++i) {
                     isa_12[sa_12[i]] = i;
@@ -107,6 +120,7 @@ namespace sacabench::nzsufsort {
                 for (size_t i = 0; i < sa_0.size(); ++i) { sa_0[i] = sa_0[i]/3; }
                 
                 //update SA(t_0) and SA(t_12) with position arrays
+                phase.split("Calculate Position arrays again");
                 p_0 = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
                 p_12 = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1+mod_2);
                 util::span<sa_index> p_1 = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1);
@@ -114,6 +128,7 @@ namespace sacabench::nzsufsort {
                 
                 calculate_position_arrays(text, p_0, p_12, p_0, p_1, p_2, count_s_type_pos);
                 
+                phase.split("Update indices of SA_0 and SA_12 with position arrays");
                 for (size_t i = 0; i < sa_0.size(); ++i) {
                     sa_0[i] = p_0[sa_0[i]];
                 }
@@ -127,6 +142,7 @@ namespace sacabench::nzsufsort {
                 revert(sa_12);
                 
                 // copy sa_0 and sa_12 into l-type-positions of out_sa
+                phase.split("Copy SA_0 and SA_12 into l-type-positions of out_sa");
                 size_t h = 0;
                 size_t curr_pos_sa_0 = sa_0.size();
                 size_t curr_pos_sa_12 = sa_12.size();
@@ -148,6 +164,7 @@ namespace sacabench::nzsufsort {
                 }
                 
                 // calculate isa_0 and isa_12 into s-type-positions of out_sa
+                phase.split("Calculate ISA_0 and ISA_12 into s-type-positions of out_sa");
                 size_t count = 0; // only l-type-positions with sa elements
                 last_char = util::SENTINEL;
                 s_type = true;
@@ -164,6 +181,7 @@ namespace sacabench::nzsufsort {
                 }
                 
                 // merge sa_0 and sa_12 by calculating positions in merged sa
+                phase.split("Merge SA_0 and SA_12");
                 curr_pos_sa_0 = h+1;
                 util::character last_char_sa_12 = util::SENTINEL;
                 curr_pos_sa_12 = out_sa.size()+1;
@@ -268,6 +286,7 @@ namespace sacabench::nzsufsort {
                 }
                 
                 /* update isa_0 and isa_12 with positions in merged arrays to calculate isa_012 */
+                phase.split("Update ISA_0 and ISA_12 with positions in merged arrays");
                 last_char = util::SENTINEL;
                 s_type = true;
                 for (size_t i = text.size(); i > 0; --i) {
@@ -279,6 +298,7 @@ namespace sacabench::nzsufsort {
                 }
                 
                 /* move isa_012 to the end of out_sa */
+                phase.split("Move ISA_012 to the end of out_sa");
                 last_char = util::SENTINEL;
                 s_type = true;
                 size_t counter = text.size()-1;
@@ -291,6 +311,7 @@ namespace sacabench::nzsufsort {
                 }
                 
                 /* calculate sa_012 by traversing isa_012 */
+                phase.split("Calculate SA_012");
                 util::span<sa_index> sa_012 = out_sa.slice(0, count_s_type_pos);
                 util::span<sa_index> isa_012 = out_sa.slice(out_sa.size()-count_s_type_pos, out_sa.size());
                 for (size_t i = 0; i < sa_012.size(); ++i) {
@@ -298,6 +319,7 @@ namespace sacabench::nzsufsort {
                 } 
                 
                 /* calculate position array of s-type-positions in right half */
+                phase.split("Calculate position array of s-type-positions");
                 util::span<sa_index> p_012 = out_sa.slice(out_sa.size()-count_s_type_pos, out_sa.size());
                 s_type = true;
                 last_char = util::SENTINEL;
@@ -311,15 +333,20 @@ namespace sacabench::nzsufsort {
                 }
                 
                 /* update sa_012 with positions in p_012 */ 
+                phase.split("Update SA_012 with s-type-positions");
                 for (size_t i = 0; i < sa_012.size(); ++i) {
                     sa_012[i] = p_012[sa_012[i]];
                 }
                 
                 /* induction scan to calculate correct sa */
+                phase.split("Induce SA");
                 left_induction_scan(text, out_sa, alphabet.size_with_sentinel()+1, count_s_type_pos);
                 
                 /* if text was reverted at the beginning out_sa must be reverted */
-                if (is_text_reverted) { revert(out_sa); }
+                if (is_text_reverted) { 
+                    phase.split("Revert SA");
+                    revert(out_sa); 
+                }
             }
           
         private:
