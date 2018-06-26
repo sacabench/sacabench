@@ -28,7 +28,7 @@ SACA_REGISTER("saca/dc7.hpp"
     sacabench::dc7::dc7)
 
 SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
-    qsufsort_ext)
+    sacabench::qsufsort_ext::qsufsort_ext)
 
 SACA_REGISTER("saca/qsufsort.hpp"
     sacabench::qsufsort::qsufsort)

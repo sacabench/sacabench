@@ -11,17 +11,17 @@
    the code must be clearly marked. No warranty is given regarding the quality
    of this software.*/
 #pragma once
-#include <limits.h>
 #include "util/signed_size_type.hpp"
+#include <limits.h>
 #include <tudocomp_stat/StatPhase.hpp>
 
 using namespace sacabench::util;
 namespace {
 
 static ssize *I, /* group array, ultimately suffix array.*/
-    *V,        /* inverse array, ultimately inverse of I.*/
-    r,         /* number of symbols aggregated by transform.*/
-    h;         /* length of already-sorted prefixes.*/
+    *V,          /* inverse array, ultimately inverse of I.*/
+    r,           /* number of symbols aggregated by transform.*/
+    h;           /* length of already-sorted prefixes.*/
 
 #define KEY(p) (V[*(p) + (h)])
 #define SWAP(p, q) (tmp = *(p), *(p) = *(q), *(q) = tmp)
@@ -303,6 +303,8 @@ void suffixsort(ssize* x, ssize* p, ssize n, ssize k, ssize l) {
     for (i = 0; i <= n; ++i) /* reconstruct suffix array from inverse.*/
         I[V[i]] = i;
 }
+} // namespace
+namespace sacabench::qsufsort_ext {
 class qsufsort_ext {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
@@ -319,7 +321,7 @@ public:
         ssize* transform_text = new ssize[text.size() + 1];
         ssize* transform_sa = new ssize[out_sa.size() + 1];
 
-        //TODO find a way without copying
+        // TODO find a way without copying
         for (size_t index = 0; index < text.size(); ++index) {
             transform_text[index] = (ssize)text[index];
         }
@@ -337,4 +339,4 @@ public:
         }
     }
 };
-} // namespace
+} // namespace sacabench::qsufsort_ext

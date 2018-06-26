@@ -13,7 +13,7 @@
 #include <util/alphabet.hpp>
 
 using namespace sacabench::util;
-
+using namespace sacabench::qsufsort_ext;
 TEST(qsufsort_ext, construct_example)
 {
     string test_span = "hello world"_s;
