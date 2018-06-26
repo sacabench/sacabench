@@ -16,6 +16,7 @@
 #include <tudocomp_stat/StatPhase.hpp>
 
 using namespace sacabench::util;
+namespace {
 
 static ssize *I, /* group array, ultimately suffix array.*/
     *V,        /* inverse array, ultimately inverse of I.*/
@@ -302,7 +303,6 @@ void suffixsort(ssize* x, ssize* p, ssize n, ssize k, ssize l) {
     for (i = 0; i <= n; ++i) /* reconstruct suffix array from inverse.*/
         I[V[i]] = i;
 }
-namespace {
 class qsufsort_ext {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
