@@ -161,7 +161,6 @@ struct prefix_doubling_impl {
                 only_unique = false;
             }
             sp.p_name(i) = name;
-            sp.p_idx(i) = sp.s_idx(i);
         }
 
         return only_unique;
@@ -318,7 +317,6 @@ struct prefix_doubling_impl {
                 }
                 auto tmp = atuple{c1, c2};
                 sp.s_names(j).copy_from(tmp);
-                sp.s_idx(j) = i1;
             }
         }
     }
