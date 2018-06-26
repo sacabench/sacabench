@@ -8,12 +8,11 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/saca.hpp>
-#include <saca/qsufsort_wrapper.hpp>
+#include <saca/external/qsufsort/qsufsort_wrapper.hpp>
 #include "test/saca.hpp"
 #include <util/alphabet.hpp>
 
 using namespace sacabench::util;
-using namespace sacabench::qsufsort_ext;
 
 TEST(qsufsort_ext, construct_example)
 {
