@@ -151,6 +151,14 @@ public:
         IF_DEBUG(r.register_alive_check(m_alive_check));
         return r;
     }
+
+    /// Copy the contents of another slice into this one
+    inline void copy_from(span const& other) {
+        DCHECK_EQ(size(), other.size());
+        for (size_t i = 0; i < size(); i++) {
+            (*this)[i] = other[i];
+        }
+    }
 };
 
 template <typename T>
