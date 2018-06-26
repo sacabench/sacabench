@@ -10,6 +10,7 @@
    distributed, the copyright notice must be retained and any alterations in
    the code must be clearly marked. No warranty is given regarding the quality
    of this software.*/
+#pragma once
 #include <limits.h>
 #include "util/signed_size_type.hpp"
 #include <tudocomp_stat/StatPhase.hpp>
@@ -301,17 +302,17 @@ void suffixsort(ssize* x, ssize* p, ssize n, ssize k, ssize l) {
     for (i = 0; i <= n; ++i) /* reconstruct suffix array from inverse.*/
         I[V[i]] = i;
 }
-namespace sacabench::qsufsort_ext {
+namespace {
 class qsufsort_ext {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "qsufsort(ext)";
+    static constexpr char const* NAME = "ext_qsufsort";
     static constexpr char const* DESCRIPTION =
         "Reference implementation of N. Larssons and K. Sadakanes qsufsort";
     template <typename sa_index>
-    static void construct_sa(util::string_span text,
-                             util::alphabet const& alphabet,
-                             util::span<sa_index> out_sa) {
+    static void construct_sa(sacabench::util::string_span text,
+                             sacabench::util::alphabet const& alphabet,
+                             sacabench::util::span<sa_index> out_sa) {
         tdc::StatPhase qss_ext("Transformation");
         if (text.size() < 2)
             return;
@@ -336,4 +337,4 @@ public:
         }
     }
 };
-} // namespace sacabench::qsufsort_ext
+} // namespace
