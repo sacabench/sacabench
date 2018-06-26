@@ -42,7 +42,7 @@ extract_details<-function(json_name)
         phase_names = cbind(phase_names, phases[[i]]$title)
         tmp_phase_runtimes = rbind(tmp_phase_runtimes, 
                                (phases[[i]]$timeEnd-phases[[i]]$timeStart))
-        tmp_phase_mems  = rbind(tmp_phase_mems, phases[[i]]$memPeak/1000)
+        tmp_phase_mems  = rbind(tmp_phase_mems, tmp_phase_mems[length(tmp_phase_mems)] + phases[[i]]$memPeak/1000)
       }
       
       phase_names = cbind("overall", phase_names)
@@ -72,13 +72,13 @@ extract_details<-function(json_name)
   label_mem = "in KB"
   
   #If values are too big -> next unit
-  too_big  = min(phase_mems) > 10000 
-  if(min(phase_runtimes) > 100){
-    phase_runtimes = phase_runtimes/1000
-    label_runtime = "Runtime in seconds"
-  }else if(min(phase_runtimes)>1000*60){
+  too_big  = max(phase_mems) > 10000 
+  if(max(phase_runtimes)>1000*60){
     phase_runtimes = phase_runtimes/(1000*60)
     label_runtime = "Runtime in minutes"
+  }else if(max(phase_runtimes) > 100){
+    phase_runtimes = phase_runtimes/1000
+    label_runtime = "Runtime in seconds"
   }
   if(too_big){
     phase_mems = phase_mems / 1000
@@ -93,18 +93,20 @@ extract_details<-function(json_name)
 plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
                                 label_runtime, label_mem)
 {
-  par(mfrow=c(1,2),mai=c(0.7,1,1,1))
+  n <- length(phase_names)
+  cols = getDistinctColors(n)
+  par(mfrow=c(1,2),mai=c(1,1,1,1))
   
   #Plots for runtimes in each phase
   if(min(runtimes) < 1){
-    barplot(runtimes[1],beside=FALSE,col = 2, ylab = label_runtime,  yaxt="n")
+    barplot(runtimes[1],beside=FALSE,col = cols[1], ylab = label_runtime,  yaxt="n")
     barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
-            col = 3:(length(runtimes)+2), add = TRUE)
+            col = cols[2:n], add = TRUE)
     title("Runtime", line=1)
   }else{
-    barplot(runtimes[1],beside=FALSE,col = 2, ylab = label_runtime,  yaxt="n")
+    barplot(runtimes[1],beside=FALSE,col = cols[1], ylab = label_runtime,  yaxt="n")
     barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
-            col = 3:(length(runtimes)+2), add = TRUE, yaxt="n")
+            col = cols[2:n], add = TRUE, yaxt="n")
     axis(2,at=seq(0,max(runtimes), by = ceiling(max(runtimes)/10)),
          labels=format(seq(0,max(runtimes),by = ceiling(max(runtimes)/10)),scientific=FALSE))
     title("Runtime", line=1)
@@ -112,7 +114,7 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   
   
   #Plots for peak memory usage in each phase
-  barplot(mems, beside=TRUE, col = 2:(length(mems)+1), ylab = label_mem,  yaxt="n")
+  barplot(matrix(mems), beside=TRUE, col = cols, ylab = label_mem,  yaxt="n")
   axis(2,at=seq(0,max(mems), by = round(max(mems)/10, digits = 0)),
        labels=format(seq(0,max(mems),by = round(max(mems)/10, digits = 0)),scientific=FALSE))
   title("Memory peak", line=1)
@@ -127,38 +129,46 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   mtext(header_name, side=3, outer=TRUE, line=-2,cex = 2)
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
       mai=c(1,1,1,1), new = TRUE)
-  legend("bottom", legend = phase_names, inset = c(0,-0.1), 
-         col = 2:(length(mems)+1), pch = 15, xpd = TRUE, horiz = TRUE)
+  legend("bottom", legend = phase_names, inset = c(-10,-0.15), 
+         col = cols, pch = 15, xpd = TRUE, ncol = length(phase_names)/2, bty = "n")
 }
 
 plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarithmic, 
-                               label_runtime, label_mem, label_main, cols)
+                                       label_runtime, label_mem, label_main, cols)
 {
-  par(mfrow=c(1,1),mai=c(1,1,1,1), oma = c(0,0,0,2))
+  par(mfrow=c(1,1),mai=c(1,1,0.5,2), oma = c(0,0,0,2))
   plot(runtimes, mems, col = cols, pch = 19, 
        xlab = label_runtime, 
        ylab = label_mem, 
-       main = label_main, log = logarithmic, xaxt = "n", yaxt="n")
-  axis(1,at=seq(0,max(runtimes), by = ceiling(max(runtimes)/20)),
-       labels=format(seq(0,max(runtimes), 
-                         by = ceiling(max(runtimes)/20)),scientific=FALSE))
+       log = logarithmic, xaxt = "n", yaxt="n")
+  mtext(label_main, side=3, outer=TRUE, line=-2,cex = 1)
+  
+  if(max(runtimes)<1){
+    axis(1,at=seq(0,max(runtimes), by = max(runtimes)/10),
+         labels=format(seq(0,max(runtimes), 
+                           by = max(runtimes)/10),scientific=FALSE))
+  }else{
+    axis(1,at=seq(0,max(runtimes), by = ceiling(max(runtimes)/20)),
+         labels=format(seq(0,max(runtimes), 
+                           by = ceiling(max(runtimes)/20)),scientific=FALSE))
+  }
   axis(2,at=seq(0,max(mems), by = ceiling(max(mems)/10)),
        labels=format(seq(0,max(mems), by = ceiling(max(mems)/10)),scientific=FALSE))
   text(runtimes, mems, labels=algorithm_names, xpd = TRUE,
        col = cols, adj=c(0.3,-0.35))
-  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
-      mai=c(1,1,1,1), new = TRUE)
+  #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
+  #    mai=c(1,1,1,1), new = TRUE)
   legend("right",  legend = algorithm_names, col = cols, 
-         inset = c(-0.23,0), pch = 19, xpd = TRUE, bty = "n")
+         inset = c(-0.4,0), pch = 19, xpd = TRUE, bty = "n")
 }
 
 plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
                                  label_runtime, label_mem, label_main, cols)
 {
-  par(mfrow=c(2,1),mai=c(1, 1, 0.3, 0))
+  par(mfrow=c(2,1),mai=c(1, 1, 0.5, 0))
   barplot(runtimes,beside=TRUE,col = cols,
-          ylab = label_runtime, yaxt="n", names.arg = algorithm_names,
-          main = label_main, las = 2)
+          ylab = label_runtime, yaxt="n", names.arg = algorithm_names, las = 2)
+  mtext(label_main, side=3, outer=TRUE, line=-2,cex = 1)
   axis(2,at=seq(0,max(runtimes), by = ceiling(max(runtimes)/10)),
        labels=format(seq(0,max(runtimes), by = ceiling(max(runtimes)/10)),
                      scientific=FALSE))
@@ -244,7 +254,7 @@ getDistinctColors <- function(n) {
   return(col_vector)
 }
 
-extract_all_stats <- function(json_name, pareto = F, logarithmic = F){
+extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatter = F){
   data= fromJSON(file=json_name,simplify = TRUE)
   
   #names
@@ -283,10 +293,10 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F){
     }
   }
   
-  prepare_plot_data(algorithm_names[1,], runtimes[1,], mems[1,], pareto, logarithmic)
+  prepare_plot_data(algorithm_names[1,], runtimes[1,], mems[1,], pareto, logarithmic, plot_scatter)
 }
 
-prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic){
+prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_scatter){
   
   label_runtime = "Runtime in milliseconds"
   label_mem = "Memory peak in KB"
@@ -298,53 +308,59 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic){
     header_name = paste(header_name,")");
   }
   
-  n <- length(names)
-  plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
-                           label_mem, header_name, getDistinctColors(n))
-  
-  if(logarithmic){
-    label_main = paste(label_main, "(logarithmic scale)", sep = " ")
-    logarithmic = "xy"
-  }else{
-    logarithmic = ""
-  }
-  
-  if(pareto){
-    algo_data = cbind(mems, runtimes)
-    is_pareto = calculate_paretofront(algo_data)
-    pareto_inidices = which(is_pareto)
-    
-    names = names[pareto_inidices]
-    runtimes = runtimes[pareto_inidices]
-    mems = mems[pareto_inidices]
-    
-    label_main = paste(label_main, "- Paretofront", sep = " ")
-  }
-  
-  label_main = paste(label_main," (",args[3])
-  if(!is.na(args[4])){
-    label_main = paste(label_main, ", size:", args[4],")")
-  }else{
-    label_main = paste(label_main,")");
-  }
-  
   #If values are too big -> next unit
-  too_big  = min(mems) > 10000 
-  if(min(runtimes) > 100){
-    runtimes = runtimes/1000
-    label_runtime = "Runtime in seconds"
-  }else if(min(runtimes)>1000*60){
+  too_big  = max(mems) > 10000 
+  if(max(runtimes)>1000*60){
     runtimes = runtimes/(1000*60)
     label_runtime = "Runtime in minutes"
+  }else if(max(runtimes) > 100){
+    runtimes = runtimes/1000
+    label_runtime = "Runtime in seconds"
   }
   if(too_big){
     mems = mems / 1000
     label_mem = "Memory peak in MB"
   }
+  
+  
   n <- length(names)
-  plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
-                               label_runtime, label_mem,
-                               label_main, getDistinctColors(n))
+  if(plot_scatter == F){
+    plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
+                           label_mem, header_name, getDistinctColors(n))
+  }else{
+  
+    if(logarithmic){
+      label_mem = paste(label_mem, "(logarithmic scale)", sep = " ")
+      label_runtime = paste(label_runtime, "(logarithmic scale)", sep = " ")
+      logarithmic = "xy"
+    }else{
+      logarithmic = ""
+    }
+    
+    if(pareto){
+      algo_data = cbind(mems, runtimes)
+      is_pareto = calculate_paretofront(algo_data)
+      pareto_inidices = which(is_pareto)
+      
+      names = names[pareto_inidices]
+      runtimes = runtimes[pareto_inidices]
+      mems = mems[pareto_inidices]
+
+      label_main = paste(label_main, "- Paretofront", sep = " ")
+    }
+    
+    label_main = paste(label_main," (",args[3])
+    if(!is.na(args[4])){
+      label_main = paste(label_main, ", size:", args[4],")")
+    }else{
+      label_main = paste(label_main,")");
+    }
+    
+    n <- length(names)
+    plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
+                                 label_runtime, label_mem,
+                                 label_main, getDistinctColors(n))
+  }
 }
 
 #testList= list(name="a",x=1,y=2)
@@ -353,12 +369,16 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic){
 #datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
 #                   stringsAsFactors = FALSE)
 
+pdf(paste(args[1],".pdf")) 
 if(args[2] == 0){
   extract_details(args[1])
 }else{
-  extract_all_stats(args[1])
-  extract_all_stats(args[1],pareto = T)
+  extract_all_stats(args[1], plot_scatter = F)
+  extract_all_stats(args[1], plot_scatter = T)
+  extract_all_stats(args[1], pareto = T, plot_scatter = T)
+  extract_all_stats(args[1], logarithmic = T, plot_scatter = T)
 }
+dev.off()
 
 #for command line:
 #R -e 'install.packages("package", repos="http://cran.us.r-project.org")'
