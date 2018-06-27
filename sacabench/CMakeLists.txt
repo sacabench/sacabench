@@ -15,6 +15,8 @@ target_include_directories(saca_bench_lib INTERFACE
 target_link_libraries(saca_bench_lib INTERFACE
   $<$<CONFIG:Debug>:dl>
   tudocomp_stat
+  reference_saca_deep_shallow
+  divsufsort
 )
 
 # Create executable that runs all registered SACAs
