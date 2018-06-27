@@ -83,12 +83,12 @@ public:
     }
 
     /// \brief Returns the element at the given direct index
-    inline content& operator[](const size_t direct_index) {
+    inline content& get_direct_unsafe(const size_t direct_index) {
         return memory[direct_index];
     }
 
     /// \brief Returns the element at the given direct index
-    inline const content& operator[](const size_t direct_index) const {
+    inline const content& get_direct_unsafe(const size_t direct_index) const {
         return memory[direct_index];
     }
 
