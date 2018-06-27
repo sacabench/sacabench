@@ -42,7 +42,7 @@ extract_details<-function(json_name)
         phase_names = cbind(phase_names, phases[[i]]$title)
         tmp_phase_runtimes = rbind(tmp_phase_runtimes, 
                                (phases[[i]]$timeEnd-phases[[i]]$timeStart))
-        tmp_phase_mems  = rbind(tmp_phase_mems, tmp_phase_mems[length(tmp_phase_mems)] + phases[[i]]$memPeak/1000)
+        tmp_phase_mems  = rbind(tmp_phase_mems, phases[[i]]$memPeak/1000)
       }
       
       phase_names = cbind("overall", phase_names)
@@ -120,17 +120,17 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   title("Memory peak", line=1)
   
   #Header and Footer
-  header_name = paste(algorithm_name," (",args[3])
+  header_name = paste(algorithm_name," (",args[3], sep = "")
   if(!is.na(args[4])){
-    header_name = paste(header_name, ", size:", args[4],")")
+    header_name = paste(header_name, ", size:", args[4],")", sep = "")
   }else{
-    header_name = paste(header_name,")");
+    header_name = paste(header_name,")",sep = "");
   }
   mtext(header_name, side=3, outer=TRUE, line=-2,cex = 2)
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
       mai=c(1,1,1,1), new = TRUE)
   legend("bottom", legend = phase_names, inset = c(-10,-0.15), 
-         col = cols, pch = 15, xpd = TRUE, ncol = length(phase_names)/2, bty = "n")
+         col = cols, pch = 15, xpd = TRUE, ncol = ceiling(length(phase_names)/2), bty = "n")
 }
 
 plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarithmic, 
@@ -301,11 +301,11 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   label_runtime = "Runtime in milliseconds"
   label_mem = "Memory peak in KB"
   label_main = "Memory & runtime measurements"
-  header_name = paste(label_main," (",args[3])
+  header_name = paste(label_main," (",args[3],sep = "")
   if(!is.na(args[4])){
-    header_name = paste(header_name, ", size:", args[4],")")
+    header_name = paste(header_name, ", size:", args[4],")",sep = "")
   }else{
-    header_name = paste(header_name,")");
+    header_name = paste(header_name,")",sep = "");
   }
   
   #If values are too big -> next unit
@@ -349,11 +349,11 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
       label_main = paste(label_main, "- Paretofront", sep = " ")
     }
     
-    label_main = paste(label_main," (",args[3])
+    label_main = paste(label_main," (",args[3], sep = "")
     if(!is.na(args[4])){
-      label_main = paste(label_main, ", size:", args[4],")")
+      label_main = paste(label_main, ", size:", args[4],")", sep = "")
     }else{
-      label_main = paste(label_main,")");
+      label_main = paste(label_main,")", sep = "");
     }
     
     n <- length(names)
@@ -370,6 +370,8 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
 #                   stringsAsFactors = FALSE)
 
 pdf(paste(args[1],".pdf")) 
+
+
 if(args[2] == 0){
   extract_details(args[1])
 }else{
@@ -378,6 +380,22 @@ if(args[2] == 0){
   extract_all_stats(args[1], pareto = T, plot_scatter = T)
   extract_all_stats(args[1], logarithmic = T, plot_scatter = T)
 }
+
+maxfreq=paste(as.numeric(try(substring(system("lscpu | grep 'CPU max MHz'",
+                                              intern=TRUE),24,27)))/1000,"GHz")
+name=try(substring(system("lscpu | grep 'Model name:'",intern=TRUE),24))
+ram = try(substring(system("grep MemTotal /proc/meminfo",intern=TRUE),18))
+ram = paste(round(as.numeric(try(substring(ram,0,nchar(ram)-3)))/1000/1000, digits = 0), "GB");
+
+name = paste(name, ", ", maxfreq, " max", sep = "")
+ram = paste(ram, "RAM")
+plot.new()
+legend("top", legend = list(name, ram),
+       col = 1, pch = 15, xpd = TRUE, bty = "n")
+title("Experimental setup", line=1)
+
+
+
 dev.off()
 
 #for command line:

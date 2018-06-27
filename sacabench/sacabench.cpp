@@ -450,15 +450,20 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     if(plot){
         std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+        std::cout << "plot benchmark...";
         if(batch){
             r_command += " 1 " + input_filename + " " + prefix_size + "'  ..//stats/stat_plot.R test.Rout"; 
             int i = system(r_command.c_str());
             (void)i; //suppress  warning
+            std::cout << "saved as: " << benchmark_filename << ".pdf" << std::endl;
         }
         else if(out_benchmark){
             r_command += " 0 " + input_filename + " " + prefix_size + "'  ..//stats/stat_plot.R test.Rout"; 
             int i = system(r_command.c_str());
             (void)i; //suppress  warning
+            std::cout << "saved as: " << benchmark_filename << ".pdf" << std::endl;
+        }else{
+            std::cout << "not able to plot." << std::endl;
         }
     }
         
