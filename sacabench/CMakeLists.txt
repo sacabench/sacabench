@@ -16,6 +16,8 @@ target_link_libraries(saca_bench_lib INTERFACE
   $<$<CONFIG:Debug>:dl>
   tudocomp_stat
   reference_bpr2_SuffixArray
+  reference_bpr2_Util
+  reference_bpr2_Standard
 )
 
 # Create executable that runs all registered SACAs

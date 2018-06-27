@@ -37,3 +37,5 @@ function(reference_bpr2_lib lib_name path_name)
 endfunction()
 
 reference_bpr2_lib(reference_bpr2_SuffixArray SuffixArray)
+reference_bpr2_lib(reference_bpr2_Util Util)
+reference_bpr2_lib(reference_bpr2_Standard Standard)
