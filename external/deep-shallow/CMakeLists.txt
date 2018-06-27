@@ -17,7 +17,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-set(MB_DS_GLOBAL_FLAGS "-w;-g;-O3;-fomit-frame-pointer;-W;-Wall;-Winline;-m32;-DDEBUG=0;-DNDEBUG=1")
+set(MB_DS_GLOBAL_FLAGS "-w;-g;-O3;-fomit-frame-pointer;-W;-Wall;-Winline;-DDEBUG=0;-DNDEBUG=1")
 
 target_compile_options(
     reference_saca_deep_shallow
