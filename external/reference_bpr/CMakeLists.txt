@@ -5,7 +5,7 @@ ExternalProject_Add(reference_bpr2
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/implementation"
     CONFIGURE_COMMAND cmake -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/implementation" "${CMAKE_CURRENT_BINARY_DIR}/implementation"
     COMMAND autoconf
-    COMMAND ./configure
+    COMMAND ./configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/install
     BUILD_COMMAND make
-    INSTALL_COMMAND cmake -E echo "Skipping install step."
+    INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/install"
 )
