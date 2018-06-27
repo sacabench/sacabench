@@ -14,9 +14,9 @@ ExternalProject_Add(reference_bpr2_external_project
 )
 ExternalProject_Get_Property(reference_bpr2_external_project binary_dir)
 
-function(reference_bpr2_lib lib_name path_name)
+function(reference_bpr2_lib lib_name path_name inner_libname)
     set(LIBRARY
-        "${binary_dir}/src/${path_name}/.libs/libsuffixarray.a"
+        "${binary_dir}/src/${path_name}/.libs/lib${inner_libname}.a"
     )
     set(INCLUDE
         "${binary_dir}/src/${path_name}/"
@@ -36,6 +36,6 @@ function(reference_bpr2_lib lib_name path_name)
     )
 endfunction()
 
-reference_bpr2_lib(reference_bpr2_SuffixArray SuffixArray)
-reference_bpr2_lib(reference_bpr2_Util Util)
-reference_bpr2_lib(reference_bpr2_Standard Standard)
+reference_bpr2_lib(reference_bpr2_SuffixArray SuffixArray suffixarray)
+reference_bpr2_lib(reference_bpr2_Util Util util)
+reference_bpr2_lib(reference_bpr2_Standard Standard standard)
