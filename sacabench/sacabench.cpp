@@ -126,7 +126,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "larger number will possibly yield more accurate results",
             1);
         batch.add_option("--blacklist", blacklist,
-            "Blacklist algorithms from execution");
+                         "Blacklist algorithms from execution");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -394,7 +394,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         nlohmann::json stat_array = nlohmann::json::array();
 
         for (const auto& algo : saca_list) {
-            if (std::find(blacklist.begin(), blacklist.end(), algo->name().data()) != blacklist.end()) {
+            if (std::find(blacklist.begin(), blacklist.end(),
+                          algo->name().data()) != blacklist.end()) {
                 continue;
             }
             nlohmann::json alg_array = nlohmann::json::array();
