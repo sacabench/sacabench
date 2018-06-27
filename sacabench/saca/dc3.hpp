@@ -15,11 +15,14 @@
 #include <util/string.hpp>
 #include <util/alphabet.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
+
 namespace sacabench::dc3 {
 
 class dc3 {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 3;
     static constexpr char const* NAME = "DC3";
     static constexpr char const* DESCRIPTION =
         "Difference Cover Modulo 3 SACA";
@@ -27,21 +30,9 @@ public:
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        if (text.size() != 0) {
-            // temporary copy text and add 3 Sentinals until feature is added
-            auto modified_text =
-                sacabench::util::make_container<sacabench::util::character>(
-                    text.size() + 3);
-
-            for (size_t i = 0; i < text.size(); ++i) {
-                modified_text[i] = text[i];
-            }
-            modified_text[modified_text.size() - 3] = '\0';
-            modified_text[modified_text.size() - 2] = '\0';
-            modified_text[modified_text.size() - 1] = '\0';
-
+        if (text.size() != 3) {
             construct_sa_dc3<sa_index, false, sacabench::util::character>(
-                modified_text, out_sa);
+                text, out_sa.slice(3,out_sa.size()));
         }
     }
 
@@ -187,7 +178,7 @@ private:
                                  util::span<sa_index> out_sa) {
         
         //--------------------------------Phase 1------------------------------//
-        
+        tdc::StatPhase dc3("Phase 1");
         // empty container which will contain indices of triplet
         // at positions i mod 3 != 0
         auto triplets_12 =
@@ -224,6 +215,7 @@ private:
             modified_text[modified_text.size() - 2] = '\0';
             modified_text[modified_text.size() - 1] = '\0';
 
+            dc3.split("Rekursion");
             // run algorithm recursive
             construct_sa_dc3<sa_index, true, size_t>(modified_text,
                                                      sa_12);
@@ -231,7 +223,7 @@ private:
 
         
         //--------------------------------Phase 2------------------------------//
-        
+        dc3.split("Phase 2");
         // empty isa_12 which should be filled correctly with method
         // determine_isa
         auto isa_12 = sacabench::util::make_container<size_t>(0);
@@ -313,7 +305,7 @@ private:
 
         
         //--------------------------------Phase 3------------------------------//
-        
+        dc3.split("Phase 3");
         // temporary suffix array, because we had to add a dummy triplet
         // This dummy triplet has to be deleted before merging
         auto tmp_out_sa = sacabench::util::container<size_t>(out_sa.size() + 1);
@@ -338,7 +330,7 @@ private:
     // implementation of get_substring method with type of character not in
     // recursion
     static const sacabench::util::span<const sacabench::util::character>
-    get_substring(const sacabench::util::span<sacabench::util::character> t,
+    get_substring(const sacabench::util::string_span t,
                   const sacabench::util::character* ptr, size_t n) {
         // Suppress unused variable warnings:
         (void)t;

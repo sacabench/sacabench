@@ -13,11 +13,14 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
+
 namespace sacabench::dc7 {
 
 class dc7 {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 7;
     static constexpr char const* NAME = "DC7";
     static constexpr char const* DESCRIPTION = "Difference Cover Modulo 7 SACA";
 
@@ -25,24 +28,12 @@ public:
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
 
-        if (text.size() == 0) {
-        } else if (text.size() == 1)
-            out_sa[0] = 0;
+        if (text.size() == 7) {
+        } else if (text.size() == 8)
+            out_sa[7] = 0;
         else {
-            auto modified_text =
-                sacabench::util::make_container<sacabench::util::character>(
-                    text.size() + 7);
-
-            for (size_t i = 0; i < text.size() + 7; i++) {
-                if (i < text.size()) {
-                    modified_text[i] = text[i];
-                } else {
-                    modified_text[i] = '\0';
-                }
-            }
-
             construct_sa_dc7<sa_index, false, sacabench::util::character>(
-                modified_text, out_sa);
+                text,  out_sa.slice(7, out_sa.size()));
         }
     }
 
@@ -154,7 +145,7 @@ private:
         const size_t n = text.size() - 6;
 
         //--------------------------------Phase 1------------------------------//
-        
+        tdc::StatPhase dc7("Phase 1");
         // empty container which will contain indices of triplet
         // at positions i mod 3 != 0
         auto tuples_124 = sacabench::util::make_container<size_t>(
@@ -197,12 +188,13 @@ private:
                 }
             }
 
+            dc7.split("Rekursion");
             // run algorithm recursive
             construct_sa_dc7<sa_index, true, size_t>(modified_text, sa_124);
         }
 
         //--------------------------------Phase 2------------------------------//
-        
+        dc7.split("Phase 2");
         // empty isa_124 which should be filled correctly with method
         // determine_isa
         auto isa_124 = sacabench::util::make_container<size_t>(0);
@@ -322,7 +314,7 @@ private:
         }
 
         //--------------------------------Phase 3------------------------------//
-        
+        dc7.split("Phase 3");
         // temporary suffix array, because we had to add a dummy triplet
         // This dummy triplet has to be deleted before merging
         auto tmp_out_sa = sacabench::util::container<size_t>(out_sa.size() + 1);
