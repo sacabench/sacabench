@@ -43,6 +43,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string output_binary_filename = "";
     std::string algorithm = "";
     std::string benchmark_filename = "";
+    std::vector<std::string> blacklist = {};
     bool check_sa = false;
     uint32_t out_fixed_bits = 0;
     std::string prefix_size = "";
@@ -124,6 +125,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
+        batch.add_option("--blacklist", blacklist,
+            "Blacklist algorithms from execution");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -391,6 +394,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         nlohmann::json stat_array = nlohmann::json::array();
 
         for (const auto& algo : saca_list) {
+            if (std::find(blacklist.begin(), blacklist.end(), algo->name().data()) != blacklist.end()) {
+                continue;
+            }
             nlohmann::json alg_array = nlohmann::json::array();
 
             for (uint32_t i = 0; i < repetition_count; i++) {
