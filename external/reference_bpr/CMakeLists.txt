@@ -24,7 +24,7 @@ function(reference_bpr2_lib lib_name path_name)
     file(MAKE_DIRECTORY "${INCLUDE}")
 
     add_library(${lib_name} IMPORTED STATIC GLOBAL)
-    add_dependencies(${lib_name} reference_bpr2)
+    add_dependencies(${lib_name} reference_bpr2_external_project)
     target_include_directories(
         ${lib_name} INTERFACE
         "${INCLUDE}"
