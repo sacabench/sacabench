@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include <cstdint>
+#include "external_saca1.hpp"
+
+extern int32_t _ds_Word_size;
 extern "C" void ds_ssort(unsigned char* x, int32_t* p, int32_t n);
 
 namespace sacabench::reference_sacas {
@@ -14,19 +18,13 @@ namespace sacabench::reference_sacas {
         static constexpr char const* NAME = "Reference-Deep-Shallow";
         static constexpr char const* DESCRIPTION =
             "Reference implementation of Deep-Shallow";
-            
+
         template <typename sa_index>
-        static void construct_sa(util::string_span text,
+        inline static void construct_sa(util::string_span text,
                                  const util::alphabet&,
                                  util::span<sa_index> out_sa) {
-
-            static_assert(sizeof(sa_index) >= sizeof(int32_t));
-
-            auto* text_ptr = const_cast<uint8_t*>(text.data());
-            auto* sa_ptr = out_sa.data();
-            auto* sa_ptr32 = reinterpret_cast<int32_t*>(sa_ptr);
-            size_t n = text.size();
-            ::ds_ssort(text_ptr, sa_ptr32, n);
+            _ds_Word_size = 1;
+            external_saca1::run_external<sa_index>(text, out_sa, ds_ssort);
         }
     };
 }

@@ -7,6 +7,7 @@
 #pragma once
 
 #include<cstdint>
+#include "external_saca1.hpp"
 
 extern "C" int32_t divsufsort(const uint8_t* T, int32_t* SA, int32_t n);
 
@@ -18,17 +19,10 @@ namespace sacabench::reference_sacas {
             "Reference implementation of DivSufSort";
 
         template <typename sa_index>
-        static void construct_sa(util::string_span text,
+        inline static void construct_sa(util::string_span text,
                                  const util::alphabet&,
                                  util::span<sa_index> out_sa) {
-
-            static_assert(sizeof(sa_index) >= sizeof(int32_t));
-
-            auto* text_ptr = text.data();
-            auto* sa_ptr = out_sa.data();
-            auto* sa_ptr32 = reinterpret_cast<int32_t*>(sa_ptr);
-            size_t n = text.size();
-            ::divsufsort(text_ptr, sa_ptr32, n);
+             external_saca1::run_external<sa_index>(text, out_sa, divsufsort);
         }
     };
 }
