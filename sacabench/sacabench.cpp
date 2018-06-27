@@ -80,7 +80,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         opt_fixed_bits->needs(opt_binary);
 
         construct.add_option("-p,--prefix", prefix_size,
-                             "calculate SA of prefix of input.");
+                             "Calculate SA of prefix of size TEXT.");
 
         construct.add_flag(
             "-f,--force", force_overwrite,
