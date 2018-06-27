@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -45,4 +45,4 @@ run_test(sa_dc3_tests DEPS saca_bench_lib)
 run_test(type_extraction_tests DEPS saca_bench_lib)
 run_test(sacak_tests DEPS saca_bench_lib)
 run_test(sads_tests DEPS saca_bench_lib)
-run_test(dc3_lite_tests DEPS saca_bench_lib)
+run_test(external_qsufsort_test DEPS saca_bench_lib)
