@@ -9,6 +9,7 @@
 #include "test/saca.hpp"
 
 #include <saca/gsaca.hpp>
+#include <saca/gsaca_ref_wrapper.hpp>
 #include <saca/bucket_pointer_refinement.hpp>
 #include <util/string.hpp>
 
@@ -16,4 +17,8 @@ using namespace sacabench::gsaca;
 
 TEST(gsaca, test_corner_cases) {
     test::saca_corner_cases<sacabench::gsaca::gsaca>();
+}
+
+TEST(gsaca, test_wrapper) {
+    test::saca_corner_cases<sacabench::gsaca::gsaca_ref_wrapper>();
 }
