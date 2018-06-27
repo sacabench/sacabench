@@ -24,6 +24,9 @@ SACA_REGISTER("saca/sads.hpp"
 SACA_REGISTER("saca/gsaca.hpp"
     sacabench::gsaca::gsaca)
 
+SACA_REGISTER("saca/gsaca_ref_wrapper.hpp"
+        sacabench::gsaca::gsaca_ref_wrapper)
+
 SACA_REGISTER("saca/dc7.hpp"
     sacabench::dc7::dc7)
 
