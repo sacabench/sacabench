@@ -18,6 +18,8 @@
 
 #include <tudocomp_stat/StatPhase.hpp>
 
+#include <kbs_SuffixArrayConstDStepAndPre.h>
+
 namespace sacabench::bucket_pointer_refinement_ext {
 
 class bucket_pointer_refinement_ext {
