@@ -60,8 +60,6 @@ public:
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa = NULL;
         Kbs_Ulong q = 3;
-
-        std::cout << filename.c_str() << std::endl;
         ustr = kbs_getUstring_FromFile(filename.c_str());
 
         kbs_get_AlphabetForUstring(ustr);
@@ -89,8 +87,6 @@ public:
         if (46 < ustr->alphabet->alphaSize) {
             q = 3;
         }
-
-        std::cout << ustr->alphabet->alphaSize << std::endl;
 
         sa = kbs_buildDstepUsePrePlusCopyFreqOrder_SuffixArray(ustr, q);
 
