@@ -41,7 +41,7 @@ public:
     template <typename sa_index>
     static void construct_sa(util::string_span input,
                              util::alphabet const& /*alphabet*/,
-                             util::span<sa_index> sa_return) {
+                             util::span<sa_index> /*sa_return*/) {
         tdc::StatPhase bpr("Prepare input file");
 
         // store contents in temporary file
@@ -51,6 +51,7 @@ public:
         std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
         out_file << input;
 
+        /*
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa = NULL;
         Kbs_Ulong q = 3;
@@ -96,6 +97,7 @@ public:
 
         // clean up
         kbs_delete_SA_IncludingString(sa);
+        */
         remove(filename.c_str());
     }
 }; // class bucket_pointer_refinement
