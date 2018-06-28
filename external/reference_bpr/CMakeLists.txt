@@ -11,6 +11,8 @@ ExternalProject_Add(reference_bpr2_external_project
     BUILD_COMMAND make
     # ------------------
     INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/install"
+    # ------------------
+    EXCLUDE_FROM_ALL 1
 )
 ExternalProject_Get_Property(reference_bpr2_external_project binary_dir)
 
