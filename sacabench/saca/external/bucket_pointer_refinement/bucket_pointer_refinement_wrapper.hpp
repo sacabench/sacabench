@@ -57,12 +57,12 @@ public:
         out_file.flush();
         out_file.close();
 
-        bpr.split("Reference Implementation");
-
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa = NULL;
         Kbs_Ulong q = 3;
         ustr = kbs_getUstring_FromFile(filename.c_str());
+
+        bpr.split("Reference Implementation");
 
         kbs_get_AlphabetForUstring(ustr);
         if (ustr == NULL) {
