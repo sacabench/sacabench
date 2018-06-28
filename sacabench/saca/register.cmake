@@ -4,11 +4,11 @@
 SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
     sacabench::qsufsort_ext::qsufsort_ext)
 
-SACA_REGISTER("saca/external/deep_shallow.hpp"
-    sacabench::reference_sacas::deep_shallow)
+#SACA_REGISTER("saca/external/deep_shallow.hpp"
+#    sacabench::reference_sacas::deep_shallow)
 
-#SACA_REGISTER("saca/external/divsufsort.hpp"
-#    sacabench::reference_sacas::div_suf_sort)
+SACA_REGISTER("saca/external/divsufsort.hpp"
+    sacabench::reference_sacas::div_suf_sort)
 
 # Our implementations:
 
