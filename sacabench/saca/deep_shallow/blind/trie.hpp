@@ -240,14 +240,18 @@ private:
         }
     };
 
+    // This text is shifted by common_prefix_length, so that the common prefix
+    // is ignored in the comparisons here.
     const util::string_span m_input_text;
     node m_root;
 
 public:
     /// \brief Construct a blind trie, which contains the initial_element.
     inline trie(const util::string_span _input_text,
+                const size_t common_prefix_length,
                 const suffix_index_type initial_element)
-        : m_input_text(_input_text) {
+        : m_input_text(_input_text.data() + common_prefix_length,
+                       _input_text.size() - common_prefix_length) {
         m_root = node::new_inner_node(0);
         m_root.incoming_char = util::SENTINEL;
 
