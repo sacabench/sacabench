@@ -46,6 +46,8 @@ private:
     bucket_data_container<sa_index_type> bd;
     anchor_data<sa_index_type> ad;
 
+    size_t max_blind_sort_size;
+
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
@@ -106,7 +108,7 @@ private:
             try_induced_sort(bucket, common_prefix_length);
 
         if (!induce_sorted_succeeded) {
-            if (bucket.size() < BLIND_SORT_THRESHOLD) {
+            if (bucket.size() < max_blind_sort_size) {
                 // If the bucket is small enough, we can use blind sorting.
                 blind_sort(bucket, common_prefix_length);
             } else {
@@ -293,7 +295,7 @@ public:
     inline saca_run(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
-          bd(), ad(text.size()) {
+          bd(), ad(text.size()), max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
 
         // Fill sa with unsorted suffix array.
         for (size_t i = 0; i < sa.size(); ++i) {
