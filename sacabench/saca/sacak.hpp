@@ -18,6 +18,8 @@
 #include "../util/sort/bucketsort.hpp"
 #include "../util/string.hpp"
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 namespace sacabench::sacak {
 
     class sacak {
@@ -149,18 +151,26 @@ namespace sacabench::sacak {
                 }
             }
 
-            print_missings<sa_index>(sa, t.size());
-            check_for_negatives<sa_index>(sa);
+#ifdef DEBUG
+                check_for_negatives(sa);
+                contains_doubles(sa, t.size());
+                print_missings(sa, t.size());
+#endif
         }
 
 
         template <typename sa_index>
         inline static void calculate_deep_sa(util::span<sa_index> t,
-            util::span<sa_index> sa, size_t max_char) {
+            util::span<sa_index> sa, size_t max_char, size_t depth) {
+
+
+            tdc::StatPhase sacak("Recursion Start");
 
             for (size_t i = 0; i < sa.size(); i++) {
                 sa[i] = -1;
             }
+
+            sacak.split("[rec] First Induced Sort");
 
             size_t lms_amount = util::insert_lms_ltr<util::span<sa_index>, sa_index>(t, sa, max_char);
 
@@ -175,6 +185,8 @@ namespace sacabench::sacak {
             }
 
             util::extract_sorted_lms<util::span<sa_index>, sa_index>(t, sa);
+
+            sacak.split("[rec] Preparing the recursion");
 
             size_t name = 0;
             util::ssize previous_LMS = -1;
@@ -240,7 +252,7 @@ namespace sacabench::sacak {
 
             if (lms_amount > name) {
 
-                calculate_deep_sa<sa_index>(t_1, sa.slice(0, lms_amount), name);
+                calculate_deep_sa<sa_index>(t_1, sa.slice(0, lms_amount), name, depth+1);
             }
             else
             {
@@ -250,6 +262,8 @@ namespace sacabench::sacak {
             }
 
 
+            sacak.split("[rec] Cleaning up the recursion");
+
             util::overwrite_lms_after_recursion<util::span<sa_index>, util::span<sa_index>>(t, t_1);
             for (size_t i = 0; i < lms_amount; i++) {
                 sa[i] = t_1[sa[i]];
@@ -258,6 +272,9 @@ namespace sacabench::sacak {
             {
                 sa[i] = -1;
             }
+
+
+            sacak.split("[rec] Second Induced Sort");
 
             util::buckesort_lms_positions<util::span<sa_index>, sa_index>(t, sa, max_char);
             induced_sort<util::span<sa_index>, sa_index>(t, sa, max_char);
@@ -275,12 +292,15 @@ namespace sacabench::sacak {
         template <typename sa_index>
         inline static void calculate_sa(util::string_span t_0, util::span<sa_index> sa,
             size_t max_char) {
+            tdc::StatPhase sacak("Main Phase");
 
             // Initialize SA so that all items are -1 at the beginning
 
             for (size_t i = 0; i < sa.size(); i++) {
                 sa[i] = -1;
             }
+
+            sacak.split("[0] First Induced Sort");
 
             size_t lms_amount = util::insert_lms_ltr<util::string_span, sa_index>(t_0, sa, max_char);
 
@@ -298,6 +318,7 @@ namespace sacabench::sacak {
 
             // TODO: "Create" t_1 by renaming the sorted LMS Substrings in SA as indices
 
+            sacak.split("[0] Preparing the Recursion");
 
             size_t name = 0;
             util::ssize previous_LMS = -1;
@@ -363,7 +384,7 @@ namespace sacabench::sacak {
 
             if (lms_amount > name) {
 
-                calculate_deep_sa<sa_index>(t_1, sa.slice(0, lms_amount), name);
+                calculate_deep_sa<sa_index>(t_1, sa.slice(0, lms_amount), name, 1);
 
                 }
                 else
@@ -373,6 +394,7 @@ namespace sacabench::sacak {
                     }
                 }
 
+            sacak.split("[0] Cleaning up the recursion");
 
             util::overwrite_lms_after_recursion<util::string_span, util::span<sa_index>>(t_0, t_1);
 
@@ -388,10 +410,10 @@ namespace sacabench::sacak {
                 sa[i] = -1;
             }
 
+            sacak.split("[0] Second Induced Sort");
 
-                util::buckesort_lms_positions<util::string_span, sa_index>(t_0, sa, max_char);
-
-                induced_sort(t_0, sa, max_char);
+            util::buckesort_lms_positions<util::string_span, sa_index>(t_0, sa, max_char);
+            induced_sort(t_0, sa, max_char);
         }
 
 
@@ -402,9 +424,13 @@ namespace sacabench::sacak {
 
                 calculate_sa<sa_index>(text_with_sentinels, out_sa, alphabet.size_without_sentinel());
 
+#ifdef DEBUG
                 check_for_negatives(out_sa);
                 contains_doubles(out_sa, text_with_sentinels.size());
                 print_missings(out_sa, text_with_sentinels.size());
+#endif
+
+                
 
         }
 
