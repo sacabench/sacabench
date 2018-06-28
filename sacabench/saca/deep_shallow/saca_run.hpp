@@ -63,29 +63,6 @@ private:
         bd.set_bucket_bounds(bucket_bounds);
     }
 
-    /// \brief Checks, if all buckets have been sorted.
-    inline bool are_there_unsorted_buckets() {
-        return get_smallest_unsorted_bucket().has_value();
-    }
-
-    /// \brief Returns either a character combination, for which the bucket has
-    ///        has not yet been sorted, or std::nullopt.
-    inline std::optional<std::pair<u_char, u_char>>
-    get_smallest_unsorted_bucket() {
-        // FIXME: this just tries every possible character combination, until
-        //        one is not sorted.
-        for (u_char i = 0; i <= alphabet_size; ++i) {
-            for (u_char j = 0; j <= alphabet_size; ++j) {
-                if (!bd.is_bucket_sorted(i, j)) {
-                    return std::optional(std::make_pair(i, j));
-                }
-            }
-        }
-
-        // There are no unsorted buckets.
-        return std::nullopt;
-    }
-
     /// \brief Use Multikey-Quicksort to sort the bucket.
     inline void shallow_sort(const span<sa_index_type> bucket) {
         // We use multikey quicksort. Abort at depth DEEP_SORT_DEPTH.
@@ -149,12 +126,14 @@ private:
                         ad.get_position_in_suffixarray(si);
 
                     // Get the bucket bounds for the already sorted suffix.
-                    const auto left_bucket_bound =
-                        bd.start_of_bucket(input_text[leftmost_suffix],
-                                           input_text[leftmost_suffix + static_cast<sa_index_type>(1)]);
-                    const auto right_bucket_bound =
-                        bd.end_of_bucket(input_text[leftmost_suffix],
-                                         input_text[leftmost_suffix + static_cast<sa_index_type>(1)]);
+                    const auto left_bucket_bound = bd.start_of_bucket(
+                        input_text[leftmost_suffix],
+                        input_text[leftmost_suffix +
+                                   static_cast<sa_index_type>(1)]);
+                    const auto right_bucket_bound = bd.end_of_bucket(
+                        input_text[leftmost_suffix],
+                        input_text[leftmost_suffix +
+                                   static_cast<sa_index_type>(1)]);
 
                     // Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
@@ -181,8 +160,10 @@ private:
                     // we're looking for, then add it to the ringbuffer at the
                     // correct location.
                     const auto look_at = [&](const size_t dist) {
-                        const size_t left = static_cast<size_t>(sorted_bucket) - dist;
-                        const size_t right = static_cast<size_t>(sorted_bucket) + dist;
+                        const size_t left =
+                            static_cast<size_t>(sorted_bucket) - dist;
+                        const size_t right =
+                            static_cast<size_t>(sorted_bucket) + dist;
 
                         // Check if `left` overflowed.
                         if (static_cast<size_t>(sorted_bucket) >= dist) {
@@ -232,10 +213,13 @@ private:
         const auto compare_suffix = [&](const sa_index_type a,
                                         const sa_index_type b) {
             // Catch out-of-range errors and return correct sorting result.
-            if (static_cast<size_t>(a + common_prefix_length) >= input_text.size()) {
-                return !(static_cast<size_t>(b + common_prefix_length) >= input_text.size());
+            if (static_cast<size_t>(a + common_prefix_length) >=
+                input_text.size()) {
+                return !(static_cast<size_t>(b + common_prefix_length) >=
+                         input_text.size());
             }
-            if (static_cast<size_t>(b + common_prefix_length) >= input_text.size()) {
+            if (static_cast<size_t>(b + common_prefix_length) >=
+                input_text.size()) {
                 return false;
             }
 
@@ -253,13 +237,13 @@ private:
 
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
-        while (are_there_unsorted_buckets()) {
+        while (bd.are_buckets_left()) {
             // Find the smallest unsorted bucket.
-            const auto unsorted_bucket = get_smallest_unsorted_bucket().value();
+            const auto unsorted_bucket = bd.get_smallest_bucket();
             const auto alpha = unsorted_bucket.first;
             const auto beta = unsorted_bucket.second;
 
-            if (bd.size_of_bucket(alpha, beta) < static_cast<sa_index_type>(2)) {
+            if (bd.size_of_bucket(alpha, beta) < 2) {
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {
@@ -295,7 +279,8 @@ public:
     inline saca_run(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
-          bd(), ad(text.size()), max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
+          bd(), ad(text.size()),
+          max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
 
         // Fill sa with unsorted suffix array.
         for (size_t i = 0; i < sa.size(); ++i) {
