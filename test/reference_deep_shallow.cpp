@@ -10,9 +10,5 @@
 
 TEST(reference_sacas, deep_shallow) {
     // Deep-Shallow reference implementation fails.
-<<<<<<< HEAD
     test::saca_corner_cases<sacabench::reference_sacas::deep_shallow>();
-=======
-    //test::saca_corner_cases<sacabench::reference_sacas::deep_shallow>();
->>>>>>> deac02a8ad56a7372c9476a5dd6074ed12773ad8
 }
