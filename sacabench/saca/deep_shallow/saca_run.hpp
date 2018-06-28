@@ -16,6 +16,7 @@
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/tagged_number.hpp>
 
 #include "anchor_data.hpp"
 #include "blind/sort.hpp"
@@ -141,27 +142,29 @@ private:
                     // This is the position the found bucket starts in si.
                     const auto relation = leftmost_suffix - si;
 
+                    // Use suffix array with front bit as tag.
+                    auto tagged_sa =
+                        util::cast_to_tagged_numbers<sa_index_type, 1>(
+                            suffix_array);
+
                     // This is the position of the known sorted suffix in its
                     // bucket.
-                    const auto sorted_bucket =
+                    const size_t sorted_bucket =
                         ad.get_position_in_suffixarray(si);
 
                     // Get the bucket bounds for the already sorted suffix.
-                    const auto left_bucket_bound =
-                        bd.start_of_bucket(input_text[leftmost_suffix],
-                                           input_text[leftmost_suffix + static_cast<sa_index_type>(1)]);
-                    const auto right_bucket_bound =
-                        bd.end_of_bucket(input_text[leftmost_suffix],
-                                         input_text[leftmost_suffix + static_cast<sa_index_type>(1)]);
+                    const auto left_bucket_bound = bd.start_of_bucket(
+                        input_text[leftmost_suffix],
+                        input_text[leftmost_suffix +
+                                   static_cast<sa_index_type>(1)]);
+                    const auto right_bucket_bound = bd.end_of_bucket(
+                        input_text[leftmost_suffix],
+                        input_text[leftmost_suffix +
+                                   static_cast<sa_index_type>(1)]);
 
                     // Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
                     // der Suche um sorted_bucket.
-
-                    // Allocate memory for ringbuffer, to store found suffixes.
-                    auto rb_memory =
-                        util::make_container<sa_index_type>(bucket.size());
-                    util::ringbuffer<sa_index_type> rb(rb_memory);
 
                     // This function returns true, if `to_find` is a member of
                     // the bucket to be sorted.
@@ -174,46 +177,63 @@ private:
                         return false;
                     };
 
+                    // We already found the first element, because it is stored
+                    // in anchor_data.
+                    tagged_sa[sorted_bucket].template set<0>(true);
+                    size_t tagged = 1;
+
+                    size_t leftmost = sorted_bucket;
+
                     // This function checks the suffixes at a given distance
                     // from the pointer into the bucket. If the suffix is one
                     // we're looking for, then add it to the ringbuffer at the
                     // correct location.
                     const auto look_at = [&](const size_t dist) {
-                        const size_t left = static_cast<size_t>(sorted_bucket) - dist;
-                        const size_t right = static_cast<size_t>(sorted_bucket) + dist;
+                        const size_t left = sorted_bucket - dist;
+                        const size_t right = sorted_bucket + dist;
 
                         // Check if `left` overflowed.
-                        if (static_cast<size_t>(sorted_bucket) >= dist) {
+                        if (sorted_bucket >= dist) {
                             // Check, if `left` is still in the bucket we're
                             // searching.
                             if (left >= left_bucket_bound) {
                                 if (contains(suffix_array[left])) {
-                                    rb.push_front(suffix_array[left] -
-                                                  relation);
+                                    leftmost = left;
+                                    tagged_sa[left].template set<0>(true);
+                                    ++tagged;
                                 }
                             }
                         }
 
                         if (right < right_bucket_bound) {
                             if (contains(suffix_array[right])) {
-                                rb.push_back(suffix_array[right] - relation);
+                                tagged_sa[right].template set<0>(true);
+                                ++tagged;
                             }
                         }
                     };
 
-                    // We already found the first element, because it is stored
-                    // in anchor_data.
-                    rb.push_front(suffix_array[sorted_bucket] - relation);
-
                     // Look at increasing distance to `sorted_bucket`.
                     size_t i = 0;
-                    while (!rb.is_full()) {
+                    while (tagged != bucket.size()) {
                         ++i;
                         look_at(i);
                     }
 
-                    // Store contents of the ringbuffer to bucket.
-                    rb.copy_into(bucket);
+                    // Traverse marked elements in-order and remove tag.
+                    for (size_t i = 0; i < tagged; ++i) {
+                        // Ignore untagged entries in the sorted bucket.
+                        while (tagged_sa[leftmost].template get<0>() == false) {
+                            ++leftmost;
+                        }
+
+                        // Insert the correct index into the to-be-sorted
+                        // bucket.
+                        bucket[i] = tagged_sa[leftmost].number() - relation;
+
+                        // Un-tag the number, so that the SA is valid again.
+                        tagged_sa[leftmost].template set<0>(false);
+                    }
 
                     // The bucket has been sorted with induced sorting.
                     return true;
@@ -230,10 +250,13 @@ private:
         const auto compare_suffix = [&](const sa_index_type a,
                                         const sa_index_type b) {
             // Catch out-of-range errors and return correct sorting result.
-            if (static_cast<size_t>(a + common_prefix_length) >= input_text.size()) {
-                return !(static_cast<size_t>(b + common_prefix_length) >= input_text.size());
+            if (static_cast<size_t>(a + common_prefix_length) >=
+                input_text.size()) {
+                return !(static_cast<size_t>(b + common_prefix_length) >=
+                         input_text.size());
             }
-            if (static_cast<size_t>(b + common_prefix_length) >= input_text.size()) {
+            if (static_cast<size_t>(b + common_prefix_length) >=
+                input_text.size()) {
                 return false;
             }
 
@@ -257,7 +280,8 @@ private:
             const auto alpha = unsorted_bucket.first;
             const auto beta = unsorted_bucket.second;
 
-            if (bd.size_of_bucket(alpha, beta) < static_cast<sa_index_type>(2)) {
+            if (bd.size_of_bucket(alpha, beta) <
+                static_cast<sa_index_type>(2)) {
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {
