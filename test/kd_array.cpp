@@ -37,7 +37,7 @@ TEST(kd_array, direct_access_set) {
     for (size_t a = 0; a < 10; ++a) {
         for (size_t b = 0; b < 10; ++b) {
             for (size_t c = 0; c < 10; ++c) {
-                array.get_direct_unsafe(i) = i;
+                array.get_mut_direct_unsafe(i) = i;
                 ASSERT_EQ(i, array[a][b][c]);
                 ++i;
             }
