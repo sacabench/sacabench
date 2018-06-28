@@ -25,7 +25,7 @@ TEST(blind_trie, traverse) {
 
     util::string input = util::make_string("nbanana");
 
-    blind_trie my_trie(input, 6);
+    blind_trie my_trie(input, 0, 6);
     my_trie.insert(5);
     my_trie.insert(4);
     my_trie.insert(3);
@@ -54,7 +54,7 @@ struct blind_saca {
             return;
         }
 
-        blind_trie my_trie(text, text.size() - 1);
+        blind_trie my_trie(text, 0, text.size() - 1);
         for (size_t i = 0; i < text.size() - 1; ++i) {
             size_t j = text.size() - 2 - i;
             my_trie.insert(j);
@@ -79,7 +79,7 @@ constexpr auto test_blind_trie = [](const util::string_span text) {
     // std::cout << "#########################################################"
     // << std::endl;
 
-    blind_trie my_trie(text, text.size() - 1);
+    blind_trie my_trie(text, 0, text.size() - 1);
     for (size_t i = 0; i < text.size() - 1; ++i) {
         size_t j = text.size() - 2 - i;
         my_trie.insert(j);
