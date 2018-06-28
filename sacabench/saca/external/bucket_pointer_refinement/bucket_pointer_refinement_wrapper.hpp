@@ -1,3 +1,4 @@
+// TODO: Update Copyright header
 /*******************************************************************************
  * Copyright (C) 2018 Florian Grieskamp <florian.grieskamp@tu-dortmund.de>
  *
@@ -43,7 +44,7 @@ public:
                              util::span<sa_index> sa_return) {
         tdc::StatPhase bpr("Prepare input file");
 
-        // TODO: Write input to file
+        // TODO: Proper usage of temporary files
         std::string filename = "/tmp/bpr_tempfile";
         remove(filename.c_str());
         std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
@@ -88,7 +89,6 @@ public:
 
         bpr.split("Move output");
 
-        // TODO: output sa to sa
         Kbs_Ulong i;
         for(i=0; i<sa->str->strLength; ++i) {
             sa_return[static_cast<size_t>(i)] = static_cast<sa_index>(sa->posArray[i]);
