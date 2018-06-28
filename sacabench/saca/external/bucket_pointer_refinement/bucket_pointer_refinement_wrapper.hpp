@@ -34,8 +34,14 @@ public:
                              util::alphabet const& alphabet,
                              util::span<sa_index> sa) {
         tdc::StatPhase bpr("Prepare input file");
-        // TODO: Write input to file
 
+        // TODO: Write input to file
+        std::string filename = "/tmp/";
+        std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+        out_file << input;
+        std::cout << "Written to " << filename << std::endl;
+
+        /*
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa_ref = NULL;
         Kbs_Ulong q = 3;
@@ -70,7 +76,7 @@ public:
                 q = 3;
             }
         }
-        /* implementation using direct pointers as bucket pointers */
+
         sa_ref = kbs_buildDstepUsePrePlusCopyFreqOrder_SuffixArray(ustr, q);
 
         bpr.split("Move output");
@@ -82,6 +88,7 @@ public:
         }
 
         kbs_delete_SA_IncludingString(sa_ref);
+        */
     }
 }; // class bucket_pointer_refinement
 
