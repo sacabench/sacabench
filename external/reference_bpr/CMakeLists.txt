@@ -25,14 +25,10 @@ function(reference_bpr2_lib lib_name path_name inner_libname)
 
     add_library(${lib_name} IMPORTED STATIC GLOBAL)
     add_dependencies(${lib_name} reference_bpr2_external_project)
-    target_include_directories(
-        ${lib_name} INTERFACE
-        "${INCLUDE}"
-    )
     set_target_properties(${lib_name} PROPERTIES
         "IMPORTED_LOCATION" "${LIBRARY}"
         #"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-        #"INTERFACE_INCLUDE_DIRECTORIES" "${INCLUDE}"
+        "INTERFACE_INCLUDE_DIRECTORIES" "${INCLUDE}"
     )
 endfunction()
 
