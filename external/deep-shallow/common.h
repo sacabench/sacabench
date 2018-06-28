@@ -1,13 +1,10 @@
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-   global defintion for the ds suffix-sort algorithm 
-   Giovanni Manzini 
+   global defintion for the ds suffix-sort algorithm
+   Giovanni Manzini
    2-apr 2001
    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 /* ----------- use assertion if DEBUG!=0 ------------- */
 #ifndef DEBUG
-#define DEBUG 1   /* set DEBUG to 0 to remove assertions and extra checks */
-#endif
-#if !DEBUG
 #define NDEBUG 1  /* do not compile assertions */
 #endif
 #include <stdint.h>
@@ -50,10 +47,3 @@ typedef uint64_t UInt64;
 
 int scmp3(unsigned char *p, unsigned char *q, int *l, int maxl);
 void pretty_putchar(int c);
-
-
-
-
-
-
-

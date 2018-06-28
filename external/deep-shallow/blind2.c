@@ -2,24 +2,24 @@
    string sorting routine based on a blind tree
    26-jun-01 ver 1.0
    03-jul-01 ver 1.1 (get rid of node header)
-   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */ 
+   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "common.h"
 
 /* ==================================================================
-   comment: it is a little triky how we handle the case in which 
+   comment: it is a little triky how we handle the case in which
    there are two strings s1 s2 such that s1 is a prefix of s2.
    (the correct ordering is that s1 preceeds lexicographically s2)
-   We proceed as follows. We insert the strings in order of increasing 
+   We proceed as follows. We insert the strings in order of increasing
    length so that s1 is inserted before s2. When s2 is inserted we put
    it in a leaf which is to the left of s1's leaf (obviously they have
    the same parent node). This is wrong acording to the alphabetic
    ordering but is done so that is there is a third string s3 which
    has s1 as a prefix we are certain that s3 meets s2's leaf and not s1's.
-   When we traverse the trie to get the sorted string we check if there 
-   are two sibling with the same key and if so we invert them 
+   When we traverse the trie to get the sorted string we check if there
+   are two sibling with the same key and if so we invert them
    to get the correct ordering
    =================================================================== */
 
@@ -28,10 +28,10 @@ extern UChar  *Text;                   // input string+ overshoot
 extern Int32  Text_size;               // size of input string
 extern UChar  *Upper_text_limit;       // Text+Text_size
 
-/* ------- node of blind trie -------- */ 
+/* ------- node of blind trie -------- */
 typedef struct nodex {
   Int32 skip;
-  UChar key;  
+  UChar key;
   struct nodex  *down;      // first child
   struct nodex *right;      // next brother
 } node;
@@ -50,7 +50,7 @@ int Stack_size;
 /* ****************************************************************
    routine for deep-sorting the suffixes a[0] ... a[n-1]
    knowing that they have a common prefix of length "depth"
-  **************************************************************** */   
+  **************************************************************** */
 void blind_ssort(Int32 *a, Int32 n, Int32 depth)
 {
    int neg_integer_cmp(const void *, const void *);
@@ -79,7 +79,7 @@ void blind_ssort(Int32 *a, Int32 n, Int32 depth)
   }
 
   // ------- init root with the first unsorted suffix
-  nh.skip = -1;   nh.right = NULL; nh.down = (void *) a[j]; 
+  nh.skip = -1;   nh.right = NULL; nh.down = (void *) a[j];
   root = &nh;
 
   // ------- insert suffixes a[j+1] ... a[n-1]
@@ -93,17 +93,17 @@ void blind_ssort(Int32 *a, Int32 n, Int32 depth)
     insert_suffix(root, a[i], lcp, Text[aj+lcp]);
   }
 
-  // ---- traverse the trie and get suffixes in lexicographic order  
+  // ---- traverse the trie and get suffixes in lexicographic order
   Aux=a;  Aux_written = j;
   traverse_trie(root);
   assert(Aux_written==n);
- 
+
   free_node_mem();
   free(Stack);
 }
 
 /* ***********************************************************************
-   this function traverses the trie rooted at head following the string s. 
+   this function traverses the trie rooted at head following the string s.
    Returns the leaf "corresponding" to the string s
    *********************************************************************** */
  node *find_companion(node *head, UChar *s)
@@ -117,7 +117,7 @@ void blind_ssort(Int32 *a, Int32 n, Int32 depth)
   while(head->skip >= 0) {
     Stack[Stack_size++] = head;
     t = head->skip;
-    if(s+t>=Upper_text_limit)    // s[t] does not exist: mismatch 
+    if(s+t>=Upper_text_limit)    // s[t] does not exist: mismatch
       return get_leaf(head);
     c = s[t]; p = head->down;
   repeat:
@@ -136,7 +136,7 @@ void blind_ssort(Int32 *a, Int32 n, Int32 depth)
 }
 
 
-// this function returns a leaf below "head". 
+// this function returns a leaf below "head".
 // any leaf will do for the algorithm: we take the easiest to reach
  node *get_leaf(node *head)
 {
@@ -156,7 +156,7 @@ __inline__ node *new_node__blind_ssort(void)
     bufn = (node *) malloc(BUFSIZE * sizeof(node));
     if(bufn==NULL) {
       fprintf(stderr,"Out of mem (new_node1)\n"); exit(1);}
-    freearr[free_num++] = (void *) bufn; 
+    freearr[free_num++] = (void *) bufn;
     if(free_num>=FREESIZE) {
       fprintf(stderr,"Out of mem (new_node2)\n"); exit(1);}
    bufn_num = BUFSIZE-1;
@@ -182,7 +182,7 @@ __inline__ node *new_node__blind_ssort(void)
   // ---------- find the insertion point
   while( (t=h->skip) < n) {
     if( t < 0) break;          // insert "suf" just above *h
-    c=s[t];  p=h->down;  
+    c=s[t];  p=h->down;
     // in the list p there must be a branch corresponding to c
   repeat:
     if(c==p->key) {              // found branch corresponding to c
@@ -201,9 +201,9 @@ __inline__ node *new_node__blind_ssort(void)
   for(t=0;t<Stack_size;t++) {
     h=Stack[t];
     if(h->skip<0 || h->skip>=n) break;
-  }  
+  }
 #endif
-  
+
   assert(s[n]!=mmchar || h->skip==-1 || h->skip==n);
 
   // --------- insert a new node before node *h if necessary
@@ -211,24 +211,24 @@ __inline__ node *new_node__blind_ssort(void)
     p = new_node__blind_ssort();     // create and init new node
     p->key = mmchar;
     p->skip = h->skip;  // p inherits skip and children of *h
-    p->down = h->down;   
+    p->down = h->down;
     p->right = NULL;
     h->skip = n;
-    h->down = p;        // now *h has p as the only child 
+    h->down = p;        // now *h has p as the only child
   }
   assert(h->skip==n);
 
   // -------- search the position of s[n] among *h offsprings
   c=s[n]; pp = &(h->down);
   while((*pp)!=NULL) {
-    if((*pp)->key>=c) 
+    if((*pp)->key>=c)
       break;
     pp = &((*pp)->right);
   }
   // ------- insert new node containing suf
   p = new_node__blind_ssort();
   p->skip = -1;
-  p->key = c; 
+  p->key = c;
   p->right = *pp; *pp = p;
   p->down = (void *) suf;
   return;
@@ -252,7 +252,7 @@ __inline__ node *new_node__blind_ssort(void)
       nextp = p->right;
       if(nextp!=NULL) {
 	assert(nextp->key>=p->key);
-	// if there are 2 nodes with equal keys 
+	// if there are 2 nodes with equal keys
 	// they must be considered in inverted order
 	if(nextp->key==p->key) {
 	  traverse_trie(nextp);
@@ -273,15 +273,15 @@ __inline__ node *new_node__blind_ssort(void)
    Function to compute the lcp of two strings originating from the *b1 and *b2
    the parameter is the length of s1 (which is shortest than s2)
    if s1 is a prefix of s2 we return the length of s1 -1
-   The size of the unrolled loop must be at most equal to the costant 
+   The size of the unrolled loop must be at most equal to the costant
    Cmp_overshoot defined in common.h
-   the function return the result of the comparison (+ or -) and writes 
+   the function return the result of the comparison (+ or -) and writes
    in Cmp_done the number of comparisons done
-   *********************************************************************** */ 
+   *********************************************************************** */
  __inline__
 Int32 get_lcp_unrolled(UChar *b1, UChar *b2, Int32 cmp_limit)
 {
-  Int32 cmp2do; 
+  Int32 cmp2do;
   UChar c1, c2;
   assert(b1 != b2);
 
@@ -293,82 +293,82 @@ Int32 get_lcp_unrolled(UChar *b1, UChar *b2, Int32 cmp_limit)
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       break;}
-    b1++; b2++; 
+    b1++; b2++;
     // 2
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  1; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 3
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  2; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 4
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  3; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 5
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  4; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 6
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  5; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 7
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  6; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 8
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  7; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 9
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  8; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 10
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -=  9; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 11
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -= 10; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 12
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -= 11; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 13
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -= 12; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 14
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -= 13; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 15
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -= 14; break; }
-    b1++; b2++; 
+    b1++; b2++;
     // 16
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       cmp2do -= 15; break; }
-    b1++; b2++; 
+    b1++; b2++;
 
     cmp2do -= 16;
   } while(cmp2do>0);
@@ -378,17 +378,17 @@ Int32 get_lcp_unrolled(UChar *b1, UChar *b2, Int32 cmp_limit)
     return cmp_limit-cmp2do;
 
   return cmp_limit-1;
-} 
+}
 
 
 
 /* ************************************************************************
-   this function returns the lcp between suf1 and suf2 (that is returns n 
+   this function returns the lcp between suf1 and suf2 (that is returns n
    such that suf1[n]!=suf2[n] but suf1[i]==suf2[i] for i=0..n-1
    However, it is possible that suf1 is a prefix of suf2 (not vice-versa
    because of the initial sorting of suffixes in order of descreasing length)
-   in this case the function returns n=length(suf1)-1. So in this case 
-   suf1[n]==suf2[n] (and suf1[n+1] does not exists). 
+   in this case the function returns n=length(suf1)-1. So in this case
+   suf1[n]==suf2[n] (and suf1[n+1] does not exists).
    ************************************************************************ */
  Int32 compare_suffixes(Int32 suf1, Int32 suf2, Int32 depth)
 {
@@ -403,15 +403,15 @@ Int32 get_lcp_unrolled(UChar *b1, UChar *b2, Int32 cmp_limit)
 }
 
 
-  
-/* ****************************************************************** 
-   comparison function used to sort suffixes in order of 
+
+/* ******************************************************************
+   comparison function used to sort suffixes in order of
    increasing length. Since suffixes are represented by their offset
    in the array, we sort these offsets in order of decreasing length.
    ****************************************************************** */
  int neg_integer_cmp(const void *a, const void *b)
 {
-  return *((Int32 *) b) -  *((Int32 *) a); 
+  return *((Int32 *) b) -  *((Int32 *) a);
 }
 
 
@@ -427,19 +427,3 @@ Int32 get_lcp_unrolled(UChar *b1, UChar *b2, Int32 cmp_limit)
   // clear counters
   bufn_num=free_num=0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
