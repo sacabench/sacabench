@@ -23,10 +23,13 @@ public:
         if (elem == compare_to) {
             return false;
         }
+        std::cout << "elem " << elem << ", compare_to " << compare_to << std::endl;
         const bool elem_too_large = (elem >= substrings.size());
         const bool compare_to_too_large = (compare_to >= substrings.size());
 
-        if (elem_too_large) {
+        DCHECK_EQ(elem_too_large, compare_to_too_large);
+        DCHECK_EQ(elem_too_large, false);
+        /*if (elem_too_large) {
             if (compare_to_too_large) {
                 // Check how to handle this case (possibly the shorter one is
                 // smaller)
@@ -37,7 +40,7 @@ public:
         if (compare_to_too_large) {
             DCHECK_EQ(elem_too_large, false);
             return false;
-        }
+        }*/
         size_t elem_size = std::get<1>(substrings[elem]) -
                            std::get<0>(substrings[elem]) + sa_index(1);
         size_t compare_to_size = std::get<1>(substrings[compare_to]) -
@@ -61,10 +64,10 @@ public:
         }
         // If one substring is shorter than the other and they are the same
         // until now:
-        elem_size =
+        /*elem_size =
             std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]);
         compare_to_size = std::get<1>(substrings[compare_to]) -
-                          std::get<0>(substrings[compare_to]);
+                          std::get<0>(substrings[compare_to]);*/
         // Either they differ in length (shorter string is smaller) or they have
         // the same length (i.e. return false)
         return (elem_size == compare_to_size) ? false
@@ -98,7 +101,7 @@ struct compare_suffix_ranks {
             compare_to_at_depth >= partial_isa.size();
         // This case can and should never occur.
         DCHECK_EQ((elem_too_large && compare_to_too_large), false);
-        
+
         if (elem_too_large) {
             // Only first suffix (substring) ends "behind" sentinel
             return true;

@@ -14,6 +14,7 @@ template <typename sa_index>
 inline static void set_unsorted_rms_substring_intervals(
     rms_suffixes<sa_index>& rms_suf, compare_rms_substrings<sa_index> cmp,
     size_t interval_start, size_t interval_end) {
+    DCHECK_LT(interval_start, interval_end-1);
     size_t elem, compare_to;
     // Last element to be compared to its predecessor: interval_start + 1
     // interval_end must not contain last element of interval
@@ -56,9 +57,11 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                     interval_begin, interval_end);
                 if (current_interval.size() > 1) {
                     // sort current interval/bucket
+                    std::cout << "sorting interval." << std::endl;
                     util::sort::introsort<sa_index,
                                           compare_rms_substrings<sa_index>>(
                         current_interval, cmp);
+                        std::cout << "sorting interval complete." << std::endl;
 
                     // Modify elements in interval if they are the same (MSB
                     // set)
@@ -69,6 +72,18 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                 interval_end = interval_begin;
             }
         }
+    }
+    interval_end = rms_suf.relative_indices.size();
+
+    if(interval_begin < interval_end-1) {
+        util::sort::introsort<sa_index,
+                            compare_rms_substrings<sa_index>>(
+            current_interval, cmp);
+
+        // Modify elements in interval if they are the same (MSB
+        // set)
+        set_unsorted_rms_substring_intervals(
+            rms_suf, cmp, interval_begin, interval_end);
     }
 }
 
@@ -129,7 +144,7 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
 
     // Variables to check, wether interval is sorted at either the beginning or
     // the end of the interval (to readjust sorted-interval sizes of
-    // predecessors/successors) 
+    // predecessors/successors)
     size_t sorted_size_begin=0, sorted_size_end=0;
 
     bool current_sorted = true, is_sorted = true;
@@ -163,7 +178,7 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
                 unsorted_begin = pos;
                 current_sorted = false;
                 // Correct size, because pos is already part of unsorted
-                //interval 
+                //interval
                 if (pos - sorted_begin > 0) {
                     rel_ind[sorted_begin] =
                         (pos - sorted_begin) ^ utils<sa_index>::NEGATIVE_MASK;
@@ -211,7 +226,7 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
             if ((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
                 length = (current ^ utils<sa_index>::NEGATIVE_MASK);
                 // Either sorted length of preceding sorted interval is
-                //increased or we can stop here 
+                //increased or we can stop here
                 std::cout << pos - 1 + length << std::endl;
                 if (pos - 1 + length == sorted_begin) {
                     // Refresh sorted begin to search for further sorted
@@ -224,19 +239,19 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
                     rel_ind[pos - 1] =
                         sorted_size_begin | utils<sa_index>::NEGATIVE_MASK;
                 } else {
-                    std::cout << "This maybe shouldn't have occured." 
-                                << std::endl; 
+                    std::cout << "This maybe shouldn't have occured."
+                                << std::endl;
                     break;
                 }
 
             } else if ((next & utils<sa_index>::NEGATIVE_MASK) > 0) {
                 // Prev index was beginning of sorted interval.
-                std::cout << 
+                std::cout <<
                           "Prev index was beginning of sorted interval -> Skip"
                           << std::endl;
             }
             // There is an unsorted interval before a sorted interval
-            //"indicator" 
+            //"indicator"
             else if (isa[current] == isa[next]) {
                 std::cout << "break me up" << std::endl;
                 break;
@@ -433,7 +448,7 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             util::sort::introsort<sa_index, compare_suffix_ranks<sa_index>>(
                 rel_ind.slice(interval_begin, interval_end), cmp);
 
-                
+
             // recompute_interval_isa(rel_ind, interval_begin, interval_end, isa, cmp);
             // Refresh ranks for complete isa
             // recompute_isa_ltr(rel_ind, isa, cmp);
@@ -441,7 +456,7 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             current_unsorted = false;
         }
     }
-    
+
     if (unsorted) {
         recompute_isa_ltr(rel_ind, isa, cmp);
     }
@@ -461,7 +476,7 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
     size_t depth;
     size_t max_index;
     sa_index current, next;
-    
+
     // TODO (optimization): Check if max_iterations can be upper bounded
     // util::floor_log2(rms_suf.relative_indices.size()) + 1;
     for (size_t iter = 0; iter < max_iterations + 1; ++iter) {
@@ -471,14 +486,14 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
         for(size_t pos=0; pos < rel_ind.size()-1; ++pos) {
             current = rel_ind[0];
             next = rel_ind[1];
-            
+
             if((current & utils<sa_index>::NEGATIVE_MASK) > 0 || (next & utils<sa_index>::NEGATIVE_MASK) > 0) {
-                
+
             } else {
                 if(cmp(current, next)) {
                     // Rank of earlier element should be smaller
                     DCHECK_LT(isa[current], isa[next]);
-                    
+
                 } else {
                     max_index = std::min(rel_ind.size()-current, rel_ind.size()-next);
                     max_index = std::min(max_index, depth);

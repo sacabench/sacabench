@@ -13,6 +13,7 @@
 #include "utils.hpp"
 #include <iostream>
 #include <util/alphabet.hpp>
+#include <util/compare.hpp>
 #include <util/assertions.hpp>
 #include <util/container.hpp>
 #include <util/span.hpp>
@@ -78,9 +79,40 @@ public:
                                       sa_type_container, bkts);
             if (rms_count > 0) {
                 insert_into_buckets<sa_index>(rms_suf, bkts);
+                auto substrings = extract_rms_substrings(rms_suf);
 
                 sort_rms_substrings<sa_index>(
                     rms_suf, alphabet.max_character_value(), bkts);
+
+                // Check, wether substrings sorted correctly
+                util::span<sa_index> rel_ind = rms_suf.relative_indices;
+                size_t a_size;
+                size_t b_size;
+                size_t max_pos;
+                for(size_t i = 0; i < rel_ind.size()-1; ++i) {
+                    if((rel_ind[i] & utils<sa_index>::NEGATIVE_MASK) > 0 ||
+                        (rel_ind[i+1] & utils<sa_index>::NEGATIVE_MASK) > 0) {
+                        std::cout << "Skipping because one index negated (i.e. same)" <<std::endl;
+                        continue;
+                    }
+                    std::cout << "Comparing substring <" << std::get<0>(substrings[rel_ind[i]])
+                     << "," << std::get<1>(substrings[rel_ind[i]]) << "> with <" <<
+                     std::get<0>(substrings[rel_ind[i+1]]) << "," << std::get<1>(substrings[rel_ind[i+1]]) << ">"<< std::endl;
+                    a_size = std::get<1>(substrings[rel_ind[i]]) - std::get<0>(substrings[rel_ind[i]]) + sa_index(1);
+                    b_size = std::get<1>(substrings[rel_ind[i+1]]) - std::get<0>(substrings[rel_ind[i+1]]) + sa_index(1);
+                    sa_index a_start = std::get<0>(substrings[rel_ind[i]]);
+                    sa_index b_start = std::get<0>(substrings[rel_ind[i+1]]);
+                    max_pos = std::min(a_size, b_size)+1;
+                    for(sa_index j=0; j < max_pos; ++j) {
+                        // Check characterwise, until smaller
+                        std::cout << "Comparing " << size_t(a_start+j) << ", index "<< rel_ind[i]+j << "  to "
+                        << size_t(b_start +j) << ", index " << rel_ind[i+1]+j << std::endl;
+                        DCHECK_LE(text[a_start + j], text[b_start+j]);
+                        if(text[a_start + j] < text[b_start+j]) {
+                            break;
+                        }
+                    }
+                }
 
                 // Compute ISA
 
@@ -88,7 +120,6 @@ public:
                                               rms_suf.partial_isa);
 
                 sort_rms_suffixes<sa_index>(rms_suf);
-
                 sort_rms_indices_to_order<sa_index>(rms_suf, rms_count,
                                                     sa_type_container, out_sa);
 
