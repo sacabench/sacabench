@@ -1,4 +1,4 @@
-#include <saca/external/sads/sads_reference.hpp>
+#include "../../../../external/reference_impls/sads_reference.hpp"
 #include <util/container.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/span.hpp>
@@ -19,11 +19,12 @@ public:
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-        int* SA = new int[text.size()];
+                             
+        auto SA = std::make_unique<int[]>(text.size());
 
         if (text.size() > 1) {
             tdc::StatPhase sads("Main Phase");
-            sacabench::reference_sacas::sads_reference::SA_DS(text.data(), SA, text.size(), alphabet.max_character_value() + 1,text.size(), 0);
+            sacabench::reference_sacas::sads_reference::SA_DS(text.data(), SA.get(), text.size(), alphabet.max_character_value() + 1, text.size(), 0);
         }
         for (size_t i = 0; i < text.size(); i++) {
             DCHECK_LE(static_cast<size_t>(SA[i]), std::numeric_limits<sa_index>::max());
