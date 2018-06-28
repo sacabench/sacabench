@@ -44,12 +44,12 @@ public:
                              util::span<sa_index> sa_return) {
         tdc::StatPhase bpr("Prepare input file");
 
-        // TODO: Proper usage of temporary files
-        std::string filename = "/tmp/bpr_tempfile";
-        remove(filename.c_str());
+        // store contents in temporary file
+        char filename_template[] = "/tmp/bpr_tempfile_XXXXXX";
+        mkstemp(filename_template);
+        std::string filename = std::string(filename_template);
         std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
         out_file << input;
-        std::cout << "Written to " << filename << std::endl;
 
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa = NULL;
