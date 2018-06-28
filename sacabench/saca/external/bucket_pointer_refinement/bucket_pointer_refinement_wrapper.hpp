@@ -43,7 +43,7 @@ public:
     template <typename sa_index>
     static void construct_sa(util::string_span input,
                              util::alphabet const& /*alphabet*/,
-                             util::span<sa_index> /*sa_return*/) {
+                             util::span<sa_index> sa_return) {
         tdc::StatPhase bpr("Prepare input file");
 
         // store contents in temporary file
@@ -52,6 +52,8 @@ public:
         std::string filename = std::string(filename_template);
         std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
         out_file << input;
+        out_file.flush();
+        out_file.close();
 
         bpr.split("Reference Implementation");
 
@@ -59,8 +61,8 @@ public:
         Kbs_SuffixArray *sa = NULL;
         Kbs_Ulong q = 3;
 
-        ustr = kbs_getUstring_FromFile(filename.c_str()); // <-- This line will break stuff
-        /*
+        std::cout << filename.c_str() << std::endl;
+        ustr = kbs_getUstring_FromFile(filename.c_str());
 
         kbs_get_AlphabetForUstring(ustr);
         if (ustr == NULL) {
@@ -88,6 +90,8 @@ public:
             q = 3;
         }
 
+        std::cout << ustr->alphabet->alphaSize << std::endl;
+
         sa = kbs_buildDstepUsePrePlusCopyFreqOrder_SuffixArray(ustr, q);
 
         bpr.split("Move output");
@@ -99,7 +103,7 @@ public:
 
         // clean up
         kbs_delete_SA_IncludingString(sa);
-        */
+
         remove(filename.c_str());
     }
 }; // class bucket_pointer_refinement
