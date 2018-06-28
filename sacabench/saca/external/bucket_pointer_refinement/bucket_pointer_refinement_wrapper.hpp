@@ -51,12 +51,12 @@ public:
         std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
         out_file << input;
 
-        /*
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa = NULL;
         Kbs_Ulong q = 3;
 
-        ustr = kbs_getUstring_FromFile(filename.c_str());
+        ustr = kbs_getUstring_FromFile(filename.c_str()); // <-- This line will break stuff
+        /*
 
         bpr.split("Reference Implementation");
 
