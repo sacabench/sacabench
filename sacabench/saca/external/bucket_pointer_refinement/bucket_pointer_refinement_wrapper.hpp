@@ -20,6 +20,7 @@
 
 #include <tudocomp_stat/StatPhase.hpp>
 
+extern "C" {
 #include <kbs_Error.h>
 #include <kbs_Math.h>
 #include <kbs_String.h>
@@ -28,6 +29,7 @@
 #include <kbs_SuffixArrayChecker.h>
 #include <kbs_SuffixArrayConstDStepAndPre.h>
 #include <kbs_Types.h>
+}
 
 namespace sacabench::bucket_pointer_refinement_ext {
 
