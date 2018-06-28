@@ -7,11 +7,13 @@
 #pragma once
 
 #include <cstdint>
-#include "external_saca1.hpp"
+#include "run_external.hpp"
 
 extern int32_t _ds_Word_size;
 extern int32_t Blind_sort_ratio;
 extern "C" void ds_ssort(unsigned char* x, int32_t* p, int32_t n);
+extern "C" void set_global_variables(void);
+extern "C" int check_global_variables(void);
 
 namespace sacabench::reference_sacas {
     struct deep_shallow {
@@ -24,9 +26,9 @@ namespace sacabench::reference_sacas {
         inline static void construct_sa(util::string_span text,
                                  const util::alphabet&,
                                  util::span<sa_index> out_sa) {
-            _ds_Word_size = 1;
-            Blind_sort_ratio = 2000;    // Extracted from paper.
-            external_saca1::run_external<sa_index>(text, out_sa, ds_ssort);
+            set_global_variables();
+            check_global_variables();
+            run_external<sa_index>(text, out_sa, ds_ssort);
         }
     };
 }

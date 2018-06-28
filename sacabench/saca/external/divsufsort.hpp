@@ -7,7 +7,7 @@
 #pragma once
 
 #include<cstdint>
-#include "external_saca1.hpp"
+#include "run_external.hpp"
 
 extern "C" int32_t divsufsort(const uint8_t* T, int32_t* SA, int32_t n);
 
@@ -22,7 +22,7 @@ namespace sacabench::reference_sacas {
         inline static void construct_sa(util::string_span text,
                                  const util::alphabet&,
                                  util::span<sa_index> out_sa) {
-             external_saca1::run_external<sa_index>(text, out_sa, divsufsort);
+             run_external<sa_index>(text, out_sa, divsufsort);
         }
     };
 }
