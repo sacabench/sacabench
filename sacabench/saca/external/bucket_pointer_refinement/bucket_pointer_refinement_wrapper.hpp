@@ -10,6 +10,9 @@
 #include <math.h>
 #include <stdio.h>
 
+#include <iostream>
+#include <fstream>
+
 #include <util/alphabet.hpp>
 #include <util/compare.hpp>
 #include <util/container.hpp>
