@@ -31,50 +31,48 @@ public:
 
     template <typename sa_index>
     static void construct_sa(util::string_span input,
-                             util::alphabet const& alphabet,
+                             util::alphabet const& /*alphabet*/,
                              util::span<sa_index> sa) {
         tdc::StatPhase bpr("Prepare input file");
 
         // TODO: Write input to file
-        std::string filename = "/tmp/";
+        std::string filename = "/tmp/bpr_tempfile";
         std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
         out_file << input;
         std::cout << "Written to " << filename << std::endl;
 
-        /*
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa_ref = NULL;
         Kbs_Ulong q = 3;
 
-        ustr = kbs_getUstring_FromFile(argv[argc-1]);
+        ustr = kbs_getUstring_FromFile(filename.c_str());
 
         bpr.split("Reference Implementation");
 
         kbs_get_AlphabetForUstring(ustr);
         if (ustr == NULL) {
-            printf("unable to get file %s\n", argv[argc-1]);
+            printf("unable to get file %s\n", filename.c_str());
             KBS_ERROR(KBS_ERROR_NULLPOINTER);
             exit(1);
         }
-        if (argc == 2) {
-            if (ustr->alphabet->alphaSize <= 9) {
-                q = 7;
-            }
-            if (9 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 13) {
-                q = 6;
-            }
-            if (13 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 21) {
-                q = 5;
-            }
-            if (13 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 21) {
-                q = 5;
-            }
-            if (21 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 46) {
-                q = 4;
-            }
-            if (46 < ustr->alphabet->alphaSize) {
-                q = 3;
-            }
+
+        if (ustr->alphabet->alphaSize <= 9) {
+            q = 7;
+        }
+        if (9 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 13) {
+            q = 6;
+        }
+        if (13 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 21) {
+            q = 5;
+        }
+        if (13 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 21) {
+            q = 5;
+        }
+        if (21 < ustr->alphabet->alphaSize && ustr->alphabet->alphaSize <= 46) {
+            q = 4;
+        }
+        if (46 < ustr->alphabet->alphaSize) {
+            q = 3;
         }
 
         sa_ref = kbs_buildDstepUsePrePlusCopyFreqOrder_SuffixArray(ustr, q);
@@ -88,7 +86,6 @@ public:
         }
 
         kbs_delete_SA_IncludingString(sa_ref);
-        */
     }
 }; // class bucket_pointer_refinement
 
