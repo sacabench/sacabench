@@ -48,7 +48,9 @@ public:
 
         // store contents in temporary file
         char filename_template[] = "/tmp/bpr_tempfile_XXXXXX";
-        mkstemp(filename_template);
+        if (mkstemp(filename_template) == -1) {
+            exit(1);
+        }
         std::string filename = std::string(filename_template);
         std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
         out_file << input;
