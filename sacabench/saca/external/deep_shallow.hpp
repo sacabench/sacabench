@@ -10,6 +10,7 @@
 #include "external_saca1.hpp"
 
 extern int32_t _ds_Word_size;
+extern int32_t Blind_sort_ratio;
 extern "C" void ds_ssort(unsigned char* x, int32_t* p, int32_t n);
 
 namespace sacabench::reference_sacas {
@@ -24,6 +25,7 @@ namespace sacabench::reference_sacas {
                                  const util::alphabet&,
                                  util::span<sa_index> out_sa) {
             _ds_Word_size = 1;
+            Blind_sort_ratio = 2000;    // Extracted from paper.
             external_saca1::run_external<sa_index>(text, out_sa, ds_ssort);
         }
     };
