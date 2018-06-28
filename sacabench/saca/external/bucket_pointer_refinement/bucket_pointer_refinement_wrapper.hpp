@@ -49,6 +49,11 @@ public:
                              util::span<sa_index> sa_return) {
         tdc::StatPhase bpr("Prepare input file");
 
+        // reference implementation breaks for empty files
+        if (input.size() == 0) {
+            return;
+        }
+
         // store contents in temporary file
         char filename_template[] = "/tmp/bpr_tempfile_XXXXXX";
         if (mkstemp(filename_template) == -1) {
