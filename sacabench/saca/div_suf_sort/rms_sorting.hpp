@@ -22,6 +22,7 @@ inline static void set_unsorted_rms_substring_intervals(
     for (size_t pos = interval_end - 1; interval_start < pos; --pos) {
         elem = rms_suf.relative_indices[pos - 1];
         compare_to = rms_suf.relative_indices[pos];
+        //std::cout << "comparing " << elem << " to " << compare_to << std::endl;
         // None of the substrings is smaller than the other (i.e. the same)
         if (!(cmp(elem, compare_to) || cmp(compare_to, elem))) {
             rms_suf.relative_indices[pos] =
@@ -72,10 +73,11 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
                 interval_end = interval_begin;
             }
         }
-    }
+    }/*
     interval_end = rms_suf.relative_indices.size();
-
-    if(interval_begin < interval_end-1) {
+    current_interval = rms_suf.relative_indices.slice(
+                    interval_begin, interval_end);
+    if(current_interval.size() > 1) {
         util::sort::introsort<sa_index,
                             compare_rms_substrings<sa_index>>(
             current_interval, cmp);
@@ -84,7 +86,7 @@ inline static void sort_rms_substrings(rms_suffixes<sa_index>& rms_suf,
         // set)
         set_unsorted_rms_substring_intervals(
             rms_suf, cmp, interval_begin, interval_end);
-    }
+    }*/
 }
 
 template <typename sa_index>
@@ -528,23 +530,21 @@ inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
                                              size_t rms_count,
                                              util::container<bool>& types,
                                              util::span<sa_index> out_sa) {
-    size_t correct_pos;
     auto isa = rms_suf.partial_isa;
 
     // Skip last index because of sentinel
-    for (size_t pos = rms_suf.text.size() - 1; 1 < pos; --pos) {
-        correct_pos = pos - 1;
+    for (size_t pos = rms_suf.text.size() - 2; 0 < pos; --pos) {
         // RMS-Suffix in text found
-        if (sa_types::is_rms_type(correct_pos, types)) {
+        if (sa_types::is_rms_type(pos, types)) {
 
-            // If predecessor of correct_pos is l-type: negate, because not
+            // If predecessor of pos is l-type: negate, because not
             // considered in first induce step
-            if (sa_types::is_l_type(correct_pos - 1, types)) {
+            if (sa_types::is_l_type(pos - 1, types)) {
                 out_sa[isa[--rms_count]] =
-                    correct_pos ^ utils<sa_index>::NEGATIVE_MASK;
+                    pos ^ utils<sa_index>::NEGATIVE_MASK;
             } else {
-                // Index correct_pos considered in first induce step
-                out_sa[isa[--rms_count]] = correct_pos;
+                // Current index considered in first induce step
+                out_sa[isa[--rms_count]] = pos;
             }
         }
     }

@@ -23,7 +23,7 @@ public:
         if (elem == compare_to) {
             return false;
         }
-        std::cout << "elem " << elem << ", compare_to " << compare_to << std::endl;
+        //std::cout << "elem " << elem << ", compare_to " << compare_to << std::endl;
         const bool elem_too_large = (elem >= substrings.size());
         const bool compare_to_too_large = (compare_to >= substrings.size());
 

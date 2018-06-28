@@ -77,15 +77,19 @@ public:
 
             compute_buckets<sa_index>(text, alphabet.max_character_value(),
                                       sa_type_container, bkts);
+            check_buckets(text, alphabet.max_character_value()+1, sa_type_container, bkts);
             if (rms_count > 0) {
+                util::span<sa_index> rel_ind = rms_suf.relative_indices;
+                
+                
                 insert_into_buckets<sa_index>(rms_suf, bkts);
                 auto substrings = extract_rms_substrings(rms_suf);
-
+                std::cout << "rel_ind " << rel_ind << std::endl;
                 sort_rms_substrings<sa_index>(
                     rms_suf, alphabet.max_character_value(), bkts);
 
                 // Check, wether substrings sorted correctly
-                util::span<sa_index> rel_ind = rms_suf.relative_indices;
+                std::cout << rms_count << " rms-substrings" << std::endl;
                 size_t a_size;
                 size_t b_size;
                 size_t max_pos;
@@ -105,8 +109,8 @@ public:
                     max_pos = std::min(a_size, b_size)+1;
                     for(sa_index j=0; j < max_pos; ++j) {
                         // Check characterwise, until smaller
-                        std::cout << "Comparing " << size_t(a_start+j) << ", index "<< rel_ind[i]+j << "  to "
-                        << size_t(b_start +j) << ", index " << rel_ind[i+1]+j << std::endl;
+                        /*std::cout << "Comparing " << size_t(text[a_start+j]) << ", index "<< a_start+j << ", to "
+                        << size_t(text[b_start +j]) << ", index " << b_start +j << std::endl;*/
                         DCHECK_LE(text[a_start + j], text[b_start+j]);
                         if(text[a_start + j] < text[b_start+j]) {
                             break;
@@ -122,7 +126,11 @@ public:
                 sort_rms_suffixes<sa_index>(rms_suf);
                 sort_rms_indices_to_order<sa_index>(rms_suf, rms_count,
                                                     sa_type_container, out_sa);
-
+                                                    
+                // Check if order correct
+                check_sorted_rms(text, rms_suf.relative_indices);
+                
+                
                 insert_rms_into_correct_pos<sa_index>(
                     rms_count, bkts, alphabet.max_character_value(), out_sa);
             }
@@ -132,6 +140,51 @@ public:
             induce_l_suffixes<sa_index>(text, bkts, out_sa);
         }
     }
+    
+    
+    template <typename sa_index>
+    static void check_sorted_rms(util::string_span text, util::span<sa_index> rms_ind) {
+        // Check for each rms-suffix if it is smaller than its successor
+        size_t elem, succ, j;
+        std::cout << rms_ind << std::endl;
+        
+        for(size_t i=0; i < rms_ind.size()-1; ++i) {
+            j = 0;
+            elem = (rms_ind[i] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK;
+            succ = (rms_ind[i+1] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK;
+            DCHECK_NE(elem, succ);
+            std::cout << "elem " << elem << " | succ " << succ << std::endl;
+            while(text[succ+j] <= text[elem+j]) {
+                std::cout << "Comparing " << size_t(text[elem+j]) << " to " << size_t(text[succ+j]) << std::endl;
+            // (Possibly) runs through whole suffix
+                DCHECK_LE(text[elem+j], text[succ+j]);
+                ++j;
+            }
+        }
+    }
+    
+    template <typename sa_index>
+    static void check_buckets(util::string_span text, size_t max,
+        util::container<bool>& types, buckets<sa_index>& bkts) {
+        auto bkt_cmp_s = util::make_container<sa_index>(pow(max, 2));
+        for(size_t i=0; i < text.size()-1; ++i) {
+            if(sa_types::is_rms_type(i, types)) {
+                ++bkt_cmp_s[text[i] * max + text[i+1]];
+            }
+        }
+        size_t current_count = 0;
+        size_t index;
+        for(size_t first_letter=0; first_letter < max; ++first_letter) {
+            
+            for(size_t second_letter=first_letter+1; second_letter < max; ++second_letter) {
+                index = first_letter * max + second_letter;
+                current_count += bkt_cmp_s[index];
+                bkt_cmp_s[index] = current_count;
+                DCHECK_EQ(bkt_cmp_s[index], bkts.s_buckets[bkts.get_rms_bucket_index(first_letter, second_letter)]);
+            }
+        }
+    }
+    
 };
 
 } // namespace sacabench::div_suf_sort
