@@ -14,90 +14,6 @@
 
 using namespace sacabench::util;
 
-TEST(multikey_quicksort, test_compare_function) {
-    const auto input = "acba"_s;
-    const sort::multikey_quicksort::compare_one_character_at_depth<size_t> less(
-        input);
-
-    // acba < cba
-    ASSERT_TRUE(less(0, 1));
-    ASSERT_FALSE(less(1, 0));
-
-    // cba < ba
-    ASSERT_FALSE(less(1, 2));
-    ASSERT_TRUE(less(2, 1));
-
-    // ba < cba
-    ASSERT_FALSE(less(2, 3));
-    ASSERT_TRUE(less(3, 2));
-
-    // a == acba
-    ASSERT_FALSE(less(3, 0));
-    ASSERT_FALSE(less(0, 3));
-}
-
-TEST(multikey_quicksort, abc) {
-    const string_span input = "abc"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    ASSERT_EQ(array.size(), input.size());
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, ba) {
-    const string_span input = "ba"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, baca) {
-    const string_span input = "baca"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, aaaabcas) {
-    const string_span input = "aaaabcas"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, caabaccaabacaa) {
-    const string_span input = "caabaccaabacaa"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
 constexpr auto test_strlen = [](size_t strl) {
     // Initialize random number generator.
     std::random_device rd;
@@ -122,6 +38,28 @@ constexpr auto test_strlen = [](size_t strl) {
     }
 };
 
+TEST(multikey_quicksort, test_compare_function) {
+    const auto input = "acba"_s;
+    const sort::multikey_quicksort::compare_one_character_at_depth<size_t> less(
+        input);
+
+    // acba < cba
+    ASSERT_TRUE(less(0, 1));
+    ASSERT_FALSE(less(1, 0));
+
+    // cba < ba
+    ASSERT_FALSE(less(1, 2));
+    ASSERT_TRUE(less(2, 1));
+
+    // ba < cba
+    ASSERT_FALSE(less(2, 3));
+    ASSERT_TRUE(less(3, 2));
+
+    // a == acba
+    ASSERT_FALSE(less(3, 0));
+    ASSERT_FALSE(less(0, 3));
+}
+
 TEST(multikey_quicksort, random_string_3) { test_strlen(3); }
 
 TEST(multikey_quicksort, random_string_4) { test_strlen(4); }
@@ -137,7 +75,7 @@ TEST(multikey_quicksort, random_string_8) { test_strlen(8); }
 TEST(multikey_quicksort, random_string_1000) { test_strlen(1000); }
 
 TEST(multikey_quicksort, deep_sort_gfedcbaaaa) {
-    const string_span input = "gfedcbaaaa"_s;
+    const string_span input = "gfedcbaaaa\0"_s;
 
     std::vector<size_t> array;
     for (size_t i = 0; i < input.size(); ++i) {
