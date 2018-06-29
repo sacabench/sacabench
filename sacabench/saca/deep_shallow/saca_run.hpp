@@ -66,9 +66,8 @@ private:
     /// \brief Use Multikey-Quicksort to sort the bucket.
     inline void shallow_sort(const span<sa_index_type> bucket) {
         // We use multikey quicksort. Abort at depth DEEP_SORT_DEPTH.
-        util::sort::multikey_quicksort::multikey_quicksort(
-            bucket, input_text, DEEP_SORT_DEPTH,
-            [&](const span<sa_index_type> equal_partition) {
+        util::sort::multikey_quicksort::multikey_quicksort<DEEP_SORT_DEPTH>(
+            bucket, input_text, [&](const span<sa_index_type> equal_partition) {
                 deep_sort(equal_partition, DEEP_SORT_DEPTH);
             });
     }
@@ -212,17 +211,6 @@ private:
                             const sa_index_type common_prefix_length) {
         const auto compare_suffix = [&](const sa_index_type a,
                                         const sa_index_type b) {
-            // Catch out-of-range errors and return correct sorting result.
-            if (static_cast<size_t>(a + common_prefix_length) >=
-                input_text.size()) {
-                return !(static_cast<size_t>(b + common_prefix_length) >=
-                         input_text.size());
-            }
-            if (static_cast<size_t>(b + common_prefix_length) >=
-                input_text.size()) {
-                return false;
-            }
-
             DCHECK_LT(a + common_prefix_length, input_text.size());
             DCHECK_LT(b + common_prefix_length, input_text.size());
 
@@ -290,7 +278,7 @@ public:
         // Catch corner cases, where input is smaller than bucket-prefix-size.
         if (text.size() < 3) {
             // Use Multikey-Quicksort.
-            shallow_sort(sa);
+            blind_sort(sa, 0);
         } else {
             // Use bucket sort to sort `sa` by the first two characters.
             bucket_sort();
