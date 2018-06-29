@@ -16,7 +16,7 @@
 namespace sacabench::deep_shallow {
 class saca {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "Deep-Shallow";
     static constexpr char const* DESCRIPTION =
         "Deep Shallow SACA by Manzini and Ferragina";

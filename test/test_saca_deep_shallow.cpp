@@ -174,16 +174,4 @@ TEST(deep_shallow, simple) {
     ASSERT_TRUE(bool(util::sa_check<size_t>(sa, input)));
 }
 
-TEST(deep_shallow, ababababa) {
-    util::string input = util::make_string(
-        "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefg"
-        "abcdefgabcdefgabcdefgabcdefgabcdefg");
-    auto alphabet = util::apply_effective_alphabet(input);
-
-    auto sa = util::make_container<size_t>(input.size());
-
-    ds::construct_sa<size_t>(input, alphabet, sa);
-    ASSERT_TRUE(bool(util::sa_check<size_t>(sa, input)));
-}
-
 TEST(deep_shallow, corner_cases) { test::saca_corner_cases<ds>(); }
