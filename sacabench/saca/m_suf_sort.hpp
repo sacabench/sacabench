@@ -397,7 +397,7 @@ inline void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr
     if (!attr.m_list.exists(i, j)) {
         return;
     } else {
-        sa_index last_idx = attr.m_list.get_tail(i, j);
+        //sa_index last_idx = attr.m_list.get_tail(i, j);
         sa_index current_idx = attr.m_list.get_head(i, j);
         sa_index next_idx = attr.isa.get(current_idx);
 
