@@ -28,7 +28,7 @@ public:
                                     span<sa_index_type> sa) {
 
         // Check if `sa_index_type` is suitable.
-        DCHECK(util::assert_text_length<sa_index_type>(text.size(), 0));
+        DCHECK(util::assert_text_length<sa_index_type>(text.size(), 1));
 
         // Construct an object of type `saca_run`, which contains the algorithm.
         // This will construct the suffix array in `sa` using deep-shallow.
