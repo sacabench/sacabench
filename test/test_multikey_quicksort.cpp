@@ -34,18 +34,6 @@ TEST(multikey_quicksort, test_compare_function) {
     // a == acba
     ASSERT_FALSE(less(3, 0));
     ASSERT_FALSE(less(0, 3));
-
-    // $ < a
-    ASSERT_TRUE(less(4, 3));
-    ASSERT_FALSE(less(3, 4));
-
-    // $$ < acba
-    ASSERT_TRUE(less(5, 0));
-    ASSERT_FALSE(less(0, 5));
-
-    // $ < $$ ?
-    ASSERT_FALSE(less(4, 5));
-    ASSERT_FALSE(less(5, 4));
 }
 
 TEST(multikey_quicksort, abc) {
@@ -126,11 +114,8 @@ constexpr auto test_strlen = [](size_t strl) {
             input.push_back(dist(gen));
             array.push_back(i);
         }
-
-        // for(size_t aa = 0; aa < input.size(); ++aa) {
-        //     std::cout << input[aa];
-        // }
-        // std::cout << std::endl;
+        input.push_back(SENTINEL);
+        array.push_back(strl);
 
         sort::multikey_quicksort::multikey_quicksort(span(array), span(input));
         ASSERT_TRUE(sa_check(span(array), span(input)));
@@ -163,7 +148,7 @@ TEST(multikey_quicksort, deep_sort_gfedcbaaaa) {
 
     auto deep_sort = [&](span<size_t>) { used_deep_sort = true; };
 
-    sort::multikey_quicksort::multikey_quicksort(span(array), input, 2,
+    sort::multikey_quicksort::multikey_quicksort<2>(span(array), input,
                                                  deep_sort);
     ASSERT_TRUE(used_deep_sort);
 }
