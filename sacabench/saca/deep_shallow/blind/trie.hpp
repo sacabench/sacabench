@@ -61,13 +61,13 @@ private:
         ///        this node, while keeping the
         ///        "sorted-by-edge-label"-invariant.
         inline void add_child(node&& new_child) {
-            for (auto i = children.begin(); i != children.end(); ++i) {
-                if (i->incoming_char >= new_child.incoming_char) {
-                    children.emplace(i, std::move(new_child));
-                    return;
-                }
-            }
-            children.emplace_back(std::move(new_child));
+            // Use binary search to find the first element in children, which is
+            // larger than the new. The correct position is right in front of
+            // the found element.
+            auto it = std::find_if(children.begin(), children.end(), [&](const node& n) {
+                return n.incoming_char >= new_child.incoming_char;
+            });
+            children.emplace(it, std::move(new_child));
         }
 
         inline void print(const util::string_span input_text,
