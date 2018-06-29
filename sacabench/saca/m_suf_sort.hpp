@@ -18,7 +18,7 @@
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
 
-//#include<iostream>
+#include<iostream>
 #include <stack>
 #include <utility>
 #include <vector>
@@ -366,16 +366,6 @@ public:
         #endif
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
         // (try 2 other options)
-        for (size_t i = 0; i < text.size(); i++) {
-            if(attr.isa.is_END(i)) {
-                std::cout << "ERROR: ISA contains END symbol at position " << i << std::endl;
-                std::cout << "Surrounding Text: " << (size_t)text[i-2] << ";" << (size_t)text[i-1] <<
-                ";" << (size_t)text[i] << ";" << (size_t)text[i+1] << ";" << (size_t)text[i+2] << ";" << std::endl;
-            }
-            else if(attr.isa.is_link(i)) {
-                std::cout << "ERROR: ISA contains LINK!" << std::endl;
-            }
-        }
         util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
     }
 };
@@ -386,8 +376,6 @@ public:
 // easy_induced_sort) false else (if called for element of a type_l_list) true
 template <typename sa_index>
 inline void assign_rank(size_t index, bool type_l, m_suf_sort_attr<sa_index>& attr) {
-    // safe last linked element if neede later before overwrite
-    sa_index last_link = attr.isa.get(index);
     // set rank for index element (main functionality)
     attr.isa.set_rank(index);
 
