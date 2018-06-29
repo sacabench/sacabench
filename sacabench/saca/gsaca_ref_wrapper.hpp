@@ -27,16 +27,18 @@ namespace sacabench::gsaca {
 
         template<typename sa_index>
         inline static void construct_sa(sacabench::util::string_span text_with_sentinels,
-                                        util::alphabet const /* &alphabet */,
+                                        util::alphabet const& /* alphabet */,
                                         sacabench::util::span<sa_index> out_sa) {
 
+            size_t n = text_with_sentinels.size();
+            DCHECK_MSG(int(n) >= 0 && n == size_t(int(n)), "reference gsaca can only handle Textsizes that fit in a `int`.");
+
             const unsigned char *chars = text_with_sentinels.data();
-            int n = int(text_with_sentinels.size());
-            int *SA = new int[n];
+            auto SA = std::make_unique<int[]>(n);
 
-            /* int resultCode = */ ::gsaca(chars, SA, n);
+            /* int resultCode = */ ::gsaca(chars, SA.get(), n);
 
-            for (int index = 0; index < n; index++) {
+            for (size_t index = 0; index < n; index++) {
                 out_sa[index] = static_cast<sa_index>(SA[index]);
             }
         }
