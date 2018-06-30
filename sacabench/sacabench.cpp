@@ -47,6 +47,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool check_sa = false;
     uint32_t out_fixed_bits = 0;
     std::string prefix_size = "";
+    size_t prefix = -1;
     bool force_overwrite = false;
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
@@ -97,7 +98,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
-        
+
         construct.add_flag("-z,--plot", plot, "Plot measurements.");
     }
 
@@ -212,7 +213,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 {
                     std::unique_ptr<util::text_initializer> text;
                     std::string stdin_buf;
-                    size_t prefix = -1;
 
                     if (prefix_size.size() > 0) {
                         try {
@@ -352,7 +352,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cerr << "Loading input..." << std::endl;
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
-        size_t prefix = -1;
 
         if (prefix_size.size() > 0) {
             try {
@@ -455,25 +454,47 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
-    if(plot){
-        std::string r_command = "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
-        std::cout << "plot benchmark...";
-        if(batch){
-            r_command += " 1 " + input_filename + " " + prefix_size + "'  ..//stats/stat_plot.R test.Rout"; 
-            int i = system(r_command.c_str());
-            (void)i; //suppress  warning
-            std::cout << "saved as: " << benchmark_filename << ".pdf" << std::endl;
+    if (plot) {
+        size_t text_size;
+        if (input_filename == "-") {
+            auto stdin_buf =
+                std::string(std::istreambuf_iterator<char>(std::cin), {});
+            auto text = std::make_unique<util::text_initializer_from_span>(
+                util::string_span((util::character const*)stdin_buf.data(),
+                                  stdin_buf.size()),
+                prefix);
+            text_size = text->text_size();
+
+        } else {
+            auto text = std::make_unique<util::text_initializer_from_file>(
+                input_filename, prefix);
+            text_size = text->text_size();
         }
-        else if(out_benchmark){
-            r_command += " 0 " + input_filename + " " + prefix_size + "'  ..//stats/stat_plot.R test.Rout"; 
+
+        std::string r_command =
+            "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+        std::cout << "plot benchmark...";
+        if (batch) {
+            r_command += " 1 " + input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
             int i = system(r_command.c_str());
-            (void)i; //suppress  warning
-            std::cout << "saved as: " << benchmark_filename << ".pdf" << std::endl;
-        }else{
+            (void)i; // suppress  warning
+            std::cout << "saved as: " << benchmark_filename << ".pdf"
+                      << std::endl;
+        } else if (out_benchmark) {
+            r_command += " 0 " + input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
+            int i = system(r_command.c_str());
+            (void)i; // suppress  warning
+            std::cout << "saved as: " << benchmark_filename << ".pdf"
+                      << std::endl;
+        } else {
             std::cout << "not able to plot." << std::endl;
         }
     }
-        
+
     return late_fail;
 }
 

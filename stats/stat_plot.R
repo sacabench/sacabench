@@ -123,11 +123,21 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   
   #Header and Footer
   header_name = paste(algorithm_name," (",args[3], sep = "")
-  if(!is.na(args[4])){
-    header_name = paste(header_name, ", size:", args[4],")", sep = "")
-  }else{
-    header_name = paste(header_name,")",sep = "");
-  }
+  size = as.numeric(args[4])
+  label_unit = "Bytes"
+  if(size > 1000 * 1000 * 1000){
+    size = round(size / 1000 / 1000 / 1000, digits = 2)
+    label_unit = "GB"
+  }else if(size > 1000 * 1000){
+    size = round(size / 1000 / 1000, digits = 2)
+    label_unit = "MB"
+  }else if(size > 1000){
+    size = round(size / 1000, digits = 2)
+    label_unit = "KB"
+  } 
+  
+    header_name = paste(header_name, ", size: ",size,label_unit, ")", sep = "")
+  
   mtext(header_name, side=3, outer=TRUE, line=-2,cex = 2)
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
       mai=c(1,1,1,1), new = TRUE)
@@ -312,12 +322,23 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   label_runtime = "Runtime in milliseconds"
   label_mem = "Memory peak in KB"
   label_main = "Memory & runtime measurements"
-  header_name = paste(label_main," (",args[3],sep = "")
-  if(!is.na(args[4])){
-    header_name = paste(header_name, ", size:", args[4],")",sep = "")
-  }else{
-    header_name = paste(header_name,")",sep = "");
-  }
+  header_name = paste(" (",args[3],sep = "")
+  
+  size = as.numeric(args[4])
+  label_unit = "Bytes"
+  if(size > 1000 * 1000 * 1000){
+    size = round(size / 1000 / 1000 / 1000, digits = 2)
+    label_unit = "GB"
+  }else if(size > 1000 * 1000){
+    size = round(size / 1000 / 1000, digits = 2)
+    label_unit = "MB"
+  }else if(size > 1000){
+    size = round(size / 1000, digits = 2)
+    label_unit = "KB"
+  } 
+  
+  header_name = paste(header_name, ", size: ", size, label_unit,")",sep = "");
+  
   
   #If values are too big -> next unit
   if(max(runtimes)>1000*60){
@@ -344,7 +365,7 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   n <- length(names)
   if(plot_scatter == F){
     plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
-                           label_mem, header_name, getDistinctColors(n))
+                           label_mem, paste(label_main,header_name, sep=""), getDistinctColors(n))
   }else{
   
     if(logarithmic){
@@ -380,17 +401,11 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
       label_main = paste(label_main, "- Paretofront", sep = " ")
     }
     
-    label_main = paste(label_main," (",args[3], sep = "")
-    if(!is.na(args[4])){
-      label_main = paste(label_main, ", size:", args[4],")", sep = "")
-    }else{
-      label_main = paste(label_main,")", sep = "");
-    }
     
     n <- length(names)
     plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
                                  label_runtime, label_mem,
-                                 label_main, getDistinctColors(n))
+                                 paste(label_main, header_name,sep = ""), getDistinctColors(n))
   }
 }
 
@@ -420,8 +435,24 @@ ram = paste(round(as.numeric(try(substring(ram,0,nchar(ram)-3)))/1000/1000, digi
 
 name = paste(name, ", ", maxfreq, " max", sep = "")
 ram = paste(ram, "RAM")
+text_input = paste("Input file:",args[3])
+size = as.numeric(args[4])
+print(size)
+label_unit = "Bytes"
+if(size > 1000 * 1000 * 1000){
+  size = round(size / 1000 / 1000 / 1000, digits = 2)
+  label_unit = "GB"
+}else if(size > 1000 * 1000){
+  size = round(size / 1000 / 1000, digits = 2)
+  label_unit = "MB"
+}else if(size > 1000){
+  size = round(size / 1000, digits = 2)
+  label_unit = "KB"
+} 
+text_size = paste("Size: ", size, label_unit, sep = "")
+
 plot.new()
-legend("top", legend = list(name, ram),
+legend("top", legend = list(name, ram, text_input, text_size),
        col = 1, pch = 15, xpd = TRUE, bty = "n")
 title("Experimental setup", line=1)
 
