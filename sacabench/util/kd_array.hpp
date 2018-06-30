@@ -82,6 +82,16 @@ public:
         return get(idx);
     }
 
+    /// \brief Returns the element at the given direct index
+    inline content& get_mut_direct_unsafe(const size_t direct_index) {
+        return memory[direct_index];
+    }
+
+    /// \brief Returns the element at the given direct index
+    inline const content& get_direct_unsafe(const size_t direct_index) const {
+        return memory[direct_index];
+    }
+
     /// \brief Updates the element at the given kd position.
     inline void set(const std::array<size_t, k>& idx, const content& v) {
         memory[index(idx)] = v;
