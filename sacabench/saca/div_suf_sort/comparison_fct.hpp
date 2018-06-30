@@ -83,22 +83,36 @@ private:
 template <typename sa_index>
 struct compare_suffix_ranks {
     size_t depth;
+    bool tmp = false;
 
     inline compare_suffix_ranks(util::span<sa_index> partial_isa, size_t depth)
         : depth(depth), partial_isa(partial_isa) {}
 
     inline bool operator()(const size_t& elem, const size_t& compare_to) const {
         // First check wether "base" ranks are different
-        if (partial_isa[elem] != partial_isa[compare_to]) {
-            return partial_isa[elem] < partial_isa[compare_to];
-        }
         // Could cause overflow if depth is too big (especially for sa_index
         // type)
         const size_t elem_at_depth = elem + pow(2, depth);
         const size_t compare_to_at_depth = compare_to + pow(2, depth);
         const bool elem_too_large = elem_at_depth >= partial_isa.size();
         const bool compare_to_too_large =
-            compare_to_at_depth >= partial_isa.size();
+            compare_to_at_depth >= partial_isa.size();        
+        if(tmp) {
+            std::cout << "elem " << elem << ", compare " << compare_to;
+            
+            std::cout << " | elem.depth:" << elem_at_depth << ", compare.depth: " 
+            << compare_to_at_depth << std::endl;
+            
+            std::cout << "elem rank " << partial_isa[elem] << ", compare rank " 
+            << partial_isa[compare_to];
+            
+            std::cout << " | elem.depth rank " << partial_isa[elem_at_depth] << 
+            ", compare.depth rank " << partial_isa[compare_to_at_depth] << std::endl;
+        }
+        if(partial_isa[elem] != partial_isa[compare_to]) {
+            return partial_isa[elem] < partial_isa[compare_to];
+        }
+
         // This case can and should never occur.
         DCHECK_EQ((elem_too_large && compare_to_too_large), false);
 
@@ -112,6 +126,10 @@ struct compare_suffix_ranks {
         // Neither index "out of bounds":
         // Ranks of compared substrings decide order
         return partial_isa[elem_at_depth] < partial_isa[compare_to_at_depth];
+    }
+    
+    inline size_t at_depth(const size_t& elem) {
+        return elem + pow(2, depth);
     }
 
 private:

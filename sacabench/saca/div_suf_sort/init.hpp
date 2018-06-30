@@ -26,6 +26,11 @@ inline static void insert_into_buckets(rms_suffixes<sa_index>& rms_suf,
         // Set current suffix into correct "bucket" at beginning of sa
         // (i.e. into relative_indices)
         rms_suf.relative_indices[relative_index] = pos - 1;
+        if(current_index == 159042) {
+            std::cout << "Index 159042 found > " << (pos - 1) << std::endl;
+        } else if(current_index == 159030) {
+            std::cout << "Index 159030 found > " << (pos - 1) << std::endl;
+        }
     }
     current_index = rms_suf.absolute_indices[rms_count - 1];
     first_letter = rms_suf.text[current_index];
@@ -35,7 +40,7 @@ inline static void insert_into_buckets(rms_suffixes<sa_index>& rms_suf,
     // TODO: Check wether new bucket borders are correct.
     bucket_index = bkts.get_rms_bucket_index(first_letter, second_letter);
 
-    // May be that prefix operator not supported here
+    // May be that prefix operator is not supported here
     relative_index = --bkts.s_buckets[bucket_index];
     // Sort last rms-suffix into correct bucket:
     rms_suf.relative_indices[relative_index] = rms_count - 1;
@@ -61,6 +66,9 @@ extract_rms_substrings(rms_suffixes<sa_index>& rms_suf) {
 
         substr_start = rms_suf.absolute_indices[current_index];
         substr_end = rms_suf.absolute_indices[current_index + 1] + sa_index(1);
+        if(current_index == 24755) {
+            std::cout << "substring <" << substr_start << "," << substr_end << ">" << std::endl;
+        }
         // Create RMS-Substring for rms-suffix from suffix-index of rms
         // and starting index of following rms-suffix + 1
         substring = std::make_pair(substr_start, substr_end);

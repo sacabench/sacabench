@@ -83,8 +83,12 @@ public:
                 
                 
                 insert_into_buckets<sa_index>(rms_suf, bkts);
+                check_rel_ind(rms_suf.relative_indices, rms_suf.absolute_indices);
+                check_rms_buckets(text, rms_suf.relative_indices, rms_suf.absolute_indices,
+                        bkts, alphabet.max_character_value());
+                
                 auto substrings = extract_rms_substrings(rms_suf);
-                std::cout << "rel_ind " << rel_ind << std::endl;
+                //std::cout << "rel_ind " << rel_ind << std::endl;
                 sort_rms_substrings<sa_index>(
                     rms_suf, alphabet.max_character_value(), bkts);
 
@@ -93,19 +97,37 @@ public:
                 size_t a_size;
                 size_t b_size;
                 size_t max_pos;
+                sa_index a, b, a_start, b_start;
                 for(size_t i = 0; i < rel_ind.size()-1; ++i) {
+                    a = (rel_ind[i] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK;
+                    b = (rel_ind[i+1] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK;
                     if((rel_ind[i] & utils<sa_index>::NEGATIVE_MASK) > 0 ||
                         (rel_ind[i+1] & utils<sa_index>::NEGATIVE_MASK) > 0) {
-                        std::cout << "Skipping because one index negated (i.e. same)" <<std::endl;
-                        continue;
+                        /*std::cout << "Skipping because one index negated (i.e. same)" << std::endl;*/
+                        //continue;
                     }
-                    std::cout << "Comparing substring <" << std::get<0>(substrings[rel_ind[i]])
-                     << "," << std::get<1>(substrings[rel_ind[i]]) << "> with <" <<
-                     std::get<0>(substrings[rel_ind[i+1]]) << "," << std::get<1>(substrings[rel_ind[i+1]]) << ">"<< std::endl;
-                    a_size = std::get<1>(substrings[rel_ind[i]]) - std::get<0>(substrings[rel_ind[i]]) + sa_index(1);
-                    b_size = std::get<1>(substrings[rel_ind[i+1]]) - std::get<0>(substrings[rel_ind[i+1]]) + sa_index(1);
-                    sa_index a_start = std::get<0>(substrings[rel_ind[i]]);
-                    sa_index b_start = std::get<0>(substrings[rel_ind[i+1]]);
+                    /*
+                    if(((rel_ind[i] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK) == 109106 
+                        || ((rel_ind[i+1] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK) == 109106) {
+                            std::cout << "Index 109106 found!" << std::endl;
+                        }                    
+                        if(((rel_ind[i] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK) == 109114 
+                        || ((rel_ind[i+1] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK) == 109114) {
+                            std::cout << "Index 109114 found!" << std::endl;
+                        }
+                    */
+                    std::cout << "Comparing substring <" << std::get<0>(substrings[a])
+                     << "," << std::get<1>(substrings[a]) << "> with <" <<
+                     std::get<0>(substrings[b]) << "," << std::get<1>(substrings[b]) << ">"<< std::endl;
+                    a_size = std::get<1>(substrings[a]) - std::get<0>(substrings[a]) + sa_index(1);
+                    b_size = std::get<1>(substrings[b]) - std::get<0>(substrings[b]) + sa_index(1);
+                    a_start = std::get<0>(substrings[a]);
+                    b_start = std::get<0>(substrings[b]);
+                    if(a_start == sa_index(76651)) {
+                        std::cout << "Index 76651 found!" << std::endl;
+                    } else if(a_start == sa_index(76659)) {
+                        std::cout << "Index 76659 found! rel_ind " << a << std::endl;
+                    }
                     max_pos = std::min(a_size, b_size)+1;
                     for(sa_index j=0; j < max_pos; ++j) {
                         // Check characterwise, until smaller
@@ -141,12 +163,42 @@ public:
         }
     }
     
+    template <typename sa_index>
+    static void check_rel_ind(util::span<sa_index> rel_ind, util::span<sa_index> abs) {
+        auto check = util::make_container<sa_index>(rel_ind.size());
+        for(size_t i=0; i < rel_ind.size(); ++i) {
+            DCHECK_LT(check[rel_ind[i]], sa_index(1));
+            ++check[rel_ind[i]];
+            if(rel_ind[i] == sa_index(24755)) {
+                std::cout << "Index " << abs[rel_ind[i]] << " found, ref: " << rel_ind[i] << std::endl; 
+            }
+        }
+    }
+    
+    template <typename sa_index>
+    static void check_rms_buckets(util::string_span text, util::span<sa_index> rel, 
+            util::span<sa_index> abs, buckets<sa_index>& bkts, size_t max_char) {
+        // Buckets contain left border of themselves
+        size_t interval_begin, interval_end = rel.size(), bkt_index;
+        for(size_t first_letter = max_char-1; 0 < first_letter; --first_letter) {
+            
+            for(size_t second_letter = max_char; first_letter < second_letter; --second_letter) {
+                bkt_index = bkts.get_rms_bucket_index(first_letter, second_letter);
+                interval_begin = bkts.s_buckets[bkt_index];
+                for(size_t i=interval_begin; i < interval_end; ++i) {
+                    DCHECK_EQ(first_letter, text[abs[rel[i]]]);
+                    DCHECK_EQ(second_letter, text[abs[rel[i]]+sa_index(1)]);
+                }
+                //Old interval_begin is right border for next bucket
+                interval_end = interval_begin;
+            }
+        }
+    }
     
     template <typename sa_index>
     static void check_sorted_rms(util::string_span text, util::span<sa_index> rms_ind) {
         // Check for each rms-suffix if it is smaller than its successor
         size_t elem, succ, j;
-        std::cout << rms_ind << std::endl;
         
         for(size_t i=0; i < rms_ind.size()-1; ++i) {
             j = 0;
@@ -156,10 +208,11 @@ public:
             std::cout << "elem " << elem << " | succ " << succ << std::endl;
             while(text[succ+j] <= text[elem+j]) {
                 std::cout << "Comparing " << size_t(text[elem+j]) << " to " << size_t(text[succ+j]) << std::endl;
-            // (Possibly) runs through whole suffix
+                // (Possibly) runs through whole suffix
                 DCHECK_LE(text[elem+j], text[succ+j]);
                 ++j;
             }
+            std::cout << "Stopped because comparing " << size_t(text[elem+j]) << " to " << size_t(text[succ+j]) << std::endl;
         }
     }
     
