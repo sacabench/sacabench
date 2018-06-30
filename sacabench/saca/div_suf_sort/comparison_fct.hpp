@@ -29,18 +29,7 @@ public:
 
         DCHECK_EQ(elem_too_large, compare_to_too_large);
         DCHECK_EQ(elem_too_large, false);
-        /*if (elem_too_large) {
-            if (compare_to_too_large) {
-                // Check how to handle this case (possibly the shorter one is
-                // smaller)
-                return elem < compare_to;
-            }
-            return true;
-        }
-        if (compare_to_too_large) {
-            DCHECK_EQ(elem_too_large, false);
-            return false;
-        }*/
+
         size_t elem_size = std::get<1>(substrings[elem]) -
                            std::get<0>(substrings[elem]) + sa_index(1);
         size_t compare_to_size = std::get<1>(substrings[compare_to]) -
@@ -64,10 +53,6 @@ public:
         }
         // If one substring is shorter than the other and they are the same
         // until now:
-        /*elem_size =
-            std::get<1>(substrings[elem]) - std::get<0>(substrings[elem]);
-        compare_to_size = std::get<1>(substrings[compare_to]) -
-                          std::get<0>(substrings[compare_to]);*/
         // Either they differ in length (shorter string is smaller) or they have
         // the same length (i.e. return false)
         return (elem_size == compare_to_size) ? false
@@ -79,11 +64,10 @@ private:
     util::container<std::pair<sa_index, sa_index>>& substrings;
 };
 
-// FIXME
 template <typename sa_index>
 struct compare_suffix_ranks {
     size_t depth;
-    bool tmp = false;
+    util::span<sa_index> partial_isa;
 
     inline compare_suffix_ranks(util::span<sa_index> partial_isa, size_t depth)
         : depth(depth), partial_isa(partial_isa) {}
@@ -96,19 +80,7 @@ struct compare_suffix_ranks {
         const size_t compare_to_at_depth = compare_to + pow(2, depth);
         const bool elem_too_large = elem_at_depth >= partial_isa.size();
         const bool compare_to_too_large =
-            compare_to_at_depth >= partial_isa.size();        
-        if(tmp) {
-            std::cout << "elem " << elem << ", compare " << compare_to;
-            
-            std::cout << " | elem.depth:" << elem_at_depth << ", compare.depth: " 
-            << compare_to_at_depth << std::endl;
-            
-            std::cout << "elem rank " << partial_isa[elem] << ", compare rank " 
-            << partial_isa[compare_to];
-            
-            std::cout << " | elem.depth rank " << partial_isa[elem_at_depth] << 
-            ", compare.depth rank " << partial_isa[compare_to_at_depth] << std::endl;
-        }
+            compare_to_at_depth >= partial_isa.size();
         if(partial_isa[elem] != partial_isa[compare_to]) {
             return partial_isa[elem] < partial_isa[compare_to];
         }
@@ -132,8 +104,6 @@ struct compare_suffix_ranks {
         return elem + pow(2, depth);
     }
 
-private:
-    util::span<sa_index> partial_isa;
 };
 
 } // namespace sacabench::div_suf_sort

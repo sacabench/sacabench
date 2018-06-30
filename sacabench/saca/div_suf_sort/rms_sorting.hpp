@@ -8,7 +8,7 @@
 #include <util/sort/introsort.hpp>
 #include <util/span.hpp>
 #include <util/sort/std_sort.hpp>
-#include <set>
+#include <queue>
 
 namespace sacabench::div_suf_sort {
 
@@ -111,12 +111,6 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
             rel_ind[pos - 1] =
                 rel_ind[pos - 1] ^ utils<sa_index>::NEGATIVE_MASK;
             isa[rel_ind[pos - 1]] = rank;
-            if(rel_ind[pos-1] == sa_index(24751)) {
-                std::cout << "giving 76651 rank " << rank << std::endl;
-            }
-            if(rel_ind[pos-1] == sa_index(24755)) {
-                std::cout << "giving 76659 rank " << rank << std::endl;
-            }
             ++unsorted_count;
 
         } else {
@@ -126,13 +120,7 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
                 DCHECK_EQ(sorted_count, 0);
                 // Set rank for "final" index in unsorted interval (i.e.
                 // interval with same substrings).
-                isa[rel_ind[pos - 1]] = rank;            
-                if(rel_ind[pos-1] == sa_index(24751)) {
-                    std::cout << "giving 76651 rank " << rank << std::endl;
-                }
-                if(rel_ind[pos-1] == sa_index(24755)) {
-                    std::cout << "giving 76659 rank " << rank << std::endl;
-                }
+                isa[rel_ind[pos - 1]] = rank;
                 /*  Reduce rank by unsorted_count (number of indices with
                     same rank; need to increase count one more time
                     (for current index))
@@ -152,7 +140,6 @@ inline static void compute_initial_isa(util::span<sa_index> rel_ind,
     }
 }
 
-// CURRENTLY NOT WORKING
 template <typename sa_index>
 inline static bool
 recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
@@ -160,46 +147,27 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
                        compare_suffix_ranks<sa_index> cmp) {
     DCHECK_LT(interval_begin, interval_end);
     DCHECK_LE(interval_end, rel_ind.size());
-    std::set<sa_index> recomputed_elem;
     // Variables to check, wether interval is sorted at either the beginning or
     // the end of the interval (to readjust sorted-interval sizes of
     // predecessors/successors)
      //size_t sorted_size_begin=0; 
     size_t sorted_size_end=0;
 
-    bool current_sorted = true, is_sorted = true, index_occured = false;
+    bool current_sorted = true, is_sorted = true;
     size_t sorted_begin = interval_begin, unsorted_begin = interval_begin,
            rank = interval_begin;
     sa_index current, next;
     
-    bool tmp = false;
-    /*if(rel_ind[interval_begin] == sa_index(24761) || 
-            rel_ind[interval_begin] == sa_index(24757) || 
-            rel_ind[interval_begin] == sa_index(24759)) {
-        std::cout << "interval starting with index 766__" << std::endl;
-        tmp = true;
-        cmp.tmp = true;
-    }*/
+    std::queue<sa_index> elements;
+    
     // Recompute ranks, skip last element of interval
     for (size_t pos = interval_begin; pos < interval_end - 1; ++pos) {
-        recomputed_elem.insert(current);
         current = rel_ind[pos];
+        elements.push(current);
         next = rel_ind[pos + 1];
         DCHECK_LE(isa[current], isa[next]);
-        if(tmp) {
-            std::cout << "Current is " << current << std::endl;
-        }
         // All indices non-negated
-        if (cmp(current, next) && 
-        (recomputed_elem.find(cmp.at_depth(current)) == recomputed_elem.end())) {
-            if(tmp) {
-                std::cout << "Searching for " << cmp.at_depth(current) << " in set: "
-                << (recomputed_elem.find(cmp.at_depth(current)) != recomputed_elem.end()) 
-                << std::endl;
-            }
-            if(next == sa_index(24755)) {
-                std::cout << "Gave predecessor of 76659 rank " << rank << std::endl;
-            }
+        if (cmp(current, next)) {
             if (!current_sorted) {
                 sorted_begin = pos + 1;
                 current_sorted = true;
@@ -207,15 +175,9 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
                 // them)
                 for (size_t i = unsorted_begin; i < pos + 1; ++i) {
                     isa[rel_ind[i]] = rank;
-                    if(rel_ind[i] == sa_index(24751)) {
-                        std::cout << "Index 76651 part of unsorted interval - rank " << rank <<std::endl;
-                    }
                 }
             } else {
                 isa[current] = rank;
-                    if(current == sa_index(24751)) {
-                        std::cout << "Index 76651 part of sorted interval - rank " << rank <<std::endl;
-                    }
             }
             // Increase rank after this step
             ++rank;
@@ -241,17 +203,12 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
             ++rank;
         }
     }
-    tmp = false;
+    elements.push(rel_ind[interval_end-1]);
     DCHECK_EQ(rank, interval_end - 1);
     // Handle last element of interval
     if (current_sorted) {
         if (sorted_begin == interval_begin) {
-            /*std::cout << "Last sorted interval is first sorted interval."
-                      << std::endl;*/
             // sorted_size_begin = sorted_begin;
-        } 
-        if(rel_ind[interval_end-1] == sa_index(24751)) {
-            std::cout << "interval ends with 76651 (rank " << rank << ")" << std::endl;
         }
         //std::cout << "Last sorted interval." << std::endl;
          sorted_size_end = interval_end - sorted_begin;
@@ -264,40 +221,17 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
         // Part of unsorted interval -> set ranks
         for (size_t i = unsorted_begin; i < interval_end; ++i) {
             isa[rel_ind[i]] = rank;
-            if(rel_ind[i] == sa_index(24751)) {
-                
-                    if(tmp) {
-                        std::cout << "both in same interval" << std::endl;
-                    }
-                std::cout << "Index 76651 part of unsorted interval - rank " << rank <<std::endl;
-                std::cout << "Pos " << i << " in unsorted interval (end: " <<
-                interval_end << ")" << "; interval size: " << (interval_end - unsorted_begin) <<std::endl;
-                tmp = true;
-            }
-                if(rel_ind[i] == sa_index(24755)) {
-                    if(tmp) {
-                        std::cout << "both in same interval" << std::endl;
-                    }
-                std::cout << "Index 76659 part of unsorted interval - rank " << rank <<std::endl;
-                std::cout << "Pos " << i << " in unsorted interval (end: " <<
-                interval_end << ")" << "; interval size: " << (interval_end - unsorted_begin) <<std::endl;
-                tmp=true;
-            }
         }
     }
-    cmp.tmp = false;
+    // Refresh ranks for cmp fct (after they have been completely refreshed
+    // in isa for current interval)
+    DCHECK_EQ(elements.size(), (interval_end - interval_begin));
+    for(size_t i=0; i < (interval_end - interval_begin); ++i) {
+        current = elements.front();
+        elements.pop();
+        cmp.partial_isa[current] = isa[current];
+    }
     
-    if(index_occured) {
-        for(size_t i = interval_begin; i < interval_end; ++i) {
-            current = rel_ind[i];
-            if((current & utils<sa_index>::NEGATIVE_MASK) > 0) {
-                current = current ^ utils<sa_index>::NEGATIVE_MASK;
-                std::cout << "Negated: ";
-            }
-            std::cout << current << ", " << std::endl;
-            
-        }
-    }
     /*
     // Alternatively: Search from beginning, until this interval is found
     size_t length;
@@ -510,25 +444,14 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             interval_end = pos;
             // Skip interval of sorted elements (negated length contained in
             // current_index)
-            if(pos + (current_index ^ utils<sa_index>::NEGATIVE_MASK) == 61018) {
-                std::cout << "Skipping to index 61018" << std::endl;
-            }
             pos += ((current_index ^ utils<sa_index>::NEGATIVE_MASK) - 1);
             
         } else if (!current_unsorted) {
-            if(current_index == sa_index(24751)) {
-                std::cout << "Index 76651 found at beginning of unsorted interval" << std::endl;
-            } else if(current_index == sa_index(24755)) {
-                std::cout << "Index 76659 found at beginning of unsorted interval" << std::endl;
-            }
             interval_begin = pos;
             current_unsorted = true;
         } else if(pos < isa.size()-1 && (next_index &
          utils<sa_index>::NEGATIVE_MASK) == 0 && isa[current_index] < isa[next_index])
          {
-            if(current_index == sa_index(24751)) {
-                std::cout << "Successor of Index 76651 larger -> sorted" << std::endl;
-            }
             // Rare case where there are two unsorted intervals directly next
             // to each other.
             // Limit to first interval.
@@ -541,24 +464,12 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             if(interval_end-interval_begin > 1) {
                 if (unsorted == 0) {
                     unsorted = true;
-                }
-                bool tmp = false;
-                for(size_t i = interval_begin; i < interval_end; ++i) {
-                    if(rel_ind[i] == sa_index(24751)) {
-                        std::cout << "sorting interval (size " << interval_end-interval_begin << ") with Index 76551" << std::endl;
-                        tmp = true;
-                    } else if(rel_ind[i] == sa_index(24755)) {
-                        std::cout << "sorting interval (size " << interval_end-interval_begin << ") with Index 76559" << std::endl;
-                        tmp = true;
-                    }
-                }                
+                } 
                 util::sort::introsort<sa_index, compare_suffix_ranks<sa_index>>(
                     rel_ind.slice(interval_begin, interval_end), cmp);
-                if(tmp) {
-                    std::cout << rel_ind.slice(interval_begin, interval_end) << std::endl;
-                }
             }
             recompute_interval_isa(rel_ind, interval_begin, interval_end, isa, cmp);
+
             // Refresh ranks for complete isa
             // recompute_isa_ltr(rel_ind, isa, cmp);
         
@@ -566,19 +477,25 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
             current_unsorted = false;
         }
     }
-
-    /*if (unsorted) {
-        recompute_isa_ltr(rel_ind, isa, cmp);
-    }*/
+    
     return unsorted;
 }
 
 template <typename sa_index>
 inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
-    compare_suffix_ranks<sa_index> cmp(rms_suf.partial_isa, 0);
-    bool unsorted;
+    // Copy content of partial isa into isa_cmp (isa particular for cmp fct)
+    // Copy needed for specific cases while recomputing ranks (referencing
+    // through depth points to indices in same unsorted interval)
     util::span<sa_index> rel_ind = rms_suf.relative_indices;
     util::span<sa_index> isa = rms_suf.partial_isa;
+    auto isa_cmp = util::make_container<sa_index>(isa.size());
+    DCHECK_EQ(isa_cmp.size(), isa.size());
+    for(size_t i=0; i < isa_cmp.size(); ++i) {
+        isa_cmp[i] = isa[i];
+        DCHECK_EQ(isa_cmp[i], isa[i]);
+    }
+    compare_suffix_ranks<sa_index> cmp(isa_cmp, 0);
+    bool unsorted;
     // At most that many iterations (if we have to consider last suffix (or
     // later))
     size_t max_iterations = rms_suf.relative_indices.size();
@@ -591,7 +508,6 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
     // util::floor_log2(rms_suf.relative_indices.size()) + 1;
     for (size_t iter = 0; iter < max_iterations + 1; ++iter) {
         // Sort rms-suffixes
-        std::cout << "Iteration " << iter << std::endl;
         for(size_t pos=0; pos < rel_ind.size()-1; ++pos) {
             current = rel_ind[0];
             next = rel_ind[1];
@@ -613,6 +529,9 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
             }
         }
         unsorted = sort_rms_suffixes_internal(rms_suf, cmp);
+        for(size_t i=0; i < isa.size(); ++i) {
+            DCHECK_EQ(isa[i], cmp.partial_isa[i]);
+        }
         // Everything has been sorted - break outer loop
         if (unsorted == 0) {
             // Check wether each rank is unique
