@@ -77,7 +77,7 @@ public:
 
             compute_buckets<sa_index>(text, alphabet.max_character_value(),
                                       sa_type_container, bkts);
-            check_buckets(text, alphabet.max_character_value()+1, sa_type_container, bkts);
+            //check_buckets(text, alphabet.max_character_value()+1, sa_type_container, bkts);
             if (rms_count > 0) {
                 
                 
@@ -115,7 +115,7 @@ public:
         }
     }
     
-    
+    /*
     template <typename sa_index>
     static void check_substrings(util::span<sa_index> rel_ind, 
             util::container<std::pair<sa_index, sa_index>> substrings, 
@@ -128,7 +128,7 @@ public:
         for(size_t i = 0; i < rel_ind.size()-1; ++i) {
             a = (rel_ind[i] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK;
             b = (rel_ind[i+1] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK;
-            /*
+            
             if(((rel_ind[i] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK) == 109106 
                 || ((rel_ind[i+1] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK) == 109106) {
                     std::cout << "Index 109106 found!" << std::endl;
@@ -137,7 +137,7 @@ public:
                 || ((rel_ind[i+1] | utils<sa_index>::NEGATIVE_MASK) ^ utils<sa_index>::NEGATIVE_MASK) == 109114) {
                     std::cout << "Index 109114 found!" << std::endl;
                 }
-            */
+            
             std::cout << "Comparing substring <" << std::get<0>(substrings[a])
              << "," << std::get<1>(substrings[a]) << "> with <" <<
              std::get<0>(substrings[b]) << "," << std::get<1>(substrings[b]) << ">"<< std::endl;
@@ -153,8 +153,8 @@ public:
             max_pos = std::min(a_size, b_size)+1;
             for(sa_index j=0; j < max_pos; ++j) {
                 // Check characterwise, until smaller
-                /*std::cout << "Comparing " << size_t(text[a_start+j]) << ", index "<< a_start+j << ", to "
-                << size_t(text[b_start +j]) << ", index " << b_start +j << std::endl;*/
+                std::cout << "Comparing " << size_t(text[a_start+j]) << ", index "<< a_start+j << ", to "
+                << size_t(text[b_start +j]) << ", index " << b_start +j << std::endl;
                 DCHECK_LE(text[a_start + j], text[b_start+j]);
                 if(text[a_start + j] < text[b_start+j]) {
                     break;
@@ -238,7 +238,7 @@ public:
                 DCHECK_EQ(bkt_cmp_s[index], bkts.s_buckets[bkts.get_rms_bucket_index(first_letter, second_letter)]);
             }
         }
-    }
+    }*/
     
 };
 
