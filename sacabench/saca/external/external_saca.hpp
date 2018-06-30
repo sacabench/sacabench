@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdint>
+#include <tudocomp_stat/StatPhase.hpp>
 
 namespace sacabench::reference_sacas {
 
@@ -16,23 +17,25 @@ template <typename sa_index, typename Fn>
 inline void external_saca_with_writable_text(util::string_span text,
                                              util::span<sa_index> out_sa,
                                              size_t n, Fn saca_fn) {
+
+    tdc::StatPhase::pause_tracking();
     auto sa_correct_size = util::make_container<int32_t>(n);
     util::container<uint8_t> writeable_text(text);
 
     if (n < 2) {
         return;
     }
+    tdc::StatPhase::resume_tracking();
 
-    {
-        tdc::StatPhase phase("External SACA");
-        saca_fn(writeable_text.data(), sa_correct_size.data(), n);
-    }
+    { saca_fn(writeable_text.data(), sa_correct_size.data(), n); }
 
+    tdc::StatPhase::pause_tracking();
     const size_t SENTINELS = text.size() - n;
 
     for (size_t i = 0; i < n; ++i) {
         out_sa[SENTINELS + i] = sa_correct_size[i];
     }
+    tdc::StatPhase::resume_tracking();
 }
 
 /// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
@@ -40,19 +43,20 @@ inline void external_saca_with_writable_text(util::string_span text,
 template <typename sa_index, typename Fn>
 inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
                           size_t n, Fn saca_fn) {
-    auto sa_correct_size = util::make_container<int32_t>(n);
 
+    tdc::StatPhase::pause_tracking();
+    auto sa_correct_size = util::make_container<int32_t>(n);
     if (n < 2) {
         return;
     }
+    tdc::StatPhase::resume_tracking();
 
-    {
-        tdc::StatPhase phase("External SACA");
-        saca_fn(text.data(), sa_correct_size.data(), n);
-    }
+    { saca_fn(text.data(), sa_correct_size.data(), n); }
 
+    tdc::StatPhase::pause_tracking();
     for (size_t i = 0; i < n; ++i) {
         out_sa[i] = sa_correct_size[i];
     }
+    tdc::StatPhase::resume_tracking();
 }
 } // namespace sacabench::reference_sacas
