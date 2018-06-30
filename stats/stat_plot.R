@@ -72,7 +72,6 @@ extract_details<-function(json_name)
   label_mem = "in KB"
   
   #If values are too big -> next unit
-  too_big  = max(phase_mems) > 10000 
   if(max(phase_runtimes)>1000*60){
     phase_runtimes = phase_runtimes/(1000*60)
     label_runtime = "Runtime in minutes"
@@ -80,7 +79,10 @@ extract_details<-function(json_name)
     phase_runtimes = phase_runtimes/1000
     label_runtime = "Runtime in seconds"
   }
-  if(too_big){
+  if(max(phase_mems) > 10000*1000){
+    phase_mems = phase_mems / 1000 / 1000
+    label_mem = "Memory peak in GB"
+  }else if(max(phase_mems) > 10000){
     phase_mems = phase_mems / 1000
     label_mem = "Memory peak in MB"
   }
@@ -174,11 +176,6 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
 plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
                                  label_runtime, label_mem, label_main, cols)
 {
-  for(i in 1:length(algorithm_names)){
-    if(nchar(algorithm_names[i]) > 12){
-      algorithm_names[i] = paste(substring(algorithm_names[i],0,nchar(algorithm_names[i])-3),"...", sep = "")
-    }
-  }
   par(mfrow=c(2,1),mai=c(1, 1, 0.5, 0))
   barplot(runtimes,beside=TRUE,col = cols,
           ylab = label_runtime, yaxt="n", names.arg = algorithm_names, las = 2)
@@ -323,7 +320,6 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   }
   
   #If values are too big -> next unit
-  too_big  = max(mems) > 10000 
   if(max(runtimes)>1000*60){
     runtimes = runtimes/(1000*60)
     label_runtime = "Runtime in minutes"
@@ -331,11 +327,19 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
     runtimes = runtimes/1000
     label_runtime = "Runtime in seconds"
   }
-  if(too_big){
+  if(max(mems) > 10000*1000){
+    mems = mems / 1000 / 1000
+    label_mem = "Memory peak in GB"
+  }else if(max(mems) > 10000){
     mems = mems / 1000
     label_mem = "Memory peak in MB"
   }
   
+  for(i in 1:length(names)){
+    if(nchar(names[i]) > 12){
+      names[i] = paste(substring(names[i],1,5),"...", substring(names[i],nchar(names[i])-6,nchar(names[i])),sep = "")
+    }
+  }
   
   n <- length(names)
   if(plot_scatter == F){
@@ -344,6 +348,12 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   }else{
   
     if(logarithmic){
+      #remove data of Naiv
+      without_naive = which(names=="Naiv")
+      names = names[-without_naive]
+      runtimes = runtimes[-without_naive]
+      mems = mems[-without_naive]
+      
       label_mem = paste(label_mem, "(logarithmic scale)", sep = " ")
       label_runtime = paste(label_runtime, "(logarithmic scale)", sep = " ")
       logarithmic = "xy"
