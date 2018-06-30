@@ -79,7 +79,6 @@ public:
                                       sa_type_container, bkts);
             check_buckets(text, alphabet.max_character_value()+1, sa_type_container, bkts);
             if (rms_count > 0) {
-                util::span<sa_index> rel_ind = rms_suf.relative_indices;
                 
                 
                 insert_into_buckets<sa_index>(rms_suf, bkts);
@@ -221,7 +220,7 @@ public:
     
     template <typename sa_index>
     static void check_buckets(util::string_span text, size_t max,
-        util::container<bool>& types, buckets<sa_index>& bkts) {
+        util::container<bool>& types) {
         auto bkt_cmp_s = util::make_container<sa_index>(pow(max, 2));
         for(size_t i=0; i < text.size()-1; ++i) {
             if(sa_types::is_rms_type(i, types)) {

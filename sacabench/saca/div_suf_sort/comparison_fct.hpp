@@ -24,12 +24,12 @@ public:
             return false;
         }
         //std::cout << "elem " << elem << ", compare_to " << compare_to << std::endl;
-        const bool elem_too_large = (elem >= substrings.size());
+        /*const bool elem_too_large = (elem >= substrings.size());
         const bool compare_to_too_large = (compare_to >= substrings.size());
 
         DCHECK_EQ(elem_too_large, compare_to_too_large);
         DCHECK_EQ(elem_too_large, false);
-
+        */
         size_t elem_size = std::get<1>(substrings[elem]) -
                            std::get<0>(substrings[elem]) + sa_index(1);
         size_t compare_to_size = std::get<1>(substrings[compare_to]) -
@@ -78,15 +78,15 @@ struct compare_suffix_ranks {
         // type)
         const size_t elem_at_depth = elem + pow(2, depth);
         const size_t compare_to_at_depth = compare_to + pow(2, depth);
-        const bool elem_too_large = elem_at_depth >= partial_isa.size();
+        /*const bool elem_too_large = elem_at_depth >= partial_isa.size();
         const bool compare_to_too_large =
-            compare_to_at_depth >= partial_isa.size();
+            compare_to_at_depth >= partial_isa.size();*/
         if(partial_isa[elem] != partial_isa[compare_to]) {
             return partial_isa[elem] < partial_isa[compare_to];
         }
 
         // This case can and should never occur.
-        DCHECK_EQ((elem_too_large && compare_to_too_large), false);
+        // DCHECK_EQ((elem_too_large && compare_to_too_large), false);
 
         if (elem_too_large) {
             // Only first suffix (substring) ends "behind" sentinel

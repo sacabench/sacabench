@@ -420,7 +420,7 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
                            compare_suffix_ranks<sa_index> cmp) {
     size_t interval_begin = 0, interval_end = 0;
 
-    sa_index current_index, next_index;
+    sa_index current_index = 0, next_index = 0;
     // indicator wether unsorted interval was found (to sort)
     bool unsorted = false, current_unsorted = false;
     util::span<sa_index> rel_ind = rms_suf.relative_indices;
