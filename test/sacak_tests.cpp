@@ -19,31 +19,31 @@
 using namespace sacabench;
 
 
-TEST(insert_lms_sacak, test_1) {
-    util::string_span test_text = "caabaccaabacaa"_s;
-    util::container<size_t> sa = util::make_container<size_t>(15);
-    util::alphabet alph = util::alphabet(test_text);
-
-    for (size_t i = 0; i < sa.size(); i++)
-    {
-        sa[i] = -1;
-    }
-
-    util::string input = util::make_string(test_text);
-    util::apply_effective_alphabet(input, alph);
-    util::string input_w = util::make_container<util::character>(15);
-
-    for (size_t i = 0; i < input_w.size(); i++) // Simulate appending one sentinel
-    {
-        if (i < input.size())
-            input_w[i] = input[i];
-        else
-            input_w[i] = util::SENTINEL;
-    }
-
-    util::insert_lms_rtl<util::string, size_t>(input_w, sa);
-
-}
+//TEST(insert_lms_sacak, test_1) {
+//    util::string_span test_text = "caabaccaabacaa"_s;
+//    util::container<size_t> sa = util::make_container<size_t>(15);
+//    util::alphabet alph = util::alphabet(test_text);
+//
+//    for (size_t i = 0; i < sa.size(); i++)
+//    {
+//        sa[i] = -1;
+//    }
+//
+//    util::string input = util::make_string(test_text);
+//    util::apply_effective_alphabet(input, alph);
+//    util::string input_w = util::make_container<util::character>(15);
+//
+//    for (size_t i = 0; i < input_w.size(); i++) // Simulate appending one sentinel
+//    {
+//        if (i < input.size())
+//            input_w[i] = input[i];
+//        else
+//            input_w[i] = util::SENTINEL;
+//    }
+//
+//    util::insert_lms_ltr<util::string, size_t>(input_w, sa, alph.size_without_sentinel());
+//
+//}
 
 TEST(induced_sorting_sacak, test_1) {
 
@@ -68,7 +68,7 @@ TEST(induced_sorting_sacak, test_1) {
             input_w[i] = util::SENTINEL;
     }
 
-    util::insert_lms_rtl<util::string_span, size_t>((util::string_span)input_w, sa);
+    util::insert_lms_ltr<util::string_span, size_t>((util::string_span)input_w, sa, alph.size_without_sentinel());
     sacak::sacak::induced_sort<util::string_span, size_t>((util::string_span)input_w, sa, alph.size_without_sentinel());
 
     ASSERT_EQ(sa[0], 14);

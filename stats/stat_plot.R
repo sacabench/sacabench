@@ -129,8 +129,17 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   mtext(header_name, side=3, outer=TRUE, line=-2,cex = 2)
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
       mai=c(1,1,1,1), new = TRUE)
+  if(length(phase_names) > 16){
+    op <- par(cex = 0.2)
+  }else if(length(phase_names) > 12){
+    op <- par(cex = 0.25)
+  }else if(length(phase_names) > 6){
+    op <- par(cex = 0.5)
+  }
+  
   legend("bottom", legend = phase_names, inset = c(-10,-0.15), 
          col = cols, pch = 15, xpd = TRUE, ncol = ceiling(length(phase_names)/2), bty = "n")
+  op <- par(cex = 1.0)
 }
 
 plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarithmic, 
@@ -165,6 +174,11 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
 plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
                                  label_runtime, label_mem, label_main, cols)
 {
+  for(i in 1:length(algorithm_names)){
+    if(nchar(algorithm_names[i]) > 12){
+      algorithm_names[i] = paste(substring(algorithm_names[i],0,nchar(algorithm_names[i])-3),"...", sep = "")
+    }
+  }
   par(mfrow=c(2,1),mai=c(1, 1, 0.5, 0))
   barplot(runtimes,beside=TRUE,col = cols,
           ylab = label_runtime, yaxt="n", names.arg = algorithm_names, las = 2)
@@ -173,7 +187,7 @@ plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems,
        labels=format(seq(0,max(runtimes), by = ceiling(max(runtimes)/10)),
                      scientific=FALSE))
   
-  par(mai=c(0.3, 1, 0.3, 0))
+  par(mai=c(0.3, 1, 0.4, 0))
   barplot(matrix(mems),beside=TRUE, col = cols,
           ylab = label_mem, yaxt="n", ylim = c(max(mems),0))
   axis(2,at=seq(0,max(mems), by = ceiling(max(mems)/10)),
@@ -338,6 +352,12 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
     }
     
     if(pareto){
+      #remove data of Naiv
+      without_naive = which(names=="Naiv")
+      names = names[-without_naive]
+      runtimes = runtimes[-without_naive]
+      mems = mems[-without_naive]
+      
       algo_data = cbind(mems, runtimes)
       is_pareto = calculate_paretofront(algo_data)
       pareto_inidices = which(is_pareto)
@@ -345,6 +365,7 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
       names = names[pareto_inidices]
       runtimes = runtimes[pareto_inidices]
       mems = mems[pareto_inidices]
+      
 
       label_main = paste(label_main, "- Paretofront", sep = " ")
     }
