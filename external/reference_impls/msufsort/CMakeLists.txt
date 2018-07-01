@@ -1,6 +1,5 @@
 add_library(
         msufsort
-        BWT.cpp
         InductionSort.cpp
         MSufSort.cpp
 )
