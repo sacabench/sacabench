@@ -19,6 +19,8 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 namespace sacabench::div_suf_sort {
 
 class div_suf_sort {
@@ -35,13 +37,14 @@ public:
                                     util::span<sa_index> out_sa) {
         // Check if enough bits free for negation.
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
-
+        
         // Contains sentinel only
         if (text.size() == 1) {
             out_sa[0] = 0;
         } else {
             DCHECK_EQ(text.size(), out_sa.size());
             // Create container for l/s types
+            tdc::StatPhase dss("Initialize DivSufSort");
             auto sa_type_container = util::make_container<bool>(text.size());
             // auto sa_types = util::span<bool>(sa_type_container);
 
@@ -87,16 +90,19 @@ public:
                 /*check_rms_buckets(text, rms_suf.relative_indices,
                    rms_suf.absolute_indices, bkts,
                    alphabet.max_character_value());*/
-
+                
+                dss.split("Sort RMS-Substrings");
                 // auto substrings = extract_rms_substrings(rms_suf);
                 sort_rms_substrings<sa_index>(
                     rms_suf, alphabet.max_character_value(), bkts);
 
                 // Compute ISA
 
+                dss.split("Computing initial ISA");
                 compute_initial_isa<sa_index>(rms_suf.relative_indices,
                                               rms_suf.partial_isa);
 
+                dss.split("Sort RMS-Suffixes");
                 sort_rms_suffixes<sa_index>(rms_suf);
                 sort_rms_indices_to_order<sa_index>(rms_suf, rms_count,
                                                     sa_type_container, out_sa);
@@ -107,6 +113,7 @@ public:
                 insert_rms_into_correct_pos<sa_index>(
                     rms_count, bkts, alphabet.max_character_value(), out_sa);
             }
+            dss.split("Inducing L/S-Suffixes");
             induce_s_suffixes<sa_index>(text, sa_type_container, bkts, out_sa,
                                         alphabet.max_character_value());
 
