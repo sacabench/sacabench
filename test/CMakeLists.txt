@@ -1,4 +1,4 @@
-################################################################################
+﻿################################################################################
 # Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -44,6 +44,7 @@ run_test(sa_dc7_tests DEPS saca_bench_lib)
 run_test(sa_dc3_tests DEPS saca_bench_lib)
 run_test(type_extraction_tests DEPS saca_bench_lib)
 run_test(sacak_tests DEPS saca_bench_lib)
+run_test(saca_k_reference_tests DEPS saca_bench_lib)
 run_test(sads_tests DEPS saca_bench_lib)
 run_test(tagged_number DEPS saca_bench_lib)
 run_test(sais_reference_tests DEPS saca_bench_lib)
