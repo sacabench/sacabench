@@ -23,7 +23,8 @@ public:
         if (elem == compare_to) {
             return false;
         }
-        //std::cout << "elem " << elem << ", compare_to " << compare_to << std::endl;
+        // std::cout << "elem " << elem << ", compare_to " << compare_to <<
+        // std::endl;
         /*const bool elem_too_large = (elem >= substrings.size());
         const bool compare_to_too_large = (compare_to >= substrings.size());
 
@@ -81,7 +82,7 @@ struct compare_suffix_ranks {
         const bool elem_too_large = elem_at_depth >= partial_isa.size();
         const bool compare_to_too_large =
             compare_to_at_depth >= partial_isa.size();
-        if(partial_isa[elem] != partial_isa[compare_to]) {
+        if (partial_isa[elem] != partial_isa[compare_to]) {
             return partial_isa[elem] < partial_isa[compare_to];
         }
 
@@ -99,11 +100,8 @@ struct compare_suffix_ranks {
         // Ranks of compared substrings decide order
         return partial_isa[elem_at_depth] < partial_isa[compare_to_at_depth];
     }
-    
-    inline size_t at_depth(const size_t& elem) {
-        return elem + pow(2, depth);
-    }
 
+    inline size_t at_depth(const size_t& elem) { return elem + pow(2, depth); }
 };
 
 } // namespace sacabench::div_suf_sort
