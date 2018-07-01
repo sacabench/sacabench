@@ -35,6 +35,10 @@ private:
         std::vector<node> children;
 
         inline node() : incoming_char(0), lcp(0), si(0), children() {}
+        inline node(const node&) = delete;
+
+        inline node(node&&) = default;
+        inline node& operator=(node&&) = default;
 
         inline static node new_leaf(const util::string_span input_text,
                                     const suffix_index_type _si) {
@@ -57,14 +61,13 @@ private:
         ///        this node, while keeping the
         ///        "sorted-by-edge-label"-invariant.
         inline void add_child(node&& new_child) {
-            // FIXME: Use insertion sort here.
-            children.push_back(new_child);
-            std::sort(children.begin(), children.end(),
-                      [](const node& a, const node& b) {
-                          // Vergleiche: das erste zeichen nach dem LCP von
-                          // diesem Knoten
-                          return a.incoming_char < b.incoming_char;
-                      });
+            // Use binary search to find the first element in children, which is
+            // larger than the new. The correct position is right in front of
+            // the found element.
+            auto it = std::find_if(children.begin(), children.end(), [&](const node& n) {
+                return n.incoming_char >= new_child.incoming_char;
+            });
+            children.emplace(it, std::move(new_child));
         }
 
         inline void print(const util::string_span input_text,
@@ -179,14 +182,15 @@ private:
                 //                  `-> old_node--> ...
                 //                              `-> ...
 
-                node new_inner = node::new_inner_node(lcp_of_new_node);
+                node new_inner =
+                    std::move(node::new_inner_node(lcp_of_new_node));
                 new_inner.incoming_char = input_text[new_element + lcp];
 
                 node new_leaf = node::new_leaf(input_text, new_element);
                 new_leaf.incoming_char =
                     input_text[new_element + lcp_of_new_node];
 
-                node old_node = *possible_child;
+                node old_node = std::move(*possible_child);
                 old_node.incoming_char = old_edge_label;
 
                 // Remove the old child from children.
@@ -240,18 +244,21 @@ private:
         }
     };
 
+    // This text is shifted by common_prefix_length, so that the common prefix
+    // is ignored in the comparisons here.
     const util::string_span m_input_text;
     node m_root;
 
 public:
     /// \brief Construct a blind trie, which contains the initial_element.
     inline trie(const util::string_span _input_text,
+                const size_t common_prefix_length,
                 const suffix_index_type initial_element)
-        : m_input_text(_input_text) {
-        m_root = node::new_inner_node(0);
+        : m_input_text(_input_text.slice(common_prefix_length)),
+          m_root(std::move(node::new_inner_node(0))) {
         m_root.incoming_char = util::SENTINEL;
 
-        node n = node::new_leaf(m_input_text, initial_element);
+        node n = std::move(node::new_leaf(m_input_text, initial_element));
         n.incoming_char = m_input_text[initial_element];
         m_root.add_child(std::move(n));
     }

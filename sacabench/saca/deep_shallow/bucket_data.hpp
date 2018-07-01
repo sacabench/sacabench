@@ -8,6 +8,7 @@
 
 #include <util/container.hpp>
 #include <util/kd_array.hpp>
+#include <util/sort/introsort.hpp>
 #include <util/string.hpp>
 #include <util/uint_types.hpp>
 
@@ -45,12 +46,18 @@ private:
     util::kd_array<bucket_information<sa_index_type>, 2> bounds;
     sa_index_type end_of_last_bucket = 0;
 
+    util::container<std::pair<u_char, u_char>> sorting_order;
+    size_t sorting_idx;
+
 public:
     inline bucket_data_container() : bucket_data_container(0) {}
 
     inline bucket_data_container(const size_t alphabet_size)
         : real_alphabet_size(alphabet_size + 1),
-          bounds({real_alphabet_size, real_alphabet_size}) {}
+          bounds({real_alphabet_size, real_alphabet_size}),
+          sorting_order(util::make_container<std::pair<u_char, u_char>>(
+              real_alphabet_size * real_alphabet_size)),
+          sorting_idx(0) {}
 
     inline void check_bounds(const u_char a, const u_char b) const {
         DCHECK_LT(a, real_alphabet_size);
@@ -70,10 +77,17 @@ public:
             const util::character alpha = i / real_alphabet_size;
             const util::character beta = i % real_alphabet_size;
             bounds[{alpha, beta}].starting_position = bucket_bounds[i].position;
+            sorting_order[i] = std::make_pair(alpha, beta);
         }
 
         end_of_last_bucket = bucket_bounds[bucket_bounds.size() - 1].position +
                              bucket_bounds[bucket_bounds.size() - 1].count;
+
+        util::sort::introsort(
+            span<std::pair<u_char, u_char>>(sorting_order),
+            util::compare_key([&](const std::pair<u_char, u_char>& p) {
+                return size_of_bucket(p.first, p.second);
+            }));
     }
 
     inline bool is_bucket_sorted(const u_char a, const u_char b) const {
@@ -100,9 +114,17 @@ public:
         }
     }
 
-    inline sa_index_type size_of_bucket(const u_char a, const u_char b) const {
+    inline size_t size_of_bucket(const u_char a, const u_char b) const {
         check_bounds(a, b);
         return end_of_bucket(a, b) - start_of_bucket(a, b);
+    }
+
+    inline std::pair<u_char, u_char> get_smallest_bucket() {
+        return sorting_order[sorting_idx++];
+    }
+
+    inline bool are_buckets_left() const {
+        return sorting_idx < sorting_order.size();
     }
 };
 } // namespace sacabench::deep_shallow
