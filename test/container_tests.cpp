@@ -88,7 +88,7 @@ TEST(ContainerSpan, compare1) {
     s);
 }
 TEST(ContainerSpan, compare2) {
-    container<long unsigned int const> c {1, 2, 3};
+    container<long unsigned int> c {1, 2, 3};
     span<long unsigned int const> s(c);
     ASSERT_TRUE(c==s);
     ASSERT_FALSE(c!=s);
