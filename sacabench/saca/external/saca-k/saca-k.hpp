@@ -8,12 +8,12 @@
 
 namespace sacabench::reference_sacas {
 using namespace sacabench::util;
-class sais {
+class saca-k {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "Reference_SACA-K";
     static constexpr char const* DESCRIPTION =
-        "TODO";
+        "Reference Implementation of SACA-K by G. Nong.";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
