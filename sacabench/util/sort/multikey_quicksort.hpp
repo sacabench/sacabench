@@ -115,10 +115,10 @@ inline void multikey_quicksort(span<index_type> array,
 // Sort the suffix indices in array by comparing one character according to
 // the submitted compare_func. compare_func needs depth-attribute (used for 
 // comparing current index) in order to work properly.
-template <typename index_type, typename compare_func>
+template <size_t abort_at_depth, typename index_type, typename compare_func>
 inline void multikey_quicksort(span<index_type> array, 
         const string_span input_text, compare_func& key_func) {
-    multikey_quicksort_internal<0, index_type, compare_func>(array, key_func);
+    multikey_quicksort_internal<abort_at_depth, index_type, compare_func>(array, key_func);
 }
 
 // Sort the suffix indices in array by comparing one character in
