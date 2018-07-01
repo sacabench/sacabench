@@ -76,10 +76,11 @@ struct default_recursion_function {
 
 // Our internal sort function.
 template <typename index_type,
+          typename compare_func = compare_one_character_at_depth<index_type>,
           typename recursion_function = default_recursion_function<index_type>>
 inline void multikey_quicksort_internal(
     span<index_type> array,
-    compare_one_character_at_depth<index_type>& key_func,
+    compare_func& key_func,
     const std::optional<size_t> abort_at_depth = std::nullopt,
     recursion_function fn = recursion_function()) {
     // If the set size is only one element, we don't need to sort.
@@ -128,6 +129,14 @@ inline void multikey_quicksort(span<index_type> array,
 
     // Call internal function.
     multikey_quicksort_internal(array, key_func);
+}
+// Sort the suffix indices in array by comparing one character according to
+// the submitted compare_func. compare_func needs depth-attribute (used for 
+// comparing current index) in order to work properly.
+template <typename index_type, typename compare_func>
+inline void multikey_quicksort(span<index_type> array, 
+        const string_span input_text, compare_func& key_func) {
+    multikey_quicksort_internal<index_type, compare_func>(array, key_func);
 }
 
 // Sort the suffix indices in array by comparing one character in
