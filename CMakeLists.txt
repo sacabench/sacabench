@@ -58,9 +58,9 @@ set(BUILD_GTEST ON CACHE BOOL "")
 git_submodule_subdirectory(external/gtest)
 git_submodule_subdirectory(external/tudostats)
 git_submodule_subdirectory(external/CLI11)
-
+add_subdirectory(external/reference_impls/deep-shallow)
+add_subdirectory(external/reference_impls/divsufsort)
 add_subdirectory(external/reference_bpr)
-
 add_subdirectory(sacabench)
 add_subdirectory(test)
 

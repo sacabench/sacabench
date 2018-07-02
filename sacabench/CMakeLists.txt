@@ -15,9 +15,12 @@ target_include_directories(saca_bench_lib INTERFACE
 target_link_libraries(saca_bench_lib INTERFACE
   $<$<CONFIG:Debug>:dl>
   tudocomp_stat
+  reference_saca_deep_shallow
+  divsufsort
   reference_bpr2_SuffixArray
   reference_bpr2_Util
   reference_bpr2_Standard
+  ${CMAKE_DL_LIBS}
 )
 
 # Create executable that runs all registered SACAs
@@ -27,7 +30,6 @@ add_executable(sacabench
 
 target_link_libraries(sacabench
   saca_bench_lib
-  tudocomp_stat
   CLI11
 )
 
