@@ -12,16 +12,32 @@
 #include "../../bigtest/bigtest_driver.hpp"
 #include <gtest/gtest.h>
 
-constexpr auto concrete_bigtest = [](const std::string& filename) {
-    run_bigtest<${SACA_TYPE}, size_t>(filename, true);
-};
-
 TEST(bigtest, ${safe_type}) {
-    concrete_bigtest("wikipedia/articles_en.txt");
-    concrete_bigtest("wikipedia/all_vital.txt");
-    concrete_bigtest("wikipedia/vital_10000/biology_and_health_sciences.html");
-
-#ifndef DEBUG
-    concrete_bigtest("wikipedia/vital_10000/people.html");
+#ifdef DEBUG
+    const auto SIZES = { 10, 20, 50, 100 };
+#else
+    const auto SIZES = { 10, 20, 50, 100, 200 };
 #endif
+
+    for(size_t size : SIZES) {
+      const auto concrete_bigtest = [&size](const std::string& filename) {
+          run_bigtest<${SACA_TYPE}, size_t>(filename, size * 1024 * 1024, true);
+      };
+
+      concrete_bigtest("downloads/cc_commoncrawl.ascii.200MB");
+      concrete_bigtest("downloads/pc_dblp.200MB");
+      concrete_bigtest("downloads/pc_dna.200MB");
+      concrete_bigtest("downloads/pc_english.200MB");
+      concrete_bigtest("downloads/pc_proteins.200MB");
+      concrete_bigtest("downloads/pcr_cere.200MB");
+      concrete_bigtest("downloads/pcr_einstein.en.txt.200MB");
+      concrete_bigtest("downloads/pcr_fib41.200MB");
+      concrete_bigtest("downloads/pcr_kernel.200MB");
+      concrete_bigtest("downloads/pcr_para.200MB");
+      concrete_bigtest("downloads/pcr_rs.13.200MB");
+      concrete_bigtest("downloads/pcr_tm29.200MB");
+      concrete_bigtest("downloads/pc_sources.200MB");
+      concrete_bigtest("downloads/tagme_wiki_disamb30.200MB");
+      concrete_bigtest("downloads/wiki_all_vital.txt.200MB");
+    }
 }

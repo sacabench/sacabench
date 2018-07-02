@@ -13,8 +13,8 @@
 using namespace sacabench;
 
 template <typename Algorithm, typename sa_index_type>
-inline void run_bigtest(const std::string& filename, const bool print_cases) {
-    const auto file_data = util::text_initializer_from_file("../../external/datasets/" + filename);
+inline void run_bigtest(const std::string& filename, const size_t prefix_size, const bool print_cases) {
+    const auto file_data = util::text_initializer_from_file("../../external/datasets/" + filename, prefix_size);
 
     ASSERT_LT(file_data.original_text_size(), size_t(-1));
 
