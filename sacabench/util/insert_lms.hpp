@@ -105,10 +105,6 @@ inline static size_t insert_lms_rtl(const string_type t_0, span<sa_index> sa) {
 template <typename string_type, typename sa_index>
 inline bool is_LMS(const string_type& t, sa_index index) {
 
-    bool last_type = true;
-    size_t amount = 1;
-    size_t sa_pointer = 1;
-
     if (index <= 0 || t.size() <= index || t[index] >= t[index - 1] || std::get<0>(util::get_type_ltr_dynamic(t,index)))
     {
         return false;

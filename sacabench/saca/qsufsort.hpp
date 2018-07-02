@@ -17,6 +17,8 @@
 
 #include <tudocomp_stat/StatPhase.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 namespace sacabench::qsufsort {
 
 // Compare function for inital sorting

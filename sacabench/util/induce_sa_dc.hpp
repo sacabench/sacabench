@@ -29,8 +29,9 @@ template<typename C, typename T, typename I, typename S>
 
     DCHECK_MSG(sa_0.size() == t_0.size(),
                "sa_0 must have the same length as t_0");
-    DCHECK_MSG(isa_12.size() >= t_0.size(),
-               "isa_12 must have at least the same length as t_0");
+    DCHECK_MSG(!(isa_12.size() >= 1 && t_0.size() >= 1) || isa_12.size() >= t_0.size(),
+               "isa_12 must have at least the same length as t_0 if "
+               "isa_12 and t_1 have at least a length of 1");
 
     // Container to store all tuples with the same length as sa_0
     // Tuples contains a char, a rank and the position

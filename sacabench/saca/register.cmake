@@ -41,3 +41,6 @@ SACA_REGISTER("saca/sacak.hpp"
 
 SACA_REGISTER("saca/dc3.hpp"
     sacabench::dc3::dc3)
+    
+SACA_REGISTER("saca/nzSufSort.hpp"
+    sacabench::nzsufsort::nzsufsort)
