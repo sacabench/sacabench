@@ -65,5 +65,6 @@ add_subdirectory(external/reference_impls/deep-shallow)
 add_subdirectory(external/reference_impls/divsufsort)
 add_subdirectory(sacabench)
 add_subdirectory(test)
+add_subdirectory(bigtest)
 
 ################################################################################
