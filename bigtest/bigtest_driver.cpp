@@ -9,10 +9,12 @@
 #include <util/sa_check.hpp>
 #include <util/saca.hpp>
 
+#include "bigtest_driver.hpp"
+
 using namespace sacabench;
 
 template<typename Algorithm, typename sa_index_type>
-void run_test(const std::string& filename, const bool print_cases = true) {
+void run_test(const std::string& filename, const bool print_cases) {
     size_t slice_limit = 40;
     const util::string_span text = "hallo"_s;
 

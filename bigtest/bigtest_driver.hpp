@@ -3,15 +3,5 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
-#include <util/alphabet.hpp>
-#include <util/bits.hpp>
-#include <util/sa_check.hpp>
-#include <util/saca.hpp>
-
-#include <gtest/gtest.h>
-#include "../../bigtest/bigtest_driver.hpp"
-#include "${SACA_HEADER}"
-
-TEST(bigtest, ${safe_type}) {
-	run_test<${SACA_TYPE}, size_t>("hallo", true);
-}
+template<typename Algorithm, typename sa_index_type>
+void run_test(const std::string& filename, const bool print_cases);
