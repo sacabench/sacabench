@@ -1,4 +1,7 @@
 #include "../../../../external/reference_impls/sads_reference.hpp"
+#include <util/alphabet.hpp>
+#include <util/span.hpp>
+#include <util/string.hpp>
 #include "../external_saca.hpp"
 
 namespace sacabench::reference_sacas {

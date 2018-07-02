@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <util/alphabet.hpp>
 #include "trie.hpp"
 #include <util/sort/introsort.hpp>
 #include <util/span.hpp>

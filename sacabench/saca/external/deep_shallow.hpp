@@ -7,6 +7,7 @@
 #pragma once
 
 #include "external_saca.hpp"
+#include <util/span.hpp>
 #include <cstdint>
 
 extern int32_t _ds_Word_size;

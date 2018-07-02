@@ -1,4 +1,6 @@
 #include "../../../../external/reference_impls/sais_reference.hpp"
+#include <util/alphabet.hpp>
+#include <tudocomp_stat/StatPhase.hpp>
 #include "../external_saca.hpp"
 
 namespace sacabench::reference_sacas {
