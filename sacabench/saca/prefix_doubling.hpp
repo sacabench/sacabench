@@ -229,9 +229,9 @@ struct prefix_doubling_impl {
             // tdc::StatPhase loop_phase("Sort S");
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(sp.s(), [k](auto const& a, auto const& b) {
-                return a.names() < b.names();
-            });
+            sorting_algorithm::sort(
+                sp.s(),
+                util::compare_key([k](auto const& a) { return a.names(); }));
 
             // loop_phase.split("Rename S tuples");
 
@@ -570,9 +570,8 @@ struct prefix_doubling_impl {
             }
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(SU, [](auto const& a, auto const& b) {
-                return a.names() < b.names();
-            });
+            sorting_algorithm::sort(
+                SU, util::compare_key([](auto const& a) { return a.names(); }));
 
             // Rename the S tuples into U
             rename_inplace(SU);
@@ -666,9 +665,9 @@ struct prefix_doubling_impl {
                 auto F = PSF.F();
 
                 // Sort the F tuples lexicographical
-                sorting_algorithm::sort(F, [](auto const& a, auto const& b) {
-                    return a.name() < b.name();
-                });
+                sorting_algorithm::sort(F, util::compare_key([](auto const& a) {
+                                            return a.name();
+                                        }));
 
                 for (size_t i = 0; i < N; i++) {
                     out_sa[i] = F[i].idx();
@@ -677,9 +676,9 @@ struct prefix_doubling_impl {
             }
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(PSF.S(), [](auto const& a, auto const& b) {
-                return a.names() < b.names();
-            });
+            sorting_algorithm::sort(
+                PSF.S(),
+                util::compare_key([](auto const& a) { return a.names(); }));
 
             // Rename S tuple into U tuple
             rename2_inplace(PSF.S());
