@@ -17,9 +17,11 @@ constexpr auto concrete_bigtest = [](const std::string& filename) {
 };
 
 TEST(bigtest, ${safe_type}) {
-    concrete_bigtest("hallo");
+    concrete_bigtest("wikipedia/articles_en.txt");
+    concrete_bigtest("wikipedia/all_vital.txt");
+    concrete_bigtest("wikipedia/vital_10000/biology_and_health_sciences.html");
 
 #ifndef DEBUG
-    concrete_bigtest("really big test.");
+    concrete_bigtest("wikipedia/vital_10000/people.html");
 #endif
 }

@@ -11,6 +11,10 @@ target_link_libraries(bigtest_testrunner
   gtest
 )
 
+target_sources(bigtest_testrunner PUBLIC
+  bigtest_driver.cpp
+)
+
 target_compile_options(bigtest_testrunner PUBLIC
   ${SACA_BENCH_FLAGS}
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
