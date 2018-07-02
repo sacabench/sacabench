@@ -169,10 +169,7 @@ struct prefix_doubling_impl {
             return;
         }
 
-        // Allocate the S and P arrays.
-        // TODO: They are never needed concurrently, so could
-        // combine into a single array and interpret either
-        // as S or P
+        // Allocate the SP arrays.
         auto sp = SP(N);
 
         // Create the initial S array of character tuples + text
@@ -546,11 +543,9 @@ struct prefix_doubling_impl {
 
             phase.log("current_iteration", k);
             phase.log("prefix_size", k_length);
-
-            // TODO: restore
-            // phase.log("fully_discarded", supf.F().size());
-            // phase.log("partially_discarded", supf.P().size());
-            // phase.log("remaining", supf.cU().size());
+            phase.log("fully_discarded", F_size);
+            phase.log("partially_discarded", P_size);
+            phase.log("remaining", N - (F_size + P_size));
 
             {
                 auto UP = supf.phase_1_UP(P_size, F_size);
