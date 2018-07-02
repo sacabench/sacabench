@@ -4,6 +4,11 @@
  ******************************************************************************/
 
 #include <gtest/gtest.h>
+#include <util/alphabet.hpp>
+#include <util/bits.hpp>
+#include <util/sa_check.hpp>
+#include <util/saca.hpp>
+
 #include "${SACA_HEADER}"
 
 TEST(bigtest, ${safe_type}) {

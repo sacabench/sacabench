@@ -29,7 +29,7 @@ struct deep_shallow {
                                     util::span<sa_index> out_sa) {
         set_global_variables();
         check_global_variables();
-        external_saca_with_writable_text<sa_index>(
+        external_saca_with_writable_text<sa_index, int32_t>(
             text, out_sa, text.size() - EXTRA_SENTINELS, ds_ssort);
     }
 };

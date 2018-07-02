@@ -18,6 +18,7 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_gsaca
   reference_saca_deep_shallow
   divsufsort
+  msufsort
   ${CMAKE_DL_LIBS}
 )
 
