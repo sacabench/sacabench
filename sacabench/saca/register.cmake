@@ -7,6 +7,9 @@ SACA_REGISTER("saca/external/deep_shallow.hpp"
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
 
+SACA_REGISTER("saca/external/saca_k/saca_k.hpp"
+    sacabench::reference_sacas::saca_k)
+
 SACA_REGISTER("saca/external/sads/sads.hpp"
     sacabench::reference_sacas::sads)
 
@@ -15,6 +18,9 @@ SACA_REGISTER("saca/external/sais/sais.hpp"
 
 SACA_REGISTER("saca/external/sais_lite/sais_lite.hpp"
     sacabench::reference_sacas::sais_lite)
+
+SACA_REGISTER("saca/external/gsaca.hpp"
+    sacabench::reference_sacas::gsaca)
 
 SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
     sacabench::qsufsort_ext::qsufsort_ext)
@@ -59,13 +65,13 @@ SACA_REGISTER("saca/naive.hpp"
 
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
-    
-SACA_REGISTER("saca/external/saca_k/saca_k.hpp"
-    sacabench::reference_sacas::saca_k)
 
 SACA_REGISTER("saca/dc3.hpp"
     sacabench::dc3::dc3)
-
+    
+SACA_REGISTER("saca/div_suf_sort/saca.hpp"
+    sacabench::div_suf_sort::div_suf_sort)
+    
 SACA_REGISTER("saca/nzSufSort.hpp"
     sacabench::nzsufsort::nzsufsort)
 
