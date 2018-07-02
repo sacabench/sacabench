@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "external_saca.hpp"
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <limits.h>
@@ -36,11 +37,7 @@ namespace sacabench::reference_sacas {
             const unsigned char *chars = text_with_sentinels.data();
             auto SA = std::make_unique<int[]>(n);
 
-            /* int resultCode = */ ::gsaca(chars, SA.get(), n);
-
-            for (size_t index = 0; index < n; index++) {
-                out_sa[index] = static_cast<sa_index>(SA[index]);
-            }
+            external_saca<sa_index>(text_with_sentinels, out_sa, text_with_sentinels.size(), ::gsaca);
         }
     }; // class gsaca
 } // namespace sacabench::reference_sacas
