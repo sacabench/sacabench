@@ -298,7 +298,7 @@ struct prefix_doubling_impl {
             m_disc_h = util::make_container<hybrid_tuple>(N);
         }
 
-        inline auto phase_0_SU() { return m_disc_h.slice(); }
+        inline auto phase_0_H() { return m_disc_h.slice(); }
         struct phase_1_UP_type {
             util::span<hybrid_tuple> m_u;
             util::span<hybrid_tuple> m_p;
@@ -511,27 +511,27 @@ struct prefix_doubling_impl {
         auto disc_h = DiscardingHArray(N);
 
         {
-            auto SU = disc_h.phase_0_SU();
+            auto H = disc_h.phase_0_H();
 
             // Create the initial S array of character tuples + text
             // position
             for (size_t i = 0; i < N - 1; ++i) {
                 auto tmp = atuple{text[i], text[i + 1]};
-                SU[i].names().copy_from(tmp);
-                SU[i].idx() = i;
+                H[i].names().copy_from(tmp);
+                H[i].idx() = i;
             }
             {
                 auto tmp = atuple{text[N - 1], util::SENTINEL};
-                SU[N - 1].names().copy_from(tmp);
-                SU[N - 1].idx() = N - 1;
+                H[N - 1].names().copy_from(tmp);
+                H[N - 1].idx() = N - 1;
             }
 
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(
-                SU, util::compare_key([](auto const& a) { return a.names(); }));
+                H, util::compare_key([](auto const& a) { return a.names(); }));
 
             // Rename the S tuples into U
-            rename_inplace(SU);
+            rename_inplace(H);
         }
 
         size_t P_size = 0;
