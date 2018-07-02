@@ -15,9 +15,9 @@
 
 #include <gsaca.h>
 
-namespace sacabench::gsaca {
+namespace sacabench::reference_sacas {
 
-    class gsaca_ref_wrapper {
+    class gsaca {
 
     public:
         static constexpr size_t EXTRA_SENTINELS = 1;
@@ -42,5 +42,5 @@ namespace sacabench::gsaca {
                 out_sa[index] = static_cast<sa_index>(SA[index]);
             }
         }
-    }; // class gsaca_ref_wrapper
-} // namespace sacabench::gsaca
+    }; // class gsaca
+} // namespace sacabench::reference_sacas
