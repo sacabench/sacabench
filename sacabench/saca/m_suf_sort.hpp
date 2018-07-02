@@ -18,6 +18,8 @@
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 //#include<iostream>
 #include <stack>
 #include <utility>
@@ -226,7 +228,7 @@ public:
     static inline void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
-
+        tdc::StatPhase init("Initialization");
         // Check if sa_index type fits for text.size(), END symbol and sign bit
         DCHECK(util::assert_text_length<sa_index>(text.size()+1, 1u));
 
@@ -266,6 +268,7 @@ public:
         // TODO: optimization: only rank necessary type l lists, not all
         // util::character last_char = 0;
 
+        init.split("ISA Construction");
         // begin main loop:
         while (attr.chain_stack.size() > 0) {
             // top & pop = get first element of stack and remove it from stack
@@ -364,6 +367,9 @@ public:
             // Debug information: global_rank at text.size()? (Next rank would be invalid)
             std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
         #endif
+
+        init.split("ISA to SA");
+
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
         // (try 2 other options)
         util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
