@@ -6,6 +6,10 @@ SACA_REGISTER("saca/external/deep_shallow.hpp"
 
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
+    
+    
+SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
+    sacabench::reference_sacas::msufsort)
 
 SACA_REGISTER("saca/external/saca_k/saca_k.hpp"
     sacabench::reference_sacas::saca_k)
