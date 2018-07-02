@@ -269,22 +269,29 @@ struct prefix_doubling_impl {
         }
     }
 
-    /// Helper class to contain the S,U,P and F arrays.
+    /// Helper class to contain the logical S,U,P and F arrays.
     ///
-    /// This type exists so that further optimizations could reduce the
-    /// memory footprint by merging some of the arrays.
+    /// It provides different views to the underlying allocation, depending
+    /// on which phase in the loop it is in.
+    ///
+    /// phase 0: initialization
+    /// [                       H(S)                                           ]
+    ///
+    /// phase 1: merging P and H(U) from last iteration
+    /// [     P          |      H(U)                               |     F     ]
+    /// [                 H(U)                                     |     F     ]
+    ///
+    /// phase 2: iterate over H(U) and split into P, H(S) and F
+    /// [next P | next S | next F |         H(U)                   |     F     ]
+    ///         >        >        >
+    ///
+    /// phase 3: process H(S) to H(U), or end iteration with F
+    /// [     P          |      H(S)                               |     F     ]
+    /// [     P          |      H(U)                               |     F     ]
+    /// or
+    /// [                            F                                         ]
     class supf_containers {
         util::container<hybrid_tuple> m_supf;
-
-        // [                     original S                        | existing F]
-        // [                     original U                        | existing F]
-
-        // [next P | next S | next F | U currently being processed | existing F]
-        //         >        >        >
-
-        // [     P          |      S                    |            F         ]
-        // [     P          |      U                    |            F         ]
-        // [                PU                          |            F         ]
 
     public:
         inline supf_containers(size_t N) {
