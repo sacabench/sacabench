@@ -38,7 +38,6 @@ struct prefix_doubling_impl {
     using name_type = sa_index;
     using atuple = std::array<name_type, 2>;
     using names_tuple = std::pair<atuple, sa_index>;
-    using name_tuple = std::pair<name_type, sa_index>;
 
     class name_or_names_tuple {
         std::array<sa_index, 3> m_data;
@@ -154,31 +153,6 @@ struct prefix_doubling_impl {
         v = v & ~unique_mask();
         DCHECK(!is_marked(v));
         return v;
-    }
-
-    /// Debug output, prints a span of `names_tuple`
-    inline static void print_names(util::span<names_tuple> S) {
-        std::cout << "[\n";
-        for (auto& e : S) {
-            std::cout << "  (" << (e.first[0]) << ", " << (e.first[1]) << "), "
-                      << e.second << "\n";
-        }
-        std::cout << "]\n";
-    }
-
-    /// Debug output, prints a span of `name_tuple`, while isolating the extra
-    /// bit
-    inline static void print_name(util::span<name_tuple> S) {
-        std::cout << "[\n";
-        for (auto& e : S) {
-            auto name = unmarked(e.first);
-            if (is_marked(e.first)) {
-                std::cout << "  * " << name << ", " << e.second << "\n";
-            } else {
-                std::cout << "    " << name << ", " << e.second << "\n";
-            }
-        }
-        std::cout << "]\n";
     }
 
     /// Naive variant, roughly identical to description in Paper
@@ -299,27 +273,6 @@ struct prefix_doubling_impl {
         }
     }
 
-    /// Get a clean (== not extra bit set) `names_tuple`
-    /// of the names at `U[j]` and `U[j+1]`.
-    inline static names_tuple get_next(util::span<name_or_names_tuple> U,
-                                       size_t j, size_t k) {
-        size_t const k_length = 1ull << k;
-
-        name_type c1 = unmarked(U[j].name());
-        name_type c2 = util::SENTINEL;
-
-        auto i1 = U[j].idx();
-
-        if (j + 1 < U.size()) {
-            auto i2 = U[j + 1].idx();
-            if (i2 == i1 + static_cast<sa_index>(k_length)) {
-                c2 = unmarked(U[j + 1].name());
-            }
-        }
-
-        return names_tuple{atuple{c1, c2}, i1};
-    }
-
     /// Helper class to contain the S,U,P and F arrays.
     ///
     /// This type exists so that further optimizations could reduce the
@@ -420,9 +373,11 @@ struct prefix_doubling_impl {
             inline name_or_names_tuple const& get_next_u_elem() {
                 return m_supf[m_U_start];
             }
-            inline names_tuple get_next_u_elem_tuple(size_t k) {
-                // TODO: Factor away gt_next() method
-                return get_next(m_supf.slice(m_U_start, m_U_end), 0, k);
+            inline util::span<name_or_names_tuple>
+            get_u_elems_after_next(size_t n) {
+                size_t start = std::min(m_U_start + 1, m_U_end);
+                size_t end = std::min(m_U_start + 1 + n, m_U_end);
+                return m_supf.slice(start, end);
             }
             inline void drop_u_elem() {
                 m_U_start++;
@@ -635,20 +590,27 @@ struct prefix_doubling_impl {
                     }
                     count = 0;
                 } else {
-                    // Get neighboring names from U[j], U[j+1]
-                    auto c1c2i1 = U2PSF.get_next_u_elem_tuple(k);
+                    // Get neighboring names U[j], U[j+1], ...
 
-                    IF_DEBUG({
-                        auto c1 = c1c2i1.first[0];
-                        auto i1 = c1c2i1.second;
-                        DCHECK_EQ(static_cast<size_t>(c1),
-                                  static_cast<size_t>(c));
-                        DCHECK_EQ(static_cast<size_t>(i1),
-                                  static_cast<size_t>(i));
-                    })
+                    auto tuple = atuple{c, util::SENTINEL};
+                    {
+                        auto neighbor_names =
+                            U2PSF.get_u_elems_after_next(tuple.size() - 1);
+
+                        size_t last_i = i;
+                        for (size_t l = 0; l < neighbor_names.size(); l++) {
+                            auto const& n = neighbor_names[l];
+                            if (n.idx() == last_i + k_length) {
+                                tuple[l + 1] = unmarked(n.name());
+                                last_i = n.idx();
+                            } else {
+                                break;
+                            }
+                        }
+                    }
 
                     U2PSF.drop_u_elem();
-                    U2PSF.append_s(c1c2i1.first, c1c2i1.second);
+                    U2PSF.append_s(tuple, i);
                     count += 1;
                 }
             }
