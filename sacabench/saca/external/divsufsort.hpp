@@ -7,6 +7,7 @@
 #pragma once
 
 #include "external_saca.hpp"
+#include <util/span.hpp>
 #include <cstdint>
 
 extern "C" int32_t divsufsort(const uint8_t* T, int32_t* SA, int32_t n);

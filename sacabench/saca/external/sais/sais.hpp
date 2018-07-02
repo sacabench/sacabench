@@ -1,4 +1,5 @@
 #include "../../../../external/reference_impls/sais_reference.hpp"
+#include <util/alphabet.hpp>
 #include <util/container.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/span.hpp>

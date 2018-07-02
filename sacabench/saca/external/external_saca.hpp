@@ -7,6 +7,9 @@
 #pragma once
 
 #include <cstdint>
+#include <util/alphabet.hpp>
+#include <util/span.hpp>
+#include <util/string.hpp>
 #include <tudocomp_stat/StatPhase.hpp>
 
 namespace sacabench::reference_sacas {
