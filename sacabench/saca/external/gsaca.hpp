@@ -35,10 +35,7 @@ namespace sacabench::reference_sacas {
             DCHECK_MSG(int(n) >= 0 && n == size_t(int(n)),
                        "reference gsaca can only handle textsizes that fit in a `int`.");
 
-            const unsigned char *chars = text_with_sentinels.data();
-            auto SA = std::make_unique<int[]>(n);
-
-            external_saca<sa_index>(text_with_sentinels, out_sa, text_with_sentinels.size(), ::gsaca);
+            external_saca<sa_index>(text_with_sentinels, out_sa, n, ::gsaca);
         }
     }; // class gsaca
 } // namespace sacabench::reference_sacas
