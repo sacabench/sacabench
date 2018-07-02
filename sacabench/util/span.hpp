@@ -152,8 +152,9 @@ public:
         return r;
     }
 
-    /// Copy the contents of another slice into this one
-    inline void copy_from(span const& other) {
+    /// Copy the contents of another container into this one
+    template<typename U>
+    inline void copy_from(U&& other) {
         DCHECK_EQ(size(), other.size());
         for (size_t i = 0; i < size(); i++) {
             (*this)[i] = other[i];

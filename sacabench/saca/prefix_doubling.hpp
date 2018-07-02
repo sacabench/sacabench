@@ -174,13 +174,11 @@ struct prefix_doubling_impl {
         // Create the initial S array of character tuples + text
         // position
         for (size_t i = 0; i < N - 1; ++i) {
-            auto tmp = atuple{text[i], text[i + 1]};
-            h.s_names(i).copy_from(tmp);
+            h.s_names(i).copy_from(atuple{text[i], text[i + 1]});
             h.s_idx(i) = i;
         }
         {
-            auto tmp = atuple{text[N - 1], util::SENTINEL};
-            h.s_names(N - 1).copy_from(tmp);
+            h.s_names(N - 1).copy_from(atuple{text[N - 1], util::SENTINEL});
             h.s_idx(N - 1) = N - 1;
         }
 
@@ -250,8 +248,7 @@ struct prefix_doubling_impl {
                         c2 = util::SENTINEL;
                     }
                 }
-                auto tmp = atuple{c1, c2};
-                h.s_names(j).copy_from(tmp);
+                h.s_names(j).copy_from(atuple{c1, c2});
             }
         }
     }
@@ -516,13 +513,11 @@ struct prefix_doubling_impl {
             // Create the initial S array of character tuples + text
             // position
             for (size_t i = 0; i < N - 1; ++i) {
-                auto tmp = atuple{text[i], text[i + 1]};
-                H[i].names().copy_from(tmp);
+                H[i].names().copy_from(atuple{text[i], text[i + 1]});
                 H[i].idx() = i;
             }
             {
-                auto tmp = atuple{text[N - 1], util::SENTINEL};
-                H[N - 1].names().copy_from(tmp);
+                H[N - 1].names().copy_from(atuple{text[N - 1], util::SENTINEL});
                 H[N - 1].idx() = N - 1;
             }
 
