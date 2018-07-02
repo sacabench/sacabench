@@ -81,7 +81,7 @@ struct prefix_doubling_impl {
     /// returning true if all names are unique.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static bool rename_inplace(util::span<hybrid_tuple> A) {
+    inline static bool rename_inplace(util::span<hybrid_tuple> H) {
         // A name is determined as follows:
         // `last_pair` contains the last `S` tuple looked at, or
         // ($, $) initially.
@@ -114,8 +114,8 @@ struct prefix_doubling_impl {
         auto last_pair = atuple{util::SENTINEL, util::SENTINEL};
         bool only_unique = true;
 
-        for (size_t i = 0; i < A.size(); i++) {
-            auto pair = A[i].names();
+        for (size_t i = 0; i < H.size(); i++) {
+            auto pair = H[i].names();
             if (pair != util::span(last_pair)) {
                 name = i + 1;
                 last_pair[0] = pair[0];
@@ -123,7 +123,7 @@ struct prefix_doubling_impl {
             } else {
                 only_unique = false;
             }
-            A[i].name() = name;
+            H[i].name() = name;
         }
 
         return only_unique;
