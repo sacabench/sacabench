@@ -66,6 +66,6 @@ add_subdirectory(external/reference_impls/divsufsort)
 add_subdirectory(external/reference_impls/msufsort)
 add_subdirectory(sacabench)
 add_subdirectory(test)
-# add_subdirectory(bigtest) # Disabled, because make builds these as well.
+add_subdirectory(bigtest)
 
 ################################################################################

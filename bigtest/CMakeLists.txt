@@ -5,6 +5,7 @@
 ################################################################################
 
 add_executable(bigtest_testrunner
+  EXCLUDE_FROM_ALL
   bigtest_driver.cpp
 )
 
@@ -37,7 +38,7 @@ endfunction(SACA_REGISTER)
 
 add_custom_target(bigtest
     COMMAND bigtest_testrunner
-    DEPENDS bigtest_testrunner
+    DEPENDS bigtest_testrunner datasets
 )
 
 include(../sacabench/saca/register.cmake)
