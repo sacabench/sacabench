@@ -45,7 +45,6 @@ TEST(qsufsort_naive, saca_test) {
 
     test::saca_corner_cases<qsufsort_naive>();
 }*/
-
 TEST(qsufsort, saca_test) {
 
     test::saca_corner_cases<qsufsort>();

@@ -13,6 +13,7 @@
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/word_packing.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
@@ -28,6 +29,16 @@ public:
         return (input_text[a] < input_text[b]);
     }
     const util::string_span input_text;
+};
+template <typename sa_index>
+struct compare_word_packed{
+public:
+    compare_word_packed(util::container<sa_index>& _isa)
+        : isa(_isa) {}
+    bool operator()(const sa_index& a, const sa_index& b) const {
+        return (isa[a] < isa[b]);
+    }
+    util::container<sa_index>& isa;
 };
 
 template <typename sa_index>
@@ -106,7 +117,7 @@ public:
         std::cout << std::endl;
     }
 
-    static void construct_sa(util::string_span text, util::alphabet const&,
+    static void construct_sa(util::string_span text, util::alphabet const& alpha,
                              util::span<sa_index> out_sa) {
 
         tdc::StatPhase qss("Initialization");
@@ -124,6 +135,14 @@ public:
         for (size_t i = 0; i < n; ++i) {
             out_sa[i] = i;
         }
+        util::word_packing(text,isa,alpha,1,1);
+        //print_array(isa);
+        for(auto elem : isa) {
+           std::cout<<elem<<", ";
+        }
+        std::cout<<std::endl;
+        
+        
         // init h (checked prefix length)
         size_t h = 0;
         // for are more readible while condition
