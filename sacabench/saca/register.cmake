@@ -59,6 +59,9 @@ SACA_REGISTER("saca/naive.hpp"
 
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
+    
+SACA_REGISTER("saca/external/saca_k/saca_k.hpp"
+    sacabench::reference_sacas::saca_k)
 
 SACA_REGISTER("saca/dc3.hpp"
     sacabench::dc3::dc3)
