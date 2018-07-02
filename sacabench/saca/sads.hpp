@@ -197,15 +197,15 @@ public:
             SA[j] = SA[i];
             SA[j + 1] = -1;
         }
-        
+
         sads.split("Radix sorting and naming");
         for (size_t i = 2 * (n1 - 1) + 3; i < s.size(); i += 2) {
             SA[i] = -1;
         }
-        
+
         size_t name = 0;
         ssize c[] = {-1, -1, -1, -1, -1};
-        
+
         for (size_t i = 0; i < n1; i++) {
             size_t h;
             size_t pos = SA[2 * i];
