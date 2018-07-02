@@ -56,23 +56,25 @@ struct prefix_doubling_impl {
         inline sa_index const& idx() const { return m_data[2]; }
     };
 
-    class SP {
-        util::container<hybrid_tuple> m_sp;
+    /// Hybrid array. Each entry stores either a `(atuple, idx)` or a `(name,
+    /// idx)` tuple.
+    class HArray {
+        util::container<hybrid_tuple> m_hybrids;
 
     public:
-        inline SP(size_t N) { m_sp = util::make_container<hybrid_tuple>(N); }
-        inline size_t size() const { return m_sp.size(); }
+        inline HArray(size_t N) {
+            m_hybrids = util::make_container<hybrid_tuple>(N);
+        }
+        inline size_t size() const { return m_hybrids.size(); }
+        inline util::span<hybrid_tuple> hybrids() { return m_hybrids; }
 
         inline util::span<name_type> s_names(size_t i) {
-            return m_sp[i].names();
+            return m_hybrids[i].names();
         }
-        inline sa_index& s_idx(size_t i) { return m_sp[i].idx(); }
-        inline util::span<hybrid_tuple> s() { return m_sp; }
+        inline sa_index& s_idx(size_t i) { return m_hybrids[i].idx(); }
 
-        inline name_type& p_name(size_t i) { return m_sp[i].name(); }
-        inline sa_index& p_idx(size_t i) { return m_sp[i].idx(); }
-        inline util::span<hybrid_tuple> p() { return m_sp; }
-        inline util::span<hybrid_tuple> sp() { return m_sp; }
+        inline name_type& p_name(size_t i) { return m_hybrids[i].name(); }
+        inline sa_index& p_idx(size_t i) { return m_hybrids[i].idx(); }
     };
 
     /// Create a unique name for each S tuple,
@@ -166,20 +168,20 @@ struct prefix_doubling_impl {
             return;
         }
 
-        // Allocate the SP arrays.
-        auto sp = SP(N);
+        // Allocate the hybrid array.
+        auto h = HArray(N);
 
         // Create the initial S array of character tuples + text
         // position
         for (size_t i = 0; i < N - 1; ++i) {
             auto tmp = atuple{text[i], text[i + 1]};
-            sp.s_names(i).copy_from(tmp);
-            sp.s_idx(i) = i;
+            h.s_names(i).copy_from(tmp);
+            h.s_idx(i) = i;
         }
         {
             auto tmp = atuple{text[N - 1], util::SENTINEL};
-            sp.s_names(N - 1).copy_from(tmp);
-            sp.s_idx(N - 1) = N - 1;
+            h.s_names(N - 1).copy_from(tmp);
+            h.s_idx(N - 1) = N - 1;
         }
 
         // We iterate up to ceil(log2(N)) times - but because we
@@ -198,13 +200,13 @@ struct prefix_doubling_impl {
 
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(
-                sp.s(),
+                h.hybrids(),
                 util::compare_key([k](auto const& a) { return a.names(); }));
 
             // loop_phase.split("Rename S tuples");
 
             // Rename the S tuples into P
-            bool only_unique = rename_inplace(sp.sp());
+            bool only_unique = rename_inplace(h.hybrids());
 
             // loop_phase.split("Check unique");
 
@@ -212,7 +214,7 @@ struct prefix_doubling_impl {
             if (only_unique) {
                 phase.split("Write out result");
                 for (size_t i = 0; i < N; i++) {
-                    out_sa[i] = sp.p_idx(i);
+                    out_sa[i] = h.p_idx(i);
                 }
                 return;
             }
@@ -223,7 +225,7 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                sp.p(), util::compare_key([k](auto const& value) {
+                h.hybrids(), util::compare_key([k](auto const& value) {
                     size_t const i = value.idx();
                     auto const anti_k = util::bits_of<size_t> - k;
                     return (i << anti_k) | (i >> k);
@@ -232,24 +234,24 @@ struct prefix_doubling_impl {
             // loop_phase.split("Pair names");
 
             for (size_t j = 0; j < N; j++) {
-                size_t const i1 = sp.p_idx(j);
+                size_t const i1 = h.p_idx(j);
 
-                name_type const c1 = sp.p_name(j);
+                name_type const c1 = h.p_name(j);
                 name_type c2;
 
                 if ((j + 1) >= N) {
                     c2 = util::SENTINEL;
                 } else {
-                    c2 = sp.p_name(j + 1);
+                    c2 = h.p_name(j + 1);
 
-                    size_t const i2 = sp.p_idx(j + 1);
+                    size_t const i2 = h.p_idx(j + 1);
 
                     if (i2 != (i1 + k_length)) {
                         c2 = util::SENTINEL;
                     }
                 }
                 auto tmp = atuple{c1, c2};
-                sp.s_names(j).copy_from(tmp);
+                h.s_names(j).copy_from(tmp);
             }
         }
     }
