@@ -8,8 +8,6 @@
 
 #include "${SACA_HEADER}"
 
-TEST(${safe_type}, bigtest) {
-    std::cout << "hallo" << std::endl;
-}
+TEST(bigtest, ${safe_type}) {}
 
 /******************************************************************************/
