@@ -3,6 +3,7 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
+#include <gtest/gtest.h>
 #include <util/saca.hpp>
 
 #include "${SACA_HEADER}"
