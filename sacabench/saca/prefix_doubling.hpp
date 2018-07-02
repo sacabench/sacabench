@@ -299,7 +299,7 @@ struct prefix_doubling_impl {
         }
 
         inline auto phase_0_H() { return m_disc_h.slice(); }
-        struct phase_1_UP_type {
+        struct phase_1_PU_type {
             util::span<hybrid_tuple> m_u;
             util::span<hybrid_tuple> m_p;
             util::span<hybrid_tuple> m_pu;
@@ -307,12 +307,12 @@ struct prefix_doubling_impl {
             inline auto P() { return m_p; }
             inline auto PU() { return m_pu; }
         };
-        inline auto phase_1_UP(size_t P_size, size_t F_size) {
+        inline auto phase_1_PU(size_t P_size, size_t F_size) {
             auto PU = m_disc_h.slice(0, m_disc_h.size() - F_size);
             auto P = PU.slice(0, P_size);
             auto U = PU.slice(P_size);
 
-            return phase_1_UP_type{U, P, PU};
+            return phase_1_PU_type{U, P, PU};
         }
         class phase_2_U2PSF_type {
             util::span<hybrid_tuple> m_disc_h;
@@ -553,7 +553,7 @@ struct prefix_doubling_impl {
             phase.log("remaining", N - (F_size + P_size));
 
             {
-                auto UP = disc_h.phase_1_UP(P_size, F_size);
+                auto UP = disc_h.phase_1_PU(P_size, F_size);
 
                 // Mark all not unique names in U by setting their extra bit.
                 mark_not_unique(UP.U());
