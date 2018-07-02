@@ -32,7 +32,8 @@ namespace sacabench::reference_sacas {
                                         sacabench::util::span<sa_index> out_sa) {
 
             size_t n = text_with_sentinels.size();
-            DCHECK_MSG(int(n) >= 0 && n == size_t(int(n)), "reference gsaca can only handle Textsizes that fit in a `int`.");
+            DCHECK_MSG(int(n) >= 0 && n == size_t(int(n)),
+                       "reference gsaca can only handle textsizes that fit in a `int`.");
 
             const unsigned char *chars = text_with_sentinels.data();
             auto SA = std::make_unique<int[]>(n);

@@ -10,6 +10,9 @@ SACA_REGISTER("saca/external/deep_shallow.hpp"
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
 
+SACA_REGISTER("saca/external/gsaca.hpp"
+        sacabench::reference_sacas::gsaca)
+
 # Our implementations:
 
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
@@ -47,9 +50,6 @@ SACA_REGISTER("saca/external/sads/sads.hpp"
 
 SACA_REGISTER("saca/gsaca.hpp"
     sacabench::gsaca::gsaca)
-
-SACA_REGISTER("saca/gsaca_ref_wrapper.hpp"
-        sacabench::gsaca::gsaca_ref_wrapper)
 
 SACA_REGISTER("saca/dc7.hpp"
     sacabench::dc7::dc7)
