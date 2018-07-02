@@ -277,103 +277,121 @@ public:
                                           size_t to = npos) const {
         return as_span().slice(from, to);
     }
-
-    // container OP container
-
-    inline friend bool operator==(container<element_type> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() == rhs.slice();
-    }
-
-    inline friend bool operator!=(container<element_type> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() != rhs.slice();
-    }
-
-    inline friend bool operator<(container<element_type> const& lhs,
-                                 container<element_type> const& rhs) {
-        return lhs.slice() < rhs.slice();
-    }
-
-    inline friend bool operator>(container<element_type> const& lhs,
-                                 container<element_type> const& rhs) {
-        return lhs.slice() > rhs.slice();
-    }
-
-    inline friend bool operator<=(container<element_type> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() <= rhs.slice();
-    }
-
-    inline friend bool operator>=(container<element_type> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() >= rhs.slice();
-    }
-
-    // span OP container
-
-    inline friend bool operator==(span<element_type const> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() == rhs.slice();
-    }
-
-    inline friend bool operator!=(span<element_type const> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() != rhs.slice();
-    }
-
-    inline friend bool operator<(span<element_type const> const& lhs,
-                                 container<element_type> const& rhs) {
-        return lhs.slice() < rhs.slice();
-    }
-
-    inline friend bool operator>(span<element_type const> const& lhs,
-                                 container<element_type> const& rhs) {
-        return lhs.slice() > rhs.slice();
-    }
-
-    inline friend bool operator<=(span<element_type const> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() <= rhs.slice();
-    }
-
-    inline friend bool operator>=(span<element_type const> const& lhs,
-                                  container<element_type> const& rhs) {
-        return lhs.slice() >= rhs.slice();
-    }
-
-    // container OP span
-
-    inline friend bool operator==(container<element_type> const& lhs,
-                                  span<element_type const> const& rhs) {
-        return lhs.slice() == rhs.slice();
-    }
-
-    inline friend bool operator!=(container<element_type> const& lhs,
-                                  span<element_type const> const& rhs) {
-        return lhs.slice() != rhs.slice();
-    }
-
-    inline friend bool operator<(container<element_type> const& lhs,
-                                 span<element_type const> const& rhs) {
-        return lhs.slice() < rhs.slice();
-    }
-
-    inline friend bool operator>(container<element_type> const& lhs,
-                                 span<element_type const> const& rhs) {
-        return lhs.slice() > rhs.slice();
-    }
-
-    inline friend bool operator<=(container<element_type> const& lhs,
-                                  span<element_type const> const& rhs) {
-        return lhs.slice() <= rhs.slice();
-    }
-
-    inline friend bool operator>=(container<element_type> const& lhs,
-                                  span<element_type const> const& rhs) {
-        return lhs.slice() >= rhs.slice();
-    }
 };
+
+// container OP container
+
+template <typename element_type>
+inline bool operator==(container<element_type> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() == rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator!=(container<element_type> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() != rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator<(container<element_type> const& lhs,
+                      container<element_type> const& rhs) {
+    return lhs.slice() < rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator>(container<element_type> const& lhs,
+                      container<element_type> const& rhs) {
+    return lhs.slice() > rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator<=(container<element_type> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() <= rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator>=(container<element_type> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() >= rhs.slice();
+}
+
+// span OP container
+
+template <typename element_type>
+inline bool operator==(span<std::add_const_t<element_type>> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() == rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator!=(span<std::add_const_t<element_type>> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() != rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator<(span<std::add_const_t<element_type>> const& lhs,
+                      container<element_type> const& rhs) {
+    return lhs.slice() < rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator>(span<std::add_const_t<element_type>> const& lhs,
+                      container<element_type> const& rhs) {
+    return lhs.slice() > rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator<=(span<std::add_const_t<element_type>> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() <= rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator>=(span<std::add_const_t<element_type>> const& lhs,
+                       container<element_type> const& rhs) {
+    return lhs.slice() >= rhs.slice();
+}
+
+// container OP span
+
+template <typename element_type>
+inline bool operator==(container<element_type> const& lhs,
+                       span<std::add_const_t<element_type>> const& rhs) {
+    return lhs.slice() == rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator!=(container<element_type> const& lhs,
+                       span<std::add_const_t<element_type>> const& rhs) {
+    return lhs.slice() != rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator<(container<element_type> const& lhs,
+                      span<std::add_const_t<element_type>> const& rhs) {
+    return lhs.slice() < rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator>(container<element_type> const& lhs,
+                      span<std::add_const_t<element_type>> const& rhs) {
+    return lhs.slice() > rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator<=(container<element_type> const& lhs,
+                       span<std::add_const_t<element_type>> const& rhs) {
+    return lhs.slice() <= rhs.slice();
+}
+
+template <typename element_type>
+inline bool operator>=(container<element_type> const& lhs,
+                       span<std::add_const_t<element_type>> const& rhs) {
+    return lhs.slice() >= rhs.slice();
+}
 
 /**\brief Creates a container with space for exactly for `size` elements.
  */
