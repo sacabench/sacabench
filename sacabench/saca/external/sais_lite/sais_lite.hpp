@@ -1,4 +1,4 @@
-#include "../../../../external/reference_impls/sais_lite_reference.hpp"
+#include <../external/reference_impls/sais_lite_reference.hpp>
 #include <util/container.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/span.hpp>
@@ -11,7 +11,7 @@ using namespace sacabench::util;
 class sais_lite {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "Reference_SAIS_LITE";
+    static constexpr char const* NAME = "Reference-SAIS-LITE";
     static constexpr char const* DESCRIPTION =
         "Suffix Array Induced Sorting by Yuta Mori";
 
@@ -19,7 +19,7 @@ public:
     static void construct_sa(util::string_span text,
                              __attribute__((unused))sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-                             
+
         auto SA = std::make_unique<int[]>(text.size());
 
         if (text.size() > 1) {

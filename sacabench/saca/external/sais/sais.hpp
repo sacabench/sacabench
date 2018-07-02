@@ -11,7 +11,7 @@ using namespace sacabench::util;
 class sais {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "Reference_SAIS";
+    static constexpr char const* NAME = "Reference-SAIS";
     static constexpr char const* DESCRIPTION =
         "Suffix Array Induced Sorting by Nong, Zhang and Chan";
 
@@ -19,7 +19,7 @@ public:
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-        
+
         auto SA = std::make_unique<int[]>(text.size());
 
         if (text.size() > 1) {
