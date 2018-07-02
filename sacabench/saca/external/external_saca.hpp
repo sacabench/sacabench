@@ -13,13 +13,13 @@ namespace sacabench::reference_sacas {
 
 /// \brief Use this if your SACA overwrites the input texts or sentinels,
 ///        but uses int32 as the SA index type.
-template <typename sa_index, typename Fn>
+template <typename sa_index, typename inner_sa_index, typename Fn>
 inline void external_saca_with_writable_text(util::string_span text,
                                              util::span<sa_index> out_sa,
                                              size_t n, Fn saca_fn) {
 
     tdc::StatPhase::pause_tracking();
-    auto sa_correct_size = util::make_container<int32_t>(n);
+    auto sa_correct_size = util::make_container<inner_sa_index>(n);
     util::container<uint8_t> writeable_text(text);
 
     if (n < 2) {
