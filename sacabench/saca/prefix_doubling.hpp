@@ -409,34 +409,6 @@ struct prefix_doubling_impl {
                 (void)msg;
             }
 
-            /*
-            inline void debug_print(util::string_span msg) {
-                DCHECK_LE(0, m_P_end);
-                DCHECK_LE(m_P_end, m_S_end);
-                DCHECK_LE(m_S_end, m_F_end);
-                DCHECK_LE(m_F_end, m_U_start);
-                DCHECK_LE(m_U_start, m_U_end);
-                DCHECK_LE(m_U_end, m_supf.size());
-
-                std::cout << msg << ": ";
-                ///*
-                std::cout << "P[" << 0 << ".." << m_P_end << "], ";
-                std::cout << "S[" << m_P_end << ".." << m_S_end << "], ";
-                std::cout << "F[" << m_S_end << ".." << m_F_end << "], ";
-                std::cout << "U[" << m_U_start << ".." << m_U_end << "], ";
-                std::cout << "GF[" << m_U_end << ".." << m_supf.size() << "]";
-
-                std::cout << "PSF[" << 0
-                    << ".."  << m_P_end
-                    << ".." << m_S_end
-                    << ".." << m_F_end << "], ";
-                std::cout << "UF[" << m_U_start
-                    << ".." << m_U_end
-                    << ".." << m_supf.size() << "]";
-                std::cout << "\n";
-            }
-            */
-
             inline phase_2_U2PSF_type(util::span<name_or_names_tuple> supf,
                                       size_t F_size) {
                 m_supf = supf;
@@ -603,7 +575,6 @@ struct prefix_doubling_impl {
             });
 
             // Rename the S tuples into U
-            // TODO: Merge into a in-place call
             rename_inplace(SU);
         }
 
@@ -631,8 +602,6 @@ struct prefix_doubling_impl {
                 auto UP = supf.phase_1_UP(P_size, F_size);
 
                 // Mark all not unique names in U by setting their extra bit.
-                // TODO: Do this as pipelining
-                // possibly as feature in U2PSF
                 mark_not_unique(UP.U());
 
                 // Merge the previous unique names from P
