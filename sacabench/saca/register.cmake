@@ -37,7 +37,7 @@ SACA_REGISTER("saca/external/sais/sais.hpp"
     sacabench::reference_sacas::sais)
 
 SACA_REGISTER("saca/external/sais_lite/sais_lite.hpp"
-    sacabench::reference_sacas::sais_lite)    
+    sacabench::reference_sacas::sais_lite)
 
 SACA_REGISTER("saca/sads.hpp"
     sacabench::sads::sads)
@@ -59,7 +59,7 @@ SACA_REGISTER("saca/naive.hpp"
 
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
-    
+
 SACA_REGISTER("saca/external/saca_k/saca_k.hpp"
     sacabench::reference_sacas::saca_k)
 
