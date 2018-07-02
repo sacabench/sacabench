@@ -9,6 +9,10 @@ SACA_REGISTER("saca/external/deep_shallow.hpp"
 
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
+    
+    
+SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
+    sacabench::reference_sacas::msufsort)
 
 # Our implementations:
 
@@ -23,9 +27,6 @@ SACA_REGISTER("saca/bucket_pointer_refinement.hpp"
 
 SACA_REGISTER("saca/m_suf_sort.hpp"
     sacabench::m_suf_sort::m_suf_sort2)
-    
-SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
-    sacabench::reference_sacas::msufsort)
 
 SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_doubling)
@@ -62,9 +63,6 @@ SACA_REGISTER("saca/naive.hpp"
 
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
-    
-SACA_REGISTER("saca/external/saca-k/saca-k.hpp"
-    sacabench::reference_sacas::saca-k)
 
 SACA_REGISTER("saca/dc3.hpp"
     sacabench::dc3::dc3)

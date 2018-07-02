@@ -1,9 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2018 Nico Bertram <nico.bertram@tu-dortmund.de>
- *
- * All rights reserved. Published under the BSD-3 license in the LICENSE file.
- ******************************************************************************/
-
 #include <MSufSort.h>
 #include "../external_saca.hpp"
 #include <util/span.hpp>
@@ -24,28 +18,34 @@ public:
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-        external_saca_with_writable_text<sa_index>(text, out_sa, text.size(), msufsort_ref);
+        tdc::StatPhase::pause_tracking();
+        auto sa_correct_size = util::make_container<unsigned int>(out_sa.size());
+        util::container<uint8_t> writeable_text(text);
+
+        if (text.size() < 2) {
+            return;
+        }
+        tdc::StatPhase::resume_tracking();
+
+        msufsort_ref(writeable_text.data(), sa_correct_size.data(), out_sa.size());
+
+        tdc::StatPhase::pause_tracking();
+
+        for (size_t i = 0; i < out_sa.size(); ++i) {
+            out_sa[i] = sa_correct_size[i];
+        }
+        tdc::StatPhase::resume_tracking();
     }
     
 private:
-    static void msufsort_ref(unsigned char* text, int32_t* sa, int32_t n) {
+    static void msufsort_ref(unsigned char* text, unsigned int* sa, unsigned int n) {
         MSufSort* m_suffixSorter = new MSufSort;
         m_suffixSorter->Sort(text, n);
-        
-        for (int32_t i = 0; i < n; ++i) {
-            std::cout << m_suffixSorter->ISA(i)-1 << ", ";
-        }
-        std::cout << std::endl;
         
         //calculate SA from ISA
         for (int32_t i = 0; i < n; ++i) {
             sa[m_suffixSorter->ISA(i)-1] = i;
         }
-        
-        for (int32_t i = 0; i < n; ++i) {
-            std::cout << sa[i] << ", ";
-        }
-        std::cout << std::endl;
     }
 };
 } // namespace sacabench:reference_sacas

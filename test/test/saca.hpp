@@ -15,6 +15,20 @@
 #include <util/saca.hpp>
 
 namespace test {
+    static const sacabench::util::string alphanum = sacabench::util::make_string("ab");
+        //"cdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"_s);
+//"0123456789"
+//"!@#$%^&*"
+//"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+//"abcdefghijklmnopqrstuvwxyz"_s;
+
+int stringLength = alphanum.size();
+
+sacabench::util::character genRandom()
+{
+    return alphanum[rand() % stringLength];
+}
+    
 /// Helper function to run a SA construction algorithm
 /// on a number of short test strings.
 ///
@@ -59,6 +73,9 @@ void saca_corner_cases_single_type(bool print_cases) {
 
         auto fast_result = sa_check(output.sa_without_sentinels(), text);
         if (fast_result != sa_check_result::ok) {
+            /*while (true) {
+                std::cout << text << std::endl;
+            }*/
             if (!print_cases) {
                 std::cout << ss.str();
             }
@@ -106,11 +123,11 @@ void saca_corner_cases_single_type(bool print_cases) {
          "мэль, декам дежпютатионй про ты. Нэ ёужто жэмпэр"
          " жкрибэнтур векж, незл коррюмпит."_s);
 
-    test("報チ申猛あち涙境ワセ周兵いわ郵入せすをだ漏告されて話巡わッき"
+    /*test("報チ申猛あち涙境ワセ周兵いわ郵入せすをだ漏告されて話巡わッき"
          "や間紙あいきり諤止テヘエラ鳥提フ健2銀稿97傷エ映田ヒマ役請多"
          "暫械ゅにうて。関国ヘフヲオ場三をおか小都供セクヲ前俳著ゅ向深"
          "まも月10言スひす胆集ヌヱナ賀提63劇とやぽ生牟56詰ひめつそ総愛"
-         "ス院攻せいまて報当アラノ日府ラのがし。"_s);
+         "ス院攻せいまて報当アラノ日府ラのがし。"_s);*/
 
     test("Εαμ ανσιλλαε περισυλα συαφιθαθε εξ, δυο ιδ ρεβυμ σομ"
          "μοδο. Φυγιθ ηομερω ιυς ατ, ει αυδιρε ινθελλεγαμ νες."
@@ -138,6 +155,20 @@ void saca_corner_cases_single_type(bool print_cases) {
          "💕🐰🐹💉🎳 🍂🐤💺🍗 🔷🍹🕁🏀🐴 👻💞💂🌇📋 👴🔛📚🔭📙 👣📆"
          "🏭🎠👠🏈 👧🌹🌉🔋🎅🔟 🎴🍮🍶👹🍋📐🌕🐂 🍆🔄🌉🍫🍶 🐝🌚🔫🏄"
          " 👙🎊📢🎄💘."_s);
+         
+    /*     for(size_t length = 30; length < 35; ++length){
+        sacabench::util::container<sacabench::util::character> Str = sacabench::util::container<sacabench::util::character>(length);
+    for(unsigned int i = 0; i < 10000; ++i)
+    {
+        for(unsigned int i = 0; i < length; ++i)
+        {
+            Str[i] =  genRandom();  
+        }
+        std::cout << Str << std::endl << std::endl;
+        test(sacabench::util::string(Str));
+        //std::cout << Str << std::endl;
+    }
+    }*/
 }
 
 /// Helper function to run a SA construction algorithm
