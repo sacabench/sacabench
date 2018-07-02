@@ -8,10 +8,18 @@
 #include <util/sa_check.hpp>
 #include <util/saca.hpp>
 
-#include <gtest/gtest.h>
-#include "../../bigtest/bigtest_driver.hpp"
 #include "${SACA_HEADER}"
+#include "../../bigtest/bigtest_driver.hpp"
+#include <gtest/gtest.h>
+
+constexpr auto concrete_bigtest = [](const std::string& filename) {
+    run_bigtest<${SACA_TYPE}, size_t>(filename, true);
+};
 
 TEST(bigtest, ${safe_type}) {
-	run_test<${SACA_TYPE}, size_t>("hallo", true);
+    concrete_bigtest("hallo");
+
+#ifndef DEBUG
+    concrete_bigtest("really big test.");
+#endif
 }
