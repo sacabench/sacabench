@@ -1,5 +1,6 @@
 ﻿################################################################################
 # Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
+# Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
 ################################################################################
 
@@ -9,19 +10,6 @@ add_custom_command(
     POST_BUILD
     COMMENT "All tests were successful!" VERBATIM
 )
-
-macro(run_bigtest bigtest_target)
-generic_run_bigtest(
-    ${bigtest_target}
-    "${bigtest_target}.cpp"
-    "bigtest_driver.cpp"
-    gtest
-    check
-    build_check
-    "Bigtest"
-    ${ARGN}
-)
-endmacro()
 
 function(SACA_REGISTER header type)
     string(REGEX REPLACE
