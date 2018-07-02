@@ -290,15 +290,15 @@ struct prefix_doubling_impl {
     /// [     P          |      H(U)                               |     F     ]
     /// or
     /// [                            F                                         ]
-    class supf_containers {
-        util::container<hybrid_tuple> m_supf;
+    class DiscardingHArray {
+        util::container<hybrid_tuple> m_disc_h;
 
     public:
-        inline supf_containers(size_t N) {
-            m_supf = util::make_container<hybrid_tuple>(N);
+        inline DiscardingHArray(size_t N) {
+            m_disc_h = util::make_container<hybrid_tuple>(N);
         }
 
-        inline auto phase_0_SU() { return m_supf.slice(); }
+        inline auto phase_0_SU() { return m_disc_h.slice(); }
         struct phase_1_UP_type {
             util::span<hybrid_tuple> m_u;
             util::span<hybrid_tuple> m_p;
@@ -308,14 +308,14 @@ struct prefix_doubling_impl {
             inline auto PU() { return m_pu; }
         };
         inline auto phase_1_UP(size_t P_size, size_t F_size) {
-            auto PU = m_supf.slice(0, m_supf.size() - F_size);
+            auto PU = m_disc_h.slice(0, m_disc_h.size() - F_size);
             auto P = PU.slice(0, P_size);
             auto U = PU.slice(P_size);
 
             return phase_1_UP_type{U, P, PU};
         }
         class phase_2_U2PSF_type {
-            util::span<hybrid_tuple> m_supf;
+            util::span<hybrid_tuple> m_disc_h;
 
             size_t m_U_start = 0;
             size_t m_U_end = 0;
@@ -344,10 +344,10 @@ struct prefix_doubling_impl {
                 std::cout << "]";
             }
 
-            inline auto p_span() { return m_supf.slice(0, m_P_end); }
-            inline auto s_span() { return m_supf.slice(m_P_end, m_S_end); }
-            inline auto f_span() { return m_supf.slice(m_S_end, m_F_end); }
-            inline auto u_span() { return m_supf.slice(m_U_start, m_U_end); }
+            inline auto p_span() { return m_disc_h.slice(0, m_P_end); }
+            inline auto s_span() { return m_disc_h.slice(m_P_end, m_S_end); }
+            inline auto f_span() { return m_disc_h.slice(m_S_end, m_F_end); }
+            inline auto u_span() { return m_disc_h.slice(m_U_start, m_U_end); }
 
         public:
             inline void debug_print(util::string_span msg) {
@@ -365,50 +365,50 @@ struct prefix_doubling_impl {
                 (void)msg;
             }
 
-            inline phase_2_U2PSF_type(util::span<hybrid_tuple> supf,
+            inline phase_2_U2PSF_type(util::span<hybrid_tuple> disc_h,
                                       size_t F_size) {
-                m_supf = supf;
-                m_U_end = supf.size() - F_size;
+                m_disc_h = disc_h;
+                m_U_end = disc_h.size() - F_size;
                 debug_print("INIT"_s);
             }
 
             inline bool has_next_u_elem() { return m_U_start != m_U_end; }
             inline hybrid_tuple const& get_next_u_elem() {
-                return m_supf[m_U_start];
+                return m_disc_h[m_U_start];
             }
             inline util::span<hybrid_tuple> get_u_elems_after_next(size_t n) {
                 size_t start = std::min(m_U_start + 1, m_U_end);
                 size_t end = std::min(m_U_start + 1 + n, m_U_end);
-                return m_supf.slice(start, end);
+                return m_disc_h.slice(start, end);
             }
             inline void drop_u_elem() {
                 m_U_start++;
                 debug_print("DROP"_s);
             }
             inline void append_f(sa_index name, sa_index idx) {
-                auto& new_f_elem = m_supf[m_F_end];
+                auto& new_f_elem = m_disc_h[m_F_end];
                 new_f_elem.name() = name;
                 new_f_elem.idx() = idx;
                 m_F_end++;
                 debug_print("AppF"_s);
             }
             inline void append_s(util::span<sa_index> names, sa_index idx) {
-                m_supf[m_F_end] = m_supf[m_S_end];
+                m_disc_h[m_F_end] = m_disc_h[m_S_end];
                 m_F_end++;
 
-                auto& new_s_elem = m_supf[m_S_end];
+                auto& new_s_elem = m_disc_h[m_S_end];
                 new_s_elem.names().copy_from(names);
                 new_s_elem.idx() = idx;
                 m_S_end++;
                 debug_print("AppS"_s);
             }
             inline void append_p(sa_index name, sa_index idx) {
-                m_supf[m_F_end] = m_supf[m_S_end];
+                m_disc_h[m_F_end] = m_disc_h[m_S_end];
                 m_F_end++;
-                m_supf[m_S_end] = m_supf[m_P_end];
+                m_disc_h[m_S_end] = m_disc_h[m_P_end];
                 m_S_end++;
 
-                auto& new_p_elem = m_supf[m_P_end];
+                auto& new_p_elem = m_disc_h[m_P_end];
                 new_p_elem.name() = name;
                 new_p_elem.idx() = idx;
                 m_P_end++;
@@ -418,7 +418,7 @@ struct prefix_doubling_impl {
             inline size_t p_size() { return m_P_end; }
         };
         inline auto phase_2_U2PSF(size_t F_size) {
-            return phase_2_U2PSF_type(m_supf, F_size);
+            return phase_2_U2PSF_type(m_disc_h, F_size);
         }
         struct phase_3_PSF_type {
             util::span<hybrid_tuple> m_p;
@@ -429,9 +429,9 @@ struct prefix_doubling_impl {
             inline auto F() { return m_f; }
         };
         inline auto phase_3_PSF(size_t P_size, size_t F_size) {
-            auto P = m_supf.slice(0, P_size);
-            auto S = m_supf.slice(P_size, m_supf.size() - F_size);
-            auto F = m_supf.slice(m_supf.size() - F_size);
+            auto P = m_disc_h.slice(0, P_size);
+            auto S = m_disc_h.slice(P_size, m_disc_h.size() - F_size);
+            auto F = m_disc_h.slice(m_disc_h.size() - F_size);
 
             return phase_3_PSF_type{P, S, F};
         }
@@ -508,10 +508,10 @@ struct prefix_doubling_impl {
         }
 
         // Allocate all logical arrays
-        auto supf = supf_containers(N);
+        auto disc_h = DiscardingHArray(N);
 
         {
-            auto SU = supf.phase_0_SU();
+            auto SU = disc_h.phase_0_SU();
 
             // Create the initial S array of character tuples + text
             // position
@@ -553,7 +553,7 @@ struct prefix_doubling_impl {
             phase.log("remaining", N - (F_size + P_size));
 
             {
-                auto UP = supf.phase_1_UP(P_size, F_size);
+                auto UP = disc_h.phase_1_UP(P_size, F_size);
 
                 // Mark all not unique names in U by setting their extra bit.
                 mark_not_unique(UP.U());
@@ -563,7 +563,7 @@ struct prefix_doubling_impl {
                 sort_U_by_index_and_merge_P_into_it(UP, k);
             }
 
-            auto U2PSF = supf.phase_2_U2PSF(F_size);
+            auto U2PSF = disc_h.phase_2_U2PSF(F_size);
 
             // Iterate through U, either appending tuples to S
             // or to F or P.
@@ -618,7 +618,7 @@ struct prefix_doubling_impl {
             F_size += U2PSF.additional_f_size();
             P_size = U2PSF.p_size();
 
-            auto PSF = supf.phase_3_PSF(P_size, F_size);
+            auto PSF = disc_h.phase_3_PSF(P_size, F_size);
 
             // If S is empty, the algorithm terminates, and
             // F contains names for unique prefixes.
