@@ -6,6 +6,7 @@
 # * All rights reserved. Published under the BSD-3 license in the LICENSE file.
 # ******************************************************************************/
  
+chooseCRANmirror(ind=1)
 
 install.packages("rjson")
 install.packages("RColorBrewer")
@@ -175,8 +176,8 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
   }
   axis(2,at=seq(0,max(mems), by = ceiling(max(mems)/10)),
        labels=format(seq(0,max(mems), by = ceiling(max(mems)/10)),scientific=FALSE))
-  text(runtimes, mems, labels=algorithm_names, xpd = TRUE,
-       col = cols, adj=c(0.3,-0.35))
+  #text(runtimes, mems, labels=algorithm_names, xpd = TRUE,
+  #     col = cols, adj=c(0.3,-0.35))
   #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
   #    mai=c(1,1,1,1), new = TRUE)
   legend("right",  legend = algorithm_names, col = cols, 
@@ -324,6 +325,8 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   label_main = "Memory & runtime measurements"
   header_name = paste(" (",args[3],sep = "")
   
+  names = gsub("Reference", "Ref", names)
+  
   size = as.numeric(args[4])
   label_unit = "Bytes"
   if(size > 1000 * 1000 * 1000){
@@ -358,7 +361,7 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   
   for(i in 1:length(names)){
     if(nchar(names[i]) > 12){
-      names[i] = paste(substring(names[i],1,5),"...", substring(names[i],nchar(names[i])-6,nchar(names[i])),sep = "")
+      names[i] = paste(substring(names[i],1,4),"...", substring(names[i],nchar(names[i])-6,nchar(names[i])),sep = "")
     }
   }
   
