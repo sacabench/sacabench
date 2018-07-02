@@ -29,8 +29,8 @@
 
 #define USE_INDUCTION_SORTING				// enable induction sorting feature.
 #define USE_ENHANCED_INDUCTION_SORTING		// enable enhanced induction sorting feature.
-#define USE_TANDEM_REPEAT_SORTING			// enable the tandem repeat sorting feature.
-#define USE_ALT_SORT_ORDER					// enable alternative sorting order
+//#define USE_TANDEM_REPEAT_SORTING			// enable the tandem repeat sorting feature.
+//#define USE_ALT_SORT_ORDER					// enable alternative sorting order
 
 
 #define ENDIAN_SWAP_16(value)				((value >> 8) | (value << 8))
