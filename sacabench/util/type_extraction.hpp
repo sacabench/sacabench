@@ -17,10 +17,12 @@ namespace sacabench::util {
 template <typename string_type>
 inline std::tuple<bool, size_t> get_type_ltr_dynamic(const string_type& t_0, size_t index) {
     if (static_cast<size_t>(t_0[index]) == util::SENTINEL)
+    {
         return std::make_tuple(false, 1);
+    }
 
     size_t same_char_amount = 0;
-    character current_char = t_0[index];
+    size_t current_char = t_0[index];
 
     for (size_t i = index; i < t_0.size(); i++) {
         same_char_amount++;
@@ -31,7 +33,7 @@ inline std::tuple<bool, size_t> get_type_ltr_dynamic(const string_type& t_0, siz
 
     bool const right_before_sentinel =
         (index + same_char_amount - 1 == t_0.size() - 2);
-    character next_different_char = t_0[index + same_char_amount];
+    size_t next_different_char = t_0[index + same_char_amount];
 
     return std::make_tuple(
         (right_before_sentinel || current_char > next_different_char),
