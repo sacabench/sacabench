@@ -151,32 +151,38 @@ public:
         IF_DEBUG(r.register_alive_check(m_alive_check));
         return r;
     }
-
-    inline friend bool operator==(span<T> const& lhs, span<T> const& rhs) {
-        return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-    }
-
-    inline friend bool operator!=(span<T> const& lhs, span<T> const& rhs) {
-        return !(lhs == rhs);
-    }
-
-    inline friend bool operator<(span<T> const& lhs, span<T> const& rhs) {
-        return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-                                            rhs.end());
-    }
-
-    inline friend bool operator>(span<T> const& lhs, span<T> const& rhs) {
-        return rhs < lhs;
-    }
-
-    inline friend bool operator<=(span<T> const& lhs, span<T> const& rhs) {
-        return !(lhs > rhs);
-    }
-
-    inline friend bool operator>=(span<T> const& lhs, span<T> const& rhs) {
-        return !(lhs < rhs);
-    }
 };
+
+template <typename T>
+inline bool operator==(span<T> const& lhs, span<T> const& rhs) {
+    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <typename T>
+inline bool operator!=(span<T> const& lhs, span<T> const& rhs) {
+    return !(lhs == rhs);
+}
+
+template <typename T>
+inline bool operator<(span<T> const& lhs, span<T> const& rhs) {
+    return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+                                        rhs.end());
+}
+
+template <typename T>
+inline bool operator>(span<T> const& lhs, span<T> const& rhs) {
+    return rhs < lhs;
+}
+
+template <typename T>
+inline bool operator<=(span<T> const& lhs, span<T> const& rhs) {
+    return !(lhs > rhs);
+}
+
+template <typename T>
+inline bool operator>=(span<T> const& lhs, span<T> const& rhs) {
+    return !(lhs < rhs);
+}
 
 } // namespace sacabench::util
 

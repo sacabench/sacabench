@@ -278,7 +278,7 @@ __inline__ node *new_node__blind_ssort(void)
    the function return the result of the comparison (+ or -) and writes
    in Cmp_done the number of comparisons done
    *********************************************************************** */
- __inline__
+
 Int32 get_lcp_unrolled(UChar *b1, UChar *b2, Int32 cmp_limit)
 {
   Int32 cmp2do;

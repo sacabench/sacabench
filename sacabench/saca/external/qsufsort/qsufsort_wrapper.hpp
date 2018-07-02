@@ -11,6 +11,7 @@
    the code must be clearly marked. No warranty is given regarding the quality
    of this software.*/
 #pragma once
+#include <util/span.hpp>
 #include "util/signed_size_type.hpp"
 #include <limits.h>
 #include <tudocomp_stat/StatPhase.hpp>
@@ -308,7 +309,7 @@ namespace sacabench::qsufsort_ext {
 class qsufsort_ext {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "ext_qsufsort";
+    static constexpr char const* NAME = "Reference-qsufsort";
     static constexpr char const* DESCRIPTION =
         "Reference implementation of N. Larssons and K. Sadakanes qsufsort";
     template <typename sa_index>

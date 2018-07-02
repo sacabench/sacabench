@@ -1,4 +1,4 @@
-################################################################################
+﻿################################################################################
 # Copyright (C) 2018 Marvin Löbel <loebel.marvin@gmail.com>
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
@@ -33,17 +33,20 @@ run_test(nzSufSort_tests DEPS saca_bench_lib)
 run_test(sais_tests DEPS saca_bench_lib)
 run_test(gsaca_tests DEPS saca_bench_lib)
 run_test(m_suf_sort_tests DEPS saca_bench_lib)
+run_test(msufsort_reference_tests DEPS saca_bench_lib)
 run_test(saca_test_qsufsort DEPS saca_bench_lib)
 run_test(test_saca_deep_shallow DEPS saca_bench_lib)
 run_test(prefix_doubling_tests DEPS saca_bench_lib)
 run_test(ringbuffer DEPS saca_bench_lib)
 run_test(construct_sa_tests DEPS saca_bench_lib)
+run_test(divsufsort_tests DEPS saca_bench_lib)
 run_test(assert_text_length DEPS saca_bench_lib)
 run_test(kd_array DEPS saca_bench_lib)
 run_test(sa_dc7_tests DEPS saca_bench_lib)
 run_test(sa_dc3_tests DEPS saca_bench_lib)
 run_test(type_extraction_tests DEPS saca_bench_lib)
 run_test(sacak_tests DEPS saca_bench_lib)
+run_test(saca_k_reference_tests DEPS saca_bench_lib)
 run_test(sads_tests DEPS saca_bench_lib)
 run_test(tagged_number DEPS saca_bench_lib)
 run_test(sais_reference_tests DEPS saca_bench_lib)
@@ -52,4 +55,5 @@ run_test(sais_lite_reference_tests DEPS saca_bench_lib)
 run_test(external_qsufsort_test DEPS saca_bench_lib)
 run_test(reference_divsufsort DEPS saca_bench_lib)
 run_test(reference_deep_shallow DEPS saca_bench_lib)
+run_test(reference_gsaca_tests DEPS saca_bench_lib)
 run_test(reference_dc3_tests DEPS saca_bench_lib)

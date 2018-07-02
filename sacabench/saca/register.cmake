@@ -1,14 +1,33 @@
 # Syntax: SACA_REGISTER(<path to header> <c++ type>)
 
 # Reference SACAS:
-SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
-    sacabench::qsufsort_ext::qsufsort_ext)
-
 SACA_REGISTER("saca/external/deep_shallow.hpp"
     sacabench::reference_sacas::deep_shallow)
 
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
+    
+    
+SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
+    sacabench::reference_sacas::msufsort)
+
+SACA_REGISTER("saca/external/saca_k/saca_k.hpp"
+    sacabench::reference_sacas::saca_k)
+
+SACA_REGISTER("saca/external/sads/sads.hpp"
+    sacabench::reference_sacas::sads)
+
+SACA_REGISTER("saca/external/sais/sais.hpp"
+    sacabench::reference_sacas::sais)
+
+SACA_REGISTER("saca/external/sais_lite/sais_lite.hpp"
+    sacabench::reference_sacas::sais_lite)
+
+SACA_REGISTER("saca/external/gsaca.hpp"
+    sacabench::reference_sacas::gsaca)
+
+SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
+    sacabench::qsufsort_ext::qsufsort_ext)
 
 SACA_REGISTER("saca/external/dc3/dc3.hpp"
         sacabench::reference_sacas::dc3)
@@ -36,17 +55,8 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
 
-SACA_REGISTER("saca/external/sais/sais.hpp"
-    sacabench::reference_sacas::sais)
-
-SACA_REGISTER("saca/external/sais_lite/sais_lite.hpp"
-    sacabench::reference_sacas::sais_lite)    
-
 SACA_REGISTER("saca/sads.hpp"
     sacabench::sads::sads)
-
-SACA_REGISTER("saca/external/sads/sads.hpp"
-    sacabench::reference_sacas::sads)
 
 SACA_REGISTER("saca/gsaca.hpp"
     sacabench::gsaca::gsaca)
@@ -65,7 +75,10 @@ SACA_REGISTER("saca/sacak.hpp"
 
 SACA_REGISTER("saca/dc3.hpp"
     sacabench::dc3::dc3)
-
+    
+SACA_REGISTER("saca/div_suf_sort/saca.hpp"
+    sacabench::div_suf_sort::div_suf_sort)
+    
 SACA_REGISTER("saca/nzSufSort.hpp"
     sacabench::nzsufsort::nzsufsort)
 
