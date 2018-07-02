@@ -20,7 +20,7 @@ function(SACA_REGISTER header type)
 
     set(SACA_HEADER "${header}")
     set(SACA_TYPE "${type}")
-    configure_file(register.cpp.in "${CMAKE_CURRENT_BINARY_DIR}/${safe_type}.cpp")
+    configure_file(bigtest.cpp.in "${CMAKE_CURRENT_BINARY_DIR}/${safe_type}.cpp")
 
     target_sources(sacabench PRIVATE
         "${CMAKE_CURRENT_BINARY_DIR}/${safe_type}.cpp"
