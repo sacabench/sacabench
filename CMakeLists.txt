@@ -60,6 +60,7 @@ git_submodule_subdirectory(external/tudostats)
 git_submodule_subdirectory(external/CLI11)
 add_subdirectory(external/reference_impls/deep-shallow)
 add_subdirectory(external/reference_impls/divsufsort)
+add_subdirectory(external/reference_impls/dc3)
 add_subdirectory(sacabench)
 add_subdirectory(test)
 
