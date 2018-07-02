@@ -4,15 +4,13 @@
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
 ################################################################################
 
-add_executable(bigtest_testrunner)
+add_executable(bigtest_testrunner
+  bigtest_driver.cpp
+)
 
 target_link_libraries(bigtest_testrunner
   saca_bench_lib
   gtest
-)
-
-target_sources(bigtest_testrunner PUBLIC
-  bigtest_driver.cpp
 )
 
 target_compile_options(bigtest_testrunner PUBLIC
