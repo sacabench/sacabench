@@ -37,13 +37,12 @@ struct prefix_doubling_impl {
     /// needed.
     using name_type = sa_index;
     using atuple = std::array<name_type, 2>;
-    using names_tuple = std::pair<atuple, sa_index>;
 
-    class name_or_names_tuple {
+    class hybrid_tuple {
         std::array<sa_index, 3> m_data;
 
     public:
-        inline name_or_names_tuple() = default;
+        inline hybrid_tuple() = default;
 
         inline util::span<name_type> names() {
             return util::span<name_type>(m_data).slice(0, 2);
@@ -58,31 +57,29 @@ struct prefix_doubling_impl {
     };
 
     class SP {
-        util::container<name_or_names_tuple> m_sp;
+        util::container<hybrid_tuple> m_sp;
 
     public:
-        inline SP(size_t N) {
-            m_sp = util::make_container<name_or_names_tuple>(N);
-        }
+        inline SP(size_t N) { m_sp = util::make_container<hybrid_tuple>(N); }
         inline size_t size() const { return m_sp.size(); }
 
         inline util::span<name_type> s_names(size_t i) {
             return m_sp[i].names();
         }
         inline sa_index& s_idx(size_t i) { return m_sp[i].idx(); }
-        inline util::span<name_or_names_tuple> s() { return m_sp; }
+        inline util::span<hybrid_tuple> s() { return m_sp; }
 
         inline name_type& p_name(size_t i) { return m_sp[i].name(); }
         inline sa_index& p_idx(size_t i) { return m_sp[i].idx(); }
-        inline util::span<name_or_names_tuple> p() { return m_sp; }
-        inline util::span<name_or_names_tuple> sp() { return m_sp; }
+        inline util::span<hybrid_tuple> p() { return m_sp; }
+        inline util::span<hybrid_tuple> sp() { return m_sp; }
     };
 
     /// Create a unique name for each S tuple,
     /// returning true if all names are unique.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static bool rename_inplace(util::span<name_or_names_tuple> A) {
+    inline static bool rename_inplace(util::span<hybrid_tuple> A) {
         // A name is determined as follows:
         // `last_pair` contains the last `S` tuple looked at, or
         // ($, $) initially.
@@ -258,7 +255,7 @@ struct prefix_doubling_impl {
     }
 
     /// Marks elements as not unique by setting the highest extra bit
-    inline static void mark_not_unique(util::span<name_or_names_tuple> U) {
+    inline static void mark_not_unique(util::span<hybrid_tuple> U) {
         for (size_t i = 1; i < U.size(); i++) {
             auto& a = U[i - 1].name();
             auto& b = U[i].name();
@@ -275,7 +272,7 @@ struct prefix_doubling_impl {
     /// This type exists so that further optimizations could reduce the
     /// memory footprint by merging some of the arrays.
     class supf_containers {
-        util::container<name_or_names_tuple> m_supf;
+        util::container<hybrid_tuple> m_supf;
 
         // [                     original S                        | existing F]
         // [                     original U                        | existing F]
@@ -289,14 +286,14 @@ struct prefix_doubling_impl {
 
     public:
         inline supf_containers(size_t N) {
-            m_supf = util::make_container<name_or_names_tuple>(N);
+            m_supf = util::make_container<hybrid_tuple>(N);
         }
 
         inline auto phase_0_SU() { return m_supf.slice(); }
         struct phase_1_UP_type {
-            util::span<name_or_names_tuple> m_u;
-            util::span<name_or_names_tuple> m_p;
-            util::span<name_or_names_tuple> m_pu;
+            util::span<hybrid_tuple> m_u;
+            util::span<hybrid_tuple> m_p;
+            util::span<hybrid_tuple> m_pu;
             inline auto U() { return m_u; }
             inline auto P() { return m_p; }
             inline auto PU() { return m_pu; }
@@ -309,7 +306,7 @@ struct prefix_doubling_impl {
             return phase_1_UP_type{U, P, PU};
         }
         class phase_2_U2PSF_type {
-            util::span<name_or_names_tuple> m_supf;
+            util::span<hybrid_tuple> m_supf;
 
             size_t m_U_start = 0;
             size_t m_U_end = 0;
@@ -359,7 +356,7 @@ struct prefix_doubling_impl {
                 (void)msg;
             }
 
-            inline phase_2_U2PSF_type(util::span<name_or_names_tuple> supf,
+            inline phase_2_U2PSF_type(util::span<hybrid_tuple> supf,
                                       size_t F_size) {
                 m_supf = supf;
                 m_U_end = supf.size() - F_size;
@@ -367,11 +364,10 @@ struct prefix_doubling_impl {
             }
 
             inline bool has_next_u_elem() { return m_U_start != m_U_end; }
-            inline name_or_names_tuple const& get_next_u_elem() {
+            inline hybrid_tuple const& get_next_u_elem() {
                 return m_supf[m_U_start];
             }
-            inline util::span<name_or_names_tuple>
-            get_u_elems_after_next(size_t n) {
+            inline util::span<hybrid_tuple> get_u_elems_after_next(size_t n) {
                 size_t start = std::min(m_U_start + 1, m_U_end);
                 size_t end = std::min(m_U_start + 1 + n, m_U_end);
                 return m_supf.slice(start, end);
@@ -416,9 +412,9 @@ struct prefix_doubling_impl {
             return phase_2_U2PSF_type(m_supf, F_size);
         }
         struct phase_3_PSF_type {
-            util::span<name_or_names_tuple> m_p;
-            util::span<name_or_names_tuple> m_s;
-            util::span<name_or_names_tuple> m_f;
+            util::span<hybrid_tuple> m_p;
+            util::span<hybrid_tuple> m_s;
+            util::span<hybrid_tuple> m_f;
             inline auto P() { return m_p; }
             inline auto S() { return m_s; }
             inline auto F() { return m_f; }
@@ -453,7 +449,7 @@ struct prefix_doubling_impl {
     /// Create a unique name for each S tuple.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static void rename2_inplace(util::span<name_or_names_tuple> A) {
+    inline static void rename2_inplace(util::span<hybrid_tuple> A) {
         /// Names are formed by taking the name of the first tuple element,
         /// and adding a offset that increments if the second element changes.
         ///
