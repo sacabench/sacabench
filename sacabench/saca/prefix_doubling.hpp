@@ -648,7 +648,7 @@ struct prefix_doubling {
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "Doubling";
     static constexpr char const* DESCRIPTION =
-        "In-Memory variant of Naive Prefix Doubling by R. Dementiev, J. "
+        "In-Memory variant of Prefix Doubling by R. Dementiev, J. "
         "Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
@@ -657,13 +657,13 @@ struct prefix_doubling {
                              util::span<sa_index> out_sa) {
         prefix_doubling_impl<sa_index, 2>::doubling(text, out_sa);
     }
-}; // struct prefix_doubling
+};
 
 struct prefix_doubling_discarding {
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "Discarding";
     static constexpr char const* DESCRIPTION =
-        "In-Memory variant of Naive Doubling with Discarding by R. "
+        "In-Memory variant of Doubling with Discarding by R. "
         "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
@@ -672,6 +672,21 @@ struct prefix_doubling_discarding {
                              util::span<sa_index> out_sa) {
         prefix_doubling_impl<sa_index, 2>::doubling_discarding(text, out_sa);
     }
-}; // struct prefix_doubling_discarding
+};
+
+struct prefix_quintupling_discarding {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "QuintupleDiscarding";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of A-Tupling with Discarding and A=5 by R. "
+        "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
+
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& /*alphabet_size*/,
+                             util::span<sa_index> out_sa) {
+        prefix_doubling_impl<sa_index, 5>::doubling_discarding(text, out_sa);
+    }
+};
 
 } // namespace sacabench::prefix_doubling

@@ -18,3 +18,7 @@ TEST(prefix_doubling, naive) {
 TEST(prefix_doubling, discarding) {
     test::saca_corner_cases<prefix_doubling_discarding>();
 }
+
+TEST(prefix_doubling, quintupling) {
+    test::saca_corner_cases<prefix_quintupling_discarding>();
+}
