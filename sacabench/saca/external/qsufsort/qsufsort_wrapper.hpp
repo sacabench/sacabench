@@ -11,6 +11,7 @@
    the code must be clearly marked. No warranty is given regarding the quality
    of this software.*/
 #pragma once
+#include <util/span.hpp>
 #include "util/signed_size_type.hpp"
 #include <limits.h>
 #include <tudocomp_stat/StatPhase.hpp>

@@ -15,8 +15,10 @@ target_include_directories(saca_bench_lib INTERFACE
 target_link_libraries(saca_bench_lib INTERFACE
   $<$<CONFIG:Debug>:dl>
   tudocomp_stat
+  reference_gsaca
   reference_saca_deep_shallow
   divsufsort
+  msufsort
   reference_bpr2_SuffixArray
   reference_bpr2_Util
   reference_bpr2_Standard
@@ -56,27 +58,5 @@ function(SACA_REGISTER header type)
 endfunction(SACA_REGISTER)
 
 include(saca/register.cmake)
-
-# Register all SACAs to generate an executable for each SACA
-# TODO: If extra launchers are needed, use a single common
-#       source file parametric over different different headers.
-# set(SACA_BENCH_SACAS
-#   saca/example1.cpp
-#   saca/example2.cpp)
-#
-# foreach(SACA IN ITEMS ${SACA_BENCH_SACAS})
-#   get_filename_component(NEW_NAME ${SACA} NAME_WE)
-#   add_executable(${NEW_NAME}
-#     ${SACA}
-#   )
-#   target_link_libraries(${NEW_NAME}
-#     saca_bench_lib
-#   )
-#   target_compile_options(${NEW_NAME} PUBLIC
-#     ${SACA_BENCH_FLAGS}
-#     $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
-#     $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
-#   )
-# endforeach(SACA)
 
 ################################################################################
