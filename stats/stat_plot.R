@@ -126,14 +126,14 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   header_name = paste(algorithm_name," (",args[3], sep = "")
   size = as.numeric(args[4])
   label_unit = "Bytes"
-  if(size > 1000 * 1000 * 1000){
-    size = round(size / 1024 / 1024 / 1024, digits = 2)
+  if(size >= 1000 * 1000 * 1000){
+    size = round(size / 1000 / 1000 / 1000, digits = 2)
     label_unit = "GB"
-  }else if(size > 1000 * 1000){
-    size = round(size / 1024 / 1024, digits = 2)
+  }else if(size >= 1000 * 1000){
+    size = round(size / 1000 / 1000, digits = 2)
     label_unit = "MB"
-  }else if(size > 1000){
-    size = round(size / 1024, digits = 2)
+  }else if(size >= 1000){
+    size = round(size / 1000, digits = 2)
     label_unit = "KB"
   } 
   
@@ -193,6 +193,15 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
 plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
                                  label_runtime, label_mem, label_main, cols)
 {
+  
+  for(i in 1:length(algorithm_names)){
+    add_text = (11-nchar(algorithm_names[i]))
+    if(add_text > 1){
+      for(j in 1:add_text){
+        #algorithm_names[i] = paste(algorithm_names[i]," ", sep = "")
+      }
+    }
+  }
   par(mfrow=c(2,1),mai=c(1, 1, 0.5, 0))
   barplot(runtimes,beside=TRUE,col = cols,
           ylab = label_runtime, yaxt="n", names.arg = algorithm_names, las = 2)
@@ -373,14 +382,14 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   
   size = as.numeric(args[4])
   label_unit = "Bytes"
-  if(size > 1000 * 1000 * 1000){
-    size = round(size / 1024 / 1024 / 1024, digits = 2)
+  if(size >= 1000 * 1000 * 1000){
+    size = round(size / 1000 / 1000 / 1000, digits = 2)
     label_unit = "GB"
-  }else if(size > 1000 * 1000){
-    size = round(size / 1024 / 1024, digits = 2)
+  }else if(size >= 1000 * 1000){
+    size = round(size / 1000 / 1000, digits = 2)
     label_unit = "MB"
-  }else if(size > 1000){
-    size = round(size / 1024, digits = 2)
+  }else if(size >= 1000){
+    size = round(size / 1000, digits = 2)
     label_unit = "KB"
   } 
   
@@ -513,14 +522,14 @@ text_input = paste("Input file:",args[3])
 size = as.numeric(args[4])
 
 label_unit = "Bytes"
-if(size > 1000 * 1000 * 1000){
-  size = round(size / 1024 / 1024 / 1024, digits = 2)
+if(size >= 1000 * 1000 * 1000){
+  size = round(size / 1000 / 1000 / 1000, digits = 2)
   label_unit = "GB"
-}else if(size > 1000 * 1000){
-  size = round(size / 1024 / 1024, digits = 2)
+}else if(size >= 1000 * 1000){
+  size = round(size / 1000 / 1000, digits = 2)
   label_unit = "MB"
-}else if(size > 1000){
-  size = round(size / 1024, digits = 2)
+}else if(size >= 1000){
+  size = round(size / 1000, digits = 2)
   label_unit = "KB"
 } 
 text_size = paste("Size: ", size, label_unit, sep = "")
