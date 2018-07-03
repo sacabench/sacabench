@@ -5,6 +5,7 @@ ExternalProject_Add(reference_bpr2_external_project
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/implementation"
     # ------------------
     CONFIGURE_COMMAND cmake -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/implementation" "${CMAKE_CURRENT_BINARY_DIR}/implementation"
+    COMMAND autoreconf --force --install
     COMMAND aclocal
     COMMAND autoconf
     COMMAND automake --add-missing
