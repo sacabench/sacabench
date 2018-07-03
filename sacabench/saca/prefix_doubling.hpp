@@ -140,6 +140,7 @@ struct prefix_doubling_impl {
 
     /// Naive variant, roughly identical to description in Paper
     static void doubling(util::string_span text, util::span<sa_index> out_sa) {
+        tdc::StatPhase::log("A_Tuple", a_size);
         tdc::StatPhase phase("Initialization");
         size_t const N = text.size();
 
@@ -507,6 +508,7 @@ struct prefix_doubling_impl {
     /// Doubling with discarding
     static void doubling_discarding(util::string_span text,
                                     util::span<sa_index> out_sa) {
+        tdc::StatPhase::log("A_Tuple", a_size);
         tdc::StatPhase phase("Initialization");
         size_t const N = text.size();
 
@@ -700,7 +702,7 @@ struct prefix_quintupling_discarding {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 5>::doubling_discarding(text, out_sa);
+        prefix_doubling_impl<sa_index, 3>::doubling_discarding(text, out_sa);
     }
 };
 
