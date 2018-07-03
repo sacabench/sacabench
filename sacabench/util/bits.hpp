@@ -46,6 +46,17 @@ namespace sacabench::util {
         return y;
     }
 
+    /*
+    inline uint64_t ceil_log_base(uint64_t x, uint64_t base) {
+        double loga = std::log(double(x)) / std::log(double(base));
+        return std::ceil(loga);
+    }
+    */
+
+    inline uint64_t powi(uint64_t base, uint64_t exp) {
+        return std::pow(base, exp);
+    }
+
     /// Calculates 'floor(log2(x))'. Placeholder for possibly efficient
     /// implementation.
     inline uint64_t floor_log2(uint64_t x) {

@@ -164,15 +164,15 @@ struct prefix_doubling_impl {
             h.s_idx(i) = i;
         }
 
-        // We iterate up to TODO ceil(log2(N)) times - but because we
+        // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
         for (size_t k = 1;; k++) {
             phase.split("Iteration");
 
-            // TODO: Correct log factor
-            // DCHECK_LE(k, util::ceil_log2(N));
-            size_t const k_length = std::pow(a_size, k);
+            // TODO: check new condition
+            // DCHECK_LE(k, util::ceil_log_base(N, a_size));
+            size_t const k_length = util::powi(a_size, k);
 
             phase.log("current_iteration", k);
             phase.log("prefix_size", k_length);
@@ -450,24 +450,27 @@ struct prefix_doubling_impl {
     /// and ensures the combined U is sorted according to `k`.
     template <typename pu_type>
     inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
-                                                           size_t k) {
+                                                           size_t k_length) {
         // TODO: Change to just merge later
 
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
         sorting_algorithm::sort(
-            pu.PU(), util::compare_key([k](auto const& value) {
+            pu.PU(), util::compare_key([k_length](auto const& value) {
                 size_t const i = value.idx();
-                auto const anti_k = util::bits_of<size_t> - k;
-                return (i << anti_k) | (i >> k);
+                // TODO: Rewrite to a single integer expression, if possible
+                return std::array<uint64_t, 2>{
+                    i % k_length,
+                    i / k_length,
+                };
             }));
     }
 
     /// Create a unique name for each S tuple.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static void rename2_inplace(util::span<hybrid_tuple> A) {
+    inline static void rename2_inplace(util::span<hybrid_tuple> H) {
         /// Names are formed by taking the name of the first tuple element,
         /// and adding a offset that increments if the second element changes.
         ///
@@ -482,21 +485,21 @@ struct prefix_doubling_impl {
         name_type name_counter = 0;
         name_type name_offset = 0;
 
-        auto last_pair = atuple{util::SENTINEL, util::SENTINEL};
+        auto last_pair_arr = make_sentinel_tuple();
+        auto last_pair = util::span(last_pair_arr);
 
-        for (size_t i = 0; i < A.size(); i++) {
-            auto pair = A[i].names();
+        for (size_t i = 0; i < H.size(); i++) {
+            auto pair = H[i].names();
 
             if (pair[0] != last_pair[0]) {
                 name_counter = 0;
                 name_offset = 0;
-                last_pair[0] = pair[0];
-                last_pair[1] = pair[1];
-            } else if (pair[1] != last_pair[1]) {
+                last_pair.copy_from(pair);
+            } else if (pair.slice(1) != last_pair.slice(1)) {
                 name_offset = name_counter;
-                last_pair[1] = pair[1];
+                last_pair.copy_from(pair);
             }
-            A[i].name() = pair[0] + name_offset;
+            H[i].name() = pair[0] + name_offset;
             name_counter += 1;
         }
     }
@@ -511,9 +514,6 @@ struct prefix_doubling_impl {
         // we don't even try to process texts of size less than 2.
         if (N == 0) {
             return;
-        } else if (N == 1) {
-            out_sa[0] = 0;
-            return;
         }
 
         // Allocate all logical arrays
@@ -524,13 +524,14 @@ struct prefix_doubling_impl {
 
             // Create the initial S array of character tuples + text
             // position
-            for (size_t i = 0; i < N - 1; ++i) {
-                H[i].names().copy_from(atuple{text[i], text[i + 1]});
+            for (size_t i = 0; i < N; ++i) {
+                auto p = make_sentinel_tuple();
+                size_t trunc_size = std::min(a_size, N - i);
+                for (size_t j = 0; j < trunc_size; j++) {
+                    p[j] = text[i + j];
+                }
+                H[i].names().copy_from(p);
                 H[i].idx() = i;
-            }
-            {
-                H[N - 1].names().copy_from(atuple{text[N - 1], util::SENTINEL});
-                H[N - 1].idx() = N - 1;
             }
 
             // Sort the S tuples lexicographical
@@ -544,14 +545,15 @@ struct prefix_doubling_impl {
         size_t P_size = 0;
         size_t F_size = 0;
 
-        // We iterate up to ceil(log2(N)) times - but because we
+        // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
         for (size_t k = 1;; k++) {
             phase.split("Iteration");
 
-            DCHECK_LE(k, util::ceil_log2(N));
-            size_t const k_length = 1ull << k;
+            // TODO: check new condition
+            // DCHECK_LE(k, util::ceil_log_base(N, a_size));
+            size_t const k_length = util::powi(a_size, k);
 
             phase.log("current_iteration", k);
             phase.log("prefix_size", k_length);
@@ -567,7 +569,7 @@ struct prefix_doubling_impl {
 
                 // Merge the previous unique names from P
                 // into U and sort them by index.
-                sort_U_by_index_and_merge_P_into_it(UP, k);
+                sort_U_by_index_and_merge_P_into_it(UP, k_length);
             }
 
             auto U2PSF = disc_h.phase_2_U2PSF(F_size);
@@ -599,7 +601,9 @@ struct prefix_doubling_impl {
                 } else {
                     // Get neighboring names U[j], U[j+1], ...
 
-                    auto tuple = atuple{c, util::SENTINEL};
+                    auto tuple = make_sentinel_tuple();
+                    tuple[0] = c;
+
                     {
                         auto neighbor_names =
                             U2PSF.get_u_elems_after_next(tuple.size() - 1);
@@ -696,7 +700,7 @@ struct prefix_quintupling_discarding {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 5>::doubling(text, out_sa);
+        prefix_doubling_impl<sa_index, 5>::doubling_discarding(text, out_sa);
     }
 };
 
