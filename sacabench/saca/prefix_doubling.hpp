@@ -37,24 +37,32 @@ struct prefix_doubling_impl {
     /// For discarding, is required to have a width of at least 1 bit more than
     /// needed.
     using name_type = sa_index;
-    using atuple = std::array<name_type, 2>;
+    using atuple = std::array<name_type, a_size>;
+
+    inline static atuple make_sentinel_tuple() {
+        auto a = atuple();
+        for (auto& e : a) {
+            e = util::SENTINEL;
+        }
+        return a;
+    }
 
     class hybrid_tuple {
-        std::array<sa_index, 3> m_data;
+        std::array<sa_index, a_size + 1> m_data;
 
     public:
         inline hybrid_tuple() = default;
 
         inline util::span<name_type> names() {
-            return util::span<name_type>(m_data).slice(0, 2);
+            return util::span<name_type>(m_data).slice(0, a_size);
         }
         inline name_type& name() { return m_data[0]; }
-        inline sa_index& idx() { return m_data[2]; }
+        inline sa_index& idx() { return m_data[a_size]; }
         inline util::span<name_type const> names() const {
-            return util::span<name_type const>(m_data).slice(0, 2);
+            return util::span<name_type const>(m_data).slice(0, a_size);
         }
         inline name_type const& name() const { return m_data[0]; }
-        inline sa_index const& idx() const { return m_data[2]; }
+        inline sa_index const& idx() const { return m_data[a_size]; }
     };
 
     /// Hybrid array. Each entry stores either a `(atuple, idx)` or a `(name,
@@ -112,15 +120,15 @@ struct prefix_doubling_impl {
         // only_unique = false
 
         name_type name = 0;
-        auto last_pair = atuple{util::SENTINEL, util::SENTINEL};
+        auto last_pair_arr = make_sentinel_tuple();
+        auto last_pair = util::span(last_pair_arr);
         bool only_unique = true;
 
         for (size_t i = 0; i < H.size(); i++) {
             auto pair = H[i].names();
-            if (pair != util::span(last_pair)) {
+            if (pair != last_pair) {
                 name = i + 1;
-                last_pair[0] = pair[0];
-                last_pair[1] = pair[1];
+                last_pair.copy_from(pair);
             } else {
                 only_unique = false;
             }
@@ -130,42 +138,14 @@ struct prefix_doubling_impl {
         return only_unique;
     }
 
-    inline static name_type unique_mask() {
-        auto mask = std::numeric_limits<name_type>::max() >> 1;
-        mask += 1;
-        return mask;
-    }
-
-    /// Check if the extra bit in `name_type` is set.
-    inline static bool is_marked(name_type v) {
-        return (v & unique_mask()) != 0;
-    }
-
-    /// Sets the extra bit in `v`, and returns the changed value.
-    inline static name_type marked(name_type v) {
-        v = v | unique_mask();
-        DCHECK(is_marked(v));
-        return v;
-    }
-
-    /// Unsets the extra bit in `v`, and returns the changed value.
-    inline static name_type unmarked(name_type v) {
-        v = v & ~unique_mask();
-        DCHECK(!is_marked(v));
-        return v;
-    }
-
     /// Naive variant, roughly identical to description in Paper
     static void doubling(util::string_span text, util::span<sa_index> out_sa) {
         tdc::StatPhase phase("Initialization");
         size_t const N = text.size();
 
         // To simplify some of the logic below,
-        // we don't even try to process texts of size less than 2.
+        // we don't even try to process texts of size less than 1.
         if (N == 0) {
-            return;
-        } else if (N == 1) {
-            out_sa[0] = 0;
             return;
         }
 
@@ -174,23 +154,25 @@ struct prefix_doubling_impl {
 
         // Create the initial S array of character tuples + text
         // position
-        for (size_t i = 0; i < N - 1; ++i) {
-            h.s_names(i).copy_from(atuple{text[i], text[i + 1]});
+        for (size_t i = 0; i < N; ++i) {
+            auto p = make_sentinel_tuple();
+            size_t trunc_size = std::min(a_size, N - i);
+            for (size_t j = 0; j < trunc_size; j++) {
+                p[j] = text[i + j];
+            }
+            h.s_names(i).copy_from(p);
             h.s_idx(i) = i;
         }
-        {
-            h.s_names(N - 1).copy_from(atuple{text[N - 1], util::SENTINEL});
-            h.s_idx(N - 1) = N - 1;
-        }
 
-        // We iterate up to ceil(log2(N)) times - but because we
+        // We iterate up to TODO ceil(log2(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
         for (size_t k = 1;; k++) {
             phase.split("Iteration");
 
-            DCHECK_LE(k, util::ceil_log2(N));
-            size_t const k_length = 1ull << k;
+            // TODO: Correct log factor
+            // DCHECK_LE(k, util::ceil_log2(N));
+            size_t const k_length = std::pow(a_size, k);
 
             phase.log("current_iteration", k);
             phase.log("prefix_size", k_length);
@@ -224,34 +206,63 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                h.hybrids(), util::compare_key([k](auto const& value) {
+                h.hybrids(), util::compare_key([k_length](auto const& value) {
                     size_t const i = value.idx();
-                    auto const anti_k = util::bits_of<size_t> - k;
-                    return (i << anti_k) | (i >> k);
+                    // TODO: Rewrite to a single integer expression, if possible
+                    return std::array<uint64_t, 2>{
+                        i % k_length,
+                        i / k_length,
+                    };
                 }));
 
             // loop_phase.split("Pair names");
 
             for (size_t j = 0; j < N; j++) {
-                size_t const i1 = h.p_idx(j);
+                auto t = make_sentinel_tuple();
+                t[0] = h.p_name(j);
 
-                name_type const c1 = h.p_name(j);
-                name_type c2;
+                size_t last_idx = h.p_idx(j);
 
-                if ((j + 1) >= N) {
-                    c2 = util::SENTINEL;
-                } else {
-                    c2 = h.p_name(j + 1);
+                size_t trunc_size = std::min(a_size, N - j);
+                for (size_t l = 1; l < trunc_size; l++) {
+                    size_t const idx = h.p_idx(j + l);
 
-                    size_t const i2 = h.p_idx(j + 1);
-
-                    if (i2 != (i1 + k_length)) {
-                        c2 = util::SENTINEL;
+                    if (idx == last_idx + k_length) {
+                        t[l] = h.p_name(j + l);
+                        last_idx = idx;
+                    } else {
+                        break;
                     }
                 }
-                h.s_names(j).copy_from(atuple{c1, c2});
+
+                h.s_names(j).copy_from(t);
             }
         }
+    }
+
+    inline static name_type unique_mask() {
+        auto mask = std::numeric_limits<name_type>::max() >> 1;
+        mask += 1;
+        return mask;
+    }
+
+    /// Check if the extra bit in `name_type` is set.
+    inline static bool is_marked(name_type v) {
+        return (v & unique_mask()) != 0;
+    }
+
+    /// Sets the extra bit in `v`, and returns the changed value.
+    inline static name_type marked(name_type v) {
+        v = v | unique_mask();
+        DCHECK(is_marked(v));
+        return v;
+    }
+
+    /// Unsets the extra bit in `v`, and returns the changed value.
+    inline static name_type unmarked(name_type v) {
+        v = v & ~unique_mask();
+        DCHECK(!is_marked(v));
+        return v;
     }
 
     /// Marks elements as not unique by setting the highest extra bit
@@ -685,7 +696,7 @@ struct prefix_quintupling_discarding {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 5>::doubling_discarding(text, out_sa);
+        prefix_doubling_impl<sa_index, 5>::doubling(text, out_sa);
     }
 };
 
