@@ -208,13 +208,18 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                h.hybrids(), util::compare_key([k_length](auto const& value) {
-                    size_t const i = value.idx();
+                h.hybrids(), [k_length](auto const& a, auto const& b) {
                     size_t const maxval = std::numeric_limits<size_t>::max();
                     size_t const mult = maxval / k_length;
 
-                    return (i % k_length) * mult + (i / k_length);
-                }));
+                    size_t const ai = a.idx();
+                    size_t ar = (ai % k_length) * mult + (ai / k_length);
+
+                    size_t const bi = b.idx();
+                    size_t br = (bi % k_length) * mult + (bi / k_length);
+
+                    return ar < br;
+                });
 
             // loop_phase.split("Pair names");
 
@@ -458,13 +463,18 @@ struct prefix_doubling_impl {
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
         sorting_algorithm::sort(
-            pu.PU(), util::compare_key([k_length](auto const& value) {
-                size_t const i = value.idx();
+            pu.PU(), [k_length](auto const& a, auto const& b) {
                 size_t const maxval = std::numeric_limits<size_t>::max();
                 size_t const mult = maxval / k_length;
 
-                return (i % k_length) * mult + (i / k_length);
-            }));
+                size_t const ai = a.idx();
+                size_t ar = (ai % k_length) * mult + (ai / k_length);
+
+                size_t const bi = b.idx();
+                size_t br = (bi % k_length) * mult + (bi / k_length);
+
+                return ar < br;
+            });
     }
 
     /// Create a unique name for each S tuple.
