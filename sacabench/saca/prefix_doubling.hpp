@@ -30,7 +30,8 @@ struct std_sorting_algorithm {
     }
 };
 
-template <typename sa_index, typename sorting_algorithm = std_sorting_algorithm>
+template <typename sa_index, size_t a_size,
+          typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
     /// The type to use for lexicographical sorted "names".
     /// For discarding, is required to have a width of at least 1 bit more than
@@ -654,7 +655,7 @@ struct prefix_doubling {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index>::doubling(text, out_sa);
+        prefix_doubling_impl<sa_index, 2>::doubling(text, out_sa);
     }
 }; // struct prefix_doubling
 
@@ -669,7 +670,7 @@ struct prefix_doubling_discarding {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index>::doubling_discarding(text, out_sa);
+        prefix_doubling_impl<sa_index, 2>::doubling_discarding(text, out_sa);
     }
 }; // struct prefix_doubling_discarding
 
