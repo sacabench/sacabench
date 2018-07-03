@@ -1,10 +1,10 @@
 // Author: Ge Nong,  Email: issng@mail.sysu.edu.cn
-// Department of Computer Science, Sun Yat-sen University, 
+// Department of Computer Science, Sun Yat-sen University,
 // Guangzhou, China
 // Date: December 24, 2012
 //
 // This is the demo source code for the algorithm SACA-K presented in this article:
-// G. Nong, Practical Linear-Time O(1)-Workspace Suffix Sorting for Constant Alphabets, 
+// G. Nong, Practical Linear-Time O(1)-Workspace Suffix Sorting for Constant Alphabets,
 // ACM Transactions on Information Systems, Scheduled to Appear in July 2013.
 // A draft for this article can be retrieved from http://code.google.com/p/ge-nong/.
 
@@ -12,30 +12,30 @@
 
 namespace sacabench::reference_sacas::saca_k_reference {
     // set only the highest bit as 1, i.e. 1000...
-    const unsigned int EMPTY=((unsigned int)1)<<(sizeof(unsigned int)*8-1); 
+    const unsigned int EMPTY=((unsigned int)1)<<(sizeof(unsigned int)*8-1);
 
     // get s[i] at a certain level
     #define chr(i) ((level==0)?((unsigned char *)s)[i]:((int *)s)[i])
 
-    void getBuckets(unsigned char *s, 
+    void getBuckets(unsigned char *s,
       unsigned int *bkt, unsigned int n,
-      unsigned int K, bool end) { 
+      unsigned int K, bool end) {
       unsigned int i, sum=0;
-      
+
       // clear all buckets .
-      for(i=0; i<K; i++) bkt[i]=0; 
-      
+      for(i=0; i<K; i++) bkt[i]=0;
+
       // compute the size of each bucket .
-      for(i=0; i<n; i++) bkt[s[i]]++; 
-      
-      for(i=0; i<K; i++) { 
-        sum+=bkt[i]; 
-        bkt[i]=end ? sum-1 : sum-bkt[i]; 
+      for(i=0; i<n; i++) bkt[s[i]]++;
+
+      for(i=0; i<K; i++) {
+        sum+=bkt[i];
+        bkt[i]=end ? sum-1 : sum-bkt[i];
       }
     }
 
-    void putSuffix0(unsigned int *SA, 
-      unsigned char *s, unsigned int *bkt, 
+    void putSuffix0(unsigned int *SA,
+      unsigned char *s, unsigned int *bkt,
       unsigned int n, unsigned int K, int n1) {
       unsigned int i, j;
 
@@ -115,7 +115,7 @@ namespace sacabench::reference_sacas::saca_k_reference {
 
     void putSuffix1(int *SA, int *s, int n1) {
       int i, j, pos, cur, pre=-1;
-      
+
       for(i=n1-1; i>0; i--) {
         j=SA[i]; SA[i]=EMPTY;
         cur=s[j];
@@ -126,10 +126,10 @@ namespace sacabench::reference_sacas::saca_k_reference {
       }
     }
 
-    void induceSAl1(int *SA, int *s, 
+    void induceSAl1(int *SA, int *s,
       int n, bool suffix) {
       int h, i, j, step=1;
-      
+
       for(i=0; i<n; i+=step) {
         step=1; j=SA[i]-1;
         if(SA[i]<=0) continue;
@@ -160,7 +160,7 @@ namespace sacabench::reference_sacas::saca_k_reference {
             SA[c]=-1; // init the counter.
             SA[c+1]=j;
           }
-          else        
+          else
             SA[c]=j; // a size-1 bucket.
         }
         else { // SA[c] is reused as a counter.
@@ -189,7 +189,7 @@ namespace sacabench::reference_sacas::saca_k_reference {
         }
       }
 
-      // scan to shift-left the items in each bucket 
+      // scan to shift-left the items in each bucket
       //   with its head being reused as a counter.
       for(i=1; i<n; i++) {
         j=SA[i];
@@ -201,10 +201,10 @@ namespace sacabench::reference_sacas::saca_k_reference {
       }
     }
 
-    void induceSAs1(int *SA, int *s, 
+    void induceSAs1(int *SA, int *s,
       int n, bool suffix) {
       int h, i, j, step=1;
-      
+
       for(i=n-1; i>0; i-=step) {
         step=1; j=SA[i]-1;
         if(SA[i]<=0) continue;
@@ -243,7 +243,7 @@ namespace sacabench::reference_sacas::saca_k_reference {
             if(SA[pos]!=EMPTY) {
               // we are running into the left
               //   neighbor bucket.
-              // shift-right one step the items 
+              // shift-right one step the items
               //   of bucket(SA, S, j).
               for(h=0; h<-d; h++)
                 SA[c-h]=SA[c-h-1];
@@ -282,9 +282,9 @@ namespace sacabench::reference_sacas::saca_k_reference {
 
       int c, c1, t, t1;
       c1=s[n-2];
-      t1=0; 
+      t1=0;
       for(i=n-2; i>0; i--) {
-        c=c1; t=t1; 
+        c=c1; t=t1;
         c1=s[i-1];
         t1=c1<c || (c1==c && t);
         if(t && !t1) {
@@ -316,7 +316,7 @@ namespace sacabench::reference_sacas::saca_k_reference {
               if(SA[pos]!=EMPTY) {
                 // we are running into the left
                 //   neighbor bucket.
-                // shift-right one step the items 
+                // shift-right one step the items
                 //   of bucket(SA, S, i).
                 for(h=0; h<-d; h++)
                   SA[c-h]=SA[c-h-1];
@@ -345,26 +345,26 @@ namespace sacabench::reference_sacas::saca_k_reference {
       SA[0]=n-1;
     }
 
-    unsigned int getLengthOfLMS(unsigned char *s, 
+    unsigned int getLengthOfLMS(unsigned char *s,
       unsigned int n, int level, unsigned int x) {
-      if(x==n-1) return 1;  
-      
-      unsigned int dist, i=1;  
+      if(x==n-1) return 1;
+
+      unsigned int dist, i=1;
       while(1) {
         if(chr(x+i)<chr(x+i-1)) break;
         i++;
-      }  
+      }
       while(1) {
         if(x+i>n-1 || chr(x+i)>chr(x+i-1)) break;
         if(x+i==n-1 || chr(x+i)<chr(x+i-1)) dist=i;
         i++;
       }
-      
+
       return dist+1;
     }
 
-    unsigned int nameSubstr(unsigned int *SA, 
-      unsigned char *s, unsigned int *s1, unsigned int n, 
+    unsigned int nameSubstr(unsigned int *SA,
+      unsigned char *s, unsigned int *s1, unsigned int n,
       unsigned int m, unsigned int n1, int level) {
       unsigned int i, j, cur_t, succ_t;
 
@@ -398,7 +398,7 @@ namespace sacabench::reference_sacas::saca_k_reference {
         SA[n1+pos/2]=name;
       }
 
-      // compact the interim s1 sparsely stored 
+      // compact the interim s1 sparsely stored
       //   in SA[n1, n-1] into SA[m-n1, m-1].
       for(i=n-1, j=m-1; i>=n1; i--)
         if(SA[i]!=EMPTY) SA[j--]=SA[i];
@@ -419,9 +419,9 @@ namespace sacabench::reference_sacas::saca_k_reference {
       return name_ctr;
     }
 
-    void getSAlms(unsigned int *SA, 
-      unsigned char *s, 
-      unsigned int *s1, unsigned int n, 
+    void getSAlms(unsigned int *SA,
+      unsigned char *s,
+      unsigned int *s1, unsigned int n,
       unsigned int n1, int level ) {
       unsigned int i, j, cur_t, succ_t;
 
@@ -435,9 +435,9 @@ namespace sacabench::reference_sacas::saca_k_reference {
       }
 
       for(i=0; i<n1; i++) SA[i]=s1[SA[i]];
-      
+
       // init SA[n1..n-1]
-      for(i=n1; i<n; i++) SA[i]=level?EMPTY:0; 
+      for(i=n1; i<n; i++) SA[i]=level?EMPTY:0;
     }
 
 
@@ -461,14 +461,14 @@ namespace sacabench::reference_sacas::saca_k_reference {
         induceSAs1((int *)SA, (int *)s, n, false);
       }
 
-      // now, all the LMS-substrings are sorted and 
+      // now, all the LMS-substrings are sorted and
       //   stored sparsely in SA.
 
       // compact all the sorted substrings into
       //   the first n1 items of SA.
       // 2*n1 must be not larger than n.
       unsigned int n1=0;
-      for(i=0; i<n; i++) 
+      for(i=0; i<n; i++)
         if((!level&&SA[i]>0) || (level&&((int *)SA)[i]>0))
           SA[n1++]=SA[i];
 
@@ -480,7 +480,7 @@ namespace sacabench::reference_sacas::saca_k_reference {
 
       // recurse if names are not yet unique.
       if(name_ctr<n1)
-        SACA_K((unsigned char *)s1, SA1, 
+        SACA_K((unsigned char *)s1, SA1,
               n1, 0, m-n1, level+1);
       else // get the suffix array of s1 directly.
         for(i=0; i<n1; i++) SA1[s1[i]]=i;

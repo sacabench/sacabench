@@ -79,3 +79,17 @@ IF_DEBUG(TEST(Container, memory_invalidation_check) {
         s[0] = 1;
     });
 })
+
+TEST(ContainerSpan, compare1) {
+    container<long unsigned int> c {1, 2, 3};
+    span<long unsigned int> s(c);
+    ASSERT_TRUE(c==s);
+    ASSERT_FALSE(c!=
+    s);
+}
+TEST(ContainerSpan, compare2) {
+    container<long unsigned int> c {1, 2, 3};
+    span<long unsigned int const> s(c);
+    ASSERT_TRUE(c==s);
+    ASSERT_FALSE(c!=s);
+}
