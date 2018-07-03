@@ -18,14 +18,14 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_gsaca
   reference_saca_deep_shallow
   divsufsort
-<<<<<<< HEAD
   reference_bpr2_SuffixArray
   reference_bpr2_Util
   reference_bpr2_Standard
   msufsort
-=======
-
->>>>>>> origin/master
+  msufsort
+  reference_bpr2_SuffixArray
+  reference_bpr2_Util
+  reference_bpr2_Standard
   ${CMAKE_DL_LIBS}
 )
 
