@@ -29,6 +29,9 @@ SACA_REGISTER("saca/external/gsaca.hpp"
 SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
     sacabench::qsufsort_ext::qsufsort_ext)
 
+SACA_REGISTER("saca/external/dc3/dc3.hpp"
+        sacabench::reference_sacas::dc3)
+
 # Our implementations:
 
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
