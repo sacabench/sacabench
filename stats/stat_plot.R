@@ -82,10 +82,10 @@ extract_details<-function(json_name)
   }
   if(max(phase_mems) > 10000*1000){
     phase_mems = phase_mems / 1000 / 1000
-    label_mem = "Memory peak in GB"
+    label_mem = "Additional memory peak in GB"
   }else if(max(phase_mems) > 10000){
     phase_mems = phase_mems / 1000
-    label_mem = "Memory peak in MB"
+    label_mem = "Additional memory peak in MB"
   }
   
   #plot
@@ -104,7 +104,7 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   if(min(runtimes) < 1){
     barplot(runtimes[1],beside=FALSE,col = cols[1], ylab = label_runtime,  yaxt="n")
     barplot(as.matrix(runtimes[2:length(runtimes)]),beside=FALSE,
-            col = cols[2:n], add = TRUE)
+            col = cols[2:n], add = TRUE, ylim=range(pretty(c(0, runtimes))))
     title("Runtime", line=1)
   }else{
     barplot(runtimes[1],beside=FALSE,col = cols[1], ylab = label_runtime,  yaxt="n")
@@ -120,20 +120,20 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   barplot(matrix(mems), beside=TRUE, col = cols, ylab = label_mem,  yaxt="n")
   axis(2,at=seq(0,max(mems), by = round(max(mems)/10, digits = 0)),
        labels=format(seq(0,max(mems),by = round(max(mems)/10, digits = 0)),scientific=FALSE))
-  title("Memory peak", line=1)
+  title("Additional memory peak", line=1)
   
   #Header and Footer
   header_name = paste(algorithm_name," (",args[3], sep = "")
   size = as.numeric(args[4])
   label_unit = "Bytes"
   if(size > 1000 * 1000 * 1000){
-    size = round(size / 1000 / 1000 / 1000, digits = 2)
+    size = round(size / 1024 / 1024 / 1024, digits = 2)
     label_unit = "GB"
   }else if(size > 1000 * 1000){
-    size = round(size / 1000 / 1000, digits = 2)
+    size = round(size / 1024 / 1024, digits = 2)
     label_unit = "MB"
   }else if(size > 1000){
-    size = round(size / 1000, digits = 2)
+    size = round(size / 1024, digits = 2)
     label_unit = "KB"
   } 
   
@@ -163,6 +163,7 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
        xlab = label_runtime, 
        ylab = label_mem, 
        log = logarithmic, xaxt = "n", yaxt="n")
+  
   mtext(label_main, side=3, outer=TRUE, line=-2,cex = 1)
   
   if(max(runtimes)<1){
@@ -174,8 +175,13 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
          labels=format(seq(0,max(runtimes), 
                            by = ceiling(max(runtimes)/20)),scientific=FALSE))
   }
+  
   axis(2,at=seq(0,max(mems), by = ceiling(max(mems)/10)),
        labels=format(seq(0,max(mems), by = ceiling(max(mems)/10)),scientific=FALSE))
+  
+  abline(h=seq(0,max(mems), by = ceiling(max(mems)/10)), v=seq(0,max(runtimes),
+                                                               by = ceiling(max(runtimes)/10)),
+                                                               lty=6, col = "gray60")
   #text(runtimes, mems, labels=algorithm_names, xpd = TRUE,
   #     col = cols, adj=c(0.3,-0.35))
   #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
@@ -191,16 +197,18 @@ plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems,
   barplot(runtimes,beside=TRUE,col = cols,
           ylab = label_runtime, yaxt="n", names.arg = algorithm_names, las = 2)
   mtext(label_main, side=3, outer=TRUE, line=-2,cex = 1)
-  axis(2,at=seq(0,max(runtimes), by = ceiling(max(runtimes)/10)),
-       labels=format(seq(0,max(runtimes), by = ceiling(max(runtimes)/10)),
+  axis(2,at=seq(0,max(runtimes)+max(runtimes)/10, by = ceiling(max(runtimes)/10)),
+       labels=format(seq(0,max(runtimes)+max(runtimes)/10, by = ceiling(max(runtimes)/10)),
                      scientific=FALSE))
-  
+
+  abline(h=seq(0,max(runtimes), by = ceiling(max(runtimes)/10)), lty=6, col = "gray60")
   par(mai=c(0.3, 1, 0.4, 0))
   barplot(matrix(mems),beside=TRUE, col = cols,
           ylab = label_mem, yaxt="n", ylim = c(max(mems),0))
-  axis(2,at=seq(0,max(mems), by = ceiling(max(mems)/10)),
-       labels=format(seq(0,max(mems),by = ceiling(max(mems)/10)),scientific=FALSE))
-  
+  axis(2,at=seq(0,max(mems)+max(mems)/10, by = ceiling(max(mems)/10)),
+       labels=format(seq(0,max(mems)+max(mems)/10,by = ceiling(max(mems)/10)),scientific=FALSE))
+
+  abline(h=seq(0,max(mems), by = ceiling(max(mems)/10)), lty=6, col = "gray60")
   #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), 
   #    mai=c(1,1,1,1), new = TRUE)
   #legend("right",  legend = algorithm_names, col = 2:(length(runtimes)+1), 
@@ -276,7 +284,7 @@ getDistinctColors <- function(n) {
   return(col_vector)
 }
 
-extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatter = F){
+extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatter = F, sort_by = "none", memory_additional = T){
   data= fromJSON(file=json_name,simplify = TRUE)
   
   #names
@@ -286,7 +294,11 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatt
       algorithm_names = cbind(algorithm_names, data[[no_algos]][[1]]$stats[[1]]$value)
     }
     #Algorithm
-    algorithm = data[[no_algos]][[1]]$sub[[1]]$sub[[4]]
+    if(memory_additional == T){
+      algorithm = data[[no_algos]][[1]]$sub[[1]]$sub[[4]]
+    }else{
+      algorithm = data[[no_algos]][[1]]
+    }
     
     #runtime
     tmp_runtimes = (algorithm$timeEnd - algorithm$timeStart)
@@ -315,28 +327,60 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatt
     }
   }
   
-  prepare_plot_data(algorithm_names[1,], runtimes[1,], mems[1,], pareto, logarithmic, plot_scatter)
+  
+  algorithm_names = gsub("Reference", "Ref", algorithm_names)
+  algorithm_names = gsub("REFERENCE ", "Ref-", algorithm_names)
+  
+  if(sort_by == "names"){
+    order_by = order(algorithm_names)
+    algorithm_names = algorithm_names[order_by]
+    runtimes = runtimes[order_by]
+    mems = mems[order_by]
+  }else if(sort_by == "runtimes"){
+    order_by = order(runtimes)
+    algorithm_names = algorithm_names[order_by]
+    runtimes = runtimes[order_by]
+    mems = mems[order_by]
+  }else if(sort_by == "mems"){
+    order_by = order(mems)
+    algorithm_names = algorithm_names[order_by]
+    runtimes = runtimes[order_by]
+    mems = mems[order_by]
+  }else{
+    order_by = 1:length(algorithm_names)
+    algorithm_names = algorithm_names[order_by]
+    runtimes = runtimes[order_by]
+    mems = mems[order_by]
+  }
+  
+  prepare_plot_data(algorithm_names, runtimes, mems, pareto, logarithmic, plot_scatter, memory_additional)
 }
 
-prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_scatter){
+
+
+prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_scatter, memory_additional = T){
   
   label_runtime = "Runtime in milliseconds"
-  label_mem = "Memory peak in KB"
+  if(memory_additional){
+    label_mem = "Additional memory peak"
+  }else{
+    label_mem = "Total memory peak"
+  }
+  
   label_main = "Memory & runtime measurements"
   header_name = paste(" (",args[3],sep = "")
   
-  names = gsub("Reference", "Ref", names)
   
   size = as.numeric(args[4])
   label_unit = "Bytes"
   if(size > 1000 * 1000 * 1000){
-    size = round(size / 1000 / 1000 / 1000, digits = 2)
+    size = round(size / 1024 / 1024 / 1024, digits = 2)
     label_unit = "GB"
   }else if(size > 1000 * 1000){
-    size = round(size / 1000 / 1000, digits = 2)
+    size = round(size / 1024 / 1024, digits = 2)
     label_unit = "MB"
   }else if(size > 1000){
-    size = round(size / 1000, digits = 2)
+    size = round(size / 1024, digits = 2)
     label_unit = "KB"
   } 
   
@@ -353,10 +397,12 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   }
   if(max(mems) > 10000*1000){
     mems = mems / 1000 / 1000
-    label_mem = "Memory peak in GB"
+    label_mem = paste(label_mem, "in GB")
   }else if(max(mems) > 10000){
     mems = mems / 1000
-    label_mem = "Memory peak in MB"
+    label_mem = paste(label_mem, "in MB")
+  }else{
+    label_mem = paste(label_mem, "in KB")
   }
   
   for(i in 1:length(names)){
@@ -372,12 +418,13 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   }else{
   
     if(logarithmic){
-      #remove data of Naiv
-      without_naive = which(names=="Naiv")
-      names = names[-without_naive]
-      runtimes = runtimes[-without_naive]
-      mems = mems[-without_naive]
-      
+      if(memory_additional == T){
+        #remove data of Naiv
+        without_naive = which(names=="Naiv")
+        names = names[-without_naive]
+        runtimes = runtimes[-without_naive]
+        mems = mems[-without_naive]
+      }
       label_mem = paste(label_mem, "(logarithmic scale)", sep = " ")
       label_runtime = paste(label_runtime, "(logarithmic scale)", sep = " ")
       logarithmic = "xy"
@@ -386,11 +433,13 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
     }
     
     if(pareto){
-      #remove data of Naiv
-      without_naive = which(names=="Naiv")
-      names = names[-without_naive]
-      runtimes = runtimes[-without_naive]
-      mems = mems[-without_naive]
+      if(memory_additional == T){
+        #remove data of Naiv
+        without_naive = which(names=="Naiv")
+        names = names[-without_naive]
+        runtimes = runtimes[-without_naive]
+        mems = mems[-without_naive]
+      }
       
       algo_data = cbind(mems, runtimes)
       is_pareto = calculate_paretofront(algo_data)
@@ -400,6 +449,11 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
       runtimes = runtimes[pareto_inidices]
       mems = mems[pareto_inidices]
       
+      if(max(mems) < 1){
+        mems = mems * 1000
+        label_main =  gsub("MB ", "KB", label_main)
+        label_main =  gsub("GB ", "MB", label_main)
+      }
 
       label_main = paste(label_main, "- Paretofront", sep = " ")
     }
@@ -424,15 +478,32 @@ pdf(paste(args[1],".pdf"))
 if(args[2] == 0){
   extract_details(args[1])
 }else{
-  extract_all_stats(args[1], plot_scatter = F)
+  #Bar plots with additional memory peaks
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "")
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "names")
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "runtimes")
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "mems")
+  
+  #Bar plots with total memory peaks
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "", memory_additional = F)
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "names", memory_additional = F)
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "runtimes", memory_additional = F)
+  extract_all_stats(args[1], plot_scatter = F, sort_by = "mems", memory_additional = F)
+  
+  #Scatter plots with additional memory peaks
   extract_all_stats(args[1], plot_scatter = T)
   extract_all_stats(args[1], pareto = T, plot_scatter = T)
   extract_all_stats(args[1], logarithmic = T, plot_scatter = T)
+  
+  #Scatter plots with total memory peaks
+  extract_all_stats(args[1], plot_scatter = T, memory_additional = F)
+  extract_all_stats(args[1], pareto = T, plot_scatter = T, memory_additional = F)
+  extract_all_stats(args[1], logarithmic = T, plot_scatter = T, memory_additional = F)
 }
 
 maxfreq=paste(as.numeric(try(substring(system("lscpu | grep 'CPU max MHz'",
                                               intern=TRUE),24,27)))/1000,"GHz")
-name=try(substring(system("lscpu | grep 'Model name:'",intern=TRUE),24))
+name = try(substring(system("lscpu | grep 'Model name:'",intern=TRUE),24))
 ram = try(substring(system("grep MemTotal /proc/meminfo",intern=TRUE),18))
 ram = paste(round(as.numeric(try(substring(ram,0,nchar(ram)-3)))/1000/1000, digits = 0), "GB");
 
@@ -440,16 +511,16 @@ name = paste(name, ", ", maxfreq, " max", sep = "")
 ram = paste(ram, "RAM")
 text_input = paste("Input file:",args[3])
 size = as.numeric(args[4])
-print(size)
+
 label_unit = "Bytes"
 if(size > 1000 * 1000 * 1000){
-  size = round(size / 1000 / 1000 / 1000, digits = 2)
+  size = round(size / 1024 / 1024 / 1024, digits = 2)
   label_unit = "GB"
 }else if(size > 1000 * 1000){
-  size = round(size / 1000 / 1000, digits = 2)
+  size = round(size / 1024 / 1024, digits = 2)
   label_unit = "MB"
 }else if(size > 1000){
-  size = round(size / 1000, digits = 2)
+  size = round(size / 1024, digits = 2)
   label_unit = "KB"
 } 
 text_size = paste("Size: ", size, label_unit, sep = "")
