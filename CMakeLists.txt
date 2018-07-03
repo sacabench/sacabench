@@ -67,5 +67,6 @@ add_subdirectory(external/reference_impls/dc3)
 add_subdirectory(external/reference_impls/msufsort)
 add_subdirectory(sacabench)
 add_subdirectory(test)
+add_subdirectory(bigtest)
 
 ################################################################################
