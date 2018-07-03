@@ -209,11 +209,10 @@ struct prefix_doubling_impl {
             sorting_algorithm::sort(
                 h.hybrids(), util::compare_key([k_length](auto const& value) {
                     size_t const i = value.idx();
-                    // TODO: Rewrite to a single integer expression, if possible
-                    return std::array<uint64_t, 2>{
-                        i % k_length,
-                        i / k_length,
-                    };
+                    size_t const maxval = std::numeric_limits<size_t>::max();
+                    size_t const mult = maxval / k_length;
+
+                    return (i % k_length) * mult + (i / k_length);
                 }));
 
             // loop_phase.split("Pair names");
@@ -460,11 +459,10 @@ struct prefix_doubling_impl {
         sorting_algorithm::sort(
             pu.PU(), util::compare_key([k_length](auto const& value) {
                 size_t const i = value.idx();
-                // TODO: Rewrite to a single integer expression, if possible
-                return std::array<uint64_t, 2>{
-                    i % k_length,
-                    i / k_length,
-                };
+                size_t const maxval = std::numeric_limits<size_t>::max();
+                size_t const mult = maxval / k_length;
+
+                return (i % k_length) * mult + (i / k_length);
             }));
     }
 
