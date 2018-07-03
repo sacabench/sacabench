@@ -163,33 +163,33 @@ public:
 };
 
 template <typename T>
-inline bool operator==(span<T> const& lhs, span<T> const& rhs) {
+inline __attribute__((always_inline)) bool operator==(span<T> const& lhs, span<T> const& rhs) {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <typename T>
-inline bool operator!=(span<T> const& lhs, span<T> const& rhs) {
+inline __attribute__((always_inline)) bool operator!=(span<T> const& lhs, span<T> const& rhs) {
     return !(lhs == rhs);
 }
 
 template <typename T>
-inline bool operator<(span<T> const& lhs, span<T> const& rhs) {
+inline __attribute__((always_inline)) bool operator<(span<T> const& lhs, span<T> const& rhs) {
     return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
                                         rhs.end());
 }
 
 template <typename T>
-inline bool operator>(span<T> const& lhs, span<T> const& rhs) {
+inline __attribute__((always_inline)) bool operator>(span<T> const& lhs, span<T> const& rhs) {
     return rhs < lhs;
 }
 
 template <typename T>
-inline bool operator<=(span<T> const& lhs, span<T> const& rhs) {
+inline __attribute__((always_inline)) bool operator<=(span<T> const& lhs, span<T> const& rhs) {
     return !(lhs > rhs);
 }
 
 template <typename T>
-inline bool operator>=(span<T> const& lhs, span<T> const& rhs) {
+inline __attribute__((always_inline)) bool operator>=(span<T> const& lhs, span<T> const& rhs) {
     return !(lhs < rhs);
 }
 
