@@ -151,6 +151,15 @@ public:
         IF_DEBUG(r.register_alive_check(m_alive_check));
         return r;
     }
+
+    /// Copy the contents of another container into this one
+    template<typename U>
+    inline void copy_from(U&& other) {
+        DCHECK_EQ(size(), other.size());
+        for (size_t i = 0; i < size(); i++) {
+            (*this)[i] = other[i];
+        }
+    }
 };
 
 template <typename T>

@@ -24,11 +24,11 @@ inline void external_saca_with_writable_text(util::string_span text,
     tdc::StatPhase::pause_tracking();
     auto sa_correct_size = util::make_container<inner_sa_index>(n);
     util::container<uint8_t> writeable_text(text);
+    tdc::StatPhase::resume_tracking();
 
     if (n < 2) {
         return;
     }
-    tdc::StatPhase::resume_tracking();
 
     { saca_fn(writeable_text.data(), sa_correct_size.data(), n); }
 
@@ -50,11 +50,11 @@ inline void sadslike(util::string_span text, util::span<sa_index> out_sa,
     tdc::StatPhase::pause_tracking();
     auto sa_correct_size = util::make_container<inner_sa_type>(n);
     util::container<uint8_t> writeable_text(text);
+    tdc::StatPhase::resume_tracking();
 
     if (n < 2) {
         return;
     }
-    tdc::StatPhase::resume_tracking();
 
     {
         saca_fn(writeable_text.data(), sa_correct_size.data(), n, alphabet_size,
@@ -78,10 +78,11 @@ inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
 
     tdc::StatPhase::pause_tracking();
     auto sa_correct_size = util::make_container<int32_t>(n);
+    tdc::StatPhase::resume_tracking();
+
     if (n < 2) {
         return;
     }
-    tdc::StatPhase::resume_tracking();
 
     { saca_fn(text.data(), sa_correct_size.data(), n); }
 
@@ -100,10 +101,11 @@ inline void saislike(util::string_span text, util::span<sa_index> out_sa,
 
     tdc::StatPhase::pause_tracking();
     auto sa_correct_size = util::make_container<int32_t>(n);
+    tdc::StatPhase::resume_tracking();
+
     if (n < 2) {
         return;
     }
-    tdc::StatPhase::resume_tracking();
 
     {
         saca_fn(text.data(), sa_correct_size.data(), n, alphabet_size,
