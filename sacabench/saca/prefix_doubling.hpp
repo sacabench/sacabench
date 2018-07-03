@@ -181,9 +181,10 @@ struct prefix_doubling_impl {
             // tdc::StatPhase loop_phase("Sort S");
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(
-                h.hybrids(),
-                util::compare_key([k](auto const& a) { return a.names(); }));
+            sorting_algorithm::sort(h.hybrids(),
+                                    [k](auto const& a, auto const& b) {
+                                        return a.names() < b.names();
+                                    });
 
             // loop_phase.split("Rename S tuples");
 
@@ -535,8 +536,9 @@ struct prefix_doubling_impl {
             }
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(
-                H, util::compare_key([](auto const& a) { return a.names(); }));
+            sorting_algorithm::sort(H, [](auto const& a, auto const& b) {
+                return a.names() < b.names();
+            });
 
             // Rename the S tuples into U
             rename_inplace(H);
@@ -638,9 +640,9 @@ struct prefix_doubling_impl {
                 auto F = PSF.F();
 
                 // Sort the F tuples lexicographical
-                sorting_algorithm::sort(F, util::compare_key([](auto const& a) {
-                                            return a.name();
-                                        }));
+                sorting_algorithm::sort(F, [](auto const& a, auto const& b) {
+                    return a.name() < b.name();
+                });
 
                 for (size_t i = 0; i < N; i++) {
                     out_sa[i] = F[i].idx();
@@ -649,9 +651,9 @@ struct prefix_doubling_impl {
             }
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(
-                PSF.S(),
-                util::compare_key([](auto const& a) { return a.names(); }));
+            sorting_algorithm::sort(PSF.S(), [](auto const& a, auto const& b) {
+                return a.names() < b.names();
+            });
 
             // Rename S tuple into U tuple
             rename2_inplace(PSF.S());
