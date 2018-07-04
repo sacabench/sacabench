@@ -52,4 +52,7 @@ namespace sacabench::util {
 
 //! \}
 
+#define SB_FORCE_INLINE __attribute__((always_inline))
+#define SB_NO_INLINE __attribute__((noinline))
+
 } // namespace util
