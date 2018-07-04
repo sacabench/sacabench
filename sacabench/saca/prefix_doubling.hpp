@@ -601,6 +601,11 @@ struct prefix_doubling_impl {
         // Allocate all logical arrays
         auto disc_h = DiscardingHArray(N);
 
+        // How many bytes to initially pack into a word
+        // TODO: Only works with power-of-two sizes
+        size_t const WP_SIZE = 4;
+        size_t const wp_initial_loop_offset = WP_SIZE / a_size;
+
         {
             auto H = disc_h.phase_0_H();
 
@@ -608,10 +613,17 @@ struct prefix_doubling_impl {
             // position
             for (size_t i = 0; i < N; ++i) {
                 auto p = make_sentinel_tuple();
-                size_t trunc_size = std::min(a_size, N - i);
-                for (size_t j = 0; j < trunc_size; j++) {
-                    p[j] = text[i + j];
+                size_t trunc_size = std::min(a_size * WP_SIZE, N - i);
+
+                for (size_t j = 0; j < a_size * WP_SIZE; j++) {
+                    uint64_t v = p[j / WP_SIZE];
+                    v <<= 8;
+                    if (j < trunc_size) {
+                        v |= text[i + j];
+                    }
+                    p[j / WP_SIZE] = v;
                 }
+
                 H[i].names().copy_from(p);
                 H[i].idx() = i;
             }
@@ -632,7 +644,7 @@ struct prefix_doubling_impl {
         // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
-        for (size_t k = 1;; k++) {
+        for (size_t k = 1 + wp_initial_loop_offset;; k++) {
             phase.split("Iteration");
 
             // TODO: check new condition
