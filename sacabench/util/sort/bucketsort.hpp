@@ -106,8 +106,8 @@ inline container<bucket> get_buckets(const span_type input,
  * \return Size and starting position for each bucket in the suffix array.
  */
 template <typename span_type, size_t depth>
-inline kd_array<bucket, depth> get_buckets_kd(const span_type input,
-                                        const std::size_t max_character_code) {
+inline kd_array<bucket, depth>
+get_buckets_kd(const span_type input, const std::size_t max_character_code) {
     DCHECK_GE(depth, 1);
 
     const std::size_t length = input.size();
@@ -161,7 +161,8 @@ inline kd_array<bucket, depth> get_buckets_kd(const span_type input,
     // calculate positions for all buckets
     for (size_t index = 1; index < bucket_count; ++index) {
         buckets.get_mut_direct_unsafe(index).position =
-            buckets.get_mut_direct_unsafe(index - 1).position + buckets.get_mut_direct_unsafe(index - 1).count;
+            buckets.get_mut_direct_unsafe(index - 1).position +
+            buckets.get_mut_direct_unsafe(index - 1).count;
     }
 
     return buckets;
@@ -266,7 +267,8 @@ bucketsort_presort_kd(const string_span input,
     DCHECK_EQ(input.size(), sa.size());
     DCHECK_LE(depth, sa.size());
 
-    auto buckets = get_buckets_kd<string_span, depth>(input, max_character_code);
+    auto buckets =
+        get_buckets_kd<string_span, depth>(input, max_character_code);
 
     const std::size_t length = input.size();
     // the real alphabet includes $, so it has one more character
@@ -308,7 +310,8 @@ bucketsort_presort_kd(const string_span input,
 
     // determine leftmost index of each bucket
     for (size_t index = 0; index < bucket_count; ++index) {
-        buckets.get_mut_direct_unsafe(index).position -= buckets.get_mut_direct_unsafe(index).count;
+        buckets.get_mut_direct_unsafe(index).position -=
+            buckets.get_mut_direct_unsafe(index).count;
     }
 
     return buckets;
