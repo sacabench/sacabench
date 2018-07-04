@@ -112,7 +112,7 @@ inline container<bucket> get_buckets(const span_type input,
  * \return Size and starting position for each bucket in the suffix array.
  */
 template <typename index_type>
-inline container<bucket>
+__attribute__((noinline)) container<bucket>
 bucketsort_presort(const string_span input,
                    const std::size_t max_character_code,
                    const std::size_t depth, span<index_type> sa) {
