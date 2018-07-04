@@ -207,19 +207,22 @@ struct prefix_doubling_impl {
             // Sort P by its i position mapped to the tuple
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
-            sorting_algorithm::sort(
-                h.hybrids(), [k_length](auto const& a, auto const& b) {
-                    size_t const maxval = std::numeric_limits<size_t>::max();
-                    size_t const mult = maxval / k_length;
+            sorting_algorithm::sort(h.hybrids(),
+                                    [k_length](auto const& a, auto const& b) {
+                                        size_t const ai = a.idx();
+                                        size_t const bi = b.idx();
 
-                    size_t const ai = a.idx();
-                    size_t ar = (ai % k_length) * mult + (ai / k_length);
+                                        size_t const high_a = ai % k_length;
+                                        size_t const high_b = bi % k_length;
+                                        size_t const low_a = ai / k_length;
+                                        size_t const low_b = bi / k_length;
 
-                    size_t const bi = b.idx();
-                    size_t br = (bi % k_length) * mult + (bi / k_length);
+                                        bool const high_diff = high_a < high_b;
+                                        bool const high_eq = high_a == high_b;
+                                        bool const low_diff = low_a < low_b;
 
-                    return ar < br;
-                });
+                                        return high_diff | (high_eq & low_diff);
+                                    });
 
             // loop_phase.split("Pair names");
 
@@ -462,19 +465,22 @@ struct prefix_doubling_impl {
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
-        sorting_algorithm::sort(
-            pu.PU(), [k_length](auto const& a, auto const& b) {
-                size_t const maxval = std::numeric_limits<size_t>::max();
-                size_t const mult = maxval / k_length;
+        sorting_algorithm::sort(pu.PU(),
+                                [k_length](auto const& a, auto const& b) {
+                                    size_t const ai = a.idx();
+                                    size_t const bi = b.idx();
 
-                size_t const ai = a.idx();
-                size_t ar = (ai % k_length) * mult + (ai / k_length);
+                                    size_t const high_a = ai % k_length;
+                                    size_t const high_b = bi % k_length;
+                                    size_t const low_a = ai / k_length;
+                                    size_t const low_b = bi / k_length;
 
-                size_t const bi = b.idx();
-                size_t br = (bi % k_length) * mult + (bi / k_length);
+                                    bool const high_diff = high_a < high_b;
+                                    bool const high_eq = high_a == high_b;
+                                    bool const low_diff = low_a < low_b;
 
-                return ar < br;
-            });
+                                    return high_diff | (high_eq & low_diff);
+                                });
     }
 
     /// Create a unique name for each S tuple.
