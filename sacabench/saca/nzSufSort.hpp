@@ -141,15 +141,15 @@ namespace sacabench::nzsufsort {
                 revert(sa_0);
                 revert(sa_12);
                 
-                //TODO: Swap sa_0 and sa_12
+                // Swap sa_0 and sa_12
                 auto sa_0_tmp = out_sa.slice(count_s_type_pos, count_s_type_pos+sa_0.size());
                 auto sa_12_tmp = out_sa.slice(count_s_type_pos+sa_0.size(), 2*count_s_type_pos);
-                for (size_t i = 0; i < sa_0.size(); ++i) { sa_0_tmp[i] = sa_0[i]; }
-                for (size_t i = 0; i < sa_12.size(); ++i) { sa_12_tmp[i] = sa_12[i]; }
+                std::copy(sa_0.begin(), sa_0.end(), sa_0_tmp.begin());
+                std::copy(sa_12.begin(), sa_12.end(), sa_12_tmp.begin());
                 sa_0 = out_sa.slice(0, sa_0.size());
                 sa_12 = out_sa.slice(sa_0.size(), count_s_type_pos);
-                for (size_t i = 0; i < sa_0.size(); ++i) { sa_0[i] = sa_0_tmp[i]; }
-                for (size_t i = 0; i < sa_12.size(); ++i) { sa_12[i] = sa_12_tmp[i]; }
+                std::copy(sa_0_tmp.begin(), sa_0_tmp.end(), sa_0.begin());
+                std::copy(sa_12_tmp.begin(), sa_12_tmp.end(), sa_12.begin());
                 
                 // copy sa_0 and sa_12 into l-type-positions of out_sa
                 phase.split("Copy SA_0 and SA_12 into l-type-positions of out_sa");
