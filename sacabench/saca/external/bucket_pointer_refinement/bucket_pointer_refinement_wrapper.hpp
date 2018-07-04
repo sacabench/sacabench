@@ -11,8 +11,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include <util/alphabet.hpp>
 #include <util/compare.hpp>
@@ -61,22 +61,24 @@ public:
             exit(1);
         }
         std::string filename = std::string(filename_template);
-        std::ofstream out_file(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+        std::ofstream out_file(filename, std::ios_base::out |
+                                             std::ios_base::binary |
+                                             std::ios_base::trunc);
         out_file << input;
         out_file.flush();
         out_file.close();
 
-/*******************************************************************************
- * From here:
- *
- * Copyright (C) 2005 Klaus-Bernd Schürmann
- *
- * Published under the GPLv2 license in the file
- * external/reference_bpr/implementation/COPYING
- ******************************************************************************/
+        /*******************************************************************************
+         * From here:
+         *
+         * Copyright (C) 2005 Klaus-Bernd Schürmann
+         *
+         * Published under the GPLv2 license in the file
+         * external/reference_bpr/implementation/COPYING
+         ******************************************************************************/
 
         Kbs_Ustring* ustr = NULL;
-        Kbs_SuffixArray *sa = NULL;
+        Kbs_SuffixArray* sa = NULL;
         Kbs_Ulong q = 3;
         ustr = kbs_getUstring_FromFile(filename.c_str());
 
@@ -113,8 +115,9 @@ public:
         bpr.split("Move output");
 
         Kbs_Ulong i;
-        for(i=0; i<sa->str->strLength; ++i) {
-            sa_return[static_cast<size_t>(i)] = static_cast<sa_index>(sa->posArray[i]);
+        for (i = 0; i < sa->str->strLength; ++i) {
+            sa_return[static_cast<size_t>(i)] =
+                static_cast<sa_index>(sa->posArray[i]);
         }
 
         // clean up
