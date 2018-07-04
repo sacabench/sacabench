@@ -30,9 +30,69 @@ struct std_sorting_algorithm {
     }
 };
 
+template <size_t a_size>
+struct a_size_helper_type {
+    inline __attribute__((always_inline)) static uint64_t pow_a_k(uint64_t k) {
+        return util::powi(a_size, k);
+    }
+    template <typename T>
+    inline __attribute__((always_inline)) static bool
+    idx_compare(uint64_t const k, T const& a, T const& b) {
+        size_t const k_length = pow_a_k(k);
+
+        size_t const ai = a.idx();
+        size_t const bi = b.idx();
+
+        size_t const high_a = ai % k_length;
+        size_t const high_b = bi % k_length;
+        size_t const low_a = ai / k_length;
+        size_t const low_b = bi / k_length;
+
+        bool const high_diff = high_a < high_b;
+        bool const high_eq = high_a == high_b;
+        bool const low_diff = low_a < low_b;
+
+        return high_diff | (high_eq & low_diff);
+    }
+};
+
+template <>
+struct a_size_helper_type<2> {
+    inline __attribute__((always_inline)) static uint64_t pow_a_k(uint64_t k) {
+        return 1ull << k;
+    }
+    template <typename T>
+    inline __attribute__((always_inline)) static bool
+    idx_compare(uint64_t const k, T const& a, T const& b) {
+        auto const anti_k = util::bits_of<size_t> - k;
+
+        size_t const ai = a.idx();
+        size_t const bi = b.idx();
+
+        size_t ar = (ai << anti_k) | (ai >> k);
+        size_t br = (bi << anti_k) | (bi >> k);
+
+        return ar < br;
+    }
+};
+
+template <>
+struct a_size_helper_type<4> {
+    inline __attribute__((always_inline)) static uint64_t pow_a_k(uint64_t k) {
+        return 1ull << (k << 1);
+    }
+    template <typename T>
+    inline __attribute__((always_inline)) static bool
+    idx_compare(uint64_t const k, T const& a, T const& b) {
+        return a_size_helper_type<2>::idx_compare(k << 1, a, b);
+    }
+};
+
 template <typename sa_index, size_t a_size,
           typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
+    using a_size_helper = a_size_helper_type<a_size>;
+
     /// The type to use for lexicographical sorted "names".
     /// For discarding, is required to have a width of at least 1 bit more than
     /// needed.
@@ -173,7 +233,7 @@ struct prefix_doubling_impl {
 
             // TODO: check new condition
             // DCHECK_LE(k, util::ceil_log_base(N, a_size));
-            size_t const k_length = util::powi(a_size, k);
+            size_t const k_length = a_size_helper::pow_a_k(k);
 
             phase.log("current_iteration", k);
             phase.log("prefix_size", k_length);
@@ -207,22 +267,10 @@ struct prefix_doubling_impl {
             // Sort P by its i position mapped to the tuple
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
-            sorting_algorithm::sort(h.hybrids(),
-                                    [k_length](auto const& a, auto const& b) {
-                                        size_t const ai = a.idx();
-                                        size_t const bi = b.idx();
-
-                                        size_t const high_a = ai % k_length;
-                                        size_t const high_b = bi % k_length;
-                                        size_t const low_a = ai / k_length;
-                                        size_t const low_b = bi / k_length;
-
-                                        bool const high_diff = high_a < high_b;
-                                        bool const high_eq = high_a == high_b;
-                                        bool const low_diff = low_a < low_b;
-
-                                        return high_diff | (high_eq & low_diff);
-                                    });
+            sorting_algorithm::sort(
+                h.hybrids(), [k](auto const& a, auto const& b) {
+                    return a_size_helper::idx_compare(k, a, b);
+                });
 
             // loop_phase.split("Pair names");
 
@@ -459,28 +507,15 @@ struct prefix_doubling_impl {
     /// and ensures the combined U is sorted according to `k`.
     template <typename pu_type>
     inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
-                                                           size_t k_length) {
+                                                           size_t k) {
         // TODO: Change to just merge later
 
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
-        sorting_algorithm::sort(pu.PU(),
-                                [k_length](auto const& a, auto const& b) {
-                                    size_t const ai = a.idx();
-                                    size_t const bi = b.idx();
-
-                                    size_t const high_a = ai % k_length;
-                                    size_t const high_b = bi % k_length;
-                                    size_t const low_a = ai / k_length;
-                                    size_t const low_b = bi / k_length;
-
-                                    bool const high_diff = high_a < high_b;
-                                    bool const high_eq = high_a == high_b;
-                                    bool const low_diff = low_a < low_b;
-
-                                    return high_diff | (high_eq & low_diff);
-                                });
+        sorting_algorithm::sort(pu.PU(), [k](auto const& a, auto const& b) {
+            return a_size_helper::idx_compare(k, a, b);
+        });
     }
 
     /// Create a unique name for each S tuple.
@@ -571,7 +606,7 @@ struct prefix_doubling_impl {
 
             // TODO: check new condition
             // DCHECK_LE(k, util::ceil_log_base(N, a_size));
-            size_t const k_length = util::powi(a_size, k);
+            size_t const k_length = a_size_helper::pow_a_k(k);
 
             phase.log("current_iteration", k);
             phase.log("prefix_size", k_length);
@@ -587,7 +622,7 @@ struct prefix_doubling_impl {
 
                 // Merge the previous unique names from P
                 // into U and sort them by index.
-                sort_U_by_index_and_merge_P_into_it(UP, k_length);
+                sort_U_by_index_and_merge_P_into_it(UP, k);
             }
 
             auto U2PSF = disc_h.phase_2_U2PSF(F_size);
@@ -667,9 +702,9 @@ struct prefix_doubling_impl {
             }
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(PSF.S(), [](auto const& a, auto const& b) {
-                return a.names() < b.names();
-            });
+            sorting_algorithm::sort(
+                PSF.S(), [](auto const& a, auto const& b) __attribute__((
+                             always_inline)) { return a.names() < b.names(); });
 
             // Rename S tuple into U tuple
             rename2_inplace(PSF.S());
