@@ -80,10 +80,10 @@ extract_details<-function(json_name)
     phase_runtimes = phase_runtimes/1000
     label_runtime = "Runtime in seconds"
   }
-  if(max(phase_mems) > 10000*1000){
+  if(max(phase_mems) > 10*1024*1024){
     phase_mems = phase_mems / 1024 / 1024
     label_mem = "Additional memory peak in GiB"
-  }else if(max(phase_mems) > 10000){
+  }else if(max(phase_mems) > 10 * 1024){
     phase_mems = phase_mems / 1024
     label_mem = "Additional memory peak in MiB"
   }
@@ -384,10 +384,10 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
     runtimes = runtimes/1000
     label_runtime = "Runtime in seconds"
   }
-  if(max(mems) > 10240*1024){
+  if(max(mems) > 10*1024*1024){
     mems = mems / 1024 / 1024
     label_mem = paste(label_mem, "in GiB")
-  }else if(max(mems) > 10000){
+  }else if(max(mems) > 10*1024){
     mems = mems / 1024
     label_mem = paste(label_mem, "in MiB")
   }else{
