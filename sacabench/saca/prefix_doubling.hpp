@@ -272,6 +272,9 @@ struct prefix_doubling_impl {
             // The algorithm terminates if P only contains unique values
             if (only_unique) {
                 phase.split("Write out result");
+                phase.log("current_iteration", k);
+                phase.log("prefix_size", k_length);
+
                 for (size_t i = 0; i < N; i++) {
                     out_sa[i] = h.p_idx(i);
                 }
@@ -706,6 +709,11 @@ struct prefix_doubling_impl {
             // F contains names for unique prefixes.
             if (PSF.S().empty()) {
                 phase.split("Write out result");
+                phase.log("current_iteration", k);
+                phase.log("prefix_size", k_length);
+                phase.log("fully_discarded", F_size);
+                phase.log("partially_discarded", P_size);
+                phase.log("remaining", N - (F_size + P_size));
                 auto F = PSF.F();
 
                 // Sort the F tuples lexicographical
