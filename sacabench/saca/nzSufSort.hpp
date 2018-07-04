@@ -116,6 +116,8 @@ namespace sacabench::nzsufsort {
                     isa_12[sa_12[i]] = i;
                 }
                 util::induce_sa_dc<size_t>(t_0, isa_12, sa_0);
+                std::copy(sa_0.begin(), sa_0.end(), t_0.begin());
+                sa_0 = t_0;
                 
                 /* positions in sa_0 are multiplied by 3 so divide by 3 */
                 for (size_t i = 0; i < sa_0.size(); ++i) { sa_0[i] = sa_0[i]/3; }
