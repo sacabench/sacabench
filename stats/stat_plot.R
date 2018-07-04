@@ -28,7 +28,7 @@ extract_details<-function(json_name)
     phases = algorithm$sub
 
     #get main entries
-    max_mem = algorithm$memPeak/1000
+    max_mem = algorithm$memPeak/1024
     runtime_overall = (algorithm$timeEnd - algorithm$timeStart)
     
     #get entries for every phase
@@ -36,14 +36,14 @@ extract_details<-function(json_name)
       
       phase_names = phases[[1]]$title
       tmp_phase_runtimes = (phases[[1]]$timeEnd-phases[[1]]$timeStart)
-      tmp_phase_mems  = phases[[1]]$memPeak/1000
+      tmp_phase_mems  = phases[[1]]$memPeak/1024
       
       
       for(i in 2:length(phases)){
         phase_names = cbind(phase_names, phases[[i]]$title)
         tmp_phase_runtimes = rbind(tmp_phase_runtimes, 
                                (phases[[i]]$timeEnd-phases[[i]]$timeStart))
-        tmp_phase_mems  = rbind(tmp_phase_mems, phases[[i]]$memPeak/1000)
+        tmp_phase_mems  = rbind(tmp_phase_mems, phases[[i]]$memPeak/1024)
       }
       
       phase_names = cbind("overall", phase_names)
@@ -53,7 +53,7 @@ extract_details<-function(json_name)
       phase_names = "overall"
       
       tmp_phase_runtimes = (algorithm$timeEnd-algorithm$timeStart)
-      tmp_phase_mems = algorithm$memPeak/1000
+      tmp_phase_mems = algorithm$memPeak/1024
     }
     if(run == 1){
       phase_runtimes = tmp_phase_runtimes
@@ -70,7 +70,7 @@ extract_details<-function(json_name)
   }
   
   label_runtime = "in milliseconds"
-  label_mem = "in KB"
+  label_mem = "in KiB"
   
   #If values are too big -> next unit
   if(max(phase_runtimes)>1000*60){
@@ -81,11 +81,11 @@ extract_details<-function(json_name)
     label_runtime = "Runtime in seconds"
   }
   if(max(phase_mems) > 10000*1000){
-    phase_mems = phase_mems / 1000 / 1000
-    label_mem = "Additional memory peak in GB"
+    phase_mems = phase_mems / 1024 / 1024
+    label_mem = "Additional memory peak in GiB"
   }else if(max(phase_mems) > 10000){
-    phase_mems = phase_mems / 1000
-    label_mem = "Additional memory peak in MB"
+    phase_mems = phase_mems / 1024
+    label_mem = "Additional memory peak in MiB"
   }
   
   #plot
@@ -126,15 +126,15 @@ plot_benchmark_single<-function(algorithm_name, phase_names, runtimes, mems,
   header_name = paste(algorithm_name," (",args[3], sep = "")
   size = as.numeric(args[4])
   label_unit = "Bytes"
-  if(size >= 1000 * 1000 * 1000){
-    size = round(size / 1000 / 1000 / 1000, digits = 2)
-    label_unit = "GB"
-  }else if(size >= 1000 * 1000){
-    size = round(size / 1000 / 1000, digits = 2)
-    label_unit = "MB"
-  }else if(size >= 1000){
-    size = round(size / 1000, digits = 2)
-    label_unit = "KB"
+  if(size >= 1024 * 1024 * 1024){
+    size = round(size / 1024 / 1024 / 1024, digits = 2)
+    label_unit = "GiB"
+  }else if(size >= 1024 * 1024){
+    size = round(size / 1024 / 1024, digits = 2)
+    label_unit = "MiB"
+  }else if(size >= 1024){
+    size = round(size / 1024, digits = 2)
+    label_unit = "KiB"
   } 
   
     header_name = paste(header_name, ", size: ",size,label_unit, ")", sep = "")
@@ -252,20 +252,6 @@ calculate_paretofront<-function(x)
   return(result)
 }
 
-example_plot_multi <-function(){
-  names = c("DC3", "DC7", "BPR", "nzSufSort", "mSufSort", "DivSufSort",
-            "GSAKA", "Deep-Shallow", "SAKA-K", "SADS", "SAIS", "gsa-is",
-            "SAIS-light", "qSufSort")
-  runtimes = c(200,300,200,500,50,100,15,10, 1, 1000,250,100,300,600)
-  
-  mems = c(75000,10000,8000,10000,9400,50000,9500, 10000, 100000,
-           150000,12000,15000,90000,120000)
-  pareto = F
-  logarithmic = F
-  prepare_plot_data(names, runtimes, mems, pareto, logarithmic)
-  
-}
-
 getDistinctColors <- function(n) {
   qual_col_pals <- brewer.pal.info[brewer.pal.info$category == 'qual',]
   col_vector <- unique (unlist(mapply(brewer.pal,
@@ -303,7 +289,7 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatt
     #runtime
     tmp_runtimes = (algorithm$timeEnd - algorithm$timeStart)
     #mem
-    tmp_mems = algorithm$memPeak/1000
+    tmp_mems = algorithm$memPeak/1024
     
     if(length(data[[no_algos]]) >= 2){
       for(runs in 2:length(data[[no_algos]])){
@@ -314,7 +300,7 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatt
         tmp_runtimes = cbind(tmp_runtimes,(algorithm$timeEnd - algorithm$timeStart))
         
         #mem
-        tmp_mems = cbind(tmp_mems,algorithm$memPeak/1000)
+        tmp_mems = cbind(tmp_mems,algorithm$memPeak/1024)
       }
     }
     
@@ -329,7 +315,7 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatt
   
   n <- length(algorithm_names)
   cols = getDistinctColors(n)
-  print(cols)
+  
   if(sort_by == "names"){
     order_by = order(algorithm_names)
     algorithm_names = algorithm_names[order_by]
@@ -376,15 +362,15 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   
   size = as.numeric(args[4])
   label_unit = "Bytes"
-  if(size >= 1000 * 1000 * 1000){
-    size = round(size / 1000 / 1000 / 1000, digits = 2)
-    label_unit = "GB"
-  }else if(size >= 1000 * 1000){
-    size = round(size / 1000 / 1000, digits = 2)
-    label_unit = "MB"
-  }else if(size >= 1000){
-    size = round(size / 1000, digits = 2)
-    label_unit = "KB"
+  if(size >= 1024 * 1024 * 1024){
+    size = round(size / 1024 / 1024 / 1024, digits = 2)
+    label_unit = "GiB"
+  }else if(size >= 1024 * 1024){
+    size = round(size / 1024 / 1024, digits = 2)
+    label_unit = "MiB"
+  }else if(size >= 1024){
+    size = round(size / 1024, digits = 2)
+    label_unit = "KiB"
   } 
   
   header_name = paste(header_name, ", size: ", size, label_unit,")",sep = "");
@@ -398,14 +384,14 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
     runtimes = runtimes/1000
     label_runtime = "Runtime in seconds"
   }
-  if(max(mems) > 10000*1000){
-    mems = mems / 1000 / 1000
-    label_mem = paste(label_mem, "in GB")
+  if(max(mems) > 10240*1024){
+    mems = mems / 1024 / 1024
+    label_mem = paste(label_mem, "in GiB")
   }else if(max(mems) > 10000){
-    mems = mems / 1000
-    label_mem = paste(label_mem, "in MB")
+    mems = mems / 1024
+    label_mem = paste(label_mem, "in MiB")
   }else{
-    label_mem = paste(label_mem, "in KB")
+    label_mem = paste(label_mem, "in KiB")
   }
   
   for(i in 1:length(names)){
@@ -452,9 +438,9 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
       cols = cols[pareto_inidices]
       
       if(max(mems) < 1){
-        mems = mems * 1000
-        label_main =  gsub("MB ", "KB", label_main)
-        label_main =  gsub("GB ", "MB", label_main)
+        mems = mems * 1024
+        label_main =  gsub("MiB ", "KiB", label_main)
+        label_main =  gsub("GiB ", "MiB", label_main)
       }
 
       label_main = paste(label_main, "- Paretofront", sep = " ")
@@ -502,15 +488,15 @@ text_input = paste("Input file:",args[3])
 size = as.numeric(args[4])
 
 label_unit = "Bytes"
-if(size >= 1000 * 1000 * 1000){
-  size = round(size / 1000 / 1000 / 1000, digits = 2)
-  label_unit = "GB"
-}else if(size >= 1000 * 1000){
-  size = round(size / 1000 / 1000, digits = 2)
-  label_unit = "MB"
-}else if(size >= 1000){
-  size = round(size / 1000, digits = 2)
-  label_unit = "KB"
+if(size >= 1024 * 1024 * 1024){
+  size = round(size / 1024 / 1024 / 1024, digits = 2)
+  label_unit = "GiB"
+}else if(size >= 1024 * 1024){
+  size = round(size / 1024 / 1024, digits = 2)
+  label_unit = "MiB"
+}else if(size >= 1024){
+  size = round(size / 1024, digits = 2)
+  label_unit = "KiB"
 } 
 text_size = paste("Size: ", size, label_unit, sep = "")
 
