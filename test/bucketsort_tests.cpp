@@ -40,6 +40,35 @@ TEST(Bucketsort, bucket_sizes){
     ASSERT_EQ(buckets.at(4).count, (size_t) 1);
 }
 
+TEST(Bucketsort_kd, function_call) {
+    sacabench::util::string input = "caabaccaabacaa"_s;
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+
+    auto sa = sacabench::util::make_container<uint8_t>(input.size());
+    sacabench::util::span<uint8_t> sa_span = sa;
+    sacabench::util::sort::bucketsort_presort_kd<sacabench::util::character, 2>(input,
+            a.size_without_sentinel(), sa_span);
+
+    std::cout << "Suffix Array: ";
+    for (auto const& c : sa)
+        std::cout << (uint32_t) c << ' ';
+    std::cout << std::endl;
+}
+
+TEST(Bucketsort_kd, bucket_sizes){
+    sacabench::util::string input = "blablablub"_s;
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+    const size_t depth = 1;
+    auto buckets = sacabench::util::sort::get_buckets_kd<sacabench::util::string_span, depth>(input, a.max_character_value());
+    ASSERT_EQ(buckets.get_direct_unsafe(0).count, (size_t) 0);
+    ASSERT_EQ(buckets.get_direct_unsafe(1).count, (size_t) 2);
+    ASSERT_EQ(buckets.get_direct_unsafe(2).count, (size_t) 4);
+    ASSERT_EQ(buckets.get_direct_unsafe(3).count, (size_t) 3);
+    ASSERT_EQ(buckets.get_direct_unsafe(4).count, (size_t) 1);
+}
+
 
 TEST(Bucketsort, recursiv_bucket_sort_test) {
     using namespace sacabench::util;
