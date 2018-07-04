@@ -17,6 +17,7 @@
 #include <util/bits.hpp>
 #include <util/compare.hpp>
 #include <util/container.hpp>
+#include <util/macros.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -24,20 +25,20 @@
 namespace sacabench::prefix_doubling {
 
 struct std_sorting_algorithm {
-    template <typename T, typename Compare = std::less<T>>
-    static void sort(util::span<T> data, Compare comp = Compare()) {
+    template <typename T, typename Compare>
+    SB_NO_INLINE static void sort(util::span<T> data, Compare comp) {
         util::sort::std_sort(data, comp);
     }
 };
 
 template <size_t a_size>
 struct a_size_helper_type {
-    inline __attribute__((always_inline)) static uint64_t pow_a_k(uint64_t k) {
+    inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return util::powi(a_size, k);
     }
     template <typename T>
-    inline __attribute__((always_inline)) static bool
-    idx_compare(uint64_t const k, T const& a, T const& b) {
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
+                                                   T const& b) {
         size_t const k_length = pow_a_k(k);
 
         size_t const ai = a.idx();
@@ -58,12 +59,12 @@ struct a_size_helper_type {
 
 template <>
 struct a_size_helper_type<2> {
-    inline __attribute__((always_inline)) static uint64_t pow_a_k(uint64_t k) {
+    inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << k;
     }
     template <typename T>
-    inline __attribute__((always_inline)) static bool
-    idx_compare(uint64_t const k, T const& a, T const& b) {
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
+                                                   T const& b) {
         auto const anti_k = util::bits_of<size_t> - k;
 
         size_t const ai = a.idx();
@@ -78,12 +79,12 @@ struct a_size_helper_type<2> {
 
 template <>
 struct a_size_helper_type<4> {
-    inline __attribute__((always_inline)) static uint64_t pow_a_k(uint64_t k) {
+    inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << (k << 1);
     }
     template <typename T>
-    inline __attribute__((always_inline)) static bool
-    idx_compare(uint64_t const k, T const& a, T const& b) {
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
+                                                   T const& b) {
         return a_size_helper_type<2>::idx_compare(k << 1, a, b);
     }
 };
@@ -198,6 +199,21 @@ struct prefix_doubling_impl {
         return only_unique;
     }
 
+    inline SB_FORCE_INLINE static bool
+    names_less(util::span<name_type const> a, util::span<name_type const> b) {
+        DCHECK_EQ(a.size(), a_size);
+        DCHECK_EQ(b.size(), a_size);
+        for (size_t i = 0; i < a_size; i++) {
+            if (a[i] < b[i]) {
+                return true;
+            }
+            if (a[i] > b[i]) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     /// Naive variant, roughly identical to description in Paper
     static void doubling(util::string_span text, util::span<sa_index> out_sa) {
         tdc::StatPhase::log("A_Tuple", a_size);
@@ -241,10 +257,10 @@ struct prefix_doubling_impl {
             // tdc::StatPhase loop_phase("Sort S");
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(h.hybrids(),
-                                    [k](auto const& a, auto const& b) {
-                                        return a.names() < b.names();
-                                    });
+            sorting_algorithm::sort(
+                h.hybrids(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
+                    return names_less(a.names(), b.names());
+                });
 
             // loop_phase.split("Rename S tuples");
 
@@ -268,7 +284,7 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                h.hybrids(), [k](auto const& a, auto const& b) {
+                h.hybrids(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
                     return a_size_helper::idx_compare(k, a, b);
                 });
 
@@ -513,9 +529,10 @@ struct prefix_doubling_impl {
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
-        sorting_algorithm::sort(pu.PU(), [k](auto const& a, auto const& b) {
-            return a_size_helper::idx_compare(k, a, b);
-        });
+        sorting_algorithm::sort(
+            pu.PU(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
+                return a_size_helper::idx_compare(k, a, b);
+            });
     }
 
     /// Create a unique name for each S tuple.
@@ -587,9 +604,10 @@ struct prefix_doubling_impl {
             }
 
             // Sort the S tuples lexicographical
-            sorting_algorithm::sort(H, [](auto const& a, auto const& b) {
-                return a.names() < b.names();
-            });
+            sorting_algorithm::sort(
+                H, [&](auto const& a, auto const& b) SB_FORCE_INLINE {
+                    return names_less(a.names(), b.names());
+                });
 
             // Rename the S tuples into U
             rename_inplace(H);
@@ -691,9 +709,9 @@ struct prefix_doubling_impl {
                 auto F = PSF.F();
 
                 // Sort the F tuples lexicographical
-                sorting_algorithm::sort(F, [](auto const& a, auto const& b) {
-                    return a.name() < b.name();
-                });
+                sorting_algorithm::sort(
+                    F, [](auto const& a, auto const& b)
+                           SB_FORCE_INLINE { return a.name() < b.name(); });
 
                 for (size_t i = 0; i < N; i++) {
                     out_sa[i] = F[i].idx();
@@ -703,8 +721,9 @@ struct prefix_doubling_impl {
 
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(
-                PSF.S(), [](auto const& a, auto const& b) __attribute__((
-                             always_inline)) { return a.names() < b.names(); });
+                PSF.S(), [](auto const& a, auto const& b) SB_FORCE_INLINE {
+                    return names_less(a.names(), b.names());
+                });
 
             // Rename S tuple into U tuple
             rename2_inplace(PSF.S());
