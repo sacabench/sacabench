@@ -18,8 +18,8 @@ struct as_greater {
     as_greater(compare_type functor) : less(functor) {}
 
     template <typename element_t>
-    inline __attribute__((always_inline)) bool
-    operator()(element_t const& lhs, element_t const& rhs) const {
+    inline SB_FORCE_INLINE bool operator()(element_t const& lhs,
+                                           element_t const& rhs) const {
         return less(rhs, lhs);
     }
 
@@ -34,8 +34,8 @@ struct as_equal {
     as_equal(compare_type functor) : less(functor) {}
 
     template <typename element_t>
-    inline __attribute__((always_inline)) bool
-    operator()(element_t const& lhs, element_t const& rhs) const {
+    inline SB_FORCE_INLINE bool operator()(element_t const& lhs,
+                                           element_t const& rhs) const {
         return !less(lhs, rhs) && !less(rhs, lhs);
     }
 
@@ -50,8 +50,8 @@ struct as_less_equal {
     as_less_equal(compare_type functor) : less(functor) {}
 
     template <typename element_t>
-    inline __attribute__((always_inline)) bool
-    operator()(element_t const& lhs, element_t const& rhs) const {
+    inline SB_FORCE_INLINE bool operator()(element_t const& lhs,
+                                           element_t const& rhs) const {
         return !less(rhs, lhs);
     }
 
@@ -66,8 +66,8 @@ struct as_greater_equal {
     as_greater_equal(compare_type functor) : less(functor) {}
 
     template <typename element_t>
-    inline __attribute__((always_inline)) bool
-    operator()(element_t const& lhs, element_t const& rhs) const {
+    inline SB_FORCE_INLINE bool operator()(element_t const& lhs,
+                                           element_t const& rhs) const {
         return !less(lhs, rhs);
     }
 
@@ -82,8 +82,8 @@ struct as_not_equal {
     as_not_equal(compare_type functor) : less(functor) {}
 
     template <typename element_t>
-    inline __attribute__((always_inline)) bool
-    operator()(element_t const& lhs, element_t const& rhs) const {
+    inline SB_FORCE_INLINE bool operator()(element_t const& lhs,
+                                           element_t const& rhs) const {
         return less(lhs, rhs) || less(rhs, lhs);
     }
 
@@ -105,8 +105,8 @@ struct compare_key {
         : m_key(key), m_cmp(cmp) {}
 
     template <typename element_type>
-    inline __attribute__((always_inline)) bool
-    operator()(element_type const& lhs, element_type const& rhs) const {
+    inline SB_FORCE_INLINE bool operator()(element_type const& lhs,
+                                           element_type const& rhs) const {
         return m_cmp(m_key(lhs), m_key(rhs));
     }
 
