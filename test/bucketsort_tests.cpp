@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 #include <util/alphabet.hpp>
-#include <util/string.hpp>
 #include <util/sort/bucketsort.hpp>
+#include <util/string.hpp>
 
 TEST(Bucketsort, function_call) {
     sacabench::util::string input =
@@ -18,26 +18,27 @@ TEST(Bucketsort, function_call) {
 
     auto sa = sacabench::util::make_container<uint8_t>(input.size());
     sacabench::util::span<uint8_t> sa_span = sa;
-    sacabench::util::sort::bucketsort_presort(input,
-            a.size_without_sentinel(), 2, sa_span);
+    sacabench::util::sort::bucketsort_presort(input, a.size_without_sentinel(),
+                                              2, sa_span);
 
     std::cout << "Suffix Array: ";
     for (auto const& c : sa)
-        std::cout << (uint32_t) c << ' ';
+        std::cout << (uint32_t)c << ' ';
     std::cout << std::endl;
 }
 
-TEST(Bucketsort, bucket_sizes){
+TEST(Bucketsort, bucket_sizes) {
     sacabench::util::string input = "blablablub"_s;
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
     sacabench::util::apply_effective_alphabet(input, a);
     size_t depth = 1;
-    auto buckets = sacabench::util::sort::get_buckets(input, a.max_character_value(), depth);
-    ASSERT_EQ(buckets.at(0).count, (size_t) 0);
-    ASSERT_EQ(buckets.at(1).count, (size_t) 2);
-    ASSERT_EQ(buckets.at(2).count, (size_t) 4);
-    ASSERT_EQ(buckets.at(3).count, (size_t) 3);
-    ASSERT_EQ(buckets.at(4).count, (size_t) 1);
+    auto buckets = sacabench::util::sort::get_buckets(
+        input, a.max_character_value(), depth);
+    ASSERT_EQ(buckets.at(0).count, (size_t)0);
+    ASSERT_EQ(buckets.at(1).count, (size_t)2);
+    ASSERT_EQ(buckets.at(2).count, (size_t)4);
+    ASSERT_EQ(buckets.at(3).count, (size_t)3);
+    ASSERT_EQ(buckets.at(4).count, (size_t)1);
 }
 
 TEST(Bucketsort_kd, function_call) {
@@ -47,28 +48,30 @@ TEST(Bucketsort_kd, function_call) {
 
     auto sa = sacabench::util::make_container<uint8_t>(input.size());
     sacabench::util::span<uint8_t> sa_span = sa;
-    sacabench::util::sort::bucketsort_presort_kd<sacabench::util::character, 2>(input,
-            a.size_without_sentinel(), sa_span);
+    sacabench::util::sort::bucketsort_presort_kd<sacabench::util::character, 2>(
+        input, a.size_without_sentinel(), sa_span);
 
     std::cout << "Suffix Array: ";
     for (auto const& c : sa)
-        std::cout << (uint32_t) c << ' ';
+        std::cout << (uint32_t)c << ' ';
     std::cout << std::endl;
 }
 
-TEST(Bucketsort_kd, bucket_sizes){
+TEST(Bucketsort_kd, bucket_sizes) {
     sacabench::util::string input = "blablablub"_s;
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
     sacabench::util::apply_effective_alphabet(input, a);
     const size_t depth = 1;
-    auto buckets = sacabench::util::sort::get_buckets_kd<sacabench::util::string_span, depth>(input, a.max_character_value());
-    ASSERT_EQ(buckets.get_direct_unsafe(0).count, (size_t) 0);
-    ASSERT_EQ(buckets.get_direct_unsafe(1).count, (size_t) 2);
-    ASSERT_EQ(buckets.get_direct_unsafe(2).count, (size_t) 4);
-    ASSERT_EQ(buckets.get_direct_unsafe(3).count, (size_t) 3);
-    ASSERT_EQ(buckets.get_direct_unsafe(4).count, (size_t) 1);
+    auto buckets =
+        sacabench::util::sort::get_buckets_kd<sacabench::util::string_span,
+                                              depth>(input,
+                                                     a.max_character_value());
+    ASSERT_EQ(buckets.get_direct_unsafe(0).count, (size_t)0);
+    ASSERT_EQ(buckets.get_direct_unsafe(1).count, (size_t)2);
+    ASSERT_EQ(buckets.get_direct_unsafe(2).count, (size_t)4);
+    ASSERT_EQ(buckets.get_direct_unsafe(3).count, (size_t)3);
+    ASSERT_EQ(buckets.get_direct_unsafe(4).count, (size_t)1);
 }
-
 
 TEST(Bucketsort, recursiv_bucket_sort_test) {
     using namespace sacabench::util;
@@ -82,29 +85,17 @@ TEST(Bucketsort, recursiv_bucket_sort_test) {
     string seventhString = "abe"_s;
     string eightString = "xyza"_s;
 
-    container<string> input {
-        firstString,
-        secondString,
-        thirdString,
-        fourthString,
-        fifthString,
-        sixthString,
-        seventhString,
-        eightString,
+    container<string> input{
+        firstString, secondString, thirdString,   fourthString,
+        fifthString, sixthString,  seventhString, eightString,
     };
 
     auto result = make_container<string>(input.size());
     sort::bucket_sort(input, 1, result);
 
-    auto should_be = container<string> {
-        secondString,
-        fifthString,
-        seventhString,
-        firstString,
-        fourthString,
-        sixthString,
-        thirdString,
-        eightString,
+    auto should_be = container<string>{
+        secondString, fifthString, seventhString, firstString,
+        fourthString, sixthString, thirdString,   eightString,
     };
     ASSERT_EQ(result, should_be);
 
@@ -144,5 +135,3 @@ TEST(Bucketsort, recursiv_bucket_sort_test) {
     ASSERT_EQ(result.at(6), eightString);
     ASSERT_EQ(result.at(7), thirdString);
 }
-
-
