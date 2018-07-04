@@ -228,8 +228,8 @@ struct prefix_doubling_impl {
         };
 
         // How many bytes to initially pack into a word
-        constexpr size_t WP_SIZE = 4;
         // TODO: Only works with power-of-two sizes
+        size_t const WP_SIZE = 4;
         size_t const wp_initial_loop_offset = WP_SIZE / a_size;
 
         // Create the initial S array of character tuples + text
@@ -239,7 +239,7 @@ struct prefix_doubling_impl {
             size_t trunc_size = std::min(a_size * WP_SIZE, N - i);
 
             for (size_t j = 0; j < a_size * WP_SIZE; j++) {
-                uint32_t v = p[j / WP_SIZE];
+                uint64_t v = p[j / WP_SIZE];
                 v <<= 8;
                 if (j < trunc_size) {
                     v |= text[i + j];
