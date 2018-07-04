@@ -221,14 +221,32 @@ struct prefix_doubling_impl {
         // Allocate the hybrid array.
         auto h = HArray(N);
 
+        auto bytes_to_ints = [](auto const& s) {
+            util::container<sa_index> tmp(s.size());
+            tmp.slice().copy_from(s);
+            return tmp;
+        };
+
+        // How many bytes to initially pack into a word
+        constexpr size_t WP_SIZE = 4;
+        // TODO: Only works with power-of-two sizes
+        size_t const wp_initial_loop_offset = WP_SIZE / a_size;
+
         // Create the initial S array of character tuples + text
         // position
         for (size_t i = 0; i < N; ++i) {
             auto p = make_sentinel_tuple();
-            size_t trunc_size = std::min(a_size, N - i);
-            for (size_t j = 0; j < trunc_size; j++) {
-                p[j] = text[i + j];
+            size_t trunc_size = std::min(a_size * WP_SIZE, N - i);
+
+            for (size_t j = 0; j < a_size * WP_SIZE; j++) {
+                uint32_t v = p[j / WP_SIZE];
+                v <<= 8;
+                if (j < trunc_size) {
+                    v |= text[i + j];
+                }
+                p[j / WP_SIZE] = v;
             }
+
             h.s_names(i).copy_from(p);
             h.s_idx(i) = i;
         }
@@ -236,7 +254,7 @@ struct prefix_doubling_impl {
         // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
-        for (size_t k = 1;; k++) {
+        for (size_t k = 1 + wp_initial_loop_offset;; k++) {
             phase.split("Iteration");
 
             // TODO: check new condition
