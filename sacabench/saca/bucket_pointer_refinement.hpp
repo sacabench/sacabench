@@ -66,8 +66,8 @@ public:
             bucketsort_depth = 3;
         }
 
-        if (bucketsort_depth > input.size()) {
-            bucketsort_depth = input.size();
+        if (bucketsort_depth > n) {
+            bucketsort_depth = n;
         }
 
         // Phase 1.1
@@ -145,10 +145,11 @@ private:
     template <typename sa_index>
     static size_t code_d(util::string_span input, size_t alphabet_size,
                          size_t depth, size_t start_index) {
+        size_t const n = input.size();
         size_t code = 0;
         const size_t stop_index = start_index + depth;
 
-        while (start_index < stop_index && start_index < input.size()) {
+        while (start_index < stop_index && start_index < n) {
             // for each symbol of the prefix: extend the code by one symbol
             code *= alphabet_size;
             code += input[start_index++];
