@@ -46,6 +46,7 @@ inline string make_string(char const* cs) {
 /// Special `character` values that is smaller than all possible
 /// input characters.
 constexpr character SENTINEL = 0;
+
 } // namespace sacabench::util
 
 /// Custom literal operator for creating a `string_span`.
