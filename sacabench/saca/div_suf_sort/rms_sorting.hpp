@@ -2,13 +2,13 @@
 
 #include "comparison_fct.hpp"
 #include "utils.hpp"
-#include <utility>
 #include <util/assertions.hpp>
 #include <util/bits.hpp>
 #include <util/container.hpp>
 #include <util/sort/introsort.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
+#include <utility>
 
 namespace sacabench::div_suf_sort {
 
@@ -158,8 +158,8 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
     size_t sorted_begin = interval_begin, unsorted_begin = interval_begin;
     sa_index current, next, rank = interval_begin;
 
-    auto tmp_ranks =
-        util::make_container<std::pair<sa_index, sa_index>>(interval_end-interval_begin);
+    auto tmp_ranks = util::make_container<std::pair<sa_index, sa_index>>(
+        interval_end - interval_begin);
     std::pair<sa_index, sa_index> elem_rank;
     // Recompute ranks, skip last element of interval
     for (size_t pos = interval_begin; pos < interval_end - 1; ++pos) {
@@ -175,11 +175,11 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
                 // them)
                 for (size_t i = unsorted_begin; i < pos + 1; ++i) {
                     elem_rank = std::make_pair(rel_ind[i], rank);
-                    tmp_ranks[i-interval_begin] = elem_rank;
+                    tmp_ranks[i - interval_begin] = elem_rank;
                 }
             } else {
                 elem_rank = std::make_pair(current, rank);
-                tmp_ranks[pos-interval_begin] = elem_rank;
+                tmp_ranks[pos - interval_begin] = elem_rank;
             }
             // Increase rank after this step
             ++rank;
@@ -214,8 +214,8 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
         // std::cout << "Last sorted interval." << std::endl;
         sorted_size_end = interval_end - sorted_begin;
         DCHECK_GT(sorted_size_end, 0);
-        elem_rank = std::make_pair(rel_ind[interval_end-1], rank);
-        tmp_ranks[tmp_ranks.size()-1] = elem_rank;
+        elem_rank = std::make_pair(rel_ind[interval_end - 1], rank);
+        tmp_ranks[tmp_ranks.size() - 1] = elem_rank;
         rel_ind[sorted_begin] =
             sorted_size_end | utils<sa_index>::NEGATIVE_MASK;
     } else {
@@ -223,7 +223,7 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
         // Part of unsorted interval -> set ranks
         for (size_t i = unsorted_begin; i < interval_end; ++i) {
             elem_rank = std::make_pair(rel_ind[i], rank);
-            tmp_ranks[i-interval_begin] = elem_rank;
+            tmp_ranks[i - interval_begin] = elem_rank;
         }
     }
     // Refresh ranks for cmp fct (after they have been completely refreshed
