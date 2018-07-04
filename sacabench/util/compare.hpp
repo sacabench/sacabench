@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cstdint>
+#include "macros.hpp"
 
 namespace sacabench::util {
 /// Adapter to turn a less-than comparison into an
