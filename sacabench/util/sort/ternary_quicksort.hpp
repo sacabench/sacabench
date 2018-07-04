@@ -17,12 +17,12 @@ namespace sacabench::util::sort::ternary_quicksort {
 constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
 
 template <typename content, typename key_func_type>
-content min(key_func_type cmp, const content& a, const content& b) {
+inline content min(key_func_type cmp, const content& a, const content& b) {
     return (cmp(a, b) ? a : b);
 }
 
 template <typename content, typename key_func_type>
-content max(key_func_type cmp, const content& a, const content& b) {
+inline content max(key_func_type cmp, const content& a, const content& b) {
     return (cmp(a, b) ? b : a);
 }
 
@@ -34,7 +34,7 @@ content max(key_func_type cmp, const content& a, const content& b) {
  * which chooses the median of the first, middle and last element of the array
  */
 template <typename content, typename key_func_type>
-content median_of_three(span<content> array, key_func_type cmp) {
+inline content median_of_three(span<content> array, key_func_type cmp) {
     const content& first = array[0];
     const content& middle = array[(array.size() - 1) / 2];
     const content& last = array[array.size() - 1];
@@ -51,7 +51,7 @@ content median_of_three(span<content> array, key_func_type cmp) {
  * according to Bentley and McIlroy "Engineering a Sort Function".
  */
 template <typename content, typename key_func_type>
-content median_of_nine(span<content> array, key_func_type cmp) {
+inline content median_of_nine(span<content> array, key_func_type cmp) {
     size_t n = array.size() - 1;
     size_t step = (n / 8);
     const content lower =
@@ -76,7 +76,7 @@ content median_of_nine(span<content> array, key_func_type cmp) {
  *
  */
 template <typename content, typename key_func_type>
-std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
+inline std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
                                     const content& pivot_element) {
     const auto less = cmp;
     const auto equal = util::as_equal(cmp);
