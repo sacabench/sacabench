@@ -46,7 +46,7 @@ if (SACA_WERROR)
     set(SACA_BENCH_FLAGS "${SACA_BENCH_FLAGS};-Werror")
 endif()
 set(SACA_BENCH_DEBUG_FLAGS "-O0;-ggdb;-DDEBUG")
-set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG")
+set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG;-g")
 
 ENDIF()
 
