@@ -46,6 +46,26 @@ public:
 
         // TODO: choose appropiate value
         size_t bucketsort_depth = 2;
+
+        if (alphabet_size <= 9) {
+            bucketsort_depth = 7;
+        }
+        if (9 < alphabet_size && alphabet_size <= 13) {
+            bucketsort_depth = 6;
+        }
+        if (13 < alphabet_size && alphabet_size <= 21) {
+            bucketsort_depth = 5;
+        }
+        if (13 < alphabet_size && alphabet_size <= 21) {
+            bucketsort_depth = 5;
+        }
+        if (21 < alphabet_size && alphabet_size <= 46) {
+            bucketsort_depth = 4;
+        }
+        if (46 < alphabet_size) {
+            bucketsort_depth = 3;
+        }
+
         if (bucketsort_depth > input.size()) {
             bucketsort_depth = input.size();
         }
