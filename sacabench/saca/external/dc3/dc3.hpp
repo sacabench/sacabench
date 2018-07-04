@@ -17,7 +17,7 @@ namespace sacabench::reference_sacas {
 class dc3 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 3;
-    static constexpr char const* NAME = "Reference-DC3";
+    static constexpr char const* NAME = "DC3_ref";
     static constexpr char const* DESCRIPTION =
         "Difference Cover Modulo 3 Reference implementation";
 

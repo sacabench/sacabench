@@ -40,7 +40,7 @@ namespace sacabench::bucket_pointer_refinement_ext {
 class bucket_pointer_refinement_ext {
 public:
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "ext_BPR";
+    static constexpr char const* NAME = "BPR_ref";
     static constexpr char const* DESCRIPTION =
         "Reference implementation of Klaus-Bernd Schürmann";
 
