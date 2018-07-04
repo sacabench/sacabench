@@ -1,8 +1,9 @@
-// TODO: Update Copyright header
 /*******************************************************************************
  * Copyright (C) 2018 Florian Grieskamp <florian.grieskamp@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ *
+ * Marked lines are published under different licenses.
  ******************************************************************************/
 
 #pragma once
@@ -64,6 +65,15 @@ public:
         out_file << input;
         out_file.flush();
         out_file.close();
+
+/*******************************************************************************
+ * From here:
+ *
+ * Copyright (C) 2005 Klaus-Bernd Schürmann
+ *
+ * Published under the GPLv2 license in the file
+ * external/reference_bpr/implementation/COPYING
+ ******************************************************************************/
 
         Kbs_Ustring* ustr = NULL;
         Kbs_SuffixArray *sa = NULL;
