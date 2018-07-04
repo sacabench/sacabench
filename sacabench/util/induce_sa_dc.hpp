@@ -29,18 +29,33 @@ template<typename C, typename T, typename I, typename S>
 
     DCHECK_MSG(sa_0.size() == t_0.size(),
                "sa_0 must have the same length as t_0");
-    DCHECK_MSG(!(isa_12.size() >= 1 && t_0.size() >= 1) || isa_12.size() >= t_0.size(),
+    DCHECK_MSG(!(isa_12.size() >= 1 && t_0.size() >= 1) ||
+                   isa_12.size() >= t_0.size(),
                "isa_12 must have at least the same length as t_0 if "
                "isa_12 and t_1 have at least a length of 1");
 
-    // Container to store all tuples with the same length as sa_0
-    // Tuples contains a char, a rank and the position
-    auto sa_0_to_be_sorted =
-        make_container<std::tuple<C, size_t, size_t>>(sa_0.size());
+    for(size_t i = 0; i < sa_0.size(); ++i){
+            sa_0[i] = 3*i;
+    }
 
-    //index of first rank for triplets beginning in i mod 3 = 2
+    // index of first rank for triplets beginning in i mod 3 = 2
     size_t start_pos_mod_2 = isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
+    
+    // TODO sort with radix sort
+    auto comp = [&](size_t i, size_t j) {
+        if(t_0[i/3] < t_0[j/3]) return true;
+        else if(t_0[i/3] > t_0[j/3]) return false;
+        else{
+            
+            if(start_pos_mod_2 <= i/3) return true;
+            else if (start_pos_mod_2 <= j/3) return false;
+            if(isa_12[i/3] < isa_12[j/3]) return true;
+            else return false;
+        }
+    };
 
+    std::sort(sa_0.begin(), sa_0.end(), comp);
+    /*
     for (size_t i = 0; i < sa_0.size(); i++) {
         if (start_pos_mod_2 > i) {
             sa_0_to_be_sorted[i] =
@@ -57,6 +72,6 @@ template<typename C, typename T, typename I, typename S>
     std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
     for (size_t i = 0; i < sa_0_to_be_sorted.size(); i++) {
         sa_0[i] = std::get<2>(sa_0_to_be_sorted[i]);
-    }
+    }*/
 }
 } // namespace sacabench::util
