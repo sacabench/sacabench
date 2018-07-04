@@ -15,6 +15,10 @@ TEST(prefix_doubling, naive) {
     test::saca_corner_cases<prefix_doubling>();
 }
 
-TEST(prefix_doubling, discarding) {
-    test::saca_corner_cases<prefix_doubling_discarding>();
+TEST(prefix_doubling, discarding_2) {
+    test::saca_corner_cases<prefix_discarding_2>();
+}
+
+TEST(prefix_doubling, discarding_4) {
+    test::saca_corner_cases<prefix_discarding_4>();
 }
