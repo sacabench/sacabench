@@ -193,25 +193,16 @@ plot_benchmark_multi_scatter<-function(algorithm_names, runtimes, mems, logarith
 plot_benchmark_multi_bar<-function(algorithm_names, runtimes, mems, 
                                  label_runtime, label_mem, label_main, cols)
 {
-  
-  for(i in 1:length(algorithm_names)){
-    add_text = (11-nchar(algorithm_names[i]))
-    if(add_text > 1){
-      for(j in 1:add_text){
-        #algorithm_names[i] = paste(algorithm_names[i]," ", sep = "")
-      }
-    }
-  }
   par(mfrow=c(2,1),mai=c(1, 1, 0.5, 0))
   barplot(runtimes,beside=TRUE,col = cols,
-          ylab = label_runtime, yaxt="n", names.arg = algorithm_names, las = 2)
+          ylab = label_runtime, yaxt="n", names.arg = algorithm_names, las = 2, space = 0)
   mtext(label_main, side=3, outer=TRUE, line=-2,cex = 1)
   axis(2,at=seq(0,max(runtimes)+max(runtimes)/10, by = ceiling(max(runtimes)/10)),
        labels=format(seq(0,max(runtimes)+max(runtimes)/10, by = ceiling(max(runtimes)/10)),
                      scientific=FALSE))
 
   abline(h=seq(0,max(runtimes), by = ceiling(max(runtimes)/10)), lty=6, col = "gray60")
-  par(mai=c(0.3, 1, 0.4, 0))
+  par(mai=c(0.3, 1, 0.5, 0))
   barplot(matrix(mems),beside=TRUE, col = cols,
           ylab = label_mem, yaxt="n", ylim = c(max(mems),0))
   axis(2,at=seq(0,max(mems)+max(mems)/10, by = ceiling(max(mems)/10)),
@@ -336,38 +327,41 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatt
     }
   }
   
-  
-  algorithm_names = gsub("Reference", "Ref", algorithm_names)
-  algorithm_names = gsub("REFERENCE ", "Ref-", algorithm_names)
-  
+  n <- length(algorithm_names)
+  cols = getDistinctColors(n)
+  print(cols)
   if(sort_by == "names"){
     order_by = order(algorithm_names)
     algorithm_names = algorithm_names[order_by]
     runtimes = runtimes[order_by]
     mems = mems[order_by]
+    cols = cols[order_by]
   }else if(sort_by == "runtimes"){
     order_by = order(runtimes)
     algorithm_names = algorithm_names[order_by]
     runtimes = runtimes[order_by]
     mems = mems[order_by]
+    cols = cols[order_by]
   }else if(sort_by == "mems"){
     order_by = order(mems)
     algorithm_names = algorithm_names[order_by]
     runtimes = runtimes[order_by]
     mems = mems[order_by]
+    cols = cols[order_by]
   }else{
     order_by = 1:length(algorithm_names)
     algorithm_names = algorithm_names[order_by]
     runtimes = runtimes[order_by]
     mems = mems[order_by]
+    cols = cols[order_by]
   }
   
-  prepare_plot_data(algorithm_names, runtimes, mems, pareto, logarithmic, plot_scatter, memory_additional)
+  prepare_plot_data(algorithm_names, runtimes, mems, pareto, logarithmic, plot_scatter, memory_additional,cols)
 }
 
 
 
-prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_scatter, memory_additional = T){
+prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_scatter, memory_additional = T, cols){
   
   label_runtime = "Runtime in milliseconds"
   if(memory_additional){
@@ -416,24 +410,23 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
   
   for(i in 1:length(names)){
     if(nchar(names[i]) > 12){
-      names[i] = paste(substring(names[i],1,4),"...", substring(names[i],nchar(names[i])-6,nchar(names[i])),sep = "")
+      names[i] = paste(substring(names[i],1,8),"...", substring(names[i],nchar(names[i])-2,nchar(names[i])),sep = "")
     }
   }
   
-  n <- length(names)
   if(plot_scatter == F){
     plot_benchmark_multi_bar(names, runtimes, mems, label_runtime,
-                           label_mem, paste(label_main,header_name, sep=""), getDistinctColors(n))
+                           label_mem, paste(label_main,header_name, sep=""), cols)
   }else{
   
     if(logarithmic){
-      if(memory_additional == T){
-        #remove data of Naiv
-        without_naive = which(names=="Naiv")
-        names = names[-without_naive]
-        runtimes = runtimes[-without_naive]
-        mems = mems[-without_naive]
-      }
+      #remove data of Naiv
+      without_naive = which(names=="Naiv")
+      names = names[-without_naive]
+      runtimes = runtimes[-without_naive]
+      mems = mems[-without_naive]
+      cols = cols[-without_naive]
+      
       label_mem = paste(label_mem, "(logarithmic scale)", sep = " ")
       label_runtime = paste(label_runtime, "(logarithmic scale)", sep = " ")
       logarithmic = "xy"
@@ -442,13 +435,12 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
     }
     
     if(pareto){
-      if(memory_additional == T){
-        #remove data of Naiv
-        without_naive = which(names=="Naiv")
-        names = names[-without_naive]
-        runtimes = runtimes[-without_naive]
-        mems = mems[-without_naive]
-      }
+      #remove data of Naiv
+      without_naive = which(names=="Naiv")
+      names = names[-without_naive]
+      runtimes = runtimes[-without_naive]
+      mems = mems[-without_naive]
+      cols = cols[-without_naive]
       
       algo_data = cbind(mems, runtimes)
       is_pareto = calculate_paretofront(algo_data)
@@ -457,6 +449,7 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
       names = names[pareto_inidices]
       runtimes = runtimes[pareto_inidices]
       mems = mems[pareto_inidices]
+      cols = cols[pareto_inidices]
       
       if(max(mems) < 1){
         mems = mems * 1000
@@ -468,10 +461,9 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
     }
     
     
-    n <- length(names)
     plot_benchmark_multi_scatter(names, runtimes, mems, logarithmic,
                                  label_runtime, label_mem,
-                                 paste(label_main, header_name,sep = ""), getDistinctColors(n))
+                                 paste(label_main, header_name,sep = ""), cols)
   }
 }
 
@@ -487,22 +479,10 @@ pdf(paste(args[1],".pdf"))
 if(args[2] == 0){
   extract_details(args[1])
 }else{
-  #Bar plots with additional memory peaks
-  extract_all_stats(args[1], plot_scatter = F, sort_by = "")
-  extract_all_stats(args[1], plot_scatter = F, sort_by = "names")
-  extract_all_stats(args[1], plot_scatter = F, sort_by = "runtimes")
-  extract_all_stats(args[1], plot_scatter = F, sort_by = "mems")
-  
   #Bar plots with total memory peaks
-  extract_all_stats(args[1], plot_scatter = F, sort_by = "", memory_additional = F)
   extract_all_stats(args[1], plot_scatter = F, sort_by = "names", memory_additional = F)
   extract_all_stats(args[1], plot_scatter = F, sort_by = "runtimes", memory_additional = F)
   extract_all_stats(args[1], plot_scatter = F, sort_by = "mems", memory_additional = F)
-  
-  #Scatter plots with additional memory peaks
-  extract_all_stats(args[1], plot_scatter = T)
-  extract_all_stats(args[1], pareto = T, plot_scatter = T)
-  extract_all_stats(args[1], logarithmic = T, plot_scatter = T)
   
   #Scatter plots with total memory peaks
   extract_all_stats(args[1], plot_scatter = T, memory_additional = F)

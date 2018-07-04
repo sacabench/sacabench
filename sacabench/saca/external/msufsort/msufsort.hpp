@@ -6,7 +6,7 @@ using namespace sacabench::util;
 class msufsort {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "Reference-MSufSort";
+    static constexpr char const* NAME = "MSufSort_ref";
     static constexpr char const* DESCRIPTION =
         "Reference MSufSort by M. Maniscalco.";
 

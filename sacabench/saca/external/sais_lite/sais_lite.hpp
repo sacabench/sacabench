@@ -12,7 +12,7 @@ using namespace sacabench::util;
 class sais_lite {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "Reference-SAIS-LITE";
+    static constexpr char const* NAME = "SAIS-LITE_ref";
     static constexpr char const* DESCRIPTION =
         "Suffix Array Induced Sorting by Yuta Mori";
 

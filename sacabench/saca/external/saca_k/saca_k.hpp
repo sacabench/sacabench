@@ -6,7 +6,7 @@ using namespace sacabench::util;
 class saca_k {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "Reference-SACA-K";
+    static constexpr char const* NAME = "SACA-K_ref";
     static constexpr char const* DESCRIPTION =
         "Reference Implementation of SACA-K by G. Nong.";
 

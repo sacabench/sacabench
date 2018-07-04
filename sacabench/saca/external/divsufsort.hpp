@@ -15,7 +15,7 @@ extern "C" int32_t divsufsort(const uint8_t* T, int32_t* SA, int32_t n);
 namespace sacabench::reference_sacas {
 struct div_suf_sort {
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "Reference-DivSufSort";
+    static constexpr char const* NAME = "DivSufSort_ref";
     static constexpr char const* DESCRIPTION =
         "Reference implementation of DivSufSort";
 
