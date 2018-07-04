@@ -727,11 +727,11 @@ struct prefix_doubling {
     }
 };
 
-struct prefix_doubling_discarding {
+struct prefix_discarding_2 {
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "Discarding";
+    static constexpr char const* NAME = "Discarding2";
     static constexpr char const* DESCRIPTION =
-        "In-Memory variant of Doubling with Discarding by R. "
+        "In-Memory variant of 2-Tupling with Discarding by R. "
         "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
@@ -742,18 +742,18 @@ struct prefix_doubling_discarding {
     }
 };
 
-struct prefix_quintupling_discarding {
+struct prefix_discarding_4 {
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "QuintupleDiscarding";
+    static constexpr char const* NAME = "Discarding4";
     static constexpr char const* DESCRIPTION =
-        "In-Memory variant of A-Tupling with Discarding and A=5 by R. "
+        "In-Memory variant of 4-Tupling with Discarding by R. "
         "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 3>::doubling_discarding(text, out_sa);
+        prefix_doubling_impl<sa_index, 4>::doubling_discarding(text, out_sa);
     }
 };
 

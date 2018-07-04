@@ -52,10 +52,10 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_doubling)
 
 SACA_REGISTER("saca/prefix_doubling.hpp"
-    sacabench::prefix_doubling::prefix_doubling_discarding)
+    sacabench::prefix_doubling::prefix_discarding_2)
 
 SACA_REGISTER("saca/prefix_doubling.hpp"
-    sacabench::prefix_doubling::prefix_quintupling_discarding)
+    sacabench::prefix_doubling::prefix_discarding_4)
 
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
