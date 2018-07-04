@@ -203,15 +203,7 @@ struct prefix_doubling_impl {
     names_less(util::span<name_type const> a, util::span<name_type const> b) {
         DCHECK_EQ(a.size(), a_size);
         DCHECK_EQ(b.size(), a_size);
-        for (size_t i = 0; i < a_size; i++) {
-            if (a[i] < b[i]) {
-                return true;
-            }
-            if (a[i] > b[i]) {
-                return false;
-            }
-        }
-        return false;
+        return a.slice(0, a_size) < b.slice(0, a_size);
     }
 
     /// Naive variant, roughly identical to description in Paper

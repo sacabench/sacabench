@@ -54,5 +54,6 @@ namespace sacabench::util {
 
 #define SB_FORCE_INLINE __attribute__((always_inline))
 #define SB_NO_INLINE __attribute__((noinline))
+#define SB_UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
 
 } // namespace util
