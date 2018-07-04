@@ -4,3 +4,4 @@ sacabench.kdev4
 **/*.kate-swp
 .idea/
 cmake-build-debug/
+.vscode/

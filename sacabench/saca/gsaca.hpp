@@ -52,6 +52,8 @@ namespace sacabench::gsaca {
             size_t number_of_chars = text_with_sentinels.size();
             build_initial_structures(text_with_sentinels, alphabet, out_sa, values, number_of_chars);
 
+            //print(values, number_of_chars, "After initializing structures.");
+
             gsaca.split("Phase 1");
 
             // Process groups in descending order. A group is defined through its start and end.
@@ -76,19 +78,29 @@ namespace sacabench::gsaca {
                 // Compute the prev pointer of the indices of current group.
                 compute_prev_pointer(out_sa, values, number_of_chars);
 
+                //print(values, number_of_chars, "After Prev Pointer Calculation.");
+
                 // Prepares ISA for phase 2 and updates group structure.
                 update_group_structure(out_sa, values);
+
+                //print(values, number_of_chars, "After Updating Group Structure.");
 
                 // Reorders the groups.
                 size_t number_of_splitted_groups = static_cast<sa_index>(0);
                 reorder_suffixes(out_sa, values, number_of_splitted_groups, group_start_temp);
 
+                //print(values, number_of_chars, "After reordering suffixes.");
+
                 // Rearranges previous suffixes stored in other groups.
                 rearrange_suffixes(out_sa, values, number_of_splitted_groups);
+
+                //print(values, number_of_chars, "After rearranging suffixes.");
 
                 // Prepare current group for phase 2. Sets counter to mark place for next entry.
                 out_sa[group_end_temp] = group_start_temp;
             }
+
+            //print(values, number_of_chars, "After Phase 1.");
 
             gsaca.split("Phase 2");
 
@@ -121,6 +133,32 @@ namespace sacabench::gsaca {
             sa_index group_start = 0;
             sa_index group_end = 0;
         };
+
+        template<typename sa_index>
+        inline static void print(gsaca_values<sa_index>& values,
+                                 size_t number_of_chars,
+                                 std::string message) {
+
+            std::cout << message << std::endl;
+
+            std::cout << "  GSIZE:  ";
+            for (size_t index = 0; index < number_of_chars; index++) {
+                std::cout << values.GSIZE[index] << ", ";
+            }
+            std::cout << std::endl;
+
+            std::cout << "  GLINK:  ";
+            for (size_t index = 0; index < number_of_chars; index++) {
+                std::cout << values.GLINK[index] << ", ";
+            }
+            std::cout << std::endl;
+
+            std::cout << "  PREV:   ";
+            for (size_t index = 0; index < number_of_chars; index++) {
+                std::cout << values.PREV[index] << ", ";
+            }
+            std::cout << std::endl;
+        }
 
         /**
          * \brief This function sets up the shared values ISA, GLINK and GSIZE.
