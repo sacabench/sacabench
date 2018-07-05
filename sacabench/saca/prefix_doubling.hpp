@@ -127,12 +127,14 @@ struct prefix_doubling_impl {
 
         inline sa_index& idx() { return m_data[a_size]; }
         inline name_type& name() { return m_data[0]; }
+        inline name_type& name2() { return m_data[1]; }
         inline util::span<name_type> names() {
             return util::span<name_type>(m_data).slice(0, a_size);
         }
 
         inline sa_index const& idx() const { return m_data[a_size]; }
         inline name_type const& name() const { return m_data[0]; }
+        inline name_type const& name2() const { return m_data[1]; }
         inline util::span<name_type const> names() const {
             return util::span<name_type const>(m_data).slice(0, a_size);
         }
