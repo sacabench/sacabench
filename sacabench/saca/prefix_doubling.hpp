@@ -93,7 +93,7 @@ template <typename sa_index, size_t a_size,
           typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
     using a_size_helper = a_size_helper_type<a_size>;
-    static constexpr bool USE_WORDPACKING = false;
+    static constexpr bool USE_WORDPACKING = true;
     static constexpr size_t WP_SIZE = 4;
 
     /// The type to use for lexicographical sorted "names".
