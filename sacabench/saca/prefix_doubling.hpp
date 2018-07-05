@@ -92,6 +92,15 @@ struct a_size_helper_type<4> {
 template <typename sa_index, size_t a_size,
           typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
+    template <typename T, typename F>
+    inline static auto debug_container(util::span<T> s, F f) {
+        util::container<decltype(f(s[0]))> tmp(s.size());
+        for (size_t i = 0; i < s.size(); i++) {
+            tmp[i] = f(s[i]);
+        }
+        return tmp;
+    };
+
     using a_size_helper = a_size_helper_type<a_size>;
     static constexpr bool USE_WORDPACKING = true;
     static constexpr size_t WP_SIZE = 4;
@@ -544,6 +553,8 @@ struct prefix_doubling_impl {
     inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
                                                            size_t k) {
         // TODO: Change to just merge later
+
+        std::cout << "P: " << debug_container(pu.P(), [](auto& x){return x.idx();}) << "\n";
 
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
