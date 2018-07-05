@@ -116,16 +116,17 @@ struct prefix_doubling_impl {
     public:
         inline hybrid_tuple() = default;
 
+        inline sa_index& idx() { return m_data[a_size]; }
+        inline name_type& name() { return m_data[0]; }
         inline util::span<name_type> names() {
             return util::span<name_type>(m_data).slice(0, a_size);
         }
-        inline name_type& name() { return m_data[0]; }
-        inline sa_index& idx() { return m_data[a_size]; }
+
+        inline sa_index const& idx() const { return m_data[a_size]; }
+        inline name_type const& name() const { return m_data[0]; }
         inline util::span<name_type const> names() const {
             return util::span<name_type const>(m_data).slice(0, a_size);
         }
-        inline name_type const& name() const { return m_data[0]; }
-        inline sa_index const& idx() const { return m_data[a_size]; }
     };
 
     /// Hybrid array. Each entry stores either a `(atuple, idx)` or a `(name,
