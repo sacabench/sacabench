@@ -102,7 +102,7 @@ struct prefix_doubling_impl {
     };
 
     using a_size_helper = a_size_helper_type<a_size>;
-    static constexpr bool USE_WORDPACKING = true;
+    static constexpr bool USE_WORDPACKING = false;
     static constexpr size_t WP_SIZE = 4;
 
     /// The type to use for lexicographical sorted "names".
