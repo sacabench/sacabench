@@ -21,6 +21,20 @@ inline void print_spaces(const size_t depth) {
 template <typename suffix_index_type>
 class trie {
 private:
+    struct node;
+
+    class arena {
+        inline arena() {}
+
+        inline node allocate(const size_t nobj) {
+            return new node[nobj];
+        }
+
+        inline node deallocate(node* ptr, const size_t nobj) {
+            delete[] ptr;
+        }
+    };
+
     struct node {
         /// \brief The character on the edge that is incident to this node.
         util::character incoming_char;
