@@ -221,12 +221,6 @@ struct prefix_doubling_impl {
         // Allocate the hybrid array.
         auto h = HArray(N);
 
-        auto bytes_to_ints = [](auto const& s) {
-            util::container<sa_index> tmp(s.size());
-            tmp.slice().copy_from(s);
-            return tmp;
-        };
-
         // How many bytes to initially pack into a word
         // TODO: Only works with power-of-two sizes
         size_t const WP_SIZE = 4;
