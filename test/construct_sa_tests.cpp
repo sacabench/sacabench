@@ -45,5 +45,5 @@ TEST(CornerCases, adapter_doubling) {
 
 TEST(CornerCases, adapter_discarding) {
     test::saca_corner_cases<
-        Adapter<prefix_doubling::prefix_doubling_discarding, 3>>();
+        Adapter<prefix_doubling::prefix_discarding_2, 3>>();
 }

@@ -17,6 +17,7 @@
 #include <util/bits.hpp>
 #include <util/compare.hpp>
 #include <util/container.hpp>
+#include <util/macros.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -24,36 +25,105 @@
 namespace sacabench::prefix_doubling {
 
 struct std_sorting_algorithm {
-    template <typename T, typename Compare = std::less<T>>
-    static void sort(util::span<T> data, Compare comp = Compare()) {
+    template <typename T, typename Compare>
+    SB_NO_INLINE static void sort(util::span<T> data, Compare comp) {
         util::sort::std_sort(data, comp);
     }
 };
 
-template <typename sa_index, typename sorting_algorithm = std_sorting_algorithm>
+template <size_t a_size>
+struct a_size_helper_type {
+    inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
+        return util::powi(a_size, k);
+    }
+    template <typename T>
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
+                                                   T const& b) {
+        size_t const k_length = pow_a_k(k);
+
+        size_t const ai = a.idx();
+        size_t const bi = b.idx();
+
+        size_t const high_a = ai % k_length;
+        size_t const high_b = bi % k_length;
+        size_t const low_a = ai / k_length;
+        size_t const low_b = bi / k_length;
+
+        bool const high_diff = high_a < high_b;
+        bool const high_eq = high_a == high_b;
+        bool const low_diff = low_a < low_b;
+
+        return high_diff | (high_eq & low_diff);
+    }
+};
+
+template <>
+struct a_size_helper_type<2> {
+    inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
+        return 1ull << k;
+    }
+    template <typename T>
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
+                                                   T const& b) {
+        auto const anti_k = util::bits_of<size_t> - k;
+
+        size_t const ai = a.idx();
+        size_t const bi = b.idx();
+
+        size_t ar = (ai << anti_k) | (ai >> k);
+        size_t br = (bi << anti_k) | (bi >> k);
+
+        return ar < br;
+    }
+};
+
+template <>
+struct a_size_helper_type<4> {
+    inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
+        return 1ull << (k << 1);
+    }
+    template <typename T>
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
+                                                   T const& b) {
+        return a_size_helper_type<2>::idx_compare(k << 1, a, b);
+    }
+};
+
+template <typename sa_index, size_t a_size,
+          typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
+    using a_size_helper = a_size_helper_type<a_size>;
+
     /// The type to use for lexicographical sorted "names".
     /// For discarding, is required to have a width of at least 1 bit more than
     /// needed.
     using name_type = sa_index;
-    using atuple = std::array<name_type, 2>;
+    using atuple = std::array<name_type, a_size>;
+
+    inline static atuple make_sentinel_tuple() {
+        auto a = atuple();
+        for (auto& e : a) {
+            e = util::SENTINEL;
+        }
+        return a;
+    }
 
     class hybrid_tuple {
-        std::array<sa_index, 3> m_data;
+        std::array<sa_index, a_size + 1> m_data;
 
     public:
         inline hybrid_tuple() = default;
 
         inline util::span<name_type> names() {
-            return util::span<name_type>(m_data).slice(0, 2);
+            return util::span<name_type>(m_data).slice(0, a_size);
         }
         inline name_type& name() { return m_data[0]; }
-        inline sa_index& idx() { return m_data[2]; }
+        inline sa_index& idx() { return m_data[a_size]; }
         inline util::span<name_type const> names() const {
-            return util::span<name_type const>(m_data).slice(0, 2);
+            return util::span<name_type const>(m_data).slice(0, a_size);
         }
         inline name_type const& name() const { return m_data[0]; }
-        inline sa_index const& idx() const { return m_data[2]; }
+        inline sa_index const& idx() const { return m_data[a_size]; }
     };
 
     /// Hybrid array. Each entry stores either a `(atuple, idx)` or a `(name,
@@ -111,15 +181,15 @@ struct prefix_doubling_impl {
         // only_unique = false
 
         name_type name = 0;
-        auto last_pair = atuple{util::SENTINEL, util::SENTINEL};
+        auto last_pair_arr = make_sentinel_tuple();
+        auto last_pair = util::span(last_pair_arr);
         bool only_unique = true;
 
         for (size_t i = 0; i < H.size(); i++) {
             auto pair = H[i].names();
-            if (pair != util::span(last_pair)) {
+            if (pair != last_pair) {
                 name = i + 1;
-                last_pair[0] = pair[0];
-                last_pair[1] = pair[1];
+                last_pair.copy_from(pair);
             } else {
                 only_unique = false;
             }
@@ -127,6 +197,115 @@ struct prefix_doubling_impl {
         }
 
         return only_unique;
+    }
+
+    inline SB_FORCE_INLINE static bool
+    names_less(util::span<name_type const> a, util::span<name_type const> b) {
+        DCHECK_EQ(a.size(), a_size);
+        DCHECK_EQ(b.size(), a_size);
+        return a.slice(0, a_size) < b.slice(0, a_size);
+    }
+
+    /// Naive variant, roughly identical to description in Paper
+    static void doubling(util::string_span text, util::span<sa_index> out_sa) {
+        tdc::StatPhase::log("A_Tuple", a_size);
+        tdc::StatPhase phase("Initialization");
+        size_t const N = text.size();
+
+        // To simplify some of the logic below,
+        // we don't even try to process texts of size less than 1.
+        if (N == 0) {
+            return;
+        }
+
+        // Allocate the hybrid array.
+        auto h = HArray(N);
+
+        // Create the initial S array of character tuples + text
+        // position
+        for (size_t i = 0; i < N; ++i) {
+            auto p = make_sentinel_tuple();
+            size_t trunc_size = std::min(a_size, N - i);
+            for (size_t j = 0; j < trunc_size; j++) {
+                p[j] = text[i + j];
+            }
+            h.s_names(i).copy_from(p);
+            h.s_idx(i) = i;
+        }
+
+        // We iterate up to ceil(log_a(N)) times - but because we
+        // always have a break condition in the loop body,
+        // we don't need to check for it explicitly
+        for (size_t k = 1;; k++) {
+            phase.split("Iteration");
+
+            // TODO: check new condition
+            // DCHECK_LE(k, util::ceil_log_base(N, a_size));
+            size_t const k_length = a_size_helper::pow_a_k(k);
+
+            phase.log("current_iteration", k);
+            phase.log("prefix_size", k_length);
+
+            // tdc::StatPhase loop_phase("Sort S");
+
+            // Sort the S tuples lexicographical
+            sorting_algorithm::sort(
+                h.hybrids(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
+                    return names_less(a.names(), b.names());
+                });
+
+            // loop_phase.split("Rename S tuples");
+
+            // Rename the S tuples into P
+            bool only_unique = rename_inplace(h.hybrids());
+
+            // loop_phase.split("Check unique");
+
+            // The algorithm terminates if P only contains unique values
+            if (only_unique) {
+                phase.split("Write out result");
+                phase.log("current_iteration", k);
+                phase.log("prefix_size", k_length);
+
+                for (size_t i = 0; i < N; i++) {
+                    out_sa[i] = h.p_idx(i);
+                }
+                return;
+            }
+
+            // loop_phase.split("Sort P tuples");
+
+            // Sort P by its i position mapped to the tuple
+            // (i % (2**k), i / (2**k), implemented as a single
+            // integer value
+            sorting_algorithm::sort(
+                h.hybrids(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
+                    return a_size_helper::idx_compare(k, a, b);
+                });
+
+            // loop_phase.split("Pair names");
+
+            for (size_t j = 0; j < N; j++) {
+                auto t = make_sentinel_tuple();
+                t[0] = h.p_name(j);
+
+                size_t last_idx = h.p_idx(j);
+
+                size_t trunc_size = std::min(a_size, N - j);
+                for (size_t l = 1; l < trunc_size; l++) {
+                    size_t const idx = h.p_idx(j + l);
+
+                    if (idx == last_idx + k_length) {
+                        t[l] = h.p_name(j + l);
+                        last_idx = idx;
+                    } else {
+                        break;
+                    }
+                }
+
+                h.s_names(j).copy_from(t);
+            }
+        }
     }
 
     inline static name_type unique_mask() {
@@ -152,105 +331,6 @@ struct prefix_doubling_impl {
         v = v & ~unique_mask();
         DCHECK(!is_marked(v));
         return v;
-    }
-
-    /// Naive variant, roughly identical to description in Paper
-    static void doubling(util::string_span text, util::span<sa_index> out_sa) {
-        tdc::StatPhase phase("Initialization");
-        size_t const N = text.size();
-
-        // To simplify some of the logic below,
-        // we don't even try to process texts of size less than 2.
-        if (N == 0) {
-            return;
-        } else if (N == 1) {
-            out_sa[0] = 0;
-            return;
-        }
-
-        // Allocate the hybrid array.
-        auto h = HArray(N);
-
-        // Create the initial S array of character tuples + text
-        // position
-        for (size_t i = 0; i < N - 1; ++i) {
-            h.s_names(i).copy_from(atuple{text[i], text[i + 1]});
-            h.s_idx(i) = i;
-        }
-        {
-            h.s_names(N - 1).copy_from(atuple{text[N - 1], util::SENTINEL});
-            h.s_idx(N - 1) = N - 1;
-        }
-
-        // We iterate up to ceil(log2(N)) times - but because we
-        // always have a break condition in the loop body,
-        // we don't need to check for it explicitly
-        for (size_t k = 1;; k++) {
-            phase.split("Iteration");
-
-            DCHECK_LE(k, util::ceil_log2(N));
-            size_t const k_length = 1ull << k;
-
-            phase.log("current_iteration", k);
-            phase.log("prefix_size", k_length);
-
-            // tdc::StatPhase loop_phase("Sort S");
-
-            // Sort the S tuples lexicographical
-            sorting_algorithm::sort(
-                h.hybrids(),
-                util::compare_key([k](auto const& a) { return a.names(); }));
-
-            // loop_phase.split("Rename S tuples");
-
-            // Rename the S tuples into P
-            bool only_unique = rename_inplace(h.hybrids());
-
-            // loop_phase.split("Check unique");
-
-            // The algorithm terminates if P only contains unique values
-            if (only_unique) {
-                phase.split("Write out result");
-                for (size_t i = 0; i < N; i++) {
-                    out_sa[i] = h.p_idx(i);
-                }
-                return;
-            }
-
-            // loop_phase.split("Sort P tuples");
-
-            // Sort P by its i position mapped to the tuple
-            // (i % (2**k), i / (2**k), implemented as a single
-            // integer value
-            sorting_algorithm::sort(
-                h.hybrids(), util::compare_key([k](auto const& value) {
-                    size_t const i = value.idx();
-                    auto const anti_k = util::bits_of<size_t> - k;
-                    return (i << anti_k) | (i >> k);
-                }));
-
-            // loop_phase.split("Pair names");
-
-            for (size_t j = 0; j < N; j++) {
-                size_t const i1 = h.p_idx(j);
-
-                name_type const c1 = h.p_name(j);
-                name_type c2;
-
-                if ((j + 1) >= N) {
-                    c2 = util::SENTINEL;
-                } else {
-                    c2 = h.p_name(j + 1);
-
-                    size_t const i2 = h.p_idx(j + 1);
-
-                    if (i2 != (i1 + k_length)) {
-                        c2 = util::SENTINEL;
-                    }
-                }
-                h.s_names(j).copy_from(atuple{c1, c2});
-            }
-        }
     }
 
     /// Marks elements as not unique by setting the highest extra bit
@@ -445,17 +525,15 @@ struct prefix_doubling_impl {
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
         sorting_algorithm::sort(
-            pu.PU(), util::compare_key([k](auto const& value) {
-                size_t const i = value.idx();
-                auto const anti_k = util::bits_of<size_t> - k;
-                return (i << anti_k) | (i >> k);
-            }));
+            pu.PU(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
+                return a_size_helper::idx_compare(k, a, b);
+            });
     }
 
     /// Create a unique name for each S tuple.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static void rename2_inplace(util::span<hybrid_tuple> A) {
+    inline static void rename2_inplace(util::span<hybrid_tuple> H) {
         /// Names are formed by taking the name of the first tuple element,
         /// and adding a offset that increments if the second element changes.
         ///
@@ -470,21 +548,21 @@ struct prefix_doubling_impl {
         name_type name_counter = 0;
         name_type name_offset = 0;
 
-        auto last_pair = atuple{util::SENTINEL, util::SENTINEL};
+        auto last_pair_arr = make_sentinel_tuple();
+        auto last_pair = util::span(last_pair_arr);
 
-        for (size_t i = 0; i < A.size(); i++) {
-            auto pair = A[i].names();
+        for (size_t i = 0; i < H.size(); i++) {
+            auto pair = H[i].names();
 
             if (pair[0] != last_pair[0]) {
                 name_counter = 0;
                 name_offset = 0;
-                last_pair[0] = pair[0];
-                last_pair[1] = pair[1];
-            } else if (pair[1] != last_pair[1]) {
+                last_pair.copy_from(pair);
+            } else if (pair.slice(1) != last_pair.slice(1)) {
                 name_offset = name_counter;
-                last_pair[1] = pair[1];
+                last_pair.copy_from(pair);
             }
-            A[i].name() = pair[0] + name_offset;
+            H[i].name() = pair[0] + name_offset;
             name_counter += 1;
         }
     }
@@ -492,15 +570,13 @@ struct prefix_doubling_impl {
     /// Doubling with discarding
     static void doubling_discarding(util::string_span text,
                                     util::span<sa_index> out_sa) {
+        tdc::StatPhase::log("A_Tuple", a_size);
         tdc::StatPhase phase("Initialization");
         size_t const N = text.size();
 
         // To simplify some of the logic below,
         // we don't even try to process texts of size less than 2.
         if (N == 0) {
-            return;
-        } else if (N == 1) {
-            out_sa[0] = 0;
             return;
         }
 
@@ -512,18 +588,21 @@ struct prefix_doubling_impl {
 
             // Create the initial S array of character tuples + text
             // position
-            for (size_t i = 0; i < N - 1; ++i) {
-                H[i].names().copy_from(atuple{text[i], text[i + 1]});
+            for (size_t i = 0; i < N; ++i) {
+                auto p = make_sentinel_tuple();
+                size_t trunc_size = std::min(a_size, N - i);
+                for (size_t j = 0; j < trunc_size; j++) {
+                    p[j] = text[i + j];
+                }
+                H[i].names().copy_from(p);
                 H[i].idx() = i;
-            }
-            {
-                H[N - 1].names().copy_from(atuple{text[N - 1], util::SENTINEL});
-                H[N - 1].idx() = N - 1;
             }
 
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(
-                H, util::compare_key([](auto const& a) { return a.names(); }));
+                H, [&](auto const& a, auto const& b) SB_FORCE_INLINE {
+                    return names_less(a.names(), b.names());
+                });
 
             // Rename the S tuples into U
             rename_inplace(H);
@@ -532,14 +611,15 @@ struct prefix_doubling_impl {
         size_t P_size = 0;
         size_t F_size = 0;
 
-        // We iterate up to ceil(log2(N)) times - but because we
+        // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
         for (size_t k = 1;; k++) {
             phase.split("Iteration");
 
-            DCHECK_LE(k, util::ceil_log2(N));
-            size_t const k_length = 1ull << k;
+            // TODO: check new condition
+            // DCHECK_LE(k, util::ceil_log_base(N, a_size));
+            size_t const k_length = a_size_helper::pow_a_k(k);
 
             phase.log("current_iteration", k);
             phase.log("prefix_size", k_length);
@@ -587,7 +667,9 @@ struct prefix_doubling_impl {
                 } else {
                     // Get neighboring names U[j], U[j+1], ...
 
-                    auto tuple = atuple{c, util::SENTINEL};
+                    auto tuple = make_sentinel_tuple();
+                    tuple[0] = c;
+
                     {
                         auto neighbor_names =
                             U2PSF.get_u_elems_after_next(tuple.size() - 1);
@@ -619,12 +701,17 @@ struct prefix_doubling_impl {
             // F contains names for unique prefixes.
             if (PSF.S().empty()) {
                 phase.split("Write out result");
+                phase.log("current_iteration", k);
+                phase.log("prefix_size", k_length);
+                phase.log("fully_discarded", F_size);
+                phase.log("partially_discarded", P_size);
+                phase.log("remaining", N - (F_size + P_size));
                 auto F = PSF.F();
 
                 // Sort the F tuples lexicographical
-                sorting_algorithm::sort(F, util::compare_key([](auto const& a) {
-                                            return a.name();
-                                        }));
+                sorting_algorithm::sort(
+                    F, [](auto const& a, auto const& b)
+                           SB_FORCE_INLINE { return a.name() < b.name(); });
 
                 for (size_t i = 0; i < N; i++) {
                     out_sa[i] = F[i].idx();
@@ -634,8 +721,9 @@ struct prefix_doubling_impl {
 
             // Sort the S tuples lexicographical
             sorting_algorithm::sort(
-                PSF.S(),
-                util::compare_key([](auto const& a) { return a.names(); }));
+                PSF.S(), [](auto const& a, auto const& b) SB_FORCE_INLINE {
+                    return names_less(a.names(), b.names());
+                });
 
             // Rename S tuple into U tuple
             rename2_inplace(PSF.S());
@@ -647,30 +735,45 @@ struct prefix_doubling {
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "Doubling";
     static constexpr char const* DESCRIPTION =
-        "In-Memory variant of Naive Prefix Doubling by R. Dementiev, J. "
+        "In-Memory variant of Prefix Doubling by R. Dementiev, J. "
         "Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index>::doubling(text, out_sa);
+        prefix_doubling_impl<sa_index, 2>::doubling(text, out_sa);
     }
-}; // struct prefix_doubling
+};
 
-struct prefix_doubling_discarding {
+struct prefix_discarding_2 {
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "Discarding";
+    static constexpr char const* NAME = "Discarding2";
     static constexpr char const* DESCRIPTION =
-        "In-Memory variant of Naive Doubling with Discarding by R. "
+        "In-Memory variant of 2-Tupling with Discarding by R. "
         "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index>::doubling_discarding(text, out_sa);
+        prefix_doubling_impl<sa_index, 2>::doubling_discarding(text, out_sa);
     }
-}; // struct prefix_doubling_discarding
+};
+
+struct prefix_discarding_4 {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Discarding4";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of 4-Tupling with Discarding by R. "
+        "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
+
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& /*alphabet_size*/,
+                             util::span<sa_index> out_sa) {
+        prefix_doubling_impl<sa_index, 4>::doubling_discarding(text, out_sa);
+    }
+};
 
 } // namespace sacabench::prefix_doubling
