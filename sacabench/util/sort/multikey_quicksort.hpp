@@ -24,10 +24,10 @@ public:
         : depth(0), input_text(_input_text) {}
 
     // The depth at which we compare.
-    index_type depth;
+    size_t depth;
 
     // This returns true, if a < b.
-    inline bool operator()(const index_type& a, const index_type& b) const {
+    inline bool operator()(const size_t& a, const size_t& b) const {
         DCHECK_LT(depth + a, input_text.size());
         DCHECK_LT(depth + b, input_text.size());
 
@@ -59,11 +59,11 @@ struct default_recursion_function {
 // Our internal sort function.
 template <size_t abort_at_depth,
           typename index_type,
-          typename compare_func = compare_one_character_at_depth<index_type>,
+          typename Compare = compare_one_character_at_depth<index_type>,
           typename Fn = default_recursion_function<index_type>>
 inline void multikey_quicksort_internal(
     span<index_type> array,
-    compare_func& key_func,
+    Compare& key_func,
     Fn fn = Fn()) {
     // If the set size is only one element, we don't need to sort.
     if (array.size() < 2) {
@@ -77,8 +77,16 @@ inline void multikey_quicksort_internal(
             : array[0];
 
     // Swap elements using ternary quicksort partitioning.
-    auto bounds =
-        sort::ternary_quicksort::partition(array, key_func, pivot_element);
+    std::pair<size_t, size_t> bounds;
+    size_t d = key_func.depth;
+
+    // Skip recursion if no smaller/bigger partitions are found.
+    for(;;++key_func.depth) {
+        bounds = sort::ternary_quicksort::partition(array, key_func, pivot_element);
+        if (bounds.first != 0 || bounds.second != array.size()) {
+            break;
+        }
+    }
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
     // bounds[0] .. bounds[1] is equal to the pivot_element
@@ -98,7 +106,7 @@ inline void multikey_quicksort_internal(
     } else {
         multikey_quicksort_internal<abort_at_depth>(equal, key_func, fn);
     }
-    --key_func.depth;
+    key_func.depth = d;
 }
 
 // Sort the suffix indices in array by comparing one character in
@@ -113,23 +121,23 @@ inline void multikey_quicksort(span<index_type> array,
     multikey_quicksort_internal<0>(array, key_func);
 }
 // Sort the suffix indices in array by comparing one character according to
-// the submitted compare_func. compare_func needs depth-attribute (used for 
+// the submitted compare_func. compare_func needs depth-attribute (used for
 // comparing current index) in order to work properly.
-template <typename index_type, typename compare_func>
-inline void multikey_quicksort(span<index_type> array, 
-        const string_span input_text, compare_func& key_func) {
-    multikey_quicksort_internal<0, index_type, compare_func>(array, key_func);
+template <typename index_type, typename Compare>
+inline void multikey_quicksort(span<index_type> array,
+        const string_span input_text, Compare& key_func) {
+    multikey_quicksort_internal<0, index_type, Compare>(array, key_func);
 }
 
 
 // Sort the suffix indices in array by comparing one character in
-// input_text according to the submitted compare function. Abort at depth 
+// input_text according to the submitted compare function. Abort at depth
 // max_depth and call deep_sort instead.
-template <size_t abort_at_depth, typename index_type, typename Fn, 
-        typename compare_func>
+template <size_t abort_at_depth, typename index_type, typename Fn,
+        typename Compare>
 inline void multikey_quicksort(span<index_type> array,
-                               const string_span input_text, Fn fn, 
-                               compare_func& key_func) {
+                               const string_span input_text, Fn fn,
+                               Compare& key_func) {
     // Call internal function.
     multikey_quicksort_internal<abort_at_depth>(array, key_func, fn);
 }
