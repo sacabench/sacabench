@@ -196,6 +196,15 @@ private:
         }
     }
 
+    /**\brief Increases offset by step_size until sort_key returns different
+     *  values for at least two elements inside the bucket
+     * \param offset Length of common prefixes inside pre sorted buckets
+     * \param step_size Minimum length of common prefixes in other buckets
+     * \param bptr Bucket pointers for the complete sa
+     * \param bucket_start Starting index of the bucket
+     * \param sort_key Key function which uses offset and bptr to compare
+     *  suffixes
+     */
     template <typename sa_index, typename key_func_type>
     inline static void find_offset(size_t& offset, size_t step_size,
                                    util::span<sa_index> bptr,
