@@ -12,8 +12,8 @@
 #include <util/compare.hpp>
 #include <util/container.hpp>
 #include <util/sort/bucketsort.hpp>
-#include <util/sort/ternary_quicksort.hpp>
 #include <util/sort/insertionsort.hpp>
+#include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -76,15 +76,14 @@ public:
         // Phase 1.1
         // determine initial buckets with bucketsort
         auto buckets = util::sort::bucketsort_presort(input, alphabet_size,
-                bucketsort_depth, sa);
+                                                      bucketsort_depth, sa);
 
         // Phase 1.2
         // initialize bucket pointers such that each suffix is mapped to the
         // bucket it's currenly in, indexed by right inclusive bound
         bpr.split("Phase 1.2");
-        util::container<sa_index> bptr =
-            initialize_bucket_pointers<sa_index>(input, alphabet_size,
-                    bucketsort_depth, sa);
+        util::container<sa_index> bptr = initialize_bucket_pointers<sa_index>(
+            input, alphabet_size, bucketsort_depth, sa);
 
         // Phase 2
         bpr.split("Phase 2");
@@ -180,7 +179,8 @@ private:
                                    util::span<sa_index> sa,
                                    util::span<sa_index> bptr, size_t offset) {
         // set sentinel pointers in bptr --> buckets[0] already sorted
-        for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS; ++sentinel_idx) {
+        for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS;
+             ++sentinel_idx) {
             bptr[bptr.size() - sentinel_idx - 1] = sentinel_idx;
         }
 
@@ -206,10 +206,9 @@ private:
      *  suffixes
      */
     template <typename sa_index, typename key_func_type>
-    inline static void find_offset(size_t& offset, size_t step_size,
-                                   util::span<sa_index> bptr,
-                                   util::span<sa_index> bucket,
-                                   key_func_type& sort_key) {
+    inline static void
+    find_offset(size_t& offset, size_t step_size, util::span<sa_index> bptr,
+                util::span<sa_index> bucket, key_func_type& sort_key) {
         bool sortable = false;
         while (true) {
             // check if bucket is sortable
@@ -240,11 +239,13 @@ private:
      */
     template <typename sa_index>
     inline static void refine_size_2_bucket(size_t offset, size_t step_size,
-            util::span<sa_index> bptr, size_t bucket_start, util::span<sa_index> bucket) {
+                                            util::span<sa_index> bptr,
+                                            size_t bucket_start,
+                                            util::span<sa_index> bucket) {
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
-        auto sort_key = [bptr,&offset](size_t suffix) {
-            DCHECK_LT(suffix+offset, bptr.size());
+        auto sort_key = [bptr, &offset](size_t suffix) {
+            DCHECK_LT(suffix + offset, bptr.size());
             return static_cast<size_t>(bptr[suffix + offset]);
         };
 
@@ -292,8 +293,8 @@ private:
 
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
-        auto sort_key = [bptr,&offset](size_t suffix) {
-            DCHECK_LT(suffix+offset, bptr.size());
+        auto sort_key = [bptr, &offset](size_t suffix) {
+            DCHECK_LT(suffix + offset, bptr.size());
             return static_cast<size_t>(bptr[suffix + offset]);
         };
 
