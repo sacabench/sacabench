@@ -232,10 +232,21 @@ private:
                 return static_cast<size_t>(bptr[suffix + offset]);
             };
 
+            // check if bucket is sortable
+            bool sortable = false;
+            size_t bucket_code = sort_key(bucket[0]);
+            for (size_t idx = 1; idx < bucket.size(); ++idx) {
+                if (sort_key(bucket[idx]) != bucket_code) {
+                    sortable = true;
+                    break;
+                }
+            }
+
             // sort the given bucket by using sort_key for each suffix
-            // TODO: use compare_key wrapper
-            util::sort::ternary_quicksort::ternary_quicksort(
-                bucket, util::compare_key(sort_key));
+            if (sortable) {
+                util::sort::ternary_quicksort::ternary_quicksort(
+                    bucket, util::compare_key(sort_key));
+            }
 
             /* As a consequence of sorting, bucket pointers might have changed.
              * We have to update the bucket pointers for further use.
