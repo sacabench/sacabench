@@ -221,7 +221,37 @@ private:
         }
     }
 
-    /**\brief Refines a single given buckets inside the suffix array
+    /**\brief Refines a size-2-bucket inside the suffix array
+     * \param offset Length of common prefixes inside pre sorted buckets
+     * \param step_size Minimum length of common prefixes in other buckets
+     * \param bptr Bucket pointers for the complete sa
+     * \param bucket_start Starting index of the bucket
+     * \param bucket Slice of the suffix array containing only elements of
+     * the current bucket.
+     */
+    template <typename sa_index>
+    inline static void refine_size_2_bucket(size_t offset, size_t step_size,
+            util::span<sa_index> bptr, size_t bucket_start, util::span<sa_index> bucket) {
+        // sort_key maps a suffix s_i to the bucket identifier of suffix
+        // s_{i+offset}. If no such suffix exists, it's assumed to be $.
+        auto sort_key = [bptr,&offset](size_t suffix) {
+            DCHECK_LT(suffix+offset, bptr.size());
+            return static_cast<size_t>(bptr[suffix + offset]);
+        };
+
+        find_offset(offset, step_size, bptr, bucket, sort_key);
+
+        if (sort_key(bucket[0]) > sort_key(bucket[1])) {
+            sa_index tmp = bucket[0];
+            bucket[0] = bucket[1];
+            bucket[1] = tmp;
+        }
+
+        bptr[bucket[0]] = bucket_start;
+        bptr[bucket[1]] = bucket_start + 1;
+    }
+
+    /**\brief Refines a single given bucket inside the suffix array
      * \param offset Length of common prefixes inside pre sorted buckets
      * \param step_size Minimum length of common prefixes in other buckets
      * \param bptr Bucket pointers for the complete sa
@@ -236,6 +266,9 @@ private:
                                      util::span<sa_index> bucket) {
         // this bucket is already sorted
         if (bucket.size() < 2) {
+            return;
+        } else if (bucket.size() == 2) {
+            refine_size_2_bucket(offset, step_size, bptr, bucket_start, bucket);
             return;
         }
 
