@@ -7,8 +7,8 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <random>
-#include <util/is_sorted.hpp>
 #include <util/sa_check.hpp>
+#include <util/is_sorted.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/string.hpp>
 
@@ -37,6 +37,19 @@ constexpr auto test_strlen = [](size_t strl) {
         ASSERT_TRUE(sa_check(span(array), span(input)));
     }
 };
+
+TEST(multikey_quicksort, test_equal_partitions) {
+    const auto input = "acbaacbaacba\0"_s;
+
+    std::vector<size_t> array;
+    for (size_t i = 0; i < input.size(); ++i) {
+        array.push_back(0);
+    }
+
+    sort::multikey_quicksort::multikey_quicksort(span(array), span(input));
+
+    ASSERT_TRUE(is_partially_suffix_sorted<size_t>(array, input));
+}
 
 TEST(multikey_quicksort, test_compare_function) {
     const auto input = "acba"_s;
