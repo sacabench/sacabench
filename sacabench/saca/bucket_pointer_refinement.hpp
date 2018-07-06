@@ -134,11 +134,6 @@ private:
             bptr[sa[current_sa_position]] = current_bucket;
         } while (current_sa_position > 0);
 
-        // set sentinel pointers in bptr
-        for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS; ++sentinel_idx) {
-            bptr[n - sentinel_idx - 1] = sentinel_idx;
-        }
-
         return bptr;
     }
 
