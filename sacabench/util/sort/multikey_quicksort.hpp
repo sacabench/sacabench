@@ -26,6 +26,10 @@ public:
     // The depth at which we compare.
     size_t depth;
 
+    inline bool all_sorted() const {
+        return depth >= input_text.size();
+    }
+
     // This returns true, if a < b.
     inline bool operator()(const size_t& a, const size_t& b) const {
         DCHECK_LT(depth + a, input_text.size());
@@ -75,14 +79,28 @@ inline void multikey_quicksort_internal(span<index_type> array,
 
     // Swap elements using ternary quicksort partitioning.
     std::pair<size_t, size_t> bounds;
-    size_t d = key_func.depth;
+    const size_t d = key_func.depth;
 
     // Skip recursion if no smaller/bigger partitions are found.
     for (;; ++key_func.depth) {
+        // Catch the case, when all strings have equal size and are also equal.
+        if(key_func.all_sorted()) {
+            // This checks, if the comparison depth is larger than the text size.
+            return;
+        }
+
         bounds =
             sort::ternary_quicksort::partition(array, key_func, pivot_element);
+
+        // If the less/greater partitions aren't empty, continue with recursion.
         if (bounds.first != 0 || bounds.second != array.size()) {
             break;
+        }
+
+        // If we reached the abort depth, switch to the user supplied
+        // "deep sorting" algorithm
+        if (abort_at_depth != 0 && key_func.depth >= abort_at_depth) {
+            fn(array);
         }
     }
 
@@ -99,8 +117,7 @@ inline void multikey_quicksort_internal(span<index_type> array,
 
     // Sort the equal partition by the next character.
     ++key_func.depth;
-    if (abort_at_depth != 0 &&
-        static_cast<size_t>(key_func.depth) >= abort_at_depth) {
+    if (abort_at_depth != 0 && key_func.depth >= abort_at_depth) {
         fn(equal);
     } else {
         multikey_quicksort_internal<abort_at_depth>(equal, key_func, fn);
