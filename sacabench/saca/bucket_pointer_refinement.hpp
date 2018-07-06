@@ -228,14 +228,8 @@ private:
             // sort_key maps a suffix s_i to the bucket identifier of suffix
             // s_{i+offset}. If no such suffix exists, it's assumed to be $.
             auto sort_key = [=](size_t suffix) {
-                //if (suffix >= bptr.size() - offset) {
-                //    return static_cast<size_t>(0);
-                //} else {
-                    // Add 1 to sort key in order to prevent collision with
-                    // sentinel.
-                    DCHECK_LT(suffix+offset, bptr.size());
-                    return static_cast<size_t>(bptr[suffix + offset]);
-                //}
+                DCHECK_LT(suffix+offset, bptr.size());
+                return static_cast<size_t>(bptr[suffix + offset]);
             };
 
             // sort the given bucket by using sort_key for each suffix
