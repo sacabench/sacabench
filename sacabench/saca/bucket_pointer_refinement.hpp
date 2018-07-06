@@ -13,6 +13,7 @@
 #include <util/container.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/ternary_quicksort.hpp>
+#include <util/sort/insertionsort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -26,6 +27,8 @@ public:
     static constexpr char const* NAME = "BPR";
     static constexpr char const* DESCRIPTION =
         "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann";
+
+    static constexpr size_t INSSORT_THRESHOLD = 200;
 
     /**\brief Performs a simplified version of the bucket pointer refinement
      * algorithm described by Klaus-Bernd Schürmann and Jens Stoye in "An
@@ -244,8 +247,12 @@ private:
 
             // sort the given bucket by using sort_key for each suffix
             if (sortable) {
-                util::sort::ternary_quicksort::ternary_quicksort(
-                    bucket, util::compare_key(sort_key));
+                if (bucket.size() < INSSORT_THRESHOLD) {
+                    util::sort::insertion_sort(bucket, util::compare_key(sort_key));
+                } else {
+                    util::sort::ternary_quicksort::ternary_quicksort(
+                        bucket, util::compare_key(sort_key));
+                }
             }
 
             /* As a consequence of sorting, bucket pointers might have changed.
