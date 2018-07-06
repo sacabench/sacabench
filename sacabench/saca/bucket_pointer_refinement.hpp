@@ -227,7 +227,7 @@ private:
                 //} else {
                     // Add 1 to sort key in order to prevent collision with
                     // sentinel.
-                    return static_cast<size_t>(bptr[suffix + offset]) + 1;
+                    return static_cast<size_t>(bptr[suffix + offset]);
                 //}
             };
 
