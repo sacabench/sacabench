@@ -223,20 +223,16 @@ private:
             util::make_container<uint8_t>(bucket.size());
         std::fill(right_bounds.begin(), right_bounds.end(), false);
 
-        size_t current_bucket_position;
-        size_t sub_buckets;
+        // sort_key maps a suffix s_i to the bucket identifier of suffix
+        // s_{i+offset}. If no such suffix exists, it's assumed to be $.
+        auto sort_key = [&bptr,&offset](size_t suffix) {
+            DCHECK_LT(suffix+offset, bptr.size());
+            return static_cast<size_t>(bptr[suffix + offset]);
+        };
 
-        do {
-            sub_buckets = 0;
-            // sort_key maps a suffix s_i to the bucket identifier of suffix
-            // s_{i+offset}. If no such suffix exists, it's assumed to be $.
-            auto sort_key = [=](size_t suffix) {
-                DCHECK_LT(suffix+offset, bptr.size());
-                return static_cast<size_t>(bptr[suffix + offset]);
-            };
-
+        bool sortable = false;
+        while (true) {
             // check if bucket is sortable
-            bool sortable = false;
             size_t bucket_code = sort_key(bucket[0]);
             for (size_t idx = 1; idx < bucket.size(); ++idx) {
                 if (sort_key(bucket[idx]) != bucket_code) {
@@ -245,46 +241,47 @@ private:
                 }
             }
 
-            // sort the given bucket by using sort_key for each suffix
             if (sortable) {
-                if (bucket.size() < INSSORT_THRESHOLD) {
-                    util::sort::insertion_sort(bucket, util::compare_key(sort_key));
-                } else {
-                    util::sort::ternary_quicksort::ternary_quicksort(
-                        bucket, util::compare_key(sort_key));
-                }
+                break;
+            } else {
+                // higher offset is needed in order to refine bucket
+                offset += step_size;
             }
+        }
 
-            /* As a consequence of sorting, bucket pointers might have changed.
-             * We have to update the bucket pointers for further use.
-             */
-            current_bucket_position = bucket.size();
-            size_t current_code = 0;
-            size_t recent_code = current_code;
+        // sort the given bucket by using sort_key for each suffix
+        if (bucket.size() < INSSORT_THRESHOLD) {
+            util::sort::insertion_sort(bucket, util::compare_key(sort_key));
+        } else {
+            util::sort::ternary_quicksort::ternary_quicksort(
+                bucket, util::compare_key(sort_key));
+        }
 
-            // sequentially scan the sa from right to left and calculate prefix
-            // codes of suffixes in order to determine borders between buckets
-            do {
-                --current_bucket_position;
+        /* As a consequence of sorting, bucket pointers might have changed.
+         * We have to update the bucket pointers for further use.
+         */
+        size_t current_bucket_position = bucket.size();
+        size_t current_code = 0;
+        size_t recent_code = current_code;
 
-                // find current prefix code by inspecting
-                // bucket[current_bucket_position]
-                current_code = sort_key(bucket[current_bucket_position]);
+        // sequentially scan the sa from right to left and calculate prefix
+        // codes of suffixes in order to determine borders between buckets
+        do {
+            --current_bucket_position;
 
-                if (current_code != recent_code) {
-                    // If the prefix code has changed, we have passed a border
-                    // between two buckets. Remember the border for later use.
-                    // As the determination of codes is based on the old bucket
-                    // pointers, bptr can not be updated instantly.
-                    right_bounds[current_bucket_position] = true;
-                    recent_code = current_code;
-                    ++sub_buckets;
-                }
-            } while (current_bucket_position > 0);
+            // find current prefix code by inspecting
+            // bucket[current_bucket_position]
+            current_code = sort_key(bucket[current_bucket_position]);
 
-            // increase offset for next level
-            offset += step_size;
-        } while (sub_buckets < 2);
+            if (current_code != recent_code) {
+                // If the prefix code has changed, we have passed a border
+                // between two buckets. Remember the border for later use.
+                // As the determination of codes is based on the old bucket
+                // pointers, bptr can not be updated instantly.
+                right_bounds[current_bucket_position] = true;
+                recent_code = current_code;
+            }
+        } while (current_bucket_position > 0);
 
         current_bucket_position = bucket.size();
         // the key of the rightmost sub bucket is the rightmost index
@@ -307,10 +304,13 @@ private:
 
         /* Refine all sub buckets */
 
+        // increase offset for next level
+        offset += step_size;
+
         size_t start_of_bucket = 0;
         size_t end_of_bucket;
-        // from right to left: Calculate codes in order to determine
-        // bucket borders
+
+        // from left to right: refine all buckets
         while (start_of_bucket < bucket.size()) {
             end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) -
                             bucket_start;
