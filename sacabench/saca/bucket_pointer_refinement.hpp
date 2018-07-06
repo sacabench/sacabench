@@ -134,6 +134,14 @@ private:
             bptr[sa[current_sa_position]] = current_bucket;
         } while (current_sa_position > 0);
 
+        bptr[n] = 0;
+        bptr[n-1] = 1;
+        bptr[n-2] = 2;
+        bptr[n-3] = 3;
+        bptr[n-4] = 4;
+        bptr[n-5] = 5;
+        bptr[n-6] = 6;
+
         return bptr;
     }
 
