@@ -40,6 +40,13 @@ TEST(Bucketsort, bucket_sizes){
     ASSERT_EQ(buckets.at(4).count, (size_t) 1);
 }
 
+TEST(Bucketsort, sentinels){
+    sacabench::util::string input = {'\0', '\0', '\0', '\0'};
+    size_t depth = 2;
+    auto buckets = sacabench::util::sort::get_buckets(input, 0, depth);
+    ASSERT_EQ(buckets.size(), (size_t) 1);
+    ASSERT_EQ(buckets.at(0).count, (size_t) 4);
+}
 
 TEST(Bucketsort, recursiv_bucket_sort_test) {
     using namespace sacabench::util;
