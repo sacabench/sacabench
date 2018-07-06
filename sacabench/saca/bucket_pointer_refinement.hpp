@@ -134,13 +134,10 @@ private:
             bptr[sa[current_sa_position]] = current_bucket;
         } while (current_sa_position > 0);
 
-        bptr[n] = 0;
-        bptr[n-1] = 1;
-        bptr[n-2] = 2;
-        bptr[n-3] = 3;
-        bptr[n-4] = 4;
-        bptr[n-5] = 5;
-        bptr[n-6] = 6;
+        // set sentinel pointers in bptr
+        for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS; ++sentinel_idx) {
+            bptr[n - sentinel_idx - 1] = sentinel_idx;
+        }
 
         return bptr;
     }
@@ -184,8 +181,14 @@ private:
     static void refine_all_buckets(util::span<util::sort::bucket> buckets,
                                    util::span<sa_index> sa,
                                    util::span<sa_index> bptr, size_t offset) {
-        // sort each bucket in naive order
-        for (auto& b : buckets) {
+        // set sentinel pointers in bptr --> buckets[0] already sorted
+        for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS; ++sentinel_idx) {
+            bptr[bptr.size() - sentinel_idx - 1] = sentinel_idx;
+        }
+
+        // sort remaining buckets in naive order
+        for (size_t bucket_idx = 1; bucket_idx < buckets.size(); ++bucket_idx) {
+            auto& b = buckets[bucket_idx];
             if (b.count > 0) {
                 size_t bucket_end_exclusive = b.position + b.count;
                 refine_single_bucket<sa_index>(
@@ -235,6 +238,7 @@ private:
                 //} else {
                     // Add 1 to sort key in order to prevent collision with
                     // sentinel.
+                    DCHECK_LT(suffix+offset, bptr.size());
                     return static_cast<size_t>(bptr[suffix + offset]);
                 //}
             };
