@@ -196,6 +196,31 @@ private:
         }
     }
 
+    template <typename sa_index, typename key_func_type>
+    inline static void find_offset(size_t& offset, size_t step_size,
+                                   util::span<sa_index> bptr,
+                                   util::span<sa_index> bucket,
+                                   key_func_type& sort_key) {
+        bool sortable = false;
+        while (true) {
+            // check if bucket is sortable
+            size_t bucket_code = sort_key(bucket[0]);
+            for (size_t idx = 1; idx < bucket.size(); ++idx) {
+                if (sort_key(bucket[idx]) != bucket_code) {
+                    sortable = true;
+                    break;
+                }
+            }
+
+            if (sortable) {
+                break;
+            } else {
+                // higher offset is needed in order to refine bucket
+                offset += step_size;
+            }
+        }
+    }
+
     /**\brief Refines a single given buckets inside the suffix array
      * \param offset Length of common prefixes inside pre sorted buckets
      * \param step_size Minimum length of common prefixes in other buckets
@@ -225,29 +250,12 @@ private:
 
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
-        auto sort_key = [&bptr,&offset](size_t suffix) {
+        auto sort_key = [bptr,&offset](size_t suffix) {
             DCHECK_LT(suffix+offset, bptr.size());
             return static_cast<size_t>(bptr[suffix + offset]);
         };
 
-        bool sortable = false;
-        while (true) {
-            // check if bucket is sortable
-            size_t bucket_code = sort_key(bucket[0]);
-            for (size_t idx = 1; idx < bucket.size(); ++idx) {
-                if (sort_key(bucket[idx]) != bucket_code) {
-                    sortable = true;
-                    break;
-                }
-            }
-
-            if (sortable) {
-                break;
-            } else {
-                // higher offset is needed in order to refine bucket
-                offset += step_size;
-            }
-        }
+        find_offset(offset, step_size, bptr, bucket, sort_key);
 
         // sort the given bucket by using sort_key for each suffix
         if (bucket.size() < INSSORT_THRESHOLD) {
