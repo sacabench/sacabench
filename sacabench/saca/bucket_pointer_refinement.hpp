@@ -75,8 +75,8 @@ public:
 
         // Phase 1.1
         // determine initial buckets with bucketsort
-        auto buckets = util::sort::bucketsort_presort(input, alphabet.max_character_value(),
-                                                      bucketsort_depth, sa);
+        auto buckets = util::sort::bucketsort_presort(
+            input, alphabet.max_character_value(), bucketsort_depth, sa);
 
         // Phase 1.2
         // initialize bucket pointers such that each suffix is mapped to the
@@ -189,9 +189,10 @@ private:
         }
 
         // remember which top level buckets are already sorted
-        auto sorted_1st_level_bucket = util::make_container<bool>(alphabet_size);
-        std::fill(sorted_1st_level_bucket.begin(), sorted_1st_level_bucket.end(),
-                  false);
+        auto sorted_1st_level_bucket =
+            util::make_container<bool>(alphabet_size);
+        std::fill(sorted_1st_level_bucket.begin(),
+                  sorted_1st_level_bucket.end(), false);
 
         const size_t in_1st_level_bucket = buckets.size() / alphabet_size;
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
@@ -199,19 +200,22 @@ private:
         // sort level 1 buckets
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
 
-            /* 
+            /*
              * perform comparison based sorting
              */
             for (util::character c2 = c1 + 1; c2 < alphabet_size; ++c2) {
-                const size_t bucket_idx_begin = c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;
-                const size_t bucket_idx_end = bucket_idx_begin + in_2nd_level_bucket;
-                for (size_t bucket_idx = bucket_idx_begin; bucket_idx < bucket_idx_end; ++bucket_idx) {
+                const size_t bucket_idx_begin =
+                    c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;
+                const size_t bucket_idx_end =
+                    bucket_idx_begin + in_2nd_level_bucket;
+                for (size_t bucket_idx = bucket_idx_begin;
+                     bucket_idx < bucket_idx_end; ++bucket_idx) {
                     auto& b = buckets[bucket_idx];
                     if (b.count > 0) {
                         size_t bucket_end_exclusive = b.position + b.count;
                         refine_single_bucket<sa_index>(
-                                offset, offset, bptr, b.position,
-                                sa.slice(b.position, bucket_end_exclusive));
+                            offset, offset, bptr, b.position,
+                            sa.slice(b.position, bucket_end_exclusive));
                     }
                 }
             }
@@ -219,9 +223,11 @@ private:
             /*
              * use copy technique for left buckets
              */
-            auto leftmost_undetermined = util::make_container<size_t>(alphabet_size);
+            auto leftmost_undetermined =
+                util::make_container<size_t>(alphabet_size);
             for (util::character c = 0; c < alphabet_size; ++c) {
-                const size_t idx = c * in_1st_level_bucket + c1 * in_2nd_level_bucket;
+                const size_t idx =
+                    c * in_1st_level_bucket + c1 * in_2nd_level_bucket;
                 leftmost_undetermined[c] = buckets[idx].position;
             }
 
@@ -232,7 +238,8 @@ private:
                 if (suffix_idx = sa[left_scan_idx]) {
                     predecessor = input[--suffix_idx];
                     if (!sorted_1st_level_bucket[predecessor]) {
-                        size_t sa_destination_idx = leftmost_undetermined[predecessor]++;
+                        size_t sa_destination_idx =
+                            leftmost_undetermined[predecessor]++;
                         sa[sa_destination_idx] = suffix_idx;
                         bptr[suffix_idx] = sa_destination_idx;
                     }
@@ -243,14 +250,18 @@ private:
             /*
              * use copy technique for right buckets
              */
-            auto rightmost_undetermined = util::make_container<size_t>(alphabet_size);
+            auto rightmost_undetermined =
+                util::make_container<size_t>(alphabet_size);
             for (util::character c = 0; c < alphabet_size; ++c) {
-                const size_t idx = c * in_1st_level_bucket + (c1 + 1) * in_2nd_level_bucket;
-                rightmost_undetermined[c] = idx >= buckets.size() ? sa.size() : buckets[idx].position;
+                const size_t idx =
+                    c * in_1st_level_bucket + (c1 + 1) * in_2nd_level_bucket;
+                rightmost_undetermined[c] =
+                    idx >= buckets.size() ? sa.size() : buckets[idx].position;
             }
 
             const size_t idx = (c1 + 1) * in_1st_level_bucket;
-            size_t right_scan_idx = idx >= buckets.size() ? sa.size() : buckets[idx].position;
+            size_t right_scan_idx =
+                idx >= buckets.size() ? sa.size() : buckets[idx].position;
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
                 sa_index suffix_idx;
@@ -258,7 +269,8 @@ private:
                 if (suffix_idx = sa[right_scan_idx]) {
                     predecessor = input[--suffix_idx];
                     if (!sorted_1st_level_bucket[predecessor]) {
-                        size_t sa_destination_idx = --rightmost_undetermined[predecessor];
+                        size_t sa_destination_idx =
+                            --rightmost_undetermined[predecessor];
                         sa[sa_destination_idx] = suffix_idx;
                         bptr[suffix_idx] = sa_destination_idx;
                     }
