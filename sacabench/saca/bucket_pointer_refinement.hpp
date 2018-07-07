@@ -87,7 +87,8 @@ public:
 
         // Phase 2
         bpr.split("Phase 2");
-        refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth);
+        refine_all_buckets<sa_index>(buckets, sa, bptr, bucketsort_depth,
+                                     alphabet_size);
     }
 
 private:
@@ -177,22 +178,40 @@ private:
     template <typename sa_index>
     static void refine_all_buckets(util::span<util::sort::bucket> buckets,
                                    util::span<sa_index> sa,
-                                   util::span<sa_index> bptr, size_t offset) {
+                                   util::span<sa_index> bptr, size_t offset,
+                                   size_t alphabet_size) {
         // set sentinel pointers in bptr --> buckets[0] already sorted
         for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS;
              ++sentinel_idx) {
             bptr[bptr.size() - sentinel_idx - 1] = sentinel_idx;
         }
 
-        // sort remaining buckets in naive order
-        for (size_t bucket_idx = 1; bucket_idx < buckets.size(); ++bucket_idx) {
-            auto& b = buckets[bucket_idx];
-            if (b.count > 0) {
-                size_t bucket_end_exclusive = b.position + b.count;
-                refine_single_bucket<sa_index>(
-                    offset, offset, bptr, b.position,
-                    sa.slice(b.position, bucket_end_exclusive));
+        // remember which top level buckets are already sorted
+        auto sorted_1st_level_bucket = util::make_container<bool>(alphabet_size);
+        std::fill(sorted_1st_level_bucket.begin(), sorted_1st_level_bucket.end(),
+                  false);
+
+        const size_t in_1st_level_bucket = buckets.size() / alphabet_size;
+        const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
+
+        // sort level 1 buckets
+        for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
+            for (util::character c2 = 0; c2 < alphabet_size; ++c2) {
+                if (c1 == 0 && c2 == 0) continue;
+                const size_t bucket_idx_begin = c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;
+                const size_t bucket_idx_end = bucket_idx_begin + in_2nd_level_bucket;
+                for (size_t bucket_idx = bucket_idx_begin; bucket_idx < bucket_idx_end; ++bucket_idx) {
+                    auto& b = buckets[bucket_idx];
+                    if (b.count > 0) {
+                        size_t bucket_end_exclusive = b.position + b.count;
+                        refine_single_bucket<sa_index>(
+                                offset, offset, bptr, b.position,
+                                sa.slice(b.position, bucket_end_exclusive));
+                    }
+                }
             }
+
+            sorted_1st_level_bucket[c1] = true;
         }
     }
 
