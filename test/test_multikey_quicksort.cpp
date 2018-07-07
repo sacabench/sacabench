@@ -39,16 +39,14 @@ constexpr auto test_strlen = [](size_t strl) {
 };
 
 TEST(multikey_quicksort, test_equal_partitions) {
-    const auto input = "acbaacbaacba\0"_s;
+    const auto input = "acbdefabcdefabcdefabcdefabcdefa\0"_s;
 
+    std::vector<size_t> array;
     for(size_t j = 0; j < input.size(); ++j) {
-        std::vector<size_t> array;
-        for (size_t i = 0; i < input.size(); ++i) {
-            array.push_back(j);
-        }
-        sort::multikey_quicksort::multikey_quicksort(span(array), span(input));
-        ASSERT_TRUE(is_partially_suffix_sorted<size_t>(array, input));
+        array.push_back(j);
     }
+    sort::multikey_quicksort::multikey_quicksort(span(array), span(input));
+    ASSERT_TRUE(is_partially_suffix_sorted<size_t>(array, input));
 }
 
 TEST(multikey_quicksort, test_compare_function) {
