@@ -75,7 +75,7 @@ public:
 
         // Phase 1.1
         // determine initial buckets with bucketsort
-        auto buckets = util::sort::bucketsort_presort(input, alphabet_size,
+        auto buckets = util::sort::bucketsort_presort(input, alphabet.max_character_value(),
                                                       bucketsort_depth, sa);
 
         // Phase 1.2
@@ -197,10 +197,10 @@ private:
         // sort level 1 buckets
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             for (util::character c2 = 0; c2 < alphabet_size; ++c2) {
-                if (c1 == 0 && c2 == 0) continue;
                 const size_t bucket_idx_begin = c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;
                 const size_t bucket_idx_end = bucket_idx_begin + in_2nd_level_bucket;
                 for (size_t bucket_idx = bucket_idx_begin; bucket_idx < bucket_idx_end; ++bucket_idx) {
+                    if (bucket_idx == 0) continue;
                     auto& b = buckets[bucket_idx];
                     if (b.count > 0) {
                         size_t bucket_end_exclusive = b.position + b.count;
