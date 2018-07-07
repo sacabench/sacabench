@@ -197,12 +197,10 @@ private:
         const size_t in_1st_level_bucket = buckets.size() / alphabet_size;
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
 
-        // sort level 1 buckets
+        /*
+         * perform comparison based sorting
+         */
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
-
-            /*
-             * perform comparison based sorting
-             */
             for (util::character c2 = c1 + 1; c2 < alphabet_size; ++c2) {
                 const size_t bucket_idx_begin =
                     c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;
@@ -219,7 +217,9 @@ private:
                     }
                 }
             }
+        }
 
+        for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             /*
              * use copy technique for left buckets
              */
@@ -241,7 +241,7 @@ private:
                         size_t sa_destination_idx =
                             leftmost_undetermined[predecessor]++;
                         sa[sa_destination_idx] = suffix_idx;
-                        bptr[suffix_idx] = sa_destination_idx;
+                        //bptr[suffix_idx] = sa_destination_idx;
                     }
                 }
                 ++left_scan_idx;
@@ -272,7 +272,7 @@ private:
                         size_t sa_destination_idx =
                             --rightmost_undetermined[predecessor];
                         sa[sa_destination_idx] = suffix_idx;
-                        bptr[suffix_idx] = sa_destination_idx;
+                        //bptr[suffix_idx] = sa_destination_idx;
                     }
                 }
             }
