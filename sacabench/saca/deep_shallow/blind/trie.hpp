@@ -266,8 +266,7 @@ private:
 public:
     /// \brief Construct a blind trie, which contains the initial_element.
     inline trie(const util::string_span _input_text,
-                const size_t common_prefix_length,
-                const size_t initial_element)
+                const size_t common_prefix_length, const size_t initial_element)
         : m_input_text(_input_text.slice(common_prefix_length)),
           m_root(std::move(node::new_inner_node(0))) {
         m_root.incoming_char = util::SENTINEL;
