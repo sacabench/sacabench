@@ -27,19 +27,15 @@ public:
     size_t depth;
 
     inline bool all_sorted() const {
-        return depth >= input_text.size();
+        return false;
     }
 
     // This returns true, if a < b.
     inline bool operator()(const size_t& a, const size_t& b) const {
+        DCHECK(!all_sorted());
         DCHECK_LT(depth + a, input_text.size());
         DCHECK_LT(depth + b, input_text.size());
-
-        const character at_a = this->input_text[depth + a];
-        const character at_b = this->input_text[depth + b];
-        const bool diff = at_a < at_b;
-
-        return diff;
+        return this->input_text[depth + a] < this->input_text[depth + b];
     }
 
 private:
@@ -83,9 +79,9 @@ inline void multikey_quicksort_internal(span<index_type> array,
 
     // Skip recursion if no smaller/bigger partitions are found.
     for (;; ++key_func.depth) {
-        // Catch the case, when all strings have equal size and are also equal.
         if(key_func.all_sorted()) {
-            // This checks, if the comparison depth is larger than the text size.
+            // This checks if the comparison depth is larger than the text size.
+            key_func.depth = d;
             return;
         }
 
@@ -101,6 +97,8 @@ inline void multikey_quicksort_internal(span<index_type> array,
         // "deep sorting" algorithm
         if (abort_at_depth != 0 && key_func.depth >= abort_at_depth) {
             fn(array);
+            key_func.depth = d;
+            return;
         }
     }
 
