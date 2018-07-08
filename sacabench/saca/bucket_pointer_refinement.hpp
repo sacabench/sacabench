@@ -75,7 +75,7 @@ public:
 
         // Phase 1.1
         // determine initial buckets with bucketsort
-        auto buckets = util::sort::bucketsort_presort(
+        auto buckets = util::sort::bucketsort_presort_lightweight(
             input, alphabet.max_character_value(), bucketsort_depth, sa);
 
         // Phase 1.2
@@ -177,7 +177,7 @@ private:
      */
     template <typename sa_index>
     static void refine_all_buckets(util::string_span input,
-                                   util::span<util::sort::bucket> buckets,
+                                   util::span<util::sort::lightweight_bucket> buckets,
                                    util::span<sa_index> sa,
                                    util::span<sa_index> bptr, size_t offset,
                                    size_t alphabet_size) {
@@ -194,7 +194,8 @@ private:
         std::fill(sorted_1st_level_bucket.begin(),
                   sorted_1st_level_bucket.end(), false);
 
-        const size_t in_1st_level_bucket = buckets.size() / alphabet_size;
+        // (buckets.size() - 1) because of trailing pseudo bucket
+        const size_t in_1st_level_bucket = (buckets.size() - 1) / alphabet_size;
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
 
         /*
@@ -208,12 +209,11 @@ private:
                     bucket_idx_begin + in_2nd_level_bucket;
                 for (size_t bucket_idx = bucket_idx_begin;
                      bucket_idx < bucket_idx_end; ++bucket_idx) {
-                    auto& b = buckets[bucket_idx];
-                    if (b.count > 0) {
-                        size_t bucket_end_exclusive = b.position + b.count;
+                    if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
+                        // if the bucket has at least 1 element
                         refine_single_bucket<sa_index>(
-                            offset, offset, bptr, b.position,
-                            sa.slice(b.position, bucket_end_exclusive));
+                            offset, offset, bptr, buckets[bucket_idx],
+                            sa.slice(buckets[bucket_idx], buckets[bucket_idx + 1]));
                     }
                 }
             }
@@ -228,10 +228,10 @@ private:
             for (util::character c = 0; c < alphabet_size; ++c) {
                 const size_t idx =
                     c * in_1st_level_bucket + c1 * in_2nd_level_bucket;
-                leftmost_undetermined[c] = buckets[idx].position;
+                leftmost_undetermined[c] = buckets[idx];
             }
 
-            size_t left_scan_idx = buckets[c1 * in_1st_level_bucket].position;
+            size_t left_scan_idx = buckets[c1 * in_1st_level_bucket];
             while (left_scan_idx < leftmost_undetermined[c1]) {
                 sa_index suffix_idx;
                 util::character predecessor;
@@ -256,12 +256,12 @@ private:
                 const size_t idx =
                     c * in_1st_level_bucket + (c1 + 1) * in_2nd_level_bucket;
                 rightmost_undetermined[c] =
-                    idx >= buckets.size() ? sa.size() : buckets[idx].position;
+                    idx >= buckets.size() ? sa.size() : buckets[idx];
             }
 
             const size_t idx = (c1 + 1) * in_1st_level_bucket;
             size_t right_scan_idx =
-                idx >= buckets.size() ? sa.size() : buckets[idx].position;
+                idx >= buckets.size() ? sa.size() : buckets[idx];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
                 sa_index suffix_idx;
