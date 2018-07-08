@@ -42,32 +42,30 @@ private:
         /// \brief The amount of characters every suffix in this set shares.
         suffix_index_type lcp;
 
-        /// \brief The suffix index this leaf corresponds to.
-        suffix_index_type si;
-
         /// \brief Child pointers.
         std::vector<node> children;
 
-        inline node() : incoming_char(0), lcp(0), si(0), children() {}
+        inline node() : incoming_char(0), lcp(0), children() {}
         inline node(const node&) = delete;
 
         inline node(node&&) = default;
         inline node& operator=(node&&) = default;
 
         inline static node new_leaf(const util::string_span input_text,
-                                    const suffix_index_type _si) {
+                                    const size_t _si) {
             node n;
             n.incoming_char = input_text[_si];
             n.lcp = input_text.size() - _si;
-            n.si = _si;
             return n;
         }
 
-        inline static node new_inner_node(const suffix_index_type _lcp) {
+        inline static node new_inner_node(const size_t _lcp) {
             node n;
             n.lcp = _lcp;
             return n;
         }
+
+        inline SB_FORCE_INLINE size_t get_si(const size_t text_size) const { return text_size - lcp; }
 
         inline bool is_leaf() const { return children.empty(); }
 
@@ -93,8 +91,8 @@ private:
             std::cout << print_incoming_char;
 
             if (is_leaf()) {
-                const util::string_span suffix = input_text.slice(si);
-                std::cout << " [ " << lcp << " ] -> " << si << ": '" << suffix
+                const util::string_span suffix = input_text.slice(get_si(input_text.size()));
+                std::cout << " [ " << lcp << " ] -> " << get_si(input_text.size()) << ": '" << suffix
                           << "'" << std::endl;
             } else {
                 std::cout << " [ " << lcp << " ]" << std::endl;
@@ -108,11 +106,11 @@ private:
 
         /// \brief Returns the suffix index of a random leaf which is a child
         ///        of this node.
-        inline suffix_index_type get_any_leaf_si() const {
+        inline size_t get_any_leaf_si(const size_t text_size) const {
             if (is_leaf()) {
-                return si;
+                return get_si(text_size);
             } else {
-                return children[0].get_any_leaf_si();
+                return children[0].get_any_leaf_si(text_size);
             }
         }
 
@@ -120,8 +118,8 @@ private:
         ///        That means, if the LCP is identical to the LCP this node
         ///        represents.
         inline bool can_contain(const util::string_span input_text,
-                                const suffix_index_type new_element) const {
-            const auto example_suffix = get_any_leaf_si();
+                                const size_t new_element) const {
+            const auto example_suffix = get_any_leaf_si(input_text.size());
             const util::string_span new_prefix = input_text.slice(new_element);
             const util::string_span existing_prefix =
                 input_text.slice(example_suffix);
@@ -133,7 +131,7 @@ private:
         ///        new_element either as a child to this node or into a child
         ///        of this node.
         inline void insert(const util::string_span input_text,
-                           const suffix_index_type new_element) {
+                           const size_t new_element) {
             // Try to find out if a suitable edge exists
             bool does_edge_exist = false;
             node* possible_child;
@@ -159,8 +157,8 @@ private:
                 // anymore. We need to split the selected child node into two.
 
                 // The common prefix the next node represents.
-                const suffix_index_type existing_suffix_index =
-                    possible_child->get_any_leaf_si();
+                const size_t existing_suffix_index =
+                    possible_child->get_any_leaf_si(input_text.size());
                 const util::string_span existing_suffix =
                     input_text.slice(existing_suffix_index);
                 const util::string_span new_suffix =
@@ -168,12 +166,12 @@ private:
 
                 // Find attributes of the new nodes.
                 // This is the LCP of new_element and the selected child.
-                suffix_index_type lcp_of_new_node;
+                size_t lcp_of_new_node;
 
                 // Save the edge label of the selected child.
                 util::character old_edge_label;
 
-                for (suffix_index_type i = lcp;; ++i) {
+                for (size_t i = lcp;; ++i) {
                     // Compare the prefixes of existing and new suffix.
                     const util::character existing_prefix = existing_suffix[i];
                     const util::character new_prefix = new_suffix[i];
@@ -225,10 +223,9 @@ private:
                     // node an inner node and insert a dummy leaf with no edge
                     // label.
 
-                    node n = node::new_leaf(input_text, si);
+                    node n = node::new_leaf(input_text, get_si(input_text.size()));
                     n.incoming_char = util::SENTINEL;
                     add_child(std::move(n));
-                    si = 0;
                 }
 
                 // Case 3: There is no edge yet for this character. Insert a
@@ -242,14 +239,14 @@ private:
 
         /// \brief Traverses the trie in order and saves the indices into the
         ///        bucket.
-        inline size_t traverse(util::span<suffix_index_type> bucket) const {
+        inline size_t traverse(const size_t text_size, util::span<suffix_index_type> bucket) const {
             if (is_leaf()) {
-                bucket[0] = si;
+                bucket[0] = get_si(text_size);
                 return 1;
             } else {
                 size_t n_suffixe = 0;
                 for (const node& child : children) {
-                    size_t n_child = child.traverse(bucket);
+                    size_t n_child = child.traverse(text_size, bucket);
                     bucket = bucket.slice(n_child);
                     n_suffixe += n_child;
                 }
@@ -267,7 +264,7 @@ public:
     /// \brief Construct a blind trie, which contains the initial_element.
     inline trie(const util::string_span _input_text,
                 const size_t common_prefix_length,
-                const suffix_index_type initial_element)
+                const size_t initial_element)
         : m_input_text(_input_text.slice(common_prefix_length)),
           m_root(std::move(node::new_inner_node(0))) {
         m_root.incoming_char = util::SENTINEL;
@@ -280,14 +277,14 @@ public:
     inline void print() const { m_root.print(m_input_text, 0); }
 
     /// \brief Insert an element into the correct place of the blind trie.
-    inline void insert(const suffix_index_type new_element) {
+    inline void insert(const size_t new_element) {
         m_root.insert(m_input_text, new_element);
     }
 
     /// \brief Traverse the blind trie in order and copy the suffixes into
     ///        bucket.
     inline void traverse(util::span<suffix_index_type> bucket) const {
-        size_t n = m_root.traverse(bucket);
+        size_t n = m_root.traverse(m_input_text.size(), bucket);
         DCHECK_EQ(n, bucket.size());
 
         // "Use" `n` so that the compiler doesn't warn
