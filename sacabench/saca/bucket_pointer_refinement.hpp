@@ -101,10 +101,10 @@ private:
      * \return Computed bucket pointer container
      */
     template <typename sa_index>
-    static util::container<sa_index>
-    initialize_bucket_pointers(util::string_span input, size_t alphabet_size,
-                               size_t bucketsort_depth,
-                               util::span<sa_index> sa, util::span<util::sort::lightweight_bucket> buckets) {
+    static util::container<sa_index> initialize_bucket_pointers(
+        util::string_span input, size_t alphabet_size, size_t bucketsort_depth,
+        util::span<sa_index> sa,
+        util::span<util::sort::lightweight_bucket> buckets) {
         const size_t n = sa.size();
 
         // create bucket pointer container
@@ -131,11 +131,11 @@ private:
      * \param offset Length of common prefixes inside pre sorted buckets
      */
     template <typename sa_index>
-    static void refine_all_buckets(util::string_span input,
-                                   util::span<util::sort::lightweight_bucket> buckets,
-                                   util::span<sa_index> sa,
-                                   util::span<sa_index> bptr, size_t offset,
-                                   size_t alphabet_size) {
+    static void
+    refine_all_buckets(util::string_span input,
+                       util::span<util::sort::lightweight_bucket> buckets,
+                       util::span<sa_index> sa, util::span<sa_index> bptr,
+                       size_t offset, size_t alphabet_size) {
         // set sentinel pointers in bptr --> buckets[0] already sorted
         for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS;
              ++sentinel_idx) {
@@ -168,7 +168,8 @@ private:
                         // if the bucket has at least 1 element
                         refine_single_bucket<sa_index>(
                             offset, offset, bptr, buckets[bucket_idx],
-                            sa.slice(buckets[bucket_idx], buckets[bucket_idx + 1]));
+                            sa.slice(buckets[bucket_idx],
+                                     buckets[bucket_idx + 1]));
                     }
                 }
             }
@@ -196,7 +197,7 @@ private:
                         size_t sa_destination_idx =
                             leftmost_undetermined[predecessor]++;
                         sa[sa_destination_idx] = suffix_idx;
-                        //bptr[suffix_idx] = sa_destination_idx;
+                        // bptr[suffix_idx] = sa_destination_idx;
                     }
                 }
                 ++left_scan_idx;
@@ -227,7 +228,7 @@ private:
                         size_t sa_destination_idx =
                             --rightmost_undetermined[predecessor];
                         sa[sa_destination_idx] = suffix_idx;
-                        //bptr[suffix_idx] = sa_destination_idx;
+                        // bptr[suffix_idx] = sa_destination_idx;
                     }
                 }
             }
