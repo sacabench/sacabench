@@ -22,7 +22,7 @@ namespace sacabench::reference_sacas {
 
     public:
         static constexpr size_t EXTRA_SENTINELS = 1;
-        static constexpr char const *NAME = "REFERENCE GSACA";
+        static constexpr char const *NAME = "GSACA_ref";
         static constexpr char const *DESCRIPTION =
                 "Computes a suffix array with the algorithm gsaca by Uwe Baier.";
 

@@ -2,13 +2,13 @@
 
 #include "comparison_fct.hpp"
 #include "utils.hpp"
-#include <queue>
 #include <util/assertions.hpp>
 #include <util/bits.hpp>
 #include <util/container.hpp>
 #include <util/sort/introsort.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
+#include <utility>
 
 namespace sacabench::div_suf_sort {
 
@@ -155,16 +155,15 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
     size_t sorted_size_end = 0;
 
     bool current_sorted = true, is_sorted = true;
-    size_t sorted_begin = interval_begin, unsorted_begin = interval_begin,
-           rank = interval_begin;
-    sa_index current, next;
+    size_t sorted_begin = interval_begin, unsorted_begin = interval_begin;
+    sa_index current, next, rank = interval_begin;
 
-    std::queue<sa_index> elements;
-
+    auto tmp_ranks = util::make_container<std::pair<sa_index, sa_index>>(
+        interval_end - interval_begin);
+    std::pair<sa_index, sa_index> elem_rank;
     // Recompute ranks, skip last element of interval
     for (size_t pos = interval_begin; pos < interval_end - 1; ++pos) {
         current = rel_ind[pos];
-        elements.push(current);
         next = rel_ind[pos + 1];
         DCHECK_LE(isa[current], isa[next]);
         // All indices non-negated
@@ -175,10 +174,12 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
                 // Set ranks for unsorted interval (highest rank for each of
                 // them)
                 for (size_t i = unsorted_begin; i < pos + 1; ++i) {
-                    isa[rel_ind[i]] = rank;
+                    elem_rank = std::make_pair(rel_ind[i], rank);
+                    tmp_ranks[i - interval_begin] = elem_rank;
                 }
             } else {
-                isa[current] = rank;
+                elem_rank = std::make_pair(current, rank);
+                tmp_ranks[pos - interval_begin] = elem_rank;
             }
             // Increase rank after this step
             ++rank;
@@ -204,33 +205,33 @@ recompute_interval_isa(util::span<sa_index> rel_ind, size_t interval_begin,
             ++rank;
         }
     }
-    elements.push(rel_ind[interval_end - 1]);
     DCHECK_EQ(rank, interval_end - 1);
     // Handle last element of interval
     if (current_sorted) {
-        if (sorted_begin == interval_begin) {
+        /* if (sorted_begin == interval_begin) {
             // sorted_size_begin = sorted_begin;
-        }
+        } */
         // std::cout << "Last sorted interval." << std::endl;
         sorted_size_end = interval_end - sorted_begin;
         DCHECK_GT(sorted_size_end, 0);
-        isa[rel_ind[interval_end - 1]] = rank;
+        elem_rank = std::make_pair(rel_ind[interval_end - 1], rank);
+        tmp_ranks[tmp_ranks.size() - 1] = elem_rank;
         rel_ind[sorted_begin] =
             sorted_size_end | utils<sa_index>::NEGATIVE_MASK;
     } else {
         // std::cout << "last unsorted interval" << std::endl;
         // Part of unsorted interval -> set ranks
         for (size_t i = unsorted_begin; i < interval_end; ++i) {
-            isa[rel_ind[i]] = rank;
+            elem_rank = std::make_pair(rel_ind[i], rank);
+            tmp_ranks[i - interval_begin] = elem_rank;
         }
     }
     // Refresh ranks for cmp fct (after they have been completely refreshed
     // in isa for current interval)
-    DCHECK_EQ(elements.size(), (interval_end - interval_begin));
+    DCHECK_EQ(tmp_ranks.size(), (interval_end - interval_begin));
     for (size_t i = 0; i < (interval_end - interval_begin); ++i) {
-        current = elements.front();
-        elements.pop();
-        cmp.partial_isa[current] = isa[current];
+        current = std::get<0>(tmp_ranks[i]);
+        isa[current] = std::get<1>(tmp_ranks[i]);
     }
 
     /*
@@ -485,18 +486,9 @@ sort_rms_suffixes_internal(rms_suffixes<sa_index>& rms_suf,
 
 template <typename sa_index>
 inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
-    // Copy content of partial isa into isa_cmp (isa particular for cmp fct)
-    // Copy needed for specific cases while recomputing ranks (referencing
-    // through depth points to indices in same unsorted interval)
     util::span<sa_index> rel_ind = rms_suf.relative_indices;
     util::span<sa_index> isa = rms_suf.partial_isa;
-    auto isa_cmp = util::make_container<sa_index>(isa.size());
-    DCHECK_EQ(isa_cmp.size(), isa.size());
-    for (size_t i = 0; i < isa_cmp.size(); ++i) {
-        isa_cmp[i] = isa[i];
-        DCHECK_EQ(isa_cmp[i], isa[i]);
-    }
-    compare_suffix_ranks<sa_index> cmp(isa_cmp, 0);
+    compare_suffix_ranks<sa_index> cmp(isa, 0);
     bool unsorted;
     // At most that many iterations (if we have to consider last suffix (or
     // later))
@@ -534,9 +526,6 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
             }
         }
         unsorted = sort_rms_suffixes_internal(rms_suf, cmp);
-        for (size_t i = 0; i < isa.size(); ++i) {
-            DCHECK_EQ(isa[i], cmp.partial_isa[i]);
-        }
         // Everything has been sorted - break outer loop
         if (unsorted == 0) {
             // Check wether each rank is unique
