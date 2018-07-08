@@ -38,7 +38,7 @@ public:
     static void construct_sa(util::string_span input,
                              util::alphabet const& alphabet,
                              util::span<sa_index> sa) {
-        tdc::StatPhase bpr("Phase 1.1");
+        tdc::StatPhase bpr("Phase 1");
 
         size_t alphabet_size = alphabet.size_with_sentinel();
 
@@ -75,15 +75,9 @@ public:
 
         // Phase 1.1
         // determine initial buckets with bucketsort
+        util::container<sa_index> bptr = util::make_container<sa_index>(n);
         auto buckets = util::sort::bucketsort_presort_lightweight(
-            input, alphabet.max_character_value(), bucketsort_depth, sa);
-
-        // Phase 1.2
-        // initialize bucket pointers such that each suffix is mapped to the
-        // bucket it's currenly in, indexed by right inclusive bound
-        bpr.split("Phase 1.2");
-        util::container<sa_index> bptr = initialize_bucket_pointers<sa_index>(
-            input, alphabet_size, bucketsort_depth, sa, buckets);
+            input, alphabet.max_character_value(), bucketsort_depth, sa, bptr);
 
         // Phase 2
         bpr.split("Phase 2");
@@ -92,37 +86,6 @@ public:
     }
 
 private:
-    /**\brief Creates a bptr container which maps suffixes to buckets
-     * \param input Input string containing the suffixes
-     * \param alphabet_size Number of distinct symbols in input
-     * \param bucketsort_depth Length of the prefix to use for code
-     *  determination in phase 1
-     * \param sa Complete suffix array as available after bucketsort step
-     * \return Computed bucket pointer container
-     */
-    template <typename sa_index>
-    static util::container<sa_index> initialize_bucket_pointers(
-        util::string_span input, size_t alphabet_size, size_t bucketsort_depth,
-        util::span<sa_index> sa,
-        util::span<util::sort::lightweight_bucket> buckets) {
-        const size_t n = sa.size();
-
-        // create bucket pointer container
-        util::container<sa_index> bptr = util::make_container<sa_index>(n);
-
-        size_t current_bucket_idx = 1;
-        sa_index current_bucket;
-        sa_index current_sa_idx = 0;
-        while (current_sa_idx < n) {
-            current_bucket = buckets[current_bucket_idx++] - 1;
-            while (current_sa_idx <= current_bucket) {
-                bptr[sa[current_sa_idx++]] = current_bucket;
-            }
-        }
-
-        return bptr;
-    }
-
     /**\brief Refines given buckets in a suffix array one by one
      * \param buckets Set of buckets each containing starting position and
      * size
