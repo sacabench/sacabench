@@ -22,6 +22,13 @@ struct bucket {
     std::size_t position = 0;
 };
 
+/**
+ * A lightweight_bucket does only store the position of the leftmost index
+ * inside the bucket. The rightmost index can be derived looking at the
+ * successor bucket's position.
+ */
+using lightweight_bucket = std::size_t;
+
 /**\brief Determines sizes and positions of buckets containing suffixes
  *  which are equal to a given offset.
  * \param input Input text (of length n) whose suffixes are to be sorted.
@@ -88,6 +95,82 @@ inline container<bucket> get_buckets(const span_type input,
     for (size_t index = 1; index < bucket_count; ++index) {
         buckets[index].position =
             buckets[index - 1].position + buckets[index - 1].count;
+    }
+
+    return buckets;
+}
+
+/**\brief Determines positions of buckets containing suffixes
+ *  which are equal to a given offset.
+ * \param input Input text (of length n) whose suffixes are to be sorted.
+ *  The input text has to use an effective alphabet with characters
+ *  {1, ..., m}.
+ * \param max_character_code Maximum possible value of characters in input
+ *  text.
+ * \param depth The offset which is used to match suffixes into buckets.
+ *  Suffixes with equal length-depth-prefix are matched to the same bucket.
+ *
+ * \return Starting position for each bucket in the suffix array as well as
+ *  a pseudo starting position for one extra bucket at the end of the SA.
+ */
+template <typename span_type>
+inline container<lightweight_bucket> get_lightweight_buckets(
+        const span_type input, const std::size_t max_character_code,
+        const std::size_t depth) {
+    DCHECK_GE(depth, 1);
+
+    const std::size_t length = input.size();
+    const std::size_t alphabet_size = max_character_code + 1;
+    const std::size_t bucket_count = pow(alphabet_size, depth) + 1;
+
+    auto buckets = make_container<lightweight_bucket>(bucket_count);
+
+    /*
+     * first step: count bucket sizes
+     */
+
+    // calculate code for an (imaginary) 0-th suffix
+    std::size_t initial_code = 0;
+    for (std::size_t index = 0; index < depth - 1; ++index) {
+        initial_code *= (alphabet_size);
+        initial_code += input[index];
+    }
+
+    // calculate modulo for code computation
+    const std::size_t code_modulo = pow(alphabet_size, depth - 1);
+
+    // count occurrences of each possible length-d-substring
+    std::size_t code = initial_code;
+    for (std::size_t index = 0; index < length - depth + 1; ++index) {
+        // induce code for nth suffix from (n-1)th suffix
+        code %= code_modulo;
+        code *= alphabet_size;
+        code += input[index + depth - 1];
+        ++buckets[code];
+    }
+
+    // same as above, but for substrings containing at least one $
+    for (std::size_t index = length - depth + 1; index < length; ++index) {
+        // induce code for nth suffix from (n-1)th suffix
+        code %= code_modulo;
+        code *= alphabet_size;
+        // the index overlaps input bounds, therefore we assume to add
+        // a 0.
+        ++buckets[code];
+    }
+
+    /*
+     * second step: determine starting positions for buckets
+     */
+
+    // calculate positions for all buckets
+    size_t next_bucket_start = buckets[0];
+    size_t current_bucket_size = 0;
+    buckets[0] = 0;
+    for (size_t index = 1; index < bucket_count; ++index) {
+        current_bucket_size = buckets[index];
+        buckets[index] = next_bucket_start;
+        next_bucket_start += current_bucket_size;
     }
 
     return buckets;

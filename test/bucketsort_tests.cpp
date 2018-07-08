@@ -40,6 +40,20 @@ TEST(Bucketsort, bucket_sizes){
     ASSERT_EQ(buckets.at(4).count, (size_t) 1);
 }
 
+TEST(Bucketsort, lightweight_bucket_positions){
+    sacabench::util::string input = "blablablub"_s;
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+    size_t depth = 1;
+    auto buckets = sacabench::util::sort::get_lightweight_buckets(input, a.max_character_value(), depth);
+    ASSERT_EQ(buckets.at(0), (size_t) 0);
+    ASSERT_EQ(buckets.at(1), (size_t) 0);
+    ASSERT_EQ(buckets.at(2), (size_t) 2);
+    ASSERT_EQ(buckets.at(3), (size_t) 6);
+    ASSERT_EQ(buckets.at(4), (size_t) 9);
+    ASSERT_EQ(buckets.at(5), (size_t) 10);
+}
+
 TEST(Bucketsort, sentinels){
     sacabench::util::string input = {'\0', '\0', '\0', '\0'};
     size_t depth = 2;
