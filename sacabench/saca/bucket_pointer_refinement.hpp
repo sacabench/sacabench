@@ -73,32 +73,21 @@ public:
             bucketsort_depth = n;
         }
 
-        // Phase 1.1
-        // determine initial buckets with bucketsort
+        /**
+         * Phase 1
+         * determine initial buckets with bucketsort
+         */
+
         util::container<sa_index> bptr = util::make_container<sa_index>(n);
         auto buckets = util::sort::bucketsort_presort_lightweight(
             input, alphabet.max_character_value(), bucketsort_depth, sa, bptr);
 
-        // Phase 2
-        bpr.split("Phase 2");
-        refine_all_buckets<sa_index>(input, buckets, sa, bptr, bucketsort_depth,
-                                     alphabet_size);
-    }
+        /**
+         * Phase 2
+         * Perform comparison based sorting
+         */
 
-private:
-    /**\brief Refines given buckets in a suffix array one by one
-     * \param buckets Set of buckets each containing starting position and
-     * size
-     * \param sa Suffix array which will be manipulated
-     * \param bptr Bucket pointer array
-     * \param offset Length of common prefixes inside pre sorted buckets
-     */
-    template <typename sa_index>
-    static void
-    refine_all_buckets(util::string_span input,
-                       util::span<util::sort::lightweight_bucket> buckets,
-                       util::span<sa_index> sa, util::span<sa_index> bptr,
-                       size_t offset, size_t alphabet_size) {
+        bpr.split("Phase 2");
         // set sentinel pointers in bptr --> buckets[0] already sorted
         for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS;
              ++sentinel_idx) {
@@ -116,9 +105,6 @@ private:
         const size_t in_1st_level_bucket = (buckets.size() - 1) / alphabet_size;
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
 
-        /*
-         * perform comparison based sorting
-         */
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             for (util::character c2 = c1 + 1; c2 < alphabet_size; ++c2) {
                 const size_t bucket_idx_begin =
@@ -130,7 +116,7 @@ private:
                     if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
                         // if the bucket has at least 1 element
                         refine_single_bucket<sa_index>(
-                            offset, offset, bptr, buckets[bucket_idx],
+                            bucketsort_depth, bucketsort_depth, bptr, buckets[bucket_idx],
                             sa.slice(buckets[bucket_idx],
                                      buckets[bucket_idx + 1]));
                     }
@@ -138,6 +124,12 @@ private:
             }
         }
 
+        /**
+         * Phase 3
+         * Perform copy step by Seward
+         */
+
+        bpr.split("Phase 3");
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             /*
              * use copy technique for left buckets
