@@ -249,6 +249,79 @@ bucketsort_presort(const string_span input,
     return buckets;
 }
 
+/**\brief Divides the suffix array into buckets with each bucket containing
+ *  suffixes which are equal to a given offset.
+ * \param input Input text (of length n) whose suffixes are to be sorted.
+ *  The input text has to use an effective alphabet with characters
+ *  {1, ..., m}.
+ * \param max_character_code Maximum possible value of characters in input
+ *  text.
+ * \param depth The offset which is used to match suffixes into buckets.
+ *  Suffixes with equal length-depth-prefix are matched to the same bucket.
+ * \param sa A container (of length n) for the suffix array.
+ *
+ * Bucketsort sorts all suffixes of the input text into buckets within the
+ * suffix array. After a call of the function, the suffix array contains all
+ * buckets in sorted ascending order. The suffixes within each bucket are
+ * not necessarily sorted.
+ *
+ * \return Starting position for each bucket in the suffix array and
+ *  starting position of a pseudo bucket at the end of the SA.
+ */
+template <typename index_type>
+__attribute__((noinline)) container<lightweight_bucket>
+bucketsort_presort_lightweight(const string_span input,
+                   const std::size_t max_character_code,
+                   const std::size_t depth, span<index_type> sa) {
+    DCHECK_EQ(input.size(), sa.size());
+    DCHECK_LE(depth, sa.size());
+
+    auto buckets = get_lightweight_buckets(input, max_character_code, depth);
+
+    const std::size_t length = input.size();
+    // the real alphabet includes $, so it has one more character
+    const std::size_t alphabet_size = max_character_code + 1;
+
+    // calculate modulo for code computation
+    const std::size_t code_modulo = pow(alphabet_size, depth - 1);
+
+    // calculate code for an (imaginary) 0-th suffix
+    std::size_t initial_code = 0;
+    for (std::size_t index = 0; index < depth - 1; ++index) {
+        initial_code *= (alphabet_size);
+        initial_code += input[index];
+    }
+
+    std::size_t code = initial_code;
+
+    // insert entries in suffix array
+    for (index_type index = 0; index < length - depth + 1; ++index) {
+        // induce code for nth suffix from (n-1)th suffix
+        code %= code_modulo;
+        code *= alphabet_size;
+        code += input[static_cast<size_t>(index) + depth - 1];
+        sa[buckets[code]] = index;
+        ++buckets[code];
+    }
+
+    // same as above, but for substrings containing at least one $
+    for (index_type index = length - depth + 1; index < length; ++index) {
+        // induce code for nth suffix from (n-1)th suffix
+        code %= code_modulo;
+        code *= alphabet_size;
+        sa[buckets[code]] = index;
+        ++buckets[code];
+    }
+
+    // determine leftmost index of each bucket
+    for (size_t idx = buckets.size(); idx > 0;) {
+        buckets[idx] = buckets[--idx];
+    }
+    buckets[0] = 0;
+
+    return buckets;
+}
+
 /// This is the recursiv helper function for the function bucket sort.
 /// Do not use this function directly, instead use
 /// void bucket_sort(container<string>& strings, size_t maxDepth,

@@ -27,6 +27,23 @@ TEST(Bucketsort, function_call) {
     std::cout << std::endl;
 }
 
+TEST(Bucketsort, function_call_lightweight) {
+    sacabench::util::string input =
+        sacabench::util::make_string("caabaccaabacaa");
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+
+    auto sa = sacabench::util::make_container<uint8_t>(input.size());
+    sacabench::util::span<uint8_t> sa_span = sa;
+    sacabench::util::sort::bucketsort_presort_lightweight(input,
+            a.size_without_sentinel(), 2, sa_span);
+
+    std::cout << "Suffix Array: ";
+    for (auto const& c : sa)
+        std::cout << (uint32_t) c << ' ';
+    std::cout << std::endl;
+}
+
 TEST(Bucketsort, bucket_sizes){
     sacabench::util::string input = "blablablub"_s;
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
