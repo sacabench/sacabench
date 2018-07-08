@@ -83,7 +83,7 @@ public:
         // bucket it's currenly in, indexed by right inclusive bound
         bpr.split("Phase 1.2");
         util::container<sa_index> bptr = initialize_bucket_pointers<sa_index>(
-            input, alphabet_size, bucketsort_depth, sa);
+            input, alphabet_size, bucketsort_depth, sa, buckets);
 
         // Phase 2
         bpr.split("Phase 2");
@@ -104,68 +104,23 @@ private:
     static util::container<sa_index>
     initialize_bucket_pointers(util::string_span input, size_t alphabet_size,
                                size_t bucketsort_depth,
-                               util::span<sa_index> sa) {
+                               util::span<sa_index> sa, util::span<util::sort::lightweight_bucket> buckets) {
         const size_t n = sa.size();
 
         // create bucket pointer container
         util::container<sa_index> bptr = util::make_container<sa_index>(n);
 
-        // the rightmost bucket is identified by the rightmost index: n-1
-        size_t current_bucket = n - 1;
-        size_t current_sa_position = n;
-
-        size_t current_prefix_code = 0;
-        size_t recent_prefix_code = current_prefix_code;
-
-        // sequentially scan the sa from right to left and calculate prefix
-        // codes of suffixes in order to determine borders between buckets
-        do {
-            --current_sa_position;
-            // find current prefix code by inspecting
-            // sa[current_sa_position]
-            current_prefix_code =
-                code_d<sa_index>(input, alphabet_size, bucketsort_depth,
-                                 sa[current_sa_position]);
-
-            if (current_prefix_code != recent_prefix_code) {
-                // If the prefix code has changed, we have passed a border
-                // between two buckets. The current index is the new
-                // bucket's identifier.
-                current_bucket = current_sa_position;
-                recent_prefix_code = current_prefix_code;
+        size_t current_bucket_idx = 1;
+        sa_index current_bucket;
+        sa_index current_sa_idx = 0;
+        while (current_sa_idx < n) {
+            current_bucket = buckets[current_bucket_idx++] - 1;
+            while (current_sa_idx <= current_bucket) {
+                bptr[sa[current_sa_idx++]] = current_bucket;
             }
-            bptr[sa[current_sa_position]] = current_bucket;
-        } while (current_sa_position > 0);
+        }
 
         return bptr;
-    }
-
-    /**\brief Calculates the prefix code for a given suffix index
-     * \param input Input string containing the suffix
-     * \param alphabet_size Number of distinct symbols in input
-     * \param depth Length of the prefix to use for code determination
-     */
-    template <typename sa_index>
-    static size_t code_d(util::string_span input, size_t alphabet_size,
-                         size_t depth, size_t start_index) {
-        size_t const n = input.size();
-        size_t code = 0;
-        const size_t stop_index = start_index + depth;
-
-        while (start_index < stop_index && start_index < n) {
-            // for each symbol of the prefix: extend the code by one symbol
-            code *= alphabet_size;
-            code += input[start_index++];
-        }
-
-        // TODO: This *might* be useless
-        while (start_index < stop_index) {
-            // for out-of-bound indices (sentinel) fill code with zeros
-            code *= alphabet_size;
-            ++start_index;
-        }
-
-        return code;
     }
 
     /**\brief Refines given buckets in a suffix array one by one
