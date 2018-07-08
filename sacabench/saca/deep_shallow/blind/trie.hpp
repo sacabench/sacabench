@@ -26,13 +26,9 @@ private:
     class arena {
         inline arena() {}
 
-        inline node allocate(const size_t nobj) {
-            return new node[nobj];
-        }
+        inline node allocate(const size_t nobj) { return new node[nobj]; }
 
-        inline node deallocate(node* ptr, const size_t nobj) {
-            delete[] ptr;
-        }
+        inline node deallocate(node* ptr, const size_t nobj) { delete[] ptr; }
     };
 
     struct node {
@@ -65,7 +61,9 @@ private:
             return n;
         }
 
-        inline SB_FORCE_INLINE size_t get_si(const size_t text_size) const { return text_size - lcp; }
+        inline SB_FORCE_INLINE size_t get_si(const size_t text_size) const {
+            return text_size - lcp;
+        }
 
         inline bool is_leaf() const { return children.empty(); }
 
@@ -76,9 +74,10 @@ private:
             // Use binary search to find the first element in children, which is
             // larger than the new. The correct position is right in front of
             // the found element.
-            auto it = std::find_if(children.begin(), children.end(), [&](const node& n) {
-                return n.incoming_char >= new_child.incoming_char;
-            });
+            auto it = std::find_if(
+                children.begin(), children.end(), [&](const node& n) {
+                    return n.incoming_char >= new_child.incoming_char;
+                });
             children.emplace(it, std::move(new_child));
         }
 
@@ -91,9 +90,11 @@ private:
             std::cout << print_incoming_char;
 
             if (is_leaf()) {
-                const util::string_span suffix = input_text.slice(get_si(input_text.size()));
-                std::cout << " [ " << lcp << " ] -> " << get_si(input_text.size()) << ": '" << suffix
-                          << "'" << std::endl;
+                const util::string_span suffix =
+                    input_text.slice(get_si(input_text.size()));
+                std::cout << " [ " << lcp << " ] -> "
+                          << get_si(input_text.size()) << ": '" << suffix << "'"
+                          << std::endl;
             } else {
                 std::cout << " [ " << lcp << " ]" << std::endl;
                 for (const node& child : children) {
@@ -223,7 +224,8 @@ private:
                     // node an inner node and insert a dummy leaf with no edge
                     // label.
 
-                    node n = node::new_leaf(input_text, get_si(input_text.size()));
+                    node n =
+                        node::new_leaf(input_text, get_si(input_text.size()));
                     n.incoming_char = util::SENTINEL;
                     add_child(std::move(n));
                 }
@@ -239,7 +241,8 @@ private:
 
         /// \brief Traverses the trie in order and saves the indices into the
         ///        bucket.
-        inline size_t traverse(const size_t text_size, util::span<suffix_index_type> bucket) const {
+        inline size_t traverse(const size_t text_size,
+                               util::span<suffix_index_type> bucket) const {
             if (is_leaf()) {
                 bucket[0] = get_si(text_size);
                 return 1;
@@ -263,8 +266,7 @@ private:
 public:
     /// \brief Construct a blind trie, which contains the initial_element.
     inline trie(const util::string_span _input_text,
-                const size_t common_prefix_length,
-                const size_t initial_element)
+                const size_t common_prefix_length, const size_t initial_element)
         : m_input_text(_input_text.slice(common_prefix_length)),
           m_root(std::move(node::new_inner_node(0))) {
         m_root.incoming_char = util::SENTINEL;
