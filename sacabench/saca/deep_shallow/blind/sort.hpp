@@ -26,7 +26,7 @@ inline void sort(const util::string_span text,
     util::sort::introsort(bucket, std::greater<suffix_index_type>());
 
     // Create trie
-    trie my_trie(text, common_prefix_length, bucket[0]);
+    trie<suffix_index_type> my_trie(text, common_prefix_length, bucket[0]);
     for (size_t i = 1; i < bucket.size(); ++i) {
         my_trie.insert(bucket[i]);
     }
