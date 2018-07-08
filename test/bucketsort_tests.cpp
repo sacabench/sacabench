@@ -34,9 +34,10 @@ TEST(Bucketsort, function_call_lightweight) {
     sacabench::util::apply_effective_alphabet(input, a);
 
     auto sa = sacabench::util::make_container<uint8_t>(input.size());
+    auto bptr = sacabench::util::make_container<uint8_t>(input.size());
     sacabench::util::span<uint8_t> sa_span = sa;
     sacabench::util::sort::bucketsort_presort_lightweight(input,
-            a.size_without_sentinel(), 2, sa_span);
+            a.size_without_sentinel(), 2, sa_span, bptr);
 
     std::cout << "Suffix Array: ";
     for (auto const& c : sa)
