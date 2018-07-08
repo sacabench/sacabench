@@ -7,8 +7,8 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <random>
-#include <util/is_sorted.hpp>
 #include <util/sa_check.hpp>
+#include <util/is_sorted.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/string.hpp>
 
