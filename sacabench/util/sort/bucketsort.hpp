@@ -114,9 +114,10 @@ inline container<bucket> get_buckets(const span_type input,
  *  a pseudo starting position for one extra bucket at the end of the SA.
  */
 template <typename span_type>
-inline container<lightweight_bucket> get_lightweight_buckets(
-        const span_type input, const std::size_t max_character_code,
-        const std::size_t depth) {
+inline container<lightweight_bucket>
+get_lightweight_buckets(const span_type input,
+                        const std::size_t max_character_code,
+                        const std::size_t depth) {
     DCHECK_GE(depth, 1);
 
     const std::size_t length = input.size();
@@ -271,8 +272,8 @@ bucketsort_presort(const string_span input,
 template <typename index_type>
 __attribute__((noinline)) container<lightweight_bucket>
 bucketsort_presort_lightweight(const string_span input,
-                   const std::size_t max_character_code,
-                   const std::size_t depth, span<index_type> sa) {
+                               const std::size_t max_character_code,
+                               const std::size_t depth, span<index_type> sa) {
     DCHECK_EQ(input.size(), sa.size());
     DCHECK_LE(depth, sa.size());
 
