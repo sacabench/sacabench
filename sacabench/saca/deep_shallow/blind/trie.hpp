@@ -131,9 +131,8 @@ private:
                           const size_t leaf_si) {
 
             // The common prefix the next node represents.
-            const size_t existing_suffix_index = leaf_si;
             const util::string_span existing_suffix =
-                input_text.slice(existing_suffix_index);
+                input_text.slice(leaf_si);
             const util::string_span new_suffix = input_text.slice(new_element);
 
             // Find attributes of the new nodes.
@@ -189,10 +188,15 @@ private:
             add_child(std::move(new_inner));
         }
 
+        /// \brief This method traverses the trie, but has the meta information
+        ///        from the first pass-through about the LCP of the new element
+        ///        and the elements on the existing path.
+        /// \param max_lcp The length of the common prefix of new_element and
+        ///                the elements on the path in the trie.
+        /// \param si      The content of any leaf which is on the correct path.
         inline void second_pass_insert(const util::string_span input_text,
                                        const size_t new_element,
                                        const size_t max_lcp, const size_t si) {
-            node* possible_child;
 
             // Follow the path until a node is encountered, which node label is
             // greater than lcp_len.
@@ -203,21 +207,21 @@ private:
 
                     // Check, if the possible child still has compatible LCPs.
                     if (child.lcp > max_lcp) {
-                        possible_child = &child;
-                        break;
+
+                        // We now have the following situation:
+                        // - This node is the last node with a correct LCP.
+                        // - possible_child is the node with the "correct" edge
+                        //   label, but too large LCP
+
+                        split(input_text, &child, new_element, si);
+                        return;
+
                     } else {
                         return child.second_pass_insert(input_text, new_element,
                                                         max_lcp, si);
                     }
                 }
             }
-
-            // We now have the following situation:
-            // - This node is the last node with a correct LCP.
-            // - possible_child is the node with the "correct" edge label, but
-            //   too large LCP
-
-            split(input_text, possible_child, new_element, si);
         }
 
         /// \brief   This is the main tree construction method. It inserts the
