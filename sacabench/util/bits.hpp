@@ -62,4 +62,10 @@ namespace sacabench::util {
     inline uint64_t floor_log2(uint64_t x) {
         return floor(std::log2(x));
     }
+
+    /// Calculates next power of 2.
+    inline size_t next_pow2(size_t x) {
+        if (x < 2) return 1;
+        return 1 << (32 - __builtin_clz (x - 1));
+    }
 }
