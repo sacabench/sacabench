@@ -26,14 +26,27 @@ TEST(blind_trie, traverse) {
     util::string input = util::make_string("nbanana");
 
     blind_trie my_trie(input, 0, 6);
-    my_trie.insert(5);
-    my_trie.insert(4);
-    my_trie.insert(3);
-    my_trie.insert(2);
-    my_trie.insert(1);
-    my_trie.insert(0);
 
-    my_trie.print();
+    // my_trie.print();
+    // std::cout << "==================================================================================================" << std::endl;
+    my_trie.insert(5);
+    // my_trie.print();
+    // std::cout << "==================================================================================================" << std::endl;
+    my_trie.insert(4);
+    // my_trie.print();
+    // std::cout << "==================================================================================================" << std::endl;
+    my_trie.insert(3);
+    // my_trie.print();
+    // std::cout << "==================================================================================================" << std::endl;
+    my_trie.insert(2);
+    // my_trie.print();
+    // std::cout << "==================================================================================================" << std::endl;
+    my_trie.insert(1);
+    // my_trie.print();
+    // std::cout << "==================================================================================================" << std::endl;
+    my_trie.insert(0);
+    // my_trie.print();
+    // std::cout << "==================================================================================================" << std::endl;
 
     auto bucket = util::make_container<size_t>(7);
     my_trie.traverse(bucket);
