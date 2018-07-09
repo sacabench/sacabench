@@ -183,19 +183,27 @@ public:
             }
 
             const size_t idx = (c1 + 1) * in_1st_level_bucket;
-            size_t right_scan_idx =
+            size_t right_scan_idx = // TODO: remove check if possible
                 idx >= buckets.size() ? sa.size() : buckets[idx];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
-                sa_index suffix_idx;
-                util::character predecessor;
-                if (suffix_idx = sa[right_scan_idx]) {
-                    predecessor = input[--suffix_idx];
-                    if (!sorted_1st_level_bucket[predecessor]) {
-                        size_t sa_destination_idx =
-                            --rightmost_undetermined[predecessor];
-                        sa[sa_destination_idx] = suffix_idx;
-                        // bptr[suffix_idx] = sa_destination_idx;
+                size_t suffix_idx = sa[right_scan_idx];
+                util::character c_pre;
+                if (suffix_idx) {
+                    c_pre = input[--suffix_idx];
+                    if (!sorted_1st_level_bucket[c_pre]) {
+                        --rightmost_undetermined[c_pre];
+                        if (!sorted_1st_level_bucket[input[suffix_idx + 2]]) {
+                            size_t sa_destination_idx = rightmost_undetermined[c_pre];
+                            sa[sa_destination_idx] = suffix_idx;
+                            // bptr[suffix_idx] = sa_destination_idx;
+                        }
+                        util::character c_pre_pre = input[--suffix_idx];
+                        if (suffix_idx >= 0 && !sorted_1st_level_bucket[c_pre_pre] && c_pre_pre != c1) {
+                            size_t sa_destination_idx = --sub_rightmost_undetermined[c_pre_pre * alphabet_size + c_pre];
+                            sa[sa_destination_idx] = suffix_idx;
+                            // bptr[suffix_idx] = sa_destination_idx;
+                        }
                     }
                 }
             }
