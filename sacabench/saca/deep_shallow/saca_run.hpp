@@ -21,6 +21,7 @@
 #include "anchor_data.hpp"
 #include "blind/sort.hpp"
 #include "bucket_data.hpp"
+#include "log.hpp"
 #include "parameters.hpp"
 
 namespace sacabench::deep_shallow {
@@ -52,7 +53,6 @@ private:
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
-
         // Create bucket_data_container object with the right size.
         bd = bucket_data_container<sa_index_type>(alphabet_size);
 
@@ -62,11 +62,15 @@ private:
 
         // Store the bucket bounds in bd.
         bd.set_bucket_bounds(bucket_bounds);
+
+        logger::get() << "bucket sorting phase done\n";
     }
 
     /// \brief Use Multikey-Quicksort to sort the bucket.
     inline void shallow_sort(const span<sa_index_type> bucket) {
         // We use multikey quicksort. Abort at depth DEEP_SORT_DEPTH.
+        logger::get() << "using shallow sort on " << bucket.size()
+                      << " elements.\n";
         util::sort::multikey_quicksort::multikey_quicksort<DEEP_SORT_DEPTH>(
             bucket, input_text, [&](const span<sa_index_type> equal_partition) {
                 deep_sort(equal_partition, DEEP_SORT_DEPTH);
@@ -79,19 +83,38 @@ private:
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
                           const size_t common_prefix_length) {
+        if (bucket.size() <= 2) {
+            if (input_text.slice(bucket[0]) > input_text.slice(bucket[1])) {
+                std::swap(bucket[0], bucket[1]);
+            }
+            logger::get() << "trivially sorted.\n";
+            return;
+        }
+
         // Try induced sorting. This call returns false, if no ANCHOR and
         // OFFSET are suitable. We then use blind-/quicksort.
-        bool induce_sorted_succeeded =
-            try_induced_sort(bucket, common_prefix_length);
+        bool induce_sorted_succeeded;
+
+        size_t induced_time =
+            duration([&]() { try_induced_sort(bucket, common_prefix_length); });
+
+        logger::get() << "induce-check on " << bucket.size()
+                      << " elements took " << induced_time << "ns.\n";
 
         if (!induce_sorted_succeeded) {
             if (bucket.size() < max_blind_sort_size) {
                 // If the bucket is small enough, we can use blind sorting.
                 blind_sort(bucket, common_prefix_length);
+                logger::get() << "using blind sort on " << bucket.size()
+                              << " elements.\n";
             } else {
                 // In this case, we use simple quicksort.
                 simple_sort(bucket, common_prefix_length);
+                logger::get() << "using quick sort on " << bucket.size()
+                              << " elements.\n";
             }
+        } else {
+            logger::get() << "induce-sorted.\n";
         }
     }
 
