@@ -111,11 +111,13 @@ namespace sacabench::nzsufsort {
                 //induce SA_0
                 phase.split("Induce SA_0");
                 util::span<sa_index> isa_12 = out_sa.slice(count_s_type_pos+mod_0, 2*count_s_type_pos);
+                util::span<sa_index> sa_0 = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
                 for (size_t i = 0; i < sa_12.size(); ++i) {
                     isa_12[sa_12[i]] = i;
                 }
-                util::induce_sa_dc<size_t>(t_0, isa_12, t_0);
-                util::span<sa_index> sa_0 = t_0;
+                util::induce_sa_dc<size_t>(t_0, isa_12, sa_0);
+                std::copy(sa_0.begin(), sa_0.end(), t_0.begin());
+                sa_0 = t_0;
                 
                 /* positions in sa_0 are multiplied by 3 so divide by 3 */
                 for (size_t i = 0; i < sa_0.size(); ++i) { sa_0[i] = sa_0[i]/3; }
