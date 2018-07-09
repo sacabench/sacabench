@@ -1,7 +1,7 @@
 #pragma once
 
-// Uncomment to deactivate logging
-#define SB_DSLOG
+// Uncomment to activate logging
+// #define SB_DSLOG
 
 // Run logging in debug mode
 #ifdef DEBUG
@@ -43,6 +43,7 @@ public:
     }
 
     inline void flush() {
+        std::cout << "Writing Deep-Shallow logfile." << std::endl;
         std::ofstream myfile;
         myfile.open("most_recent.log", std::fstream::out | std::fstream::trunc);
         myfile << ss.rdbuf();
@@ -51,7 +52,7 @@ public:
 };
 
 template <typename Fn>
-double duration(Fn fn) {
+inline double duration(Fn fn) {
     const auto start = std::chrono::steady_clock::now();
     fn();
     const auto end = std::chrono::steady_clock::now();
@@ -68,9 +69,17 @@ public:
         static logger singleton;
         return singleton;
     }
-    inline void log(const std::string& str) {}
+
+    template <typename T>
+    inline logger& operator<<(const T& c) {
+        return *this;
+    }
+
     inline void flush() {}
 };
+
+template <typename Fn>
+inline double duration(Fn fn) { fn(); return 0; }
 
 #endif
 } // namespace sacabench::deep_shallow

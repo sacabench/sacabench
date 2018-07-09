@@ -87,7 +87,6 @@ private:
             if (input_text.slice(bucket[0]) > input_text.slice(bucket[1])) {
                 std::swap(bucket[0], bucket[1]);
             }
-            logger::get() << "trivially sorted.\n";
             return;
         }
 
@@ -104,14 +103,18 @@ private:
         if (!induce_sorted_succeeded) {
             if (bucket.size() < max_blind_sort_size) {
                 // If the bucket is small enough, we can use blind sorting.
-                blind_sort(bucket, common_prefix_length);
+                size_t blind_time = duration([&]() {
+                    blind_sort(bucket, common_prefix_length);
+                });
                 logger::get() << "using blind sort on " << bucket.size()
-                              << " elements.\n";
+                              << " elements took " << blind_time << "ns.\n";
             } else {
                 // In this case, we use simple quicksort.
-                simple_sort(bucket, common_prefix_length);
+                size_t quick_time = duration([&]() {
+                    simple_sort(bucket, common_prefix_length);
+                });
                 logger::get() << "using quick sort on " << bucket.size()
-                              << " elements.\n";
+                              << " elements took " << quick_time << ".\n";
             }
         } else {
             logger::get() << "induce-sorted.\n";
@@ -259,7 +262,7 @@ private:
                 input_text.slice(b + common_prefix_length);
             return as < bs;
         };
-        util::sort::introsort(bucket, compare_suffix);
+        util::sort::ternary_quicksort::ternary_quicksort(bucket, compare_suffix);
     }
 
     /// \brief Iteratively sort all buckets.
@@ -285,8 +288,12 @@ private:
                 const span<sa_index_type> bucket =
                     suffix_array.slice(bucket_start, bucket_end);
 
-                // Shallow sort it.
-                shallow_sort(bucket);
+                if(bucket.size() <= 2) {
+                    simple_sort(bucket, 0);
+                } else {
+                    // Shallow sort it.
+                    shallow_sort(bucket);
+                }
 
                 // Debug check: the bucket is correctly suffix sorted.
                 // FIXME: get rid of the obnoxious debug warning.
