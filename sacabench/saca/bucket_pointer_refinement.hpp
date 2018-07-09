@@ -108,11 +108,11 @@ public:
 
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             for (util::character c2 = c1 + 1; c2 < alphabet_size; ++c2) {
-                //for (util::character c3 = c1; c3 < alphabet_size; ++c3) {
+                for (util::character c3 = c1; c3 < alphabet_size; ++c3) {
                     const size_t bucket_idx_begin =
-                        c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;// + c3 * in_3rd_level_bucket;
+                        c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket + c3 * in_3rd_level_bucket;
                     const size_t bucket_idx_end =
-                        bucket_idx_begin + in_2nd_level_bucket;
+                        bucket_idx_begin + in_3rd_level_bucket;
                     for (size_t bucket_idx = bucket_idx_begin;
                             bucket_idx < bucket_idx_end; ++bucket_idx) {
                         if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
@@ -123,7 +123,7 @@ public:
                                         buckets[bucket_idx + 1]));
                         }
                     }
-                //}
+                }
             }
         }
 
