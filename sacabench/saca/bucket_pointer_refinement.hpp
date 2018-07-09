@@ -104,23 +104,26 @@ public:
         // (buckets.size() - 1) because of trailing pseudo bucket
         const size_t in_1st_level_bucket = (buckets.size() - 1) / alphabet_size;
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
+        const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
 
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             for (util::character c2 = c1 + 1; c2 < alphabet_size; ++c2) {
-                const size_t bucket_idx_begin =
-                    c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;
-                const size_t bucket_idx_end =
-                    bucket_idx_begin + in_2nd_level_bucket;
-                for (size_t bucket_idx = bucket_idx_begin;
-                     bucket_idx < bucket_idx_end; ++bucket_idx) {
-                    if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
-                        // if the bucket has at least 1 element
-                        refine_single_bucket<sa_index>(
-                            bucketsort_depth, bucketsort_depth, bptr, buckets[bucket_idx],
-                            sa.slice(buckets[bucket_idx],
-                                     buckets[bucket_idx + 1]));
+                //for (util::character c3 = c1; c3 < alphabet_size; ++c3) {
+                    const size_t bucket_idx_begin =
+                        c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;// + c3 * in_3rd_level_bucket;
+                    const size_t bucket_idx_end =
+                        bucket_idx_begin + in_2nd_level_bucket;
+                    for (size_t bucket_idx = bucket_idx_begin;
+                            bucket_idx < bucket_idx_end; ++bucket_idx) {
+                        if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
+                            // if the bucket has at least 1 element
+                            refine_single_bucket<sa_index>(
+                                    bucketsort_depth, bucketsort_depth, bptr, buckets[bucket_idx],
+                                    sa.slice(buckets[bucket_idx],
+                                        buckets[bucket_idx + 1]));
+                        }
                     }
-                }
+                //}
             }
         }
 
@@ -128,14 +131,21 @@ public:
          * Phase 3
          * Perform copy step by Seward
          */
+        auto leftmost_undetermined =
+            util::make_container<size_t>(alphabet_size);
+        auto rightmost_undetermined =
+            util::make_container<size_t>(alphabet_size);
+
+        auto sub_leftmost_undetermined =
+            util::make_container<size_t>(alphabet_size * alphabet_size);
+        auto sub_rightmost_undetermined =
+            util::make_container<size_t>(alphabet_size * alphabet_size);
 
         bpr.split("Phase 3");
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             /*
              * use copy technique for left buckets
              */
-            auto leftmost_undetermined =
-                util::make_container<size_t>(alphabet_size);
             for (util::character c = 0; c < alphabet_size; ++c) {
                 const size_t idx =
                     c * in_1st_level_bucket + c1 * in_2nd_level_bucket;
@@ -161,13 +171,10 @@ public:
             /*
              * use copy technique for right buckets
              */
-            auto rightmost_undetermined =
-                util::make_container<size_t>(alphabet_size);
-            for (util::character c = 0; c < alphabet_size; ++c) {
+            for (util::character c_pre = 0; c_pre < alphabet_size; ++c_pre) {
                 const size_t idx =
-                    c * in_1st_level_bucket + (c1 + 1) * in_2nd_level_bucket;
-                rightmost_undetermined[c] =
-                    idx >= buckets.size() ? sa.size() : buckets[idx];
+                    c_pre * in_1st_level_bucket + (c1 + 1) * in_2nd_level_bucket;
+                rightmost_undetermined[c_pre] = buckets[idx];
             }
 
             const size_t idx = (c1 + 1) * in_1st_level_bucket;
