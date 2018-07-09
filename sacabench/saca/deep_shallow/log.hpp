@@ -8,7 +8,7 @@
 #define SB_DSLOG
 #endif
 
-// Include headesr
+// Include headers
 #ifdef SB_DSLOG
 #include <chrono>
 #include <fstream>
