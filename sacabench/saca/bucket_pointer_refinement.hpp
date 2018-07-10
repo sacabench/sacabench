@@ -100,11 +100,10 @@ public:
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
         const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
 
-        util:: character c_curr, c_succ, c_succ_succ;
+        util::character c_curr, c_succ, c_succ_succ;
 
         for (c_curr = 0; c_curr < alphabet_size; ++c_curr) {
-            for (c_succ = c_curr + 1; c_succ < alphabet_size;
-                 ++c_succ) {
+            for (c_succ = c_curr + 1; c_succ < alphabet_size; ++c_succ) {
                 for (c_succ_succ = c_curr; c_succ_succ < alphabet_size;
                      ++c_succ_succ) {
                     const size_t bucket_idx_begin =
@@ -170,13 +169,16 @@ public:
              */
 
             for (c_pred = c_curr; c_pred < alphabet_size; ++c_pred) {
-                leftmost_undetermined[c_pred] = buckets[c_pred * in_1st_level_bucket + c_curr * in_2nd_level_bucket];
-                rightmost_undetermined[c_pred] = buckets[c_pred * in_1st_level_bucket +
-                                   (c_curr + 1) * in_2nd_level_bucket];
-                for (c_pred_pred = c_curr + 1;
-                     c_pred_pred < alphabet_size; ++c_pred_pred) {
+                leftmost_undetermined[c_pred] =
+                    buckets[c_pred * in_1st_level_bucket +
+                            c_curr * in_2nd_level_bucket];
+                rightmost_undetermined[c_pred] =
+                    buckets[c_pred * in_1st_level_bucket +
+                            (c_curr + 1) * in_2nd_level_bucket];
+                for (c_pred_pred = c_curr + 1; c_pred_pred < alphabet_size;
+                     ++c_pred_pred) {
                     sub_leftmost_undetermined[c_pred_pred * alphabet_size +
-                                               c_pred] =
+                                              c_pred] =
                         buckets[c_pred_pred * in_1st_level_bucket +
                                 c_pred * in_2nd_level_bucket +
                                 c_curr * in_3rd_level_bucket];
@@ -197,18 +199,23 @@ public:
                 if (suffix_idx = sa[left_scan_idx]) {
                     c_pred = input[--suffix_idx];
                     if (!sorted_1st_level_bucket[c_pred]) {
-                        sa_destination_idx =
-                            leftmost_undetermined[c_pred]++;
+                        sa_destination_idx = leftmost_undetermined[c_pred]++;
                         sa[sa_destination_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_destination_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
                         c_pred_pred = input[--suffix_idx];
-                        if (c_curr < c_pred_pred && c_pred_pred < c_pred && !sorted_1st_level_bucket[c_pred_pred]) {
-                            if (sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred] < sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
-                                sa_destination_idx =
-                                    sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]++;
+                        if (c_curr < c_pred_pred && c_pred_pred < c_pred &&
+                            !sorted_1st_level_bucket[c_pred_pred]) {
+                            if (sub_leftmost_undetermined[c_pred_pred *
+                                                              alphabet_size +
+                                                          c_pred] <
+                                sub_rightmost_undetermined[c_pred_pred *
+                                                               alphabet_size +
+                                                           c_pred]) {
+                                sa_destination_idx = sub_leftmost_undetermined
+                                    [c_pred_pred * alphabet_size + c_pred]++;
                                 sa[sa_destination_idx] = suffix_idx;
                                 // bptr[suffix_idx] = sa_destination_idx;
                             }
@@ -228,18 +235,24 @@ public:
                 if (suffix_idx = sa[right_scan_idx]) {
                     c_pred = input[--suffix_idx];
                     if (!sorted_1st_level_bucket[c_pred]) {
-                        sa_destination_idx =
-                            --rightmost_undetermined[c_pred];
+                        sa_destination_idx = --rightmost_undetermined[c_pred];
                         sa[sa_destination_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_destination_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
                         c_pred_pred = input[--suffix_idx];
-                        if (c_curr < c_pred_pred && c_pred_pred < c_pred && !sorted_1st_level_bucket[c_pred_pred]) {
-                            if (sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred] > sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
+                        if (c_curr < c_pred_pred && c_pred_pred < c_pred &&
+                            !sorted_1st_level_bucket[c_pred_pred]) {
+                            if (sub_rightmost_undetermined[c_pred_pred *
+                                                               alphabet_size +
+                                                           c_pred] >
+                                sub_leftmost_undetermined[c_pred_pred *
+                                                              alphabet_size +
+                                                          c_pred]) {
                                 sa_destination_idx =
-                                    --sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred];
+                                    --sub_rightmost_undetermined
+                                        [c_pred_pred * alphabet_size + c_pred];
                                 sa[sa_destination_idx] = suffix_idx;
                                 // bptr[suffix_idx] = sa_destination_idx;
                             }
