@@ -113,12 +113,14 @@ inline void multikey_quicksort_internal(span<index_type> array,
     multikey_quicksort_internal<abort_at_depth>(lesser, key_func, fn);
     multikey_quicksort_internal<abort_at_depth>(greater, key_func, fn);
 
-    // Sort the equal partition by the next character.
-    ++key_func.depth;
-    if (abort_at_depth != 0 && key_func.depth >= abort_at_depth) {
-        fn(equal);
-    } else {
-        multikey_quicksort_internal<abort_at_depth>(equal, key_func, fn);
+    if(equal.size() > 1) {
+        // Sort the equal partition by the next character.
+        ++key_func.depth;
+        if (abort_at_depth != 0 && key_func.depth >= abort_at_depth) {
+            fn(equal);
+        } else {
+            multikey_quicksort_internal<abort_at_depth>(equal, key_func, fn);
+        }
     }
     key_func.depth = d;
 }

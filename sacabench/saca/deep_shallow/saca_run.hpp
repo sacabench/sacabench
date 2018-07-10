@@ -89,8 +89,10 @@ private:
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
                           const size_t common_prefix_length) {
+        DCHECK_GE(bucket.size(), 2);
+
         // Catch this common case and sort it efficiently.
-        if (bucket.size() <= 2) {
+        if (bucket.size() == 2) {
             if (input_text.slice(bucket[1]) < input_text.slice(bucket[0])) {
                 std::swap(bucket[0], bucket[1]);
             }
@@ -304,7 +306,7 @@ private:
                     suffix_array.slice(bucket_start, bucket_end);
 
                 if (bucket.size() <= 2) {
-                    deep_sort(bucket, 2);
+                    simple_sort(bucket, 2);
                 } else {
                     // Shallow sort it.
                     shallow_sort(bucket);
