@@ -92,7 +92,7 @@ namespace sacabench::nzsufsort {
                 phase.split("Call DC3-Lite");
                 auto u = out_sa.slice(t_12.size(), 2*t_12.size());
                 auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
-                dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u, v);
+                dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u, v, text.size()+1);
                 for (size_t i = 0; i < t_12.size(); ++i) {
                     t_12[i] = v[i];
                 }

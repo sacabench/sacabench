@@ -115,7 +115,9 @@ void radixsort_septuple(container<T>& tuples, container<size_t>& result) {
 
 template <typename T, typename S, typename N>
 void radixsort_triple(T& text, S& tuples, S& result, const N& alphabet_size, const N position) {
-
+    DCHECK_MSG(tuples.size() == result.size(),
+               "tuples must have the same length as result");
+               
     auto buckets = util::container<size_t>(alphabet_size);
 
     for(size_t i = 0; i < tuples.size(); ++i){
@@ -164,6 +166,39 @@ void radixsort_tuple(container<T>& tuples, container<size_t>& result) {
             result[counter] = s;
             ++counter;
         }
+    }
+}
+
+template <typename S, typename Key>
+void radixsort_with_key(S& input, S& result, const size_t radix_size, 
+        const size_t max_index, Key key_function) {
+    DCHECK_MSG(input.size() == result.size(),
+               "input must have the same length as result");
+               
+    auto buckets = util::container<size_t>(radix_size);
+    for (size_t p = max_index; p >= 0; --p) {
+        // reset buckets
+        for (size_t i = 0; i < radix_size; ++i) { buckets[i] = 0; }
+        
+        // generate Buckets
+        for(size_t i = 0; i < input.size(); ++i){
+            ++buckets[key_function(input[i], p)];
+        }
+        size_t sum = 0;
+        for(size_t i = 0; i < buckets.size(); ++i){
+            sum += buckets[i];
+            buckets[i] = sum-buckets[i];
+        }
+        
+        // partition input elements by key
+        for(size_t i = 0; i < input.size(); ++i){
+            result[buckets[key_function(input[i], p)]++] = input[i];
+        }
+        
+        if (p == 0) { break; }
+        
+        // collect elements
+        std::copy(result.begin(), result.end(), input.begin());
     }
 }
 } // namespace sacabench::util

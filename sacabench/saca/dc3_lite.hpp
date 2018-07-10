@@ -17,6 +17,7 @@
 #include <util/alphabet.hpp>
 #include <util/induce_sa_dc.hpp>
 #include <util/compare.hpp>
+#include <util/sort/tuple_sort.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
@@ -35,18 +36,18 @@ namespace sacabench::dc3_lite {
             static void construct_sa(util::string_span text,
                                      util::alphabet const& alphabet,
                                      util::span<sa_index> out_sa) {
-                //Suppress warnings
-                (void) alphabet;
                                          
                 auto new_text_cont = util::make_container<sa_index>(text.size());
                 util::span<sa_index> new_text = new_text_cont;
                 auto u = util::make_container<sa_index>(text.size());
-                lightweight_dc3<const util::character, sa_index>(text, new_text, u, out_sa);
+                lightweight_dc3<const util::character, sa_index>(text, new_text, u, out_sa,
+                    alphabet.size_with_sentinel());
             }
             
             template<typename C, typename sa_index>
             static void lightweight_dc3(util::span<C> text, util::span<sa_index> new_text,
-                                        util::span<sa_index> u, util::span<sa_index> out_sa) {
+                                        util::span<sa_index> u, util::span<sa_index> out_sa,
+                                        const size_t alphabet_size) {
                 //end of recursion if text.size() < 3 
                 if (text.size() < 3) {
                     if (text.size() == 1) {
@@ -69,21 +70,18 @@ namespace sacabench::dc3_lite {
                 
                 tdc::StatPhase phase("Sort triplets");
                 
-                //save indices of text in u
-                for (size_t i = 0; i < text.size(); ++i) { u[i] = i; }
+                /* save indices of text in out_sa in reverted order
+                   so that the lastc complete triplet gets higher priority */
+                for (size_t i = 0; i < text.size(); ++i) { out_sa[i] = text.size()-i-1; }
                 
-                //TODO sort triplets_12 with radix sort
-                auto comp = [&](size_t i, size_t j) {
-                    util::span<C> t_1 = retrieve_triplets<C>(text, i, 3);
-                    util::span<C> t_2 = retrieve_triplets<C>(text, j, 3);
-                    return t_1 < t_2 
-                        || (t_1 == t_2 && i+3 == text.size()); 
-                                /*If equal the last triplet must have lower
-                                  priority to simulate dummy triplet */
+                auto key_function = [&](size_t i, size_t p) {
+                    if (i+p < text.size()) {
+                        return text[i+p];
+                    }
+                    else { return (C)0; }
                 };
                 
-                //sort all triplets
-                std::sort(u.begin(), u.end(), comp);
+                radixsort_with_key(out_sa, u, alphabet_size, 2, key_function);
                 
                 //Determine lexicographical names of all triplets
                 //if triplets are the same, they will get the same rank
@@ -131,7 +129,7 @@ namespace sacabench::dc3_lite {
                 for (size_t i = 0; i < tmp_2.size(); ++i) { tmp_2[i] = text_1[start_pos_mod_2+i]; }
                 
                 //Rekursion
-                lightweight_dc3<sa_index, sa_index>(text_1, text_1, u_1, v_1);
+                lightweight_dc3<sa_index, sa_index>(text_1, text_1, u_1, v_1, rank+1);
                 
                 //copy old value of text_1 back
                 phase.split("Copy text_1 back");
