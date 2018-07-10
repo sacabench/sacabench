@@ -183,8 +183,7 @@ public:
             }
 
             const size_t idx = (c1 + 1) * in_1st_level_bucket;
-            size_t right_scan_idx =
-                idx >= buckets.size() ? sa.size() : buckets[idx];
+            size_t right_scan_idx = buckets[idx];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
                 sa_index suffix_idx;
