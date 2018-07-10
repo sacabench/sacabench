@@ -95,21 +95,17 @@ public:
             sa[sentinel_idx] = bptr.size() - sentinel_idx - 1;
         }
 
-        // remember which top level buckets are already sorted
-        auto sorted_1st_level_bucket =
-            util::make_container<bool>(alphabet_size);
-        std::fill(sorted_1st_level_bucket.begin(),
-                  sorted_1st_level_bucket.end(), false);
-
         // (buckets.size() - 1) because of trailing pseudo bucket
         const size_t in_1st_level_bucket = (buckets.size() - 1) / alphabet_size;
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
         const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
 
-        for (util::character c_curr = 0; c_curr < alphabet_size; ++c_curr) {
-            for (util::character c_succ = c_curr + 1; c_succ < alphabet_size;
+        util:: character c_curr, c_succ, c_succ_succ;
+
+        for (c_curr = 0; c_curr < alphabet_size; ++c_curr) {
+            for (c_succ = c_curr + 1; c_succ < alphabet_size;
                  ++c_succ) {
-                for (util::character c_succ_succ = c_curr; c_succ_succ < alphabet_size;
+                for (c_succ_succ = c_curr; c_succ_succ < alphabet_size;
                      ++c_succ_succ) {
                     const size_t bucket_idx_begin =
                         c_curr * in_1st_level_bucket +
@@ -138,33 +134,45 @@ public:
          */
 
         bpr.split("Phase 3");
+
+        // remember which top level buckets are already sorted
+        auto sorted_1st_level_bucket =
+            util::make_container<bool>(alphabet_size);
+        std::fill(sorted_1st_level_bucket.begin(),
+                  sorted_1st_level_bucket.end(), false);
+
+        // insert positions on next left scan (inclusive index)
         auto leftmost_undetermined =
             util::make_container<size_t>(alphabet_size);
+        // insert positions on next right scan (exclusive index)
         auto rightmost_undetermined =
             util::make_container<size_t>(alphabet_size);
 
+        // 2nd level insert positions on next left scan (inclusive index)
         auto sub_leftmost_undetermined =
             util::make_container<size_t>(alphabet_size * alphabet_size);
+        // 2nd level insert positions on next right scan (exclusive index)
         auto sub_rightmost_undetermined =
             util::make_container<size_t>(alphabet_size * alphabet_size);
 
-        size_t left_scan_idx;
-        size_t right_scan_idx;
+        size_t left_scan_idx, right_scan_idx;
 
         sa_index suffix_idx;
         size_t sa_destination_idx;
 
-        util::character c_pred;
-        util::character c_pred_pred;
+        // predecessor and pre-predecessor characters of
+        util::character c_pred, c_pred_pred;
 
-        for (util::character c_curr = 0; c_curr < alphabet_size; ++c_curr) {
+        for (c_curr = 0; c_curr < alphabet_size; ++c_curr) {
 
             /*
              * initialize undetermined pointers
              */
 
-            for (c_pred = 0; c_pred < alphabet_size; ++c_pred) {
+            for (c_pred = c_curr; c_pred < alphabet_size; ++c_pred) {
                 leftmost_undetermined[c_pred] = buckets[c_pred * in_1st_level_bucket + c_curr * in_2nd_level_bucket];
+                rightmost_undetermined[c_pred] = buckets[c_pred * in_1st_level_bucket +
+                                   (c_curr + 1) * in_2nd_level_bucket];
                 for (c_pred_pred = c_curr + 1;
                      c_pred_pred < alphabet_size; ++c_pred_pred) {
                     sub_leftmost_undetermined[c_pred_pred * alphabet_size +
@@ -172,15 +180,6 @@ public:
                         buckets[c_pred_pred * in_1st_level_bucket +
                                 c_pred * in_2nd_level_bucket +
                                 c_curr * in_3rd_level_bucket];
-                }
-            }
-
-            for (c_pred = c_curr; c_pred < alphabet_size;
-                 ++c_pred) {
-                rightmost_undetermined[c_pred] = buckets[c_pred * in_1st_level_bucket +
-                                   (c_curr + 1) * in_2nd_level_bucket];
-                for (c_pred_pred = c_curr + 1;
-                     c_pred_pred < alphabet_size; ++c_pred_pred) {
                     sub_rightmost_undetermined[c_pred_pred * alphabet_size +
                                                c_pred] =
                         buckets[c_pred_pred * in_1st_level_bucket +
