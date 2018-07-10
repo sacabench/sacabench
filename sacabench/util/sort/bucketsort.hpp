@@ -305,7 +305,8 @@ bucketsort_presort_lightweight(const string_span input,
         code %= code_modulo;
         code *= alphabet_size;
         code += input[index + depth - 1];
-        if (input[index] < input[index + 1] && input[index] <= input[index + 2]) {
+        if ((index + 2 >= length) || (input[index] < input[index + 1] && input[index] <= input[index + 2])) {
+            //DCHECK_LT(index + 2, length);
             sa[buckets_tmp[code]] = index;
         }
         bptr[index] = buckets[code + 1] - 1;
