@@ -225,7 +225,7 @@ if(suffix_idx + 2 >= sa.size()){
                         if (!sorted_1st_level_bucket[input[suffix_idx + 2]]) {
                             size_t sa_destination_idx = leftmost_undetermined[c_pre];
 if(sa_destination_idx >= sa.size()){
-    std::cout << "e" << std::endl;
+    std::cout << "e: sa_destination_idx is: " << sa_destination_idx << std::endl;
     exit(0);
 }
                             sa[sa_destination_idx] = suffix_idx;
@@ -234,14 +234,14 @@ if(sa_destination_idx >= sa.size()){
                         ++leftmost_undetermined[c_pre];
                         if (suffix_idx > 0) {
 if(suffix_idx - 1 >= sa.size()){
-    std::cout << "e" << std::endl;
+    std::cout << "e: suffix_idx is " << suffix_idx << std::endl;
     exit(0);
 }
                             util::character c_pre_pre = input[--suffix_idx];
                             if (!sorted_1st_level_bucket[c_pre_pre] && c_pre_pre != c1)  {
                                 size_t sa_destination_idx = ++sub_leftmost_undetermined[c_pre_pre * alphabet_size + c_pre];
 if(sa_destination_idx >= sa.size()){
-    std::cout << "f" << std::endl;
+    std::cout << "f: sa_destination_idx is " << sa_destination_idx << std::endl;
     exit(0);
 }
                                 sa[sa_destination_idx] = suffix_idx;
@@ -292,11 +292,11 @@ if(suffix_idx - 1 >= sa.size()){
                     c_pre = input[--suffix_idx];
                     if (!sorted_1st_level_bucket[c_pre]) {
                         --rightmost_undetermined[c_pre];
-if(suffix_idx + 2 >= sa.size()){
-    std::cout << "F: suffix_idx is " << suffix_idx << std::endl;
-    exit(0);
-}
-                        if (!sorted_1st_level_bucket[input[suffix_idx + 2]]) {
+//if(suffix_idx + 2 >= sa.size()){
+    //std::cout << "F: suffix_idx is " << suffix_idx << std::endl;
+    //exit(0);
+//}
+                        if (suffix_idx < sa.size() - 3 && !sorted_1st_level_bucket[input[suffix_idx + 2]]) {
                             size_t sa_destination_idx =
                                 rightmost_undetermined[c_pre];
 if(sa_destination_idx >= sa.size()){
