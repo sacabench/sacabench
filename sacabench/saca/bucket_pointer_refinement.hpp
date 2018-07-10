@@ -148,17 +148,24 @@ public:
         auto sub_rightmost_undetermined =
             util::make_container<size_t>(alphabet_size * alphabet_size);
 
+        size_t left_scan_idx;
+        size_t right_scan_idx;
+
+        sa_index suffix_idx;
+        size_t sa_destination_idx;
+
+        util::character c_pred;
+        util::character c_pred_pred;
+
         for (util::character c_curr = 0; c_curr < alphabet_size; ++c_curr) {
 
             /*
              * initialize undetermined pointers
              */
 
-            for (util::character c_pred = 0; c_pred < alphabet_size; ++c_pred) {
-                const size_t idx =
-                    c_pred * in_1st_level_bucket + c_curr * in_2nd_level_bucket;
-                leftmost_undetermined[c_pred] = buckets[idx];
-                for (util::character c_pred_pred = c_curr + 1;
+            for (c_pred = 0; c_pred < alphabet_size; ++c_pred) {
+                leftmost_undetermined[c_pred] = buckets[c_pred * in_1st_level_bucket + c_curr * in_2nd_level_bucket];
+                for (c_pred_pred = c_curr + 1;
                      c_pred_pred < alphabet_size; ++c_pred_pred) {
                     sub_leftmost_undetermined[c_pred_pred * alphabet_size +
                                                c_pred] =
@@ -168,12 +175,11 @@ public:
                 }
             }
 
-            for (util::character c_pred = c_curr; c_pred < alphabet_size;
+            for (c_pred = c_curr; c_pred < alphabet_size;
                  ++c_pred) {
-                const size_t idx = c_pred * in_1st_level_bucket +
-                                   (c_curr + 1) * in_2nd_level_bucket;
-                rightmost_undetermined[c_pred] = buckets[idx];
-                for (util::character c_pred_pred = c_curr + 1;
+                rightmost_undetermined[c_pred] = buckets[c_pred * in_1st_level_bucket +
+                                   (c_curr + 1) * in_2nd_level_bucket];
+                for (c_pred_pred = c_curr + 1;
                      c_pred_pred < alphabet_size; ++c_pred_pred) {
                     sub_rightmost_undetermined[c_pred_pred * alphabet_size +
                                                c_pred] =
@@ -187,24 +193,22 @@ public:
              * use copy technique for left buckets
              */
 
-            size_t left_scan_idx = buckets[c_curr * in_1st_level_bucket];
+            left_scan_idx = buckets[c_curr * in_1st_level_bucket];
             while (left_scan_idx < leftmost_undetermined[c_curr]) {
-                sa_index suffix_idx;
-                util::character c_pred;
                 if (suffix_idx = sa[left_scan_idx]) {
                     c_pred = input[--suffix_idx];
                     if (!sorted_1st_level_bucket[c_pred]) {
-                        size_t sa_destination_idx =
+                        sa_destination_idx =
                             leftmost_undetermined[c_pred]++;
                         sa[sa_destination_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_destination_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
-                        util::character c_pred_pred = input[--suffix_idx];
+                        c_pred_pred = input[--suffix_idx];
                         if (c_curr < c_pred_pred && c_pred_pred < c_pred && !sorted_1st_level_bucket[c_pred_pred]) {
                             if (sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred] < sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
-                                size_t sa_destination_idx =
+                                sa_destination_idx =
                                     sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]++;
                                 if(sa[sa_destination_idx] != suffix_idx && sa[sa_destination_idx] != (sa_index) 0) {
                                     std::cout << "sa[" << sa_destination_idx << "] is " << sa[sa_destination_idx] << ". Overwriting with " << suffix_idx << std::endl;
@@ -223,26 +227,23 @@ public:
              * use copy technique for right buckets
              */
 
-            const size_t idx = (c_curr + 1) * in_1st_level_bucket;
-            size_t right_scan_idx = buckets[idx];
+            right_scan_idx = buckets[(c_curr + 1) * in_1st_level_bucket];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
-                sa_index suffix_idx;
-                util::character c_pred;
                 if (suffix_idx = sa[right_scan_idx]) {
                     c_pred = input[--suffix_idx];
                     if (!sorted_1st_level_bucket[c_pred]) {
-                        size_t sa_destination_idx =
+                        sa_destination_idx =
                             --rightmost_undetermined[c_pred];
                         sa[sa_destination_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_destination_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
-                        util::character c_pred_pred = input[--suffix_idx];
+                        c_pred_pred = input[--suffix_idx];
                         if (c_curr < c_pred_pred && c_pred_pred < c_pred && !sorted_1st_level_bucket[c_pred_pred]) {
                             if (sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred] > sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
-                                size_t sa_destination_idx =
+                                sa_destination_idx =
                                     --sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred];
                                 if(sa[sa_destination_idx] != suffix_idx && sa[sa_destination_idx] != (sa_index) 0) {
                                     std::cout << "sa[" << sa_destination_idx << "] is " << sa[sa_destination_idx] << ". Overwriting with " << suffix_idx << std::endl;
