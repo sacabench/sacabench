@@ -71,10 +71,16 @@ private:
         // We use multikey quicksort. Abort at depth DEEP_SORT_DEPTH.
         logger::get() << "using shallow sort on " << bucket.size()
                       << " elements.\n";
-        util::sort::multikey_quicksort::multikey_quicksort<DEEP_SORT_DEPTH>(
-            bucket, input_text, [&](const span<sa_index_type> equal_partition) {
-                deep_sort(equal_partition, DEEP_SORT_DEPTH);
-            });
+
+        size_t ns = duration([&]() {
+            util::sort::multikey_quicksort::multikey_quicksort<DEEP_SORT_DEPTH>(
+                bucket, input_text,
+                [&](const span<sa_index_type> equal_partition) {
+                    deep_sort(equal_partition, DEEP_SORT_DEPTH);
+                });
+        });
+
+        logger::get() << "Took " << ns << "ns.\n";
     }
 
     /// \brief Use Induce Sorting, Blind Sorting and Ternary Quicksort to sort
@@ -94,30 +100,38 @@ private:
         // OFFSET are suitable. We then use blind-/quicksort.
         bool induce_sorted_succeeded;
 
-        size_t induced_time =
-            duration([&]() { try_induced_sort(bucket, common_prefix_length); });
+        size_t induced_time = duration([&]() {
+            induce_sorted_succeeded =
+                try_induced_sort(bucket, common_prefix_length);
+        });
 
         logger::get() << "induce-check on " << bucket.size()
                       << " elements took " << induced_time << "ns.\n";
 
         if (!induce_sorted_succeeded) {
+            logger::get().time_spent_induction_testing(induced_time);
+
             if (bucket.size() < max_blind_sort_size) {
                 // If the bucket is small enough, we can use blind sorting.
-                size_t blind_time = duration([&]() {
-                    blind_sort(bucket, common_prefix_length);
-                });
+                size_t blind_time = duration(
+                    [&]() { blind_sort(bucket, common_prefix_length); });
                 logger::get() << "using blind sort on " << bucket.size()
                               << " elements took " << blind_time << "ns.\n";
+                logger::get().sorted_elements_blind(bucket.size());
+                logger::get().time_spent_blind(blind_time);
             } else {
                 // In this case, we use simple quicksort.
-                size_t quick_time = duration([&]() {
-                    simple_sort(bucket, common_prefix_length);
-                });
+                size_t quick_time = duration(
+                    [&]() { simple_sort(bucket, common_prefix_length); });
                 logger::get() << "using quick sort on " << bucket.size()
                               << " elements took " << quick_time << ".\n";
+                logger::get().sorted_elements_quick(bucket.size());
+                logger::get().time_spent_quick(quick_time);
             }
         } else {
             logger::get() << "induce-sorted.\n";
+            logger::get().sorted_elements_induction(bucket.size());
+            logger::get().time_spent_induction_sorting(induced_time);
         }
     }
 
@@ -125,6 +139,24 @@ private:
     inline void blind_sort(const span<sa_index_type> bucket,
                            const size_t common_prefix_length) {
         blind::sort(input_text, bucket, common_prefix_length);
+    }
+
+    /// \brief Use ternary quicksort to sort the bucket.
+    inline void simple_sort(span<sa_index_type> bucket,
+                            const sa_index_type common_prefix_length) {
+        const auto compare_suffix = [&](const sa_index_type a,
+                                        const sa_index_type b) {
+            DCHECK_LT(a + common_prefix_length, input_text.size());
+            DCHECK_LT(b + common_prefix_length, input_text.size());
+
+            const util::string_span as =
+                input_text.slice(a + common_prefix_length);
+            const util::string_span bs =
+                input_text.slice(b + common_prefix_length);
+            return as < bs;
+        };
+        util::sort::ternary_quicksort::ternary_quicksort(bucket,
+                                                         compare_suffix);
     }
 
     inline bool try_induced_sort(const span<sa_index_type> bucket,
@@ -248,23 +280,6 @@ private:
         return false;
     }
 
-    /// \brief Use ternary quicksort to sort the bucket.
-    inline void simple_sort(span<sa_index_type> bucket,
-                            const sa_index_type common_prefix_length) {
-        const auto compare_suffix = [&](const sa_index_type a,
-                                        const sa_index_type b) {
-            DCHECK_LT(a + common_prefix_length, input_text.size());
-            DCHECK_LT(b + common_prefix_length, input_text.size());
-
-            const util::string_span as =
-                input_text.slice(a + common_prefix_length);
-            const util::string_span bs =
-                input_text.slice(b + common_prefix_length);
-            return as < bs;
-        };
-        util::sort::ternary_quicksort::ternary_quicksort(bucket, compare_suffix);
-    }
-
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
         while (bd.are_buckets_left()) {
@@ -288,8 +303,8 @@ private:
                 const span<sa_index_type> bucket =
                     suffix_array.slice(bucket_start, bucket_end);
 
-                if(bucket.size() <= 2) {
-                    simple_sort(bucket, 0);
+                if (bucket.size() <= 2) {
+                    deep_sort(bucket, 2);
                 } else {
                     // Shallow sort it.
                     shallow_sort(bucket);

@@ -81,26 +81,25 @@ private:
             children.emplace(it, std::move(new_child));
         }
 
-        inline void print(const util::string_span input_text,
+        inline void print(std::ostream& out, const util::string_span input_text,
                           const size_t depth) const {
             util::character print_incoming_char = incoming_char;
             if (print_incoming_char == util::SENTINEL) {
                 print_incoming_char = '$';
             }
-            std::cout << print_incoming_char;
+            out << print_incoming_char;
 
             if (is_leaf()) {
-                const util::string_span suffix =
-                    input_text.slice(get_si(input_text.size()));
-                std::cout << " [ " << lcp << " ] -> "
-                          << get_si(input_text.size()) << ": '" << suffix << "'"
-                          << std::endl;
+                const size_t si = get_si(input_text.size());
+                const util::string_span suffix = input_text.slice(si);
+                out << " [ " << lcp << " ] -> " << si << ": '" << suffix << "'"
+                    << std::endl;
             } else {
-                std::cout << " [ " << lcp << " ]" << std::endl;
+                out << " [ " << lcp << " ]" << std::endl;
                 for (const node& child : children) {
                     print_spaces(depth);
-                    std::cout << "'- ";
-                    child.print(input_text, depth + 3);
+                    out << "'- ";
+                    child.print(out, input_text, depth + 3);
                 }
             }
         }
@@ -131,8 +130,7 @@ private:
                           const size_t leaf_si) {
 
             // The common prefix the next node represents.
-            const util::string_span existing_suffix =
-                input_text.slice(leaf_si);
+            const util::string_span existing_suffix = input_text.slice(leaf_si);
             const util::string_span new_suffix = input_text.slice(new_element);
 
             // Find attributes of the new nodes.
@@ -253,6 +251,8 @@ private:
                 // Case 2: There is an edge, but the LCP is not the same
                 // anymore. We need to split the selected child node into two.
 
+                logger::get() << "Blind: Case 2.\n";
+
                 split(input_text, possible_child, new_element,
                       get_any_leaf_si(input_text.size()));
                 return std::make_pair(0, 0);
@@ -263,6 +263,8 @@ private:
                         // Case 4: This node is itself a leaf. We then make this
                         // node an inner node and insert a dummy leaf with no
                         // edge label.
+
+                        logger::get() << "Blind: Case 4.\n";
 
                         node n = node::new_leaf(input_text, si);
                         n.incoming_char = util::SENTINEL;
@@ -276,6 +278,8 @@ private:
                     n.incoming_char = input_text[new_element + lcp];
                     add_child(std::move(n));
 
+                    logger::get() << "Blind: Case 3.\n";
+
                     return std::make_pair(0, 0);
                 } else {
                     // Case 5: We know, that there is an usable edge existing at
@@ -284,6 +288,9 @@ private:
                     // to-be-newly-inserted node. We then return to the tree
                     // root and try again, now with the information, how long
                     // the LCP will be.
+
+                    logger::get() << "Blind: Case 5.\n";
+
                     const util::string_span this_lcp = input_text.slice(si);
                     const util::string_span new_lcp =
                         input_text.slice(new_element);
@@ -337,7 +344,9 @@ public:
         m_root.add_child(std::move(n));
     }
 
-    inline void print() const { m_root.print(m_input_text, 0); }
+    inline void print(std::ostream& out) const {
+        m_root.print(out, m_input_text, 0);
+    }
 
     /// \brief Insert an element into the correct place of the blind trie.
     inline void insert(const size_t new_element) {
@@ -359,5 +368,11 @@ public:
         (void)n;
     }
 };
+
+template <typename sa_index>
+inline std::ostream& operator<<(std::ostream& out, const trie<sa_index>& t) {
+    t.print(out);
+    return out;
+}
 
 } // namespace sacabench::deep_shallow::blind
