@@ -106,13 +106,9 @@ public:
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
         const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
 
-        //std::cout << sa << "SA after bucketing" << std::endl;
-
         for (util::character c_curr = 0; c_curr < alphabet_size; ++c_curr) {
             for (util::character c_succ = c_curr + 1; c_succ < alphabet_size;
                  ++c_succ) {
-                // possible with c_succ_succ = c_curr + 1 or even c_succ_succ = c_succ
-                // + 1?
                 for (util::character c_succ_succ = c_curr; c_succ_succ < alphabet_size;
                      ++c_succ_succ) {
                     const size_t bucket_idx_begin =
@@ -136,12 +132,12 @@ public:
             }
         }
 
-        //std::cout << sa << " SA after sorting" << std::endl;
-
         /**
          * Phase 3
          * Perform copy step by Seward
          */
+
+        bpr.split("Phase 3");
         auto leftmost_undetermined =
             util::make_container<size_t>(alphabet_size);
         auto rightmost_undetermined =
@@ -152,8 +148,12 @@ public:
         auto sub_rightmost_undetermined =
             util::make_container<size_t>(alphabet_size * alphabet_size);
 
-        bpr.split("Phase 3");
         for (util::character c_curr = 0; c_curr < alphabet_size; ++c_curr) {
+
+            /*
+             * initialize undetermined pointers
+             */
+
             for (util::character c_pred = 0; c_pred < alphabet_size; ++c_pred) {
                 const size_t idx =
                     c_pred * in_1st_level_bucket + c_curr * in_2nd_level_bucket;
@@ -182,11 +182,6 @@ public:
                                 (c_curr + 1) * in_3rd_level_bucket];
                 }
             }
-
-            /*
-            std::cout << sub_leftmost_undetermined << " sub_leftmost_undetermined before copy of " << (size_t) c_curr << std::endl;
-            std::cout << sub_rightmost_undetermined << " sub_rightmost_undetermined before copy of " << (size_t) c_curr << std::endl;
-            */
 
             /*
              * use copy technique for left buckets
@@ -223,8 +218,6 @@ public:
                 }
                 ++left_scan_idx;
             }
-
-            //std::cout << sa << " SA after copy left of " << (size_t) c_curr << std::endl;
 
             /*
              * use copy technique for right buckets
@@ -263,25 +256,8 @@ public:
                 }
             }
 
-            /*
-            std::cout << sa << " SA after copy right of " << (size_t) c_curr << std::endl;
-            std::cout << sub_leftmost_undetermined << " sub_leftmost_undetermined after copy of " << (size_t) c_curr << std::endl;
-            std::cout << sub_rightmost_undetermined << " sub_rightmost_undetermined after copy of " << (size_t) c_curr << std::endl;
-            */
-
             sorted_1st_level_bucket[c_curr] = true;
         }
-
-        /*
-        size_t zero_count = 0;
-        for (sa_index i : sa) {
-            if (i == (sa_index) 0) {
-                ++zero_count;
-            }
-        }
-
-        std::cout << "Zeros: " << zero_count << std::endl;
-        */
     }
 
     /**\brief Increases offset by step_size until sort_key returns different
