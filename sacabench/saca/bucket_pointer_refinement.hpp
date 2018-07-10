@@ -133,10 +133,6 @@ public:
 
         bpr.split("Phase 3");
 
-        // remember which top level buckets are already sorted
-        auto sorted_l1_bucket = util::make_container<bool>(alph_size);
-        std::fill(sorted_l1_bucket.begin(), sorted_l1_bucket.end(), false);
-
         // insert positions on next left scan (inclusive index)
         // "leftmost_undetermined"
         auto lmu = util::make_container<size_t>(alph_size);
@@ -188,7 +184,7 @@ public:
             while (left_scan_idx < lmu[c_curr]) {
                 if (suffix_idx = sa[left_scan_idx]) {
                     c_pred = input[--suffix_idx];
-                    if (!sorted_l1_bucket[c_pred]) {
+                    if (c_pred >= c_curr) { // bucket of c_pred not yet sorted
                         sa_dest_idx = lmu[c_pred]++;
                         sa[sa_dest_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_dest_idx;
@@ -196,8 +192,8 @@ public:
                     // second level copy
                     if (suffix_idx) {
                         c_pred_pred = input[--suffix_idx];
-                        if (c_curr < c_pred_pred && c_pred_pred < c_pred &&
-                            !sorted_l1_bucket[c_pred_pred]) {
+                        if (c_curr < c_pred_pred && c_pred_pred < c_pred) {
+                            // bucket of c_pred_pred is not yet sorted
                             if (sub_lmu[c_pred_pred * alph_size + c_pred] <
                                 sub_rmu[c_pred_pred * alph_size + c_pred]) {
                                 sa_dest_idx =
@@ -220,7 +216,7 @@ public:
                 --right_scan_idx;
                 if (suffix_idx = sa[right_scan_idx]) {
                     c_pred = input[--suffix_idx];
-                    if (!sorted_l1_bucket[c_pred]) {
+                    if (c_pred >= c_curr) { // bucket of c_pred not yet sorted
                         sa_dest_idx = --rmu[c_pred];
                         sa[sa_dest_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_dest_idx;
@@ -228,8 +224,8 @@ public:
                     // second level copy
                     if (suffix_idx) {
                         c_pred_pred = input[--suffix_idx];
-                        if (c_curr < c_pred_pred && c_pred_pred < c_pred &&
-                            !sorted_l1_bucket[c_pred_pred]) {
+                        if (c_curr < c_pred_pred && c_pred_pred < c_pred) {
+                            // bucket of c_pred_pred not yet sorted
                             if (sub_rmu[c_pred_pred * alph_size + c_pred] >
                                 sub_lmu[c_pred_pred * alph_size + c_pred]) {
                                 sa_dest_idx =
@@ -241,8 +237,6 @@ public:
                     }
                 }
             }
-
-            sorted_l1_bucket[c_curr] = true;
         }
     }
 
