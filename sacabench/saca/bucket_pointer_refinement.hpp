@@ -107,21 +107,27 @@ public:
         const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
 
         for (util::character c_cur = 0; c_cur < alphabet_size; ++c_cur) {
-            for (util::character c_suc = c_cur + 1; c_suc < alphabet_size; ++c_suc) {
-                // possible with c_suc_suc = c_cur + 1 or even c_suc_suc = c_suc + 1?
-                for (util::character c_suc_suc = 0; c_suc_suc < alphabet_size; ++c_suc_suc) {
+            for (util::character c_suc = c_cur + 1; c_suc < alphabet_size;
+                 ++c_suc) {
+                // possible with c_suc_suc = c_cur + 1 or even c_suc_suc = c_suc
+                // + 1?
+                for (util::character c_suc_suc = 0; c_suc_suc < alphabet_size;
+                     ++c_suc_suc) {
                     const size_t bucket_idx_begin =
-                        c_cur * in_1st_level_bucket + c_suc * in_2nd_level_bucket + c_suc_suc * in_3rd_level_bucket;
+                        c_cur * in_1st_level_bucket +
+                        c_suc * in_2nd_level_bucket +
+                        c_suc_suc * in_3rd_level_bucket;
                     const size_t bucket_idx_end =
                         bucket_idx_begin + in_3rd_level_bucket;
                     for (size_t bucket_idx = bucket_idx_begin;
-                            bucket_idx < bucket_idx_end; ++bucket_idx) {
+                         bucket_idx < bucket_idx_end; ++bucket_idx) {
                         if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
                             // if the bucket has at least 1 element
                             refine_single_bucket<sa_index>(
-                                    bucketsort_depth, bucketsort_depth, bptr, buckets[bucket_idx],
-                                    sa.slice(buckets[bucket_idx],
-                                        buckets[bucket_idx + 1]));
+                                bucketsort_depth, bucketsort_depth, bptr,
+                                buckets[bucket_idx],
+                                sa.slice(buckets[bucket_idx],
+                                         buckets[bucket_idx + 1]));
                         }
                     }
                 }
@@ -172,13 +178,18 @@ public:
             /*
              * use copy technique for right buckets
              */
-            for (util::character c_pre = c_cur; c_pre < alphabet_size; ++c_pre) {
-                const size_t idx =
-                    c_pre * in_1st_level_bucket + (c_cur + 1) * in_2nd_level_bucket;
+            for (util::character c_pre = c_cur; c_pre < alphabet_size;
+                 ++c_pre) {
+                const size_t idx = c_pre * in_1st_level_bucket +
+                                   (c_cur + 1) * in_2nd_level_bucket;
                 rightmost_undetermined[c_pre] = buckets[idx];
-                for (util::character c_pre_pre = c_cur + 1; c_pre_pre < alphabet_size; ++c_pre_pre) {
-                    sub_rightmost_undetermined[c_pre_pre * alphabet_size + c_pre] =
-                            buckets[c_pre_pre * in_1st_level_bucket + c_pre * in_2nd_level_bucket + (c_cur + 1) * in_3rd_level_bucket];
+                for (util::character c_pre_pre = c_cur + 1;
+                     c_pre_pre < alphabet_size; ++c_pre_pre) {
+                    sub_rightmost_undetermined[c_pre_pre * alphabet_size +
+                                               c_pre] =
+                        buckets[c_pre_pre * in_1st_level_bucket +
+                                c_pre * in_2nd_level_bucket +
+                                (c_cur + 1) * in_3rd_level_bucket];
                 }
             }
 
