@@ -40,7 +40,7 @@ public:
                              util::span<sa_index> sa) {
         tdc::StatPhase bpr("Phase 1");
 
-        size_t alphabet_size = alphabet.size_with_sentinel();
+        size_t alph_size = alphabet.size_with_sentinel();
 
         size_t const n = input.size();
         if (n == 0) { // there's nothing to do
@@ -50,22 +50,22 @@ public:
         // TODO: choose appropiate value
         size_t bucketsort_depth = 2;
 
-        if (alphabet_size <= 9) {
+        if (alph_size <= 9) {
             bucketsort_depth = 7;
         }
-        if (9 < alphabet_size && alphabet_size <= 13) {
+        if (9 < alph_size && alph_size <= 13) {
             bucketsort_depth = 6;
         }
-        if (13 < alphabet_size && alphabet_size <= 21) {
+        if (13 < alph_size && alph_size <= 21) {
             bucketsort_depth = 5;
         }
-        if (13 < alphabet_size && alphabet_size <= 21) {
+        if (13 < alph_size && alph_size <= 21) {
             bucketsort_depth = 5;
         }
-        if (21 < alphabet_size && alphabet_size <= 46) {
+        if (21 < alph_size && alph_size <= 46) {
             bucketsort_depth = 4;
         }
-        if (46 < alphabet_size) {
+        if (46 < alph_size) {
             bucketsort_depth = 3;
         }
 
@@ -96,22 +96,21 @@ public:
         }
 
         // (buckets.size() - 1) because of trailing pseudo bucket
-        const size_t in_1st_level_bucket = (buckets.size() - 1) / alphabet_size;
-        const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
-        const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
+        const size_t in_l1_bucket = (buckets.size() - 1) / alph_size;
+        const size_t in_l2_bucket = in_l1_bucket / alph_size;
+        const size_t in_l3_bucket = in_l2_bucket / alph_size;
 
         util::character c_curr, c_succ, c_succ_succ;
 
-        for (c_curr = 0; c_curr < alphabet_size; ++c_curr) {
-            for (c_succ = c_curr + 1; c_succ < alphabet_size; ++c_succ) {
-                for (c_succ_succ = c_curr; c_succ_succ < alphabet_size;
+        for (c_curr = 0; c_curr < alph_size; ++c_curr) {
+            for (c_succ = c_curr + 1; c_succ < alph_size; ++c_succ) {
+                for (c_succ_succ = c_curr; c_succ_succ < alph_size;
                      ++c_succ_succ) {
-                    const size_t bucket_idx_begin =
-                        c_curr * in_1st_level_bucket +
-                        c_succ * in_2nd_level_bucket +
-                        c_succ_succ * in_3rd_level_bucket;
+                    const size_t bucket_idx_begin = c_curr * in_l1_bucket +
+                                                    c_succ * in_l2_bucket +
+                                                    c_succ_succ * in_l3_bucket;
                     const size_t bucket_idx_end =
-                        bucket_idx_begin + in_3rd_level_bucket;
+                        bucket_idx_begin + in_l3_bucket;
                     for (size_t bucket_idx = bucket_idx_begin;
                          bucket_idx < bucket_idx_end; ++bucket_idx) {
                         if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
@@ -135,58 +134,49 @@ public:
         bpr.split("Phase 3");
 
         // remember which top level buckets are already sorted
-        auto sorted_1st_level_bucket =
-            util::make_container<bool>(alphabet_size);
-        std::fill(sorted_1st_level_bucket.begin(),
-                  sorted_1st_level_bucket.end(), false);
+        auto sorted_l1_bucket = util::make_container<bool>(alph_size);
+        std::fill(sorted_l1_bucket.begin(), sorted_l1_bucket.end(), false);
 
         // insert positions on next left scan (inclusive index)
-        auto leftmost_undetermined =
-            util::make_container<size_t>(alphabet_size);
+        // "leftmost_undetermined"
+        auto lmu = util::make_container<size_t>(alph_size);
         // insert positions on next right scan (exclusive index)
-        auto rightmost_undetermined =
-            util::make_container<size_t>(alphabet_size);
+        // "leftmost_undetermined"
+        auto rmu = util::make_container<size_t>(alph_size);
 
         // 2nd level insert positions on next left scan (inclusive index)
-        auto sub_leftmost_undetermined =
-            util::make_container<size_t>(alphabet_size * alphabet_size);
+        auto sub_lmu = util::make_container<size_t>(alph_size * alph_size);
         // 2nd level insert positions on next right scan (exclusive index)
-        auto sub_rightmost_undetermined =
-            util::make_container<size_t>(alphabet_size * alphabet_size);
+        auto sub_rmu = util::make_container<size_t>(alph_size * alph_size);
 
         size_t left_scan_idx, right_scan_idx;
 
         sa_index suffix_idx;
-        size_t sa_destination_idx;
+        size_t sa_dest_idx;
 
         // predecessor and pre-predecessor characters of
         util::character c_pred, c_pred_pred;
 
-        for (c_curr = 0; c_curr < alphabet_size; ++c_curr) {
+        for (c_curr = 0; c_curr < alph_size; ++c_curr) {
 
             /*
              * initialize undetermined pointers
              */
 
-            for (c_pred = c_curr; c_pred < alphabet_size; ++c_pred) {
-                leftmost_undetermined[c_pred] =
-                    buckets[c_pred * in_1st_level_bucket +
-                            c_curr * in_2nd_level_bucket];
-                rightmost_undetermined[c_pred] =
-                    buckets[c_pred * in_1st_level_bucket +
-                            (c_curr + 1) * in_2nd_level_bucket];
-                for (c_pred_pred = c_curr + 1; c_pred_pred < alphabet_size;
+            for (c_pred = c_curr; c_pred < alph_size; ++c_pred) {
+                lmu[c_pred] =
+                    buckets[c_pred * in_l1_bucket + c_curr * in_l2_bucket];
+                rmu[c_pred] = buckets[c_pred * in_l1_bucket +
+                                      (c_curr + 1) * in_l2_bucket];
+                for (c_pred_pred = c_curr + 1; c_pred_pred < alph_size;
                      ++c_pred_pred) {
-                    sub_leftmost_undetermined[c_pred_pred * alphabet_size +
-                                              c_pred] =
-                        buckets[c_pred_pred * in_1st_level_bucket +
-                                c_pred * in_2nd_level_bucket +
-                                c_curr * in_3rd_level_bucket];
-                    sub_rightmost_undetermined[c_pred_pred * alphabet_size +
-                                               c_pred] =
-                        buckets[c_pred_pred * in_1st_level_bucket +
-                                c_pred * in_2nd_level_bucket +
-                                (c_curr + 1) * in_3rd_level_bucket];
+                    sub_lmu[c_pred_pred * alph_size + c_pred] =
+                        buckets[c_pred_pred * in_l1_bucket +
+                                c_pred * in_l2_bucket + c_curr * in_l3_bucket];
+                    sub_rmu[c_pred_pred * alph_size + c_pred] =
+                        buckets[c_pred_pred * in_l1_bucket +
+                                c_pred * in_l2_bucket +
+                                (c_curr + 1) * in_l3_bucket];
                 }
             }
 
@@ -194,30 +184,26 @@ public:
              * use copy technique for left buckets
              */
 
-            left_scan_idx = buckets[c_curr * in_1st_level_bucket];
-            while (left_scan_idx < leftmost_undetermined[c_curr]) {
+            left_scan_idx = buckets[c_curr * in_l1_bucket];
+            while (left_scan_idx < lmu[c_curr]) {
                 if (suffix_idx = sa[left_scan_idx]) {
                     c_pred = input[--suffix_idx];
-                    if (!sorted_1st_level_bucket[c_pred]) {
-                        sa_destination_idx = leftmost_undetermined[c_pred]++;
-                        sa[sa_destination_idx] = suffix_idx;
-                        // bptr[suffix_idx] = sa_destination_idx;
+                    if (!sorted_l1_bucket[c_pred]) {
+                        sa_dest_idx = lmu[c_pred]++;
+                        sa[sa_dest_idx] = suffix_idx;
+                        // bptr[suffix_idx] = sa_dest_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
                         c_pred_pred = input[--suffix_idx];
                         if (c_curr < c_pred_pred && c_pred_pred < c_pred &&
-                            !sorted_1st_level_bucket[c_pred_pred]) {
-                            if (sub_leftmost_undetermined[c_pred_pred *
-                                                              alphabet_size +
-                                                          c_pred] <
-                                sub_rightmost_undetermined[c_pred_pred *
-                                                               alphabet_size +
-                                                           c_pred]) {
-                                sa_destination_idx = sub_leftmost_undetermined
-                                    [c_pred_pred * alphabet_size + c_pred]++;
-                                sa[sa_destination_idx] = suffix_idx;
-                                // bptr[suffix_idx] = sa_destination_idx;
+                            !sorted_l1_bucket[c_pred_pred]) {
+                            if (sub_lmu[c_pred_pred * alph_size + c_pred] <
+                                sub_rmu[c_pred_pred * alph_size + c_pred]) {
+                                sa_dest_idx =
+                                    sub_lmu[c_pred_pred * alph_size + c_pred]++;
+                                sa[sa_dest_idx] = suffix_idx;
+                                // bptr[suffix_idx] = sa_dest_idx;
                             }
                         }
                     }
@@ -229,39 +215,34 @@ public:
              * use copy technique for right buckets
              */
 
-            right_scan_idx = buckets[(c_curr + 1) * in_1st_level_bucket];
+            right_scan_idx = buckets[(c_curr + 1) * in_l1_bucket];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
                 if (suffix_idx = sa[right_scan_idx]) {
                     c_pred = input[--suffix_idx];
-                    if (!sorted_1st_level_bucket[c_pred]) {
-                        sa_destination_idx = --rightmost_undetermined[c_pred];
-                        sa[sa_destination_idx] = suffix_idx;
-                        // bptr[suffix_idx] = sa_destination_idx;
+                    if (!sorted_l1_bucket[c_pred]) {
+                        sa_dest_idx = --rmu[c_pred];
+                        sa[sa_dest_idx] = suffix_idx;
+                        // bptr[suffix_idx] = sa_dest_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
                         c_pred_pred = input[--suffix_idx];
                         if (c_curr < c_pred_pred && c_pred_pred < c_pred &&
-                            !sorted_1st_level_bucket[c_pred_pred]) {
-                            if (sub_rightmost_undetermined[c_pred_pred *
-                                                               alphabet_size +
-                                                           c_pred] >
-                                sub_leftmost_undetermined[c_pred_pred *
-                                                              alphabet_size +
-                                                          c_pred]) {
-                                sa_destination_idx =
-                                    --sub_rightmost_undetermined
-                                        [c_pred_pred * alphabet_size + c_pred];
-                                sa[sa_destination_idx] = suffix_idx;
-                                // bptr[suffix_idx] = sa_destination_idx;
+                            !sorted_l1_bucket[c_pred_pred]) {
+                            if (sub_rmu[c_pred_pred * alph_size + c_pred] >
+                                sub_lmu[c_pred_pred * alph_size + c_pred]) {
+                                sa_dest_idx =
+                                    --sub_rmu[c_pred_pred * alph_size + c_pred];
+                                sa[sa_dest_idx] = suffix_idx;
+                                // bptr[suffix_idx] = sa_dest_idx;
                             }
                         }
                     }
                 }
             }
 
-            sorted_1st_level_bucket[c_curr] = true;
+            sorted_l1_bucket[c_curr] = true;
         }
     }
 
