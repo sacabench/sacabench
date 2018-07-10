@@ -23,7 +23,7 @@ namespace sacabench::bucket_pointer_refinement {
 
 class bucket_pointer_refinement {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 7;
+    static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "BPR";
     static constexpr char const* DESCRIPTION =
         "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann";
@@ -78,7 +78,8 @@ public:
          * determine initial buckets with bucketsort
          */
 
-        util::container<sa_index> bptr = util::make_container<sa_index>(n);
+        util::container<sa_index> bptr =
+            util::make_container<sa_index>(n + 2 * bucketsort_depth);
         auto buckets = util::sort::bucketsort_presort_lightweight(
             input, alphabet.max_character_value(), bucketsort_depth, sa, bptr);
 
@@ -89,10 +90,10 @@ public:
 
         bpr.split("Phase 2");
         // set sentinel pointers in bptr --> buckets[0] already sorted
-        for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS;
+        for (size_t sentinel_idx = 0; sentinel_idx < 2 * bucketsort_depth;
              ++sentinel_idx) {
-            bptr[bptr.size() - sentinel_idx - 1] = sentinel_idx;
-            sa[sentinel_idx] = bptr.size() - sentinel_idx - 1;
+            // not sure if there are cases where -1 is needed instead of 0
+            bptr[bptr.size() - sentinel_idx - 1] = 0;
         }
 
         // (buckets.size() - 1) because of trailing pseudo bucket
