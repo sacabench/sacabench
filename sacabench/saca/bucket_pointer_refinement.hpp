@@ -111,7 +111,7 @@ public:
                  ++c_succ) {
                 // possible with c_succ_succ = c_curr + 1 or even c_succ_succ = c_succ
                 // + 1?
-                for (util::character c_succ_succ = 0; c_succ_succ < alphabet_size;
+                for (util::character c_succ_succ = c_curr; c_succ_succ < alphabet_size;
                      ++c_succ_succ) {
                     const size_t bucket_idx_begin =
                         c_curr * in_1st_level_bucket +
@@ -178,6 +178,18 @@ public:
                             leftmost_undetermined[c_pred]++;
                         sa[sa_destination_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_destination_idx;
+                    }
+                    // second level copy
+                    if (suffix_idx) {
+                        util::character c_pred_pred = input[--suffix_idx];
+                        if (c_curr < c_pred_pred && c_pred_pred < c_pred && !sorted_1st_level_bucket[c_pred_pred]) {
+                            if (sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred] < sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
+                                size_t sa_destination_idx =
+                                    sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]++;
+                                sa[sa_destination_idx] = suffix_idx;
+                                // bptr[suffix_idx] = sa_destination_idx;
+                            }
+                        }
                     }
                 }
                 ++left_scan_idx;
