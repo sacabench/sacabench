@@ -80,6 +80,7 @@ private:
                 });
         });
 
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
         logger::get() << "Took " << ns << "ns.\n";
     }
 
@@ -113,7 +114,8 @@ private:
                           << " elements took " << induced_time << "ns.\n";
             logger::get().time_spent_induction_testing(induced_time);
 
-            if (blind::MIN_BLINDSORT_SIZE <= bucket.size() && bucket.size() < max_blind_sort_size) {
+            if (blind::MIN_BLINDSORT_SIZE <= bucket.size() &&
+                bucket.size() < max_blind_sort_size) {
                 // If the bucket is small enough, we can use blind sorting.
                 size_t blind_time = duration(
                     [&]() { blind_sort(bucket, common_prefix_length); });
@@ -159,12 +161,13 @@ private:
         };
         util::sort::ternary_quicksort::ternary_quicksort(bucket,
                                                          compare_suffix);
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
     }
 
     inline bool try_induced_sort(const span<sa_index_type> bucket,
                                  const sa_index_type common_prefix_length) {
         // Try every suffix index, which is to be sorted
-        for (const sa_index_type& si : bucket) {
+        for (const size_t& si : bucket) {
 
             // Check, if there is a suitable entry in anchor_data.
             const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
@@ -173,12 +176,12 @@ private:
                 // Test, if the suffix is in the valid range, that means
                 // entry_in_offset \in [leftmost_suffix, leftmost_suffix +
                 // common_prefix_length]
-                const auto leftmost_suffix = leftmost_suffix_opt.value();
+                const size_t leftmost_suffix = leftmost_suffix_opt.value();
                 if (si < leftmost_suffix &&
                     leftmost_suffix < si + common_prefix_length) {
 
                     // This is the position the found bucket starts in si.
-                    const auto relation = leftmost_suffix - si;
+                    const size_t relation = leftmost_suffix - si;
 
                     // Use suffix array with front bit as tag.
                     auto tagged_sa =
@@ -207,7 +210,7 @@ private:
                     // This function returns true, if `to_find` is a member of
                     // the bucket to be sorted.
                     const auto contains = [&](const sa_index_type to_find) {
-                        for (const sa_index_type& bsi : bucket) {
+                        for (const size_t& bsi : bucket) {
                             if (to_find == bsi + relation) {
                                 return true;
                             }
@@ -267,11 +270,14 @@ private:
 
                         // Insert the correct index into the to-be-sorted
                         // bucket.
-                        bucket[i] = tagged_sa[leftmost].number() - relation;
+                        bucket[i] =
+                            size_t(tagged_sa[leftmost].number()) - relation;
 
                         // Un-tag the number, so that the SA is valid again.
                         tagged_sa[leftmost].template set<0>(false);
                     }
+
+                    DCHECK(is_partially_suffix_sorted(bucket, input_text));
 
                     // The bucket has been sorted with induced sorting.
                     return true;
@@ -319,6 +325,8 @@ private:
                 for (sa_index_type i = 0; i < bucket.size(); ++i) {
                     ad.update_anchor(bucket[i], bucket_start + i);
                 }
+
+                DCHECK(is_partially_suffix_sorted(bucket, input_text));
             }
 
             // Mark this bucket as sorted.

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <optional>
+#include <util/is_sorted.hpp>
 #include <util/string.hpp>
 
 namespace sacabench::deep_shallow::blind {
@@ -285,8 +286,7 @@ private:
                 logger::get() << "Blind: Case 5.\n";
 
                 const util::string_span this_lcp = input_text.slice(si);
-                const util::string_span new_lcp =
-                    input_text.slice(new_element);
+                const util::string_span new_lcp = input_text.slice(new_element);
                 size_t lcp_len;
                 for (lcp_len = 0; this_lcp[lcp_len] == new_lcp[lcp_len];
                      ++lcp_len) {
@@ -354,6 +354,7 @@ public:
     inline void traverse(util::span<suffix_index_type> bucket) const {
         size_t n = m_root.traverse(m_input_text.size(), bucket);
         DCHECK_EQ(n, bucket.size());
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
 
         // "Use" `n` so that the compiler doesn't warn
         // about it being unused.

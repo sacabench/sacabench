@@ -20,6 +20,7 @@ namespace sacabench::deep_shallow {
 class logger {
 private:
     std::stringstream ss;
+    bool flushed = false;
 
     size_t elements_induction_sorted;
     size_t elements_blind_sorted;
@@ -32,6 +33,13 @@ private:
 
     inline logger() : ss() {
         std::cout << "Using Deep-Shallow Logger" << std::endl;
+    }
+
+    inline ~logger() {
+        if (!flushed) {
+            ss << "Aborting!!\n";
+            flush();
+        }
     }
 
 public:
@@ -98,6 +106,7 @@ public:
         myfile << "####################################################\n\n";
         myfile << ss.rdbuf();
         myfile.close();
+        flushed = true;
     }
 };
 
