@@ -106,17 +106,17 @@ public:
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
         const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
 
-        for (util::character c_cur = 0; c_cur < alphabet_size; ++c_cur) {
-            for (util::character c_suc = c_cur + 1; c_suc < alphabet_size;
-                 ++c_suc) {
-                // possible with c_suc_suc = c_cur + 1 or even c_suc_suc = c_suc
+        for (util::character c_curr = 0; c_curr < alphabet_size; ++c_curr) {
+            for (util::character c_succ = c_curr + 1; c_succ < alphabet_size;
+                 ++c_succ) {
+                // possible with c_succ_succ = c_curr + 1 or even c_succ_succ = c_succ
                 // + 1?
-                for (util::character c_suc_suc = 0; c_suc_suc < alphabet_size;
-                     ++c_suc_suc) {
+                for (util::character c_succ_succ = 0; c_succ_succ < alphabet_size;
+                     ++c_succ_succ) {
                     const size_t bucket_idx_begin =
-                        c_cur * in_1st_level_bucket +
-                        c_suc * in_2nd_level_bucket +
-                        c_suc_suc * in_3rd_level_bucket;
+                        c_curr * in_1st_level_bucket +
+                        c_succ * in_2nd_level_bucket +
+                        c_succ_succ * in_3rd_level_bucket;
                     const size_t bucket_idx_end =
                         bucket_idx_begin + in_3rd_level_bucket;
                     for (size_t bucket_idx = bucket_idx_begin;
@@ -149,25 +149,25 @@ public:
             util::make_container<size_t>(alphabet_size * alphabet_size);
 
         bpr.split("Phase 3");
-        for (util::character c_cur = 0; c_cur < alphabet_size; ++c_cur) {
+        for (util::character c_curr = 0; c_curr < alphabet_size; ++c_curr) {
             /*
              * use copy technique for left buckets
              */
-            for (util::character c_pre = 0; c_pre < alphabet_size; ++c_pre) {
+            for (util::character c_pred = 0; c_pred < alphabet_size; ++c_pred) {
                 const size_t idx =
-                    c_pre * in_1st_level_bucket + c_cur * in_2nd_level_bucket;
-                leftmost_undetermined[c_pre] = buckets[idx];
+                    c_pred * in_1st_level_bucket + c_curr * in_2nd_level_bucket;
+                leftmost_undetermined[c_pred] = buckets[idx];
             }
 
-            size_t left_scan_idx = buckets[c_cur * in_1st_level_bucket];
-            while (left_scan_idx < leftmost_undetermined[c_cur]) {
+            size_t left_scan_idx = buckets[c_curr * in_1st_level_bucket];
+            while (left_scan_idx < leftmost_undetermined[c_curr]) {
                 sa_index suffix_idx;
-                util::character predecessor;
+                util::character c_pred;
                 if (suffix_idx = sa[left_scan_idx]) {
-                    predecessor = input[--suffix_idx];
-                    if (!sorted_1st_level_bucket[predecessor]) {
+                    c_pred = input[--suffix_idx];
+                    if (!sorted_1st_level_bucket[c_pred]) {
                         size_t sa_destination_idx =
-                            leftmost_undetermined[predecessor]++;
+                            leftmost_undetermined[c_pred]++;
                         sa[sa_destination_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_destination_idx;
                     }
@@ -178,39 +178,51 @@ public:
             /*
              * use copy technique for right buckets
              */
-            for (util::character c_pre = c_cur; c_pre < alphabet_size;
-                 ++c_pre) {
-                const size_t idx = c_pre * in_1st_level_bucket +
-                                   (c_cur + 1) * in_2nd_level_bucket;
-                rightmost_undetermined[c_pre] = buckets[idx];
-                for (util::character c_pre_pre = c_cur + 1;
-                     c_pre_pre < alphabet_size; ++c_pre_pre) {
-                    sub_rightmost_undetermined[c_pre_pre * alphabet_size +
-                                               c_pre] =
-                        buckets[c_pre_pre * in_1st_level_bucket +
-                                c_pre * in_2nd_level_bucket +
-                                (c_cur + 1) * in_3rd_level_bucket];
+            for (util::character c_pred = c_curr; c_pred < alphabet_size;
+                 ++c_pred) {
+                const size_t idx = c_pred * in_1st_level_bucket +
+                                   (c_curr + 1) * in_2nd_level_bucket;
+                rightmost_undetermined[c_pred] = buckets[idx];
+                for (util::character c_pred_pred = c_curr + 1;
+                     c_pred_pred < alphabet_size; ++c_pred_pred) {
+                    sub_rightmost_undetermined[c_pred_pred * alphabet_size +
+                                               c_pred] =
+                        buckets[c_pred_pred * in_1st_level_bucket +
+                                c_pred * in_2nd_level_bucket +
+                                (c_curr + 1) * in_3rd_level_bucket];
                 }
             }
 
-            const size_t idx = (c_cur + 1) * in_1st_level_bucket;
+            const size_t idx = (c_curr + 1) * in_1st_level_bucket;
             size_t right_scan_idx = buckets[idx];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
                 sa_index suffix_idx;
-                util::character predecessor;
+                util::character c_pred;
                 if (suffix_idx = sa[right_scan_idx]) {
-                    predecessor = input[--suffix_idx];
-                    if (!sorted_1st_level_bucket[predecessor]) {
+                    c_pred = input[--suffix_idx];
+                    if (!sorted_1st_level_bucket[c_pred]) {
                         size_t sa_destination_idx =
-                            --rightmost_undetermined[predecessor];
+                            --rightmost_undetermined[c_pred];
                         sa[sa_destination_idx] = suffix_idx;
                         // bptr[suffix_idx] = sa_destination_idx;
+                    }
+                    // second level copy
+                    if (suffix_idx) {
+                        util::character c_pred_pred = input[--suffix_idx];
+                        if (c_curr < c_pred_pred && c_pred_pred < c_pred && !sorted_1st_level_bucket[c_pred_pred]) {
+                            if (sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred] > sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
+                                size_t sa_destination_idx =
+                                    --sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred];
+                                sa[sa_destination_idx] = suffix_idx;
+                                // bptr[suffix_idx] = sa_destination_idx;
+                            }
+                        }
                     }
                 }
             }
 
-            sorted_1st_level_bucket[c_cur] = true;
+            sorted_1st_level_bucket[c_curr] = true;
         }
     }
 
