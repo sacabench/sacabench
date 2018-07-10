@@ -100,15 +100,14 @@ public:
         const size_t in_l2_bucket = in_l1_bucket / alph_size;
         const size_t in_l3_bucket = in_l2_bucket / alph_size;
 
-        util::character c_curr, c_succ, c_succ_succ;
+        util::character c_cur, c_suc, c_suc_suc;
 
-        for (c_curr = 0; c_curr < alph_size; ++c_curr) {
-            for (c_succ = c_curr + 1; c_succ < alph_size; ++c_succ) {
-                for (c_succ_succ = c_curr; c_succ_succ < alph_size;
-                     ++c_succ_succ) {
-                    const size_t bucket_idx_begin = c_curr * in_l1_bucket +
-                                                    c_succ * in_l2_bucket +
-                                                    c_succ_succ * in_l3_bucket;
+        for (c_cur = 0; c_cur < alph_size; ++c_cur) {
+            for (c_suc = c_cur + 1; c_suc < alph_size; ++c_suc) {
+                for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) {
+                    const size_t bucket_idx_begin = c_cur * in_l1_bucket +
+                                                    c_suc * in_l2_bucket +
+                                                    c_suc_suc * in_l3_bucket;
                     const size_t bucket_idx_end =
                         bucket_idx_begin + in_l3_bucket;
                     for (size_t bucket_idx = bucket_idx_begin;
@@ -148,31 +147,32 @@ public:
         size_t left_scan_idx, right_scan_idx;
 
         sa_index suffix_idx;
-        size_t sa_dest_idx;
+
+        size_t bucket_idx;
 
         // predecessor and pre-predecessor characters of
-        util::character c_pred, c_pred_pred;
+        util::character c_pre, c_pre_pre;
 
-        for (c_curr = 0; c_curr < alph_size; ++c_curr) {
+        for (c_cur = 0; c_cur < alph_size; ++c_cur) {
 
             /*
              * initialize undetermined pointers
              */
 
-            for (c_pred = c_curr; c_pred < alph_size; ++c_pred) {
-                lmu[c_pred] =
-                    buckets[c_pred * in_l1_bucket + c_curr * in_l2_bucket];
-                rmu[c_pred] = buckets[c_pred * in_l1_bucket +
-                                      (c_curr + 1) * in_l2_bucket];
-                for (c_pred_pred = c_curr + 1; c_pred_pred < alph_size;
-                     ++c_pred_pred) {
-                    sub_lmu[c_pred_pred * alph_size + c_pred] =
-                        buckets[c_pred_pred * in_l1_bucket +
-                                c_pred * in_l2_bucket + c_curr * in_l3_bucket];
-                    sub_rmu[c_pred_pred * alph_size + c_pred] =
-                        buckets[c_pred_pred * in_l1_bucket +
-                                c_pred * in_l2_bucket +
-                                (c_curr + 1) * in_l3_bucket];
+            for (c_pre = c_cur; c_pre < alph_size; ++c_pre) {
+                lmu[c_pre] =
+                    buckets[c_pre * in_l1_bucket + c_cur * in_l2_bucket];
+                rmu[c_pre] =
+                    buckets[c_pre * in_l1_bucket + (c_cur + 1) * in_l2_bucket];
+                for (c_pre_pre = c_cur + 1; c_pre_pre < alph_size;
+                     ++c_pre_pre) {
+                    bucket_idx = c_pre_pre * alph_size + c_pre;
+                    sub_lmu[bucket_idx] =
+                        buckets[c_pre_pre * in_l1_bucket +
+                                c_pre * in_l2_bucket + c_cur * in_l3_bucket];
+                    sub_rmu[bucket_idx] = buckets[c_pre_pre * in_l1_bucket +
+                                                  c_pre * in_l2_bucket +
+                                                  (c_cur + 1) * in_l3_bucket];
                 }
             }
 
@@ -180,26 +180,21 @@ public:
              * use copy technique for left buckets
              */
 
-            left_scan_idx = buckets[c_curr * in_l1_bucket];
-            while (left_scan_idx < lmu[c_curr]) {
+            left_scan_idx = buckets[c_cur * in_l1_bucket];
+            while (left_scan_idx < lmu[c_cur]) {
                 if (suffix_idx = sa[left_scan_idx]) {
-                    c_pred = input[--suffix_idx];
-                    if (c_pred >= c_curr) { // bucket of c_pred not yet sorted
-                        sa_dest_idx = lmu[c_pred]++;
-                        sa[sa_dest_idx] = suffix_idx;
-                        // bptr[suffix_idx] = sa_dest_idx;
+                    c_pre = input[--suffix_idx];
+                    if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
+                        sa[lmu[c_pre]++] = suffix_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
-                        c_pred_pred = input[--suffix_idx];
-                        if (c_curr < c_pred_pred && c_pred_pred < c_pred) {
-                            // bucket of c_pred_pred is not yet sorted
-                            if (sub_lmu[c_pred_pred * alph_size + c_pred] <
-                                sub_rmu[c_pred_pred * alph_size + c_pred]) {
-                                sa_dest_idx =
-                                    sub_lmu[c_pred_pred * alph_size + c_pred]++;
-                                sa[sa_dest_idx] = suffix_idx;
-                                // bptr[suffix_idx] = sa_dest_idx;
+                        c_pre_pre = input[--suffix_idx];
+                        if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
+                            // bucket of c_pre_pre is not yet sorted
+                            bucket_idx = c_pre_pre * alph_size + c_pre;
+                            if (sub_lmu[bucket_idx] < sub_rmu[bucket_idx]) {
+                                sa[sub_lmu[bucket_idx]++] = suffix_idx;
                             }
                         }
                     }
@@ -211,27 +206,22 @@ public:
              * use copy technique for right buckets
              */
 
-            right_scan_idx = buckets[(c_curr + 1) * in_l1_bucket];
+            right_scan_idx = buckets[(c_cur + 1) * in_l1_bucket];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
                 if (suffix_idx = sa[right_scan_idx]) {
-                    c_pred = input[--suffix_idx];
-                    if (c_pred >= c_curr) { // bucket of c_pred not yet sorted
-                        sa_dest_idx = --rmu[c_pred];
-                        sa[sa_dest_idx] = suffix_idx;
-                        // bptr[suffix_idx] = sa_dest_idx;
+                    c_pre = input[--suffix_idx];
+                    if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
+                        sa[--rmu[c_pre]] = suffix_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
-                        c_pred_pred = input[--suffix_idx];
-                        if (c_curr < c_pred_pred && c_pred_pred < c_pred) {
-                            // bucket of c_pred_pred not yet sorted
-                            if (sub_rmu[c_pred_pred * alph_size + c_pred] >
-                                sub_lmu[c_pred_pred * alph_size + c_pred]) {
-                                sa_dest_idx =
-                                    --sub_rmu[c_pred_pred * alph_size + c_pred];
-                                sa[sa_dest_idx] = suffix_idx;
-                                // bptr[suffix_idx] = sa_dest_idx;
+                        c_pre_pre = input[--suffix_idx];
+                        if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
+                            // bucket of c_pre_pre not yet sorted
+                            bucket_idx = c_pre_pre * alph_size + c_pre;
+                            if (sub_rmu[bucket_idx] > sub_lmu[bucket_idx]) {
+                                sa[--sub_rmu[bucket_idx]] = suffix_idx;
                             }
                         }
                     }
