@@ -210,10 +210,6 @@ public:
                             if (sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred] < sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
                                 sa_destination_idx =
                                     sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]++;
-                                if(sa[sa_destination_idx] != suffix_idx && sa[sa_destination_idx] != (sa_index) 0) {
-                                    std::cout << "sa[" << sa_destination_idx << "] is " << sa[sa_destination_idx] << ". Overwriting with " << suffix_idx << std::endl;
-                                    exit(0);
-                                }
                                 sa[sa_destination_idx] = suffix_idx;
                                 // bptr[suffix_idx] = sa_destination_idx;
                             }
@@ -245,10 +241,6 @@ public:
                             if (sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred] > sub_leftmost_undetermined[c_pred_pred * alphabet_size + c_pred]) {
                                 sa_destination_idx =
                                     --sub_rightmost_undetermined[c_pred_pred * alphabet_size + c_pred];
-                                if(sa[sa_destination_idx] != suffix_idx && sa[sa_destination_idx] != (sa_index) 0) {
-                                    std::cout << "sa[" << sa_destination_idx << "] is " << sa[sa_destination_idx] << ". Overwriting with " << suffix_idx << std::endl;
-                                    exit(0);
-                                }
                                 sa[sa_destination_idx] = suffix_idx;
                                 // bptr[suffix_idx] = sa_destination_idx;
                             }
