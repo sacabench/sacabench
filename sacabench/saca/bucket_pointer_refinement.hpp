@@ -157,6 +157,14 @@ public:
                 const size_t idx =
                     c_pred * in_1st_level_bucket + c_curr * in_2nd_level_bucket;
                 leftmost_undetermined[c_pred] = buckets[idx];
+                for (util::character c_pred_pred = c_curr + 1;
+                     c_pred_pred < alphabet_size; ++c_pred_pred) {
+                    sub_leftmost_undetermined[c_pred_pred * alphabet_size +
+                                               c_pred] =
+                        buckets[c_pred_pred * in_1st_level_bucket +
+                                c_pred * in_2nd_level_bucket +
+                                c_curr * in_3rd_level_bucket];
+                }
             }
 
             size_t left_scan_idx = buckets[c_curr * in_1st_level_bucket];
