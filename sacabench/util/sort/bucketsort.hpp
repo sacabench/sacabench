@@ -300,18 +300,20 @@ bucketsort_presort_lightweight(const string_span input,
     std::size_t code = initial_code;
 
     // insert entries in suffix array
-    for (index_type index = 0; index < length - depth + 1; ++index) {
+    for (size_t index = 0; index < length - depth + 1; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
-        code += input[static_cast<size_t>(index) + depth - 1];
-        sa[buckets_tmp[code]] = index;
+        code += input[index + depth - 1];
+        if (input[index] < input[index + 1] && input[index] < input[index + 2]) {
+            sa[buckets_tmp[code]] = index;
+        }
         bptr[index] = buckets[code + 1] - 1;
         ++buckets_tmp[code];
     }
 
     // same as above, but for substrings containing at least one $
-    for (index_type index = length - depth + 1; index < length; ++index) {
+    for (size_t index = length - depth + 1; index < length; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;

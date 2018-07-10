@@ -89,11 +89,11 @@ public:
 
         bpr.split("Phase 2");
         // set sentinel pointers in bptr --> buckets[0] already sorted
-        for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS;
-             ++sentinel_idx) {
-            bptr[bptr.size() - sentinel_idx - 1] = sentinel_idx;
-            sa[sentinel_idx] = bptr.size() - sentinel_idx - 1;
-        }
+        //for (size_t sentinel_idx = 0; sentinel_idx < EXTRA_SENTINELS;
+             //++sentinel_idx) {
+            //bptr[bptr.size() - sentinel_idx - 1] = sentinel_idx;
+            //sa[sentinel_idx] = bptr.size() - sentinel_idx - 1;
+        //}
 
         // remember which top level buckets are already sorted
         auto sorted_1st_level_bucket =
@@ -104,91 +104,234 @@ public:
         // (buckets.size() - 1) because of trailing pseudo bucket
         const size_t in_1st_level_bucket = (buckets.size() - 1) / alphabet_size;
         const size_t in_2nd_level_bucket = in_1st_level_bucket / alphabet_size;
+        const size_t in_3rd_level_bucket = in_2nd_level_bucket / alphabet_size;
 
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             for (util::character c2 = c1 + 1; c2 < alphabet_size; ++c2) {
-                const size_t bucket_idx_begin =
-                    c1 * in_1st_level_bucket + c2 * in_2nd_level_bucket;
-                const size_t bucket_idx_end =
-                    bucket_idx_begin + in_2nd_level_bucket;
-                for (size_t bucket_idx = bucket_idx_begin;
-                     bucket_idx < bucket_idx_end; ++bucket_idx) {
-                    if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
-                        // if the bucket has at least 1 element
-                        refine_single_bucket<sa_index>(
-                            bucketsort_depth, bucketsort_depth, bptr, buckets[bucket_idx],
-                            sa.slice(buckets[bucket_idx],
-                                     buckets[bucket_idx + 1]));
+                // possible with c3 = c1 + 1 or even c3 = c2 + 1?
+                for (util::character c3 = c1; c3 < alphabet_size; ++c3) {
+                    const size_t bucket_idx_begin = c1 * in_1st_level_bucket +
+                                                    c2 * in_2nd_level_bucket +
+                                                    c3 * in_3rd_level_bucket;
+                    const size_t bucket_idx_end =
+                        bucket_idx_begin + in_3rd_level_bucket;
+                    for (size_t bucket_idx = bucket_idx_begin;
+                         bucket_idx < bucket_idx_end; ++bucket_idx) {
+                        if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
+                            // if the bucket has at least 1 element
+                            refine_single_bucket<sa_index>(
+                                bucketsort_depth, bucketsort_depth, bptr,
+                                buckets[bucket_idx],
+                                sa.slice(buckets[bucket_idx],
+                                         buckets[bucket_idx + 1]));
+                        }
                     }
                 }
             }
         }
 
+        std::cout << "SA after sorting: " << sa << std::endl;
+
         /**
          * Phase 3
          * Perform copy step by Seward
          */
+        auto leftmost_undetermined =
+            util::make_container<size_t>(alphabet_size);
+        auto rightmost_undetermined =
+            util::make_container<size_t>(alphabet_size);
+
+        auto sub_leftmost_undetermined =
+            util::make_container<size_t>(alphabet_size * alphabet_size);
+        auto sub_rightmost_undetermined =
+            util::make_container<size_t>(alphabet_size * alphabet_size);
 
         bpr.split("Phase 3");
         for (util::character c1 = 0; c1 < alphabet_size; ++c1) {
             /*
              * use copy technique for left buckets
              */
-            auto leftmost_undetermined =
-                util::make_container<size_t>(alphabet_size);
-            for (util::character c = 0; c < alphabet_size; ++c) {
+            for (util::character c_pre = c1; c_pre < alphabet_size; ++c_pre) {
                 const size_t idx =
-                    c * in_1st_level_bucket + c1 * in_2nd_level_bucket;
-                leftmost_undetermined[c] = buckets[idx];
+                    c_pre * in_1st_level_bucket + c1 * in_2nd_level_bucket;
+                leftmost_undetermined[c_pre] = buckets[idx];
+                for (util::character c_pre_pre = c1 + 1;
+                    c_pre_pre < alphabet_size; ++c_pre_pre) {
+                    sub_leftmost_undetermined[c_pre_pre * alphabet_size +
+                                               c_pre] =
+                        buckets[c_pre_pre * in_1st_level_bucket +
+                                c_pre * in_2nd_level_bucket +
+                                c1 * in_3rd_level_bucket];
+                }
             }
 
-            size_t left_scan_idx = buckets[c1 * in_1st_level_bucket];
+            if (c1 == 0) {
+if(n-1 >= sa.size()){
+    std::cout << "A" << std::endl;
+    exit(0);
+}
+                util::character c_pre = input[n - 1];
+if(n-2 >= sa.size()){
+    std::cout << "B" << std::endl;
+    exit(0);
+}
+                util::character c_pre_pre = input[n - 2];
+                if (!sorted_1st_level_bucket[c_pre]) {
+                    ++leftmost_undetermined[c_pre];
+if(sub_leftmost_undetermined[c_pre*alphabet_size] >= sa.size()){
+    std::cout << "a" << std::endl;
+    exit(0);
+}
+                    ++sa[sub_leftmost_undetermined[c_pre * alphabet_size]];
+                    if (!sorted_1st_level_bucket[c_pre_pre] && c_pre_pre != c1) {
+if(sub_leftmost_undetermined[c_pre_pre * alphabet_size + c_pre] >= sa.size()){
+    std::cout << "b" << std::endl;
+    exit(0);
+}
+                        sa[sub_leftmost_undetermined[c_pre_pre * alphabet_size + c_pre]] = n - 2;
+                        //bptr[n-2] = sa[sub_leftmost_undetermined[c_pre_pre * alphabet_size + c_pre]];
+if(sub_leftmost_undetermined[c_pre_pre * alphabet_size + c_pre] >= sa.size()){
+    std::cout << "c" << std::endl;
+    exit(0);
+}
+                        ++sa[sub_leftmost_undetermined[c_pre_pre * alphabet_size + c_pre]];
+                    }
+                }
+            }
+
+std::cout << "SA after misc step of " << (size_t) c1 << ": " << sa << std::endl;
+
+            const size_t left_idx = c1 * in_1st_level_bucket;
+            size_t left_scan_idx = // TODO: remove check if possible
+                left_idx >= buckets.size() ? sa.size() : buckets[left_idx];
             while (left_scan_idx < leftmost_undetermined[c1]) {
-                sa_index suffix_idx;
-                util::character predecessor;
-                if (suffix_idx = sa[left_scan_idx]) {
-                    predecessor = input[--suffix_idx];
-                    if (!sorted_1st_level_bucket[predecessor]) {
-                        size_t sa_destination_idx =
-                            leftmost_undetermined[predecessor]++;
-                        sa[sa_destination_idx] = suffix_idx;
-                        // bptr[suffix_idx] = sa_destination_idx;
+if(left_scan_idx >= sa.size()){
+    std::cout << "d" << std::endl;
+    exit(0);
+}
+                size_t suffix_idx = sa[left_scan_idx];
+                util::character c_pre;
+                if (suffix_idx) {
+if(suffix_idx - 1 >= sa.size()){
+    std::cout << "C" << std::endl;
+    exit(0);
+}
+                    c_pre = input[--suffix_idx];
+                    if (!sorted_1st_level_bucket[c_pre]) {
+if(suffix_idx + 2 >= sa.size()){
+    std::cout << "D" << std::endl;
+    exit(0);
+}
+                        if (!sorted_1st_level_bucket[input[suffix_idx + 2]]) {
+                            size_t sa_destination_idx = leftmost_undetermined[c_pre];
+if(sa_destination_idx >= sa.size()){
+    std::cout << "e: sa_destination_idx is: " << sa_destination_idx << std::endl;
+    exit(0);
+}
+                            sa[sa_destination_idx] = suffix_idx;
+                            // bptr[suffix_idx] = sa_destination_idx;
+                        }
+                        ++leftmost_undetermined[c_pre];
+                        if (suffix_idx > 0) {
+if(suffix_idx - 1 >= sa.size()){
+    std::cout << "e: suffix_idx is " << suffix_idx << std::endl;
+    exit(0);
+}
+                            util::character c_pre_pre = input[--suffix_idx];
+                            if (!sorted_1st_level_bucket[c_pre_pre] && c_pre_pre != c1)  {
+                                size_t sa_destination_idx = ++sub_leftmost_undetermined[c_pre_pre * alphabet_size + c_pre];
+if(sa_destination_idx >= sa.size()){
+    std::cout << "f: sa_destination_idx is " << sa_destination_idx << std::endl;
+    exit(0);
+}
+                                sa[sa_destination_idx] = suffix_idx;
+                                // bptr[suffix_idx] = sa_destination_idx;
+                            }
+                        }
                     }
                 }
                 ++left_scan_idx;
             }
 
+std::cout << "SA after left copy of " << (size_t) c1 << ": " << sa << std::endl;
+
             /*
              * use copy technique for right buckets
              */
-            auto rightmost_undetermined =
-                util::make_container<size_t>(alphabet_size);
-            for (util::character c = 0; c < alphabet_size; ++c) {
-                const size_t idx =
-                    c * in_1st_level_bucket + (c1 + 1) * in_2nd_level_bucket;
-                rightmost_undetermined[c] =
-                    idx >= buckets.size() ? sa.size() : buckets[idx];
+            for (util::character c_pre = c1; c_pre < alphabet_size; ++c_pre) {
+                const size_t idx = c_pre * in_1st_level_bucket +
+                                   (c1 + 1) * in_2nd_level_bucket;
+                rightmost_undetermined[c_pre] = buckets[idx];
+                for (util::character c_pre_pre = c1 + 1;
+                     c_pre_pre < alphabet_size; ++c_pre_pre) {
+                    sub_rightmost_undetermined[c_pre_pre * alphabet_size +
+                                               c_pre] =
+                        buckets[c_pre_pre * in_1st_level_bucket +
+                                c_pre * in_2nd_level_bucket +
+                                (c1 + 1) * in_3rd_level_bucket];
+                }
             }
 
-            const size_t idx = (c1 + 1) * in_1st_level_bucket;
-            size_t right_scan_idx =
-                idx >= buckets.size() ? sa.size() : buckets[idx];
+            const size_t right_idx = (c1 + 1) * in_1st_level_bucket;
+            size_t right_scan_idx = // TODO: remove check if possible
+                right_idx >= buckets.size() ? sa.size() : buckets[right_idx];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
-                sa_index suffix_idx;
-                util::character predecessor;
-                if (suffix_idx = sa[right_scan_idx]) {
-                    predecessor = input[--suffix_idx];
-                    if (!sorted_1st_level_bucket[predecessor]) {
-                        size_t sa_destination_idx =
-                            --rightmost_undetermined[predecessor];
-                        sa[sa_destination_idx] = suffix_idx;
-                        // bptr[suffix_idx] = sa_destination_idx;
+if(right_scan_idx >= sa.size()){
+    std::cout << "g" << std::endl;
+    exit(0);
+}
+                size_t suffix_idx = sa[right_scan_idx];
+                std::cout << "In loop of " << (size_t) c1 << ", suffix_idx is " << suffix_idx << std::endl;
+                util::character c_pre;
+                if (suffix_idx) {
+if(suffix_idx - 1 >= sa.size()){
+    std::cout << "E: suffix_idx is " << suffix_idx  << std::endl;
+    exit(0);
+}
+                    c_pre = input[--suffix_idx];
+                    if (!sorted_1st_level_bucket[c_pre]) {
+                        --rightmost_undetermined[c_pre];
+//if(suffix_idx + 2 >= sa.size()){
+    //std::cout << "F: suffix_idx is " << suffix_idx << std::endl;
+    //exit(0);
+//}
+                        if (suffix_idx < sa.size() - 3 && !sorted_1st_level_bucket[input[suffix_idx + 2]]) {
+                            size_t sa_destination_idx =
+                                rightmost_undetermined[c_pre];
+if(sa_destination_idx >= sa.size()){
+    std::cout << "h" << std::endl;
+    exit(0);
+}
+                            sa[sa_destination_idx] = suffix_idx;
+                            // bptr[suffix_idx] = sa_destination_idx;
+                        }
+                        if (suffix_idx > 0) {
+if(suffix_idx - 1 >= sa.size()){
+    std::cout << "G: suffix_idx is " << suffix_idx << std::endl;
+    exit(0);
+}
+                            util::character c_pre_pre = input[--suffix_idx];
+                            if (!sorted_1st_level_bucket[c_pre_pre] &&
+                                c_pre_pre != c1) {
+                                size_t sa_destination_idx =
+                                    --sub_rightmost_undetermined[c_pre_pre *
+                                                                 alphabet_size +
+                                                             c_pre];
+if(sa_destination_idx >= sa.size()){
+    std::cout << "i" << std::endl;
+    exit(0);
+}
+                                sa[sa_destination_idx] = suffix_idx;
+                                // bptr[suffix_idx] = sa_destination_idx;
+                            }
+                        }
                     }
                 }
             }
 
             sorted_1st_level_bucket[c1] = true;
+            std::cout << "SA after left copy of " << (size_t) c1 << ": " << sa << std::endl;
         }
     }
 
