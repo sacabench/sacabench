@@ -15,6 +15,9 @@
 #include <util/string.hpp>
 
 namespace sacabench::deep_shallow::blind {
+
+constexpr size_t MIN_BLINDSORT_SIZE = 2;
+
 template <typename suffix_index_type>
 inline void sort(const util::string_span text,
                  const util::span<suffix_index_type> bucket,

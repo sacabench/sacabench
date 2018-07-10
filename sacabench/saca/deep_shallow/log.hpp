@@ -3,11 +3,6 @@
 // Uncomment to activate logging
 // #define SB_DSLOG
 
-// Run logging in debug mode
-#ifdef DEBUG
-#define SB_DSLOG
-#endif
-
 // Include headers
 #ifdef SB_DSLOG
 #include <chrono>

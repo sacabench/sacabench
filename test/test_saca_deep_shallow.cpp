@@ -127,7 +127,7 @@ TEST(blind_trie, sort) {
     std::uniform_int_distribution<> dist('a', 'b');
 
     // Try with 100 text lengths.
-    for (size_t j = 0; j < 100; ++j) {
+    for (size_t j = 3; j < 100; ++j) {
         std::vector<util::character> input;
         auto space = util::make_container<size_t>(j);
 

@@ -89,8 +89,9 @@ private:
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
                           const size_t common_prefix_length) {
+        // Catch this common case and sort it efficiently.
         if (bucket.size() <= 2) {
-            if (input_text.slice(bucket[0]) > input_text.slice(bucket[1])) {
+            if (input_text.slice(bucket[1]) < input_text.slice(bucket[0])) {
                 std::swap(bucket[0], bucket[1]);
             }
             return;
@@ -105,13 +106,12 @@ private:
                 try_induced_sort(bucket, common_prefix_length);
         });
 
-        logger::get() << "induce-check on " << bucket.size()
-                      << " elements took " << induced_time << "ns.\n";
-
         if (!induce_sorted_succeeded) {
+            logger::get() << "induce-check on " << bucket.size()
+                          << " elements took " << induced_time << "ns.\n";
             logger::get().time_spent_induction_testing(induced_time);
 
-            if (bucket.size() < max_blind_sort_size) {
+            if (blind::MIN_BLINDSORT_SIZE <= bucket.size() && bucket.size() < max_blind_sort_size) {
                 // If the bucket is small enough, we can use blind sorting.
                 size_t blind_time = duration(
                     [&]() { blind_sort(bucket, common_prefix_length); });
@@ -338,8 +338,8 @@ public:
 
         // Catch corner cases, where input is smaller than bucket-prefix-size.
         if (text.size() < 3) {
-            // Use Multikey-Quicksort.
-            blind_sort(sa, 0);
+            // Use Quicksort.
+            simple_sort(sa, 0);
         } else {
             // Use bucket sort to sort `sa` by the first two characters.
             bucket_sort();
