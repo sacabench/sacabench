@@ -1,5 +1,8 @@
 #include "../external_saca.hpp"
+#pragma GCC diagnostic push
+#pragma GCC system_header
 #include <MSufSort.h>
+#pragma GCC diagnostic pop
 
 namespace sacabench::reference_sacas {
 using namespace sacabench::util;
