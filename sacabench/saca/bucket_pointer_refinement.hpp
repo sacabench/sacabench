@@ -244,7 +244,7 @@ public:
      */
     template <typename sa_index, typename key_func_type>
     inline static void
-    find_offset(size_t& offset, size_t step_size, util::span<sa_index> bptr,
+    find_offset(sa_index& offset, size_t step_size, util::span<sa_index> bptr,
                 util::span<sa_index> bucket, key_func_type& sort_key) {
         bool sortable = false;
         while (true) {
@@ -275,7 +275,7 @@ public:
      * the current bucket.
      */
     template <typename sa_index>
-    inline static void refine_size_2_bucket(size_t offset, size_t step_size,
+    inline static void refine_size_2_bucket(sa_index offset, size_t step_size,
                                             util::span<sa_index> bptr,
                                             size_t bucket_start,
                                             util::span<sa_index> bucket) {
@@ -307,7 +307,7 @@ public:
      * the current bucket.
      */
     template <typename sa_index>
-    static void refine_single_bucket(size_t offset, size_t step_size,
+    static void refine_single_bucket(sa_index offset, size_t step_size,
                                      util::span<sa_index> bptr,
                                      size_t bucket_start,
                                      util::span<sa_index> bucket) {
@@ -318,15 +318,6 @@ public:
             refine_size_2_bucket(offset, step_size, bptr, bucket_start, bucket);
             return;
         }
-
-        /* right_bounds indicates jumps between buckets:
-         * right_bounds[i] = false: suffix i and i+1 are in the same bucket
-         * right_bounds[i] = true: suffix i and i+1 are in different buckets
-         * TODO: Find a more memory efficient solution
-         */
-        util::container<uint8_t> right_bounds =
-            util::make_container<uint8_t>(bucket.size());
-        std::fill(right_bounds.begin(), right_bounds.end(), false);
 
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
@@ -348,6 +339,55 @@ public:
         /* As a consequence of sorting, bucket pointers might have changed.
          * We have to update the bucket pointers for further use.
          */
+
+        /*
+        constexpr size_t start = 0;
+        const size_t end = bucket.size() - 1;
+        size_t left_idx = start;
+        size_t right_idx = end;
+        size_t current_bucket;
+
+        // for suffixes with bptr[suffix] > end
+        while (left_idx >= start && (current_bucket = bptr[bucket[left_idx] + offset]) > end) {
+            do {
+                bptr[bucket[left_idx]] = right_idx;
+                --left_idx;
+            } while (left_idx >= start && bptr[bucket[left_idx] + offset] == current_bucket);
+            right_idx = left_idx;
+        }
+
+        // for suffixes with start <= bptr[suffix] <= end
+        right_idx = left_idx;
+        while (left_idx >= start && bptr[bucket[left_idx] + offset] >= start && bptr[bucket[left_idx] + offset] <= end) {
+            bptr[bucket[left_idx]] = right_idx;
+            --left_idx;
+        }
+
+        // for suffixes with bptr[suffix] < start
+        size_t middle_right_idx = right_idx;
+        size_t middle_left_idx = left_idx;
+        right_idx = left_idx;
+        while (left_idx >= start) {
+            current_bucket = bptr[bucket[left_idx] + offset];
+            do {
+                bptr[bucket[left_idx]] = right_idx;
+                --left_idx;
+            } while (left_idx >= start && bptr[bucket[left_idx] + offset] == current_bucket);
+            right_idx = left_idx;
+        }
+        */
+        bptr[-1] = 0;
+
+        /* right_bounds indicates jumps between buckets:
+         * right_bounds[i] = false: suffix i and i+1 are in the same bucket
+         * right_bounds[i] = true: suffix i and i+1 are in different buckets
+         * TODO: Find a more memory efficient solution
+         */
+
+        util::container<uint8_t> right_bounds =
+            util::make_container<uint8_t>(bucket.size());
+        std::fill(right_bounds.begin(), right_bounds.end(), false);
+
         size_t current_bucket_position = bucket.size();
         size_t current_code = 0;
         size_t recent_code = current_code;
