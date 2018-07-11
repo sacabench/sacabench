@@ -36,18 +36,14 @@ struct a_size_helper_type {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return util::powi(a_size, k);
     }
-    template <typename T>
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
-                                                   T const& b) {
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, uint64_t a,
+                                                   uint64_t b) {
         size_t const k_length = pow_a_k(k);
 
-        size_t const ai = a.idx();
-        size_t const bi = b.idx();
-
-        size_t const high_a = ai % k_length;
-        size_t const high_b = bi % k_length;
-        size_t const low_a = ai / k_length;
-        size_t const low_b = bi / k_length;
+        size_t const high_a = a % k_length;
+        size_t const high_b = b % k_length;
+        size_t const low_a = a / k_length;
+        size_t const low_b = b / k_length;
 
         bool const high_diff = high_a < high_b;
         bool const high_eq = high_a == high_b;
@@ -62,16 +58,12 @@ struct a_size_helper_type<2> {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << k;
     }
-    template <typename T>
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
-                                                   T const& b) {
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, uint64_t a,
+                                                   uint64_t b) {
         auto const anti_k = util::bits_of<size_t> - k;
 
-        size_t const ai = a.idx();
-        size_t const bi = b.idx();
-
-        size_t ar = (ai << anti_k) | (ai >> k);
-        size_t br = (bi << anti_k) | (bi >> k);
+        size_t ar = (a << anti_k) | (a >> k);
+        size_t br = (b << anti_k) | (b >> k);
 
         return ar < br;
     }
@@ -82,9 +74,8 @@ struct a_size_helper_type<4> {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << (k << 1);
     }
-    template <typename T>
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
-                                                   T const& b) {
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, uint64_t a,
+                                                   uint64_t b) {
         return a_size_helper_type<2>::idx_compare(k << 1, a, b);
     }
 };
@@ -315,7 +306,7 @@ struct prefix_doubling_impl {
             // integer value
             sorting_algorithm::sort(
                 h.hybrids(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                    return a_size_helper::idx_compare(k, a, b);
+                    return a_size_helper::idx_compare(k, a.idx(), b.idx());
                 });
 
             // loop_phase.split("Pair names");
@@ -583,7 +574,7 @@ struct prefix_doubling_impl {
         // integer value
         sorting_algorithm::sort(
             pu.U(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                return a_size_helper::idx_compare(k, a, b);
+                return a_size_helper::idx_compare(k, a.idx(), b.idx());
             });
         std::cout << "sorted U idx, idx % " << k_length << ":\n"
                   << debug_container(pu.U(), [](auto& x) { return x.idx(); })
@@ -598,7 +589,7 @@ struct prefix_doubling_impl {
         // integer value
         sorting_algorithm::sort(
             pu.PU(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                return a_size_helper::idx_compare(k, a, b);
+                return a_size_helper::idx_compare(k, a.idx(), b.idx());
             });
     }
 
