@@ -7,11 +7,11 @@
 
 #pragma once
 
-extern "C" void suffixArray(int* s, int* SA, int n, int K);
-
-#include "../external_saca.hpp"
 #include <cstdint>
+
 #include <util/alphabet.hpp>
+#include "drittel.h"
+#include "../external_saca.hpp"
 
 namespace sacabench::reference_sacas {
 
