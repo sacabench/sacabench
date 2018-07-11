@@ -118,10 +118,9 @@ public:
                         if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
                             // if the bucket has at least 1 element
                             span<sa_index> sub_bucket = sa.slice(buckets[bucket_idx], buckets[bucket_idx + 1]);
-                            //sa_index offset = find_offset(bucketsort_depth,
-                                    //bucketsort_depth, bptr, bucket);
+                            sa_index offset = find_offset<sa_index>(bucketsort_depth, bucketsort_depth, bptr, sub_bucket);
                             refine_single_bucket<sa_index>(
-                                bucketsort_depth, bucketsort_depth, bptr,
+                                offset, bucketsort_depth, bptr,
                                 buckets[bucket_idx], sub_bucket);
                         }
                     }
