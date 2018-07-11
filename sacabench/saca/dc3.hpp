@@ -28,63 +28,28 @@ public:
     static constexpr char const* DESCRIPTION = "Difference Cover Modulo 3 SACA";
 
     template <typename sa_index>
-    static void construct_sa(util::string_span text, util::alphabet const&,
+    static void construct_sa(util::string_span text, util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
         if (text.size() != 3) {
             construct_sa_dc3<sa_index, false, sacabench::util::character>(
-                text, out_sa.slice(3, out_sa.size()));
+                text, out_sa.slice(3, out_sa.size()), alphabet.size_with_sentinel());
         }
     }
 
 private:
     template <typename C, typename T, typename S>
     inline SB_FORCE_INLINE static void determine_triplets(const T& INPUT_STRING,
-                                                          S& triplets_12) {
+                                                          S& triplets_12, size_t alphabet_size) {
 
         DCHECK_MSG(
             triplets_12.size() == 2 * (INPUT_STRING.size() - 2) / 3,
-            "triplets_12 must have the length (2*INPUT_STRING.size()/3)");
-
-        // Container to store all tuples with the same length as triplets_12
-        // Tuples contains three chararcters (triplet) and the start position i
-        // mod 3 != 0
-        /*auto triplets_12_to_be_sorted =
-            sacabench::util::make_container<std::tuple<C, C, C, size_t>>(
-                2 * (INPUT_STRING.size() - 2) / 3);
-
-        for (size_t i = 1; i < INPUT_STRING.size() - 2; ++i) {
-            if (i % 3 != 0) {
-                triplets_12_to_be_sorted[counter++] =
-                    std::tuple<C, C, C, size_t>(INPUT_STRING[i],
-                                                INPUT_STRING[i + 1],
-                                                INPUT_STRING[i + 2], i);
-            }
-        }
-
-        // TODO: sort Tupels with radix_sort
-        // radix_sort(sa0_to_be_sorted, sa0);
-        std::sort(triplets_12_to_be_sorted.begin(),
-                  triplets_12_to_be_sorted.end());
-
-        for (size_t i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
-            triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
-        }
-        */
-        size_t counter = 0;
-        for (size_t i = 0; i < INPUT_STRING.size() - 2; ++i) {
-            if (i % 3 != 0) {
-                triplets_12[counter++] = i;
-            }
-        }
-
-        // TODO sort with radix sort
-        auto comp = [&](size_t i, size_t j) {
-            util::span triplet_1 = retrieve_triplets<C>(INPUT_STRING, i, 3);
-            util::span triplet_2 = retrieve_triplets<C>(INPUT_STRING, j, 3);
-            return (triplet_1 < triplet_2);
-        };
-
-        std::sort(triplets_12.begin(), triplets_12.end(), comp);
+            "triplets_12 must have the length (2*INPUT_STRING.size()/3)");        
+        
+        sacabench::util::container<size_t> result(triplets_12.size());
+        
+        radixsort_triple(INPUT_STRING, result, triplets_12, alphabet_size, 2, true);
+        radixsort_triple(INPUT_STRING, triplets_12, result, alphabet_size, 1, false);
+        radixsort_triple(INPUT_STRING, result, triplets_12, alphabet_size, 0, false);
     }
 
     template <typename C, typename T>
@@ -100,7 +65,8 @@ private:
     template <typename T, typename S, typename L>
     inline SB_FORCE_INLINE static void determine_leq(const T& INPUT_STRING,
                                                      const S& triplets_12,
-                                                     L& t_12, bool& recursion) {
+                                                     L& t_12, bool& recursion,
+                                                     size_t alphabet_size) {
 
         DCHECK_MSG(triplets_12.size() == t_12.size(),
                    "triplets_12 must have the same length as t_12");
@@ -129,6 +95,7 @@ private:
                 } else { // if lexicographical names are not uniqe set recursion
                          // = true
                     recursion = true;
+                    --alphabet_size;
                 }
             }
         }
@@ -157,7 +124,7 @@ private:
     }
 
     template <typename sa_index, bool rec, typename C, typename S>
-    static void construct_sa_dc3(S& text, util::span<sa_index> out_sa) {
+    static void construct_sa_dc3(S& text, util::span<sa_index> out_sa, size_t alphabet_size) {
 
         //-----------------------Phase 1------------------------------//
         tdc::StatPhase dc3("Phase 1");
@@ -167,7 +134,7 @@ private:
             sacabench::util::make_container<size_t>(2 * (text.size() - 2) / 3);
 
         // determine positions and calculate the sorted order
-        determine_triplets<C>(text, triplets_12);
+        determine_triplets<C>(text, triplets_12, alphabet_size);
 
         // empty SA which should be filled correctly with lexicographical
         // names of triplets (+3 because of dummy triplet)
@@ -180,7 +147,8 @@ private:
 
         // fill t_12 with lexicographical names
         auto span_t_12 = util::span(&t_12[0], t_12.size() - 3);
-        determine_leq(text, triplets_12, span_t_12, recursion);
+        alphabet_size = span_t_12.size();
+        determine_leq(text, triplets_12, span_t_12, recursion, alphabet_size);
 
         util::span<sa_index> sa_12 = util::span(&out_sa[0], t_12.size() - 3);
 
@@ -188,7 +156,7 @@ private:
         if (recursion) {
             dc3.split("Rekursion");
             // run algorithm recursive
-            construct_sa_dc3<sa_index, true, size_t>(t_12, sa_12);
+            construct_sa_dc3<sa_index, true, size_t>(t_12, sa_12, alphabet_size);
         }
 
         //-----------------------Phase2------------------------------//
@@ -308,10 +276,10 @@ private:
         for (size_t i = 0; i < sa_0.size(); ++i) {
             sa_0[i] = 3 * i;
         }
-
+        
         // index of first rank for triplets beginning in i mod 3 = 2
         size_t start_pos_mod_2 = isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
-
+        
         // TODO sort with radix sort
         auto comp = [&](size_t i, size_t j) {
             if (text[i] < text[j])
@@ -451,6 +419,45 @@ private:
             else {
 
                 sa[index] = sa_0[i++];
+            }
+        }
+    }
+    
+    template <typename T, typename S, typename N, typename M>
+    static void radixsort_triple(const T& text, const S& tuples, S& result, const N& alphabet_size, const M& position, const bool& first) {
+        auto buckets = util::container<size_t>(alphabet_size);
+        if(first){
+            for(size_t i = 1; i < text.size()-2; ++i){
+                if(i % 3 != 0){
+                    ++buckets[text[i+position]];
+                }
+            }
+            
+            size_t sum = 0;
+            for(size_t i = 0; i < buckets.size(); ++i){
+                sum += buckets[i];
+                buckets[i] = sum-buckets[i];
+            }
+              
+            for(size_t  i = 1; i < text.size()-2; ++i){
+                if(i % 3 != 0){
+                    result[buckets[text[i+position]]++] = i;
+                }
+            }
+        }
+        else{
+            for(size_t i = 0; i < tuples.size(); ++i){
+                ++buckets[text[tuples[i]+position]];
+            }
+            
+            size_t sum = 0;
+            for(size_t i = 0; i < buckets.size(); ++i){
+                sum += buckets[i];
+                buckets[i] = sum-buckets[i];
+            }
+                
+            for(size_t  i = 0; i < tuples.size(); ++i){
+                result[buckets[text[tuples[i]+position]]++] = tuples[i];
             }
         }
     }
