@@ -211,9 +211,7 @@ private:
                         // - This node is the last node with a correct LCP.
                         // - possible_child is the node with the "correct" edge
                         //   label, but too large LCP
-                        split(input_text, &child, new_element, si);
-                        return;
-
+                        return split(input_text, &child, new_element, si);
                     } else {
                         return child.second_pass_insert(input_text, new_element,
                                                         max_lcp, si);
