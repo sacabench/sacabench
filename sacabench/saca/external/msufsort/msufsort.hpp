@@ -12,7 +12,7 @@ public:
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
-                             sacabench::util::alphabet alphabet,
+                             const sacabench::util::alphabet&,
                              util::span<sa_index> out_sa) {
         external_saca_with_writable_text<sa_index, uint32_t>(
             text, out_sa, text.size(), msufsort_ref);
