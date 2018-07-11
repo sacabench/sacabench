@@ -82,25 +82,25 @@ private:
             children.emplace(it, std::move(new_child));
         }
 
-        inline void print(std::ostream& out, const util::string_span input_text,
+        inline void print(const util::string_span input_text,
                           const size_t depth) const {
             util::character print_incoming_char = incoming_char;
             if (print_incoming_char == util::SENTINEL) {
                 print_incoming_char = '$';
             }
-            out << print_incoming_char;
+            std::cout << print_incoming_char;
 
             if (is_leaf()) {
                 const size_t si = get_si(input_text.size());
                 const util::string_span suffix = input_text.slice(si);
-                out << " [ " << lcp << " ] -> " << si << ": '" << suffix << "'"
+                std::cout << " [ " << lcp << " ] -> " << si << ": '" << suffix << "'"
                     << std::endl;
             } else {
-                out << " [ " << lcp << " ]" << std::endl;
+                std::cout << " [ " << lcp << " ]" << std::endl;
                 for (const node& child : children) {
                     print_spaces(depth);
-                    out << "'- ";
-                    child.print(out, input_text, depth + 3);
+                    std::cout << "'- ";
+                    child.print(input_text, depth + 3);
                 }
             }
         }
@@ -211,7 +211,6 @@ private:
                         // - This node is the last node with a correct LCP.
                         // - possible_child is the node with the "correct" edge
                         //   label, but too large LCP
-
                         split(input_text, &child, new_element, si);
                         return;
 
@@ -260,8 +259,8 @@ public:
         m_root.add_child(std::move(n));
     }
 
-    inline void print(std::ostream& out) const {
-        m_root.print(out, m_input_text, 0);
+    inline void print() const {
+        m_root.print(m_input_text, 0);
     }
 
     /// \brief   This is the main tree construction method. It inserts the
@@ -270,58 +269,60 @@ public:
     ///
     /// \returns 0, if the node was successfully inserted. Otherwise the
     ///          length of the LCP with the existing path.
-    inline std::pair<size_t, size_t>
-    insert(const util::string_span input_text, const size_t new_element) {
-        node current& = m_root;
+    inline void insert(const size_t new_element) {
+        node* current_ptr = &m_root;
 
-        bool child_found = false;
+        bool child_found = true;
+
         while(child_found) {
             // Scan the children to find the right edge.
             // TODO: Replace by binary search since the children are sorted by
             // their edge labels.
             child_found = false;
-            for (node& child : m_root.children) {
+            for (node& child : current_ptr->children) {
 
                 // Check if an edge exists with the correct character label.
-                if (child.incoming_char == input_text[new_element + lcp]) {
+                if (child.incoming_char == m_input_text[new_element + current_ptr->lcp]) {
 
                     // Case 1: There is an edge with the correct edge label. We
                     // have to assume, that the LCP matches. Once we reach a
                     // leaf we will see if that assessment was correct.
                     child_found = true;
-                    current = child;
+                    current_ptr = &child;
                     break;
                 }
             }
         }
 
+        node& current = *current_ptr;
+
         // We know, that no edge exists for the suffix to insert. Therefore,
         // we can just create a leaf and add it as a child of this node.
 
-        const size_t si = get_any_leaf_si(input_text.size());
-        if (can_contain(input_text, new_element, si)) {
-            if (is_leaf()) {
+        // Get the stored SI in any leaf of a child of this node.
+        const size_t si = current.get_any_leaf_si(m_input_text.size());
+
+        if (current.can_contain(m_input_text, new_element, si)) {
+            if (current.is_leaf()) {
                 // Case 4: This node is itself a leaf. We then make this
                 // node an inner node and insert a dummy leaf with no
                 // edge label.
 
                 logger::get() << "Blind: Case 4.\n";
 
-                node n = node::new_leaf(input_text, si);
+                node n = node::new_leaf(m_input_text, si);
                 n.incoming_char = util::SENTINEL;
-                add_child(std::move(n));
+                current.add_child(std::move(n));
             }
 
             // Case 3: There is no edge yet for this character. Insert a
             // leaf below this node.
 
-            node n = node::new_leaf(input_text, new_element);
-            n.incoming_char = input_text[new_element + lcp];
-            add_child(std::move(n));
+            node n = node::new_leaf(m_input_text, new_element);
+            n.incoming_char = m_input_text[new_element + current.lcp];
+            current.add_child(std::move(n));
 
             logger::get() << "Blind: Case 3.\n";
-
-            return std::make_pair(0, 0);
         } else {
             // Case 5: We know, that there is an usable edge existing at
             // each level, but one of the LCPs is not identical. We can
@@ -332,8 +333,8 @@ public:
 
             logger::get() << "Blind: Case 5.\n";
 
-            const util::string_span this_lcp = input_text.slice(si);
-            const util::string_span new_lcp = input_text.slice(new_element);
+            const util::string_span this_lcp = m_input_text.slice(si);
+            const util::string_span new_lcp = m_input_text.slice(new_element);
             size_t lcp_len;
             for (lcp_len = 0; this_lcp[lcp_len] == new_lcp[lcp_len];
                  ++lcp_len) {
@@ -342,7 +343,7 @@ public:
             // LCP can't be 0, because then we would have inserted a
             // new edge.
             DCHECK_GT(lcp_len, 0);
-            return std::make_pair(lcp_len, si);
+            m_root.second_pass_insert(m_input_text, new_element, lcp_len, si);
         }
     }
 
@@ -359,11 +360,4 @@ public:
         (void)n;
     }
 };
-
-template <typename sa_index>
-inline std::ostream& operator<<(std::ostream& out, const trie<sa_index>& t) {
-    t.print(out);
-    return out;
-}
-
 } // namespace sacabench::deep_shallow::blind
