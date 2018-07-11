@@ -117,11 +117,12 @@ public:
                          bucket_idx < bucket_idx_end; ++bucket_idx) {
                         if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
                             // if the bucket has at least 1 element
+                            span<sa_index> sub_bucket = sa.slice(buckets[bucket_idx], buckets[bucket_idx + 1]);
+                            //sa_index offset = find_offset(bucketsort_depth,
+                                    //bucketsort_depth, bptr, bucket);
                             refine_single_bucket<sa_index>(
                                 bucketsort_depth, bucketsort_depth, bptr,
-                                buckets[bucket_idx],
-                                sa.slice(buckets[bucket_idx],
-                                         buckets[bucket_idx + 1]));
+                                buckets[bucket_idx], sub_bucket);
                         }
                     }
                 }
@@ -242,16 +243,16 @@ public:
      * \param sort_key Key function which uses offset and bptr to compare
      *  suffixes
      */
-    template <typename sa_index, typename key_func_type>
-    inline static void
-    find_offset(sa_index& offset, size_t step_size, util::span<sa_index> bptr,
-                util::span<sa_index> bucket, key_func_type& sort_key) {
+    template <typename sa_index>
+    inline static sa_index
+    find_offset(sa_index offset, size_t step_size, util::span<sa_index> bptr,
+                util::span<sa_index> bucket) {
         bool sortable = false;
         while (true) {
             // check if bucket is sortable
-            size_t bucket_code = sort_key(bucket[0]);
+            size_t bucket_code = bptr[bucket[0] + offset];
             for (size_t idx = 1; idx < bucket.size(); ++idx) {
-                if (sort_key(bucket[idx]) != bucket_code) {
+                if (bptr[bucket[idx] + offset] != bucket_code) {
                     sortable = true;
                     break;
                 }
@@ -264,6 +265,8 @@ public:
                 offset += step_size;
             }
         }
+
+        return offset;
     }
 
     /**\brief Refines a size-2-bucket inside the suffix array
@@ -286,7 +289,7 @@ public:
             return static_cast<size_t>(bptr[suffix + offset]);
         };
 
-        find_offset(offset, step_size, bptr, bucket, sort_key);
+        offset = find_offset(offset, step_size, bptr, bucket);
 
         if (sort_key(bucket[0]) > sort_key(bucket[1])) {
             sa_index tmp = bucket[0];
@@ -327,7 +330,7 @@ public:
         };
 
         // TODO: move to end somehow
-        find_offset(offset, step_size, bptr, bucket, sort_key);
+        offset = find_offset(offset, step_size, bptr, bucket);
 
         // sort the given bucket by using sort_key for each suffix
         if (bucket.size() < INSSORT_THRESHOLD) {
