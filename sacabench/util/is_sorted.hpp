@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "compare.hpp"
 #include "container.hpp"
 #include "sort/std_sort.hpp"
 #include "span.hpp"
