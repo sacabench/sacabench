@@ -8,6 +8,8 @@
 // ACM Transactions on Information Systems, Scheduled to Appear in July 2013.
 // A draft for this article can be retrieved from http://code.google.com/p/ge-nong/.
 
+#pragma GCC system_header
+
 #include <stdlib.h>
 
 namespace sacabench::reference_sacas::saca_k_reference {

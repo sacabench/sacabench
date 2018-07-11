@@ -1,7 +1,4 @@
-#pragma GCC diagnostic push
-#pragma GCC system_header
-#include "../../../../external/reference_impls/saca_k_reference.hpp"
-#pragma GCC diagnostic pop
+#include <saca_k_reference.hpp>
 #include "../external_saca.hpp"
 
 namespace sacabench::reference_sacas {

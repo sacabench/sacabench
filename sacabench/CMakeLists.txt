@@ -23,6 +23,7 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_bpr2_Standard
   msufsort
   reference_dc3
+  reference_saca_k
   ${CMAKE_DL_LIBS}
 )
 
