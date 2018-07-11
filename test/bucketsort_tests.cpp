@@ -9,6 +9,7 @@
 #include <util/alphabet.hpp>
 #include <util/string.hpp>
 #include <util/sort/bucketsort.hpp>
+#include <saca/bucket_pointer_refinement/bucketsort.hpp>
 
 TEST(Bucketsort, function_call) {
     sacabench::util::string input =
@@ -36,7 +37,7 @@ TEST(Bucketsort, function_call_lightweight) {
     auto sa = sacabench::util::make_container<uint8_t>(input.size());
     auto bptr = sacabench::util::make_container<uint8_t>(input.size());
     sacabench::util::span<uint8_t> sa_span = sa;
-    sacabench::util::sort::bucketsort_presort_lightweight(input,
+    sacabench::bucket_pointer_refinement::sort::bucketsort_presort_lightweight(input,
             a.size_without_sentinel(), 2, sa_span, bptr);
 
     std::cout << "Suffix Array: ";
@@ -63,7 +64,7 @@ TEST(Bucketsort, lightweight_bucket_positions){
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
     sacabench::util::apply_effective_alphabet(input, a);
     size_t depth = 1;
-    auto buckets = sacabench::util::sort::get_lightweight_buckets(input, a.max_character_value(), depth);
+    auto buckets = sacabench::bucket_pointer_refinement::sort::get_lightweight_buckets(input, a.max_character_value(), depth);
     ASSERT_EQ(buckets.at(0), (size_t) 0);
     ASSERT_EQ(buckets.at(1), (size_t) 0);
     ASSERT_EQ(buckets.at(2), (size_t) 2);
