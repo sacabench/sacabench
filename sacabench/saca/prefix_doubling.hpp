@@ -123,69 +123,28 @@ struct prefix_doubling_impl {
         return a;
     }
 
-    struct IdxMeta {
-        sa_index m_v;
-        bool m_rotated;
-        size_t m_k;
-
-        IdxMeta() : m_v(0), m_rotated(false), m_k(0){};
-        IdxMeta(IdxMeta const&) = default;
-        IdxMeta(IdxMeta&&) = default;
-        IdxMeta& operator=(IdxMeta const&) = default;
-        IdxMeta& operator=(IdxMeta&&) = default;
-
-        inline IdxMeta(sa_index v, bool rotated, size_t k) {
-            m_v = v;
-            m_rotated = rotated;
-            m_k = k;
-        }
-
-        SB_NO_INLINE sa_index const& assert_not_rotated() const {
-            DCHECK_EQ(m_rotated, false);
-            return m_v;
-        }
-        SB_NO_INLINE sa_index const& assert_rotated(size_t k) const {
-            DCHECK_EQ(m_rotated, true);
-            DCHECK_EQ(m_k, k);
-            return m_v;
-        }
-        SB_NO_INLINE sa_index& assert_not_rotated() {
-            DCHECK_EQ(m_rotated, false);
-            return m_v;
-        }
-        SB_NO_INLINE sa_index& assert_rotated(size_t k) {
-            DCHECK_EQ(m_rotated, true);
-            DCHECK_EQ(m_k, k);
-            return m_v;
-        }
-    };
-
-    inline static IdxMeta rotate(size_t k, IdxMeta v) {
-        uint64_t x = v.assert_not_rotated();
-        x = a_size_helper::rotate(k, x);
-        return IdxMeta(x, true, k);
+    inline static sa_index rotate(size_t k, sa_index v) {
+        return a_size_helper::rotate(k, v);
     }
-    inline static IdxMeta unrotate(size_t k, IdxMeta v) {
-        uint64_t x = v.assert_rotated(k);
-        x = a_size_helper::unrotate(k, x);
-        return IdxMeta(x, false, 0);
+
+    inline static sa_index unrotate(size_t k, sa_index v) {
+        return a_size_helper::unrotate(k, v);
     }
 
     class hybrid_tuple {
         std::array<sa_index, a_size + 1> m_data;
-        IdxMeta m_idx;
 
     public:
         inline hybrid_tuple() = default;
 
-        inline IdxMeta& idx() { return m_idx; }
+        inline sa_index& idx() { return m_data[a_size]; }
         inline name_type& name() { return m_data[0]; }
         inline name_type& name2() { return m_data[1]; }
         inline util::span<name_type> names() {
             return util::span<name_type>(m_data).slice(0, a_size);
         }
 
-        inline IdxMeta const& idx() const { return m_idx; }
+        inline sa_index const& idx() const { return m_data[a_size]; }
         inline name_type const& name() const { return m_data[0]; }
         inline name_type const& name2() const { return m_data[1]; }
         inline util::span<name_type const> names() const {
@@ -208,10 +167,10 @@ struct prefix_doubling_impl {
         inline util::span<name_type> s_names(size_t i) {
             return m_hybrids[i].names();
         }
-        inline IdxMeta& s_idx(size_t i) { return m_hybrids[i].idx(); }
+        inline sa_index& s_idx(size_t i) { return m_hybrids[i].idx(); }
 
         inline name_type& p_name(size_t i) { return m_hybrids[i].name(); }
-        inline IdxMeta& p_idx(size_t i) { return m_hybrids[i].idx(); }
+        inline sa_index& p_idx(size_t i) { return m_hybrids[i].idx(); }
     };
 
     /// Create a unique name for each S tuple,
@@ -318,8 +277,7 @@ struct prefix_doubling_impl {
             }
 
             h.s_names(i).copy_from(p);
-            h.s_idx(i) =
-                rotate(1 + wp_initial_loop_offset, IdxMeta(i, false, 0));
+            h.s_idx(i) = rotate(1 + wp_initial_loop_offset, i);
         }
 
         // We iterate up to ceil(log_a(N)) times - but because we
@@ -357,7 +315,7 @@ struct prefix_doubling_impl {
                 phase.log("prefix_size", k_length);
 
                 for (size_t i = 0; i < N; i++) {
-                    out_sa[i] = unrotate(k, h.p_idx(i)).assert_not_rotated();
+                    out_sa[i] = unrotate(k, h.p_idx(i));
                 }
                 return;
             }
@@ -368,10 +326,8 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                h.hybrids(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                    return a.idx().assert_rotated(k) <
-                           b.idx().assert_rotated(k);
-                });
+                h.hybrids(), [k](auto const& a, auto const& b)
+                                 SB_FORCE_INLINE { return a.idx() < b.idx(); });
 
             for (auto& e : h.hybrids()) {
                 e.idx() = rotate(k + 1, unrotate(k, e.idx()));
@@ -389,10 +345,8 @@ struct prefix_doubling_impl {
                 for (size_t l = 1; l < trunc_size; l++) {
                     auto const idx = h.p_idx(j + l);
 
-                    if (unrotate(k + 1, idx).assert_not_rotated() ==
-                        uint64_t(
-                            unrotate(k + 1, last_idx).assert_not_rotated()) +
-                            k_length) {
+                    if (unrotate(k + 1, idx) ==
+                        uint64_t(unrotate(k + 1, last_idx)) + k_length) {
                         t[l] = h.p_name(j + l);
                         last_idx = idx;
                     } else {
@@ -502,8 +456,8 @@ struct prefix_doubling_impl {
             inline void debug_print_name(V const& v) {
                 std::cout << "[";
                 for (auto& e : v) {
-                    std::cout << "(" << unmarked(e.name()) << ",_,"
-                              << e.idx().assert_not_rotated() << "),";
+                    std::cout << "(" << unmarked(e.name()) << ",_," << e.idx()
+                              << "),";
                 }
                 std::cout << "]";
             }
@@ -512,8 +466,8 @@ struct prefix_doubling_impl {
                 std::cout << "[";
                 for (auto& e : v) {
                     std::cout << "(" << unmarked(e.names()[0]) << ","
-                              << unmarked(e.names()[1]) << ","
-                              << e.idx().assert_not_rotated() << "),";
+                              << unmarked(e.names()[1]) << "," << e.idx()
+                              << "),";
                 }
                 std::cout << "]";
             }
@@ -559,14 +513,14 @@ struct prefix_doubling_impl {
                 m_U_start++;
                 debug_print("DROP"_s);
             }
-            inline void append_f(sa_index name, IdxMeta idx) {
+            inline void append_f(sa_index name, sa_index idx) {
                 auto& new_f_elem = m_disc_h[m_F_end];
                 new_f_elem.name() = name;
                 new_f_elem.idx() = idx;
                 m_F_end++;
                 debug_print("AppF"_s);
             }
-            inline void append_s(util::span<sa_index> names, IdxMeta idx) {
+            inline void append_s(util::span<sa_index> names, sa_index idx) {
                 m_disc_h[m_F_end] = m_disc_h[m_S_end];
                 m_F_end++;
 
@@ -576,7 +530,7 @@ struct prefix_doubling_impl {
                 m_S_end++;
                 debug_print("AppS"_s);
             }
-            inline void append_p(sa_index name, IdxMeta idx) {
+            inline void append_p(sa_index name, sa_index idx) {
                 m_disc_h[m_F_end] = m_disc_h[m_S_end];
                 m_F_end++;
                 m_disc_h[m_S_end] = m_disc_h[m_P_end];
@@ -661,9 +615,8 @@ struct prefix_doubling_impl {
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
         sorting_algorithm::sort(
-            pu.PU(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                return a.idx().assert_rotated(k) < b.idx().assert_rotated(k);
-            });
+            pu.PU(), [k](auto const& a, auto const& b)
+                         SB_FORCE_INLINE { return a.idx() < b.idx(); });
     }
 
     /// Create a unique name for each S tuple.
@@ -752,8 +705,7 @@ struct prefix_doubling_impl {
                 }
 
                 H[i].names().copy_from(p);
-                H[i].idx() =
-                    rotate(1 + wp_initial_loop_offset, IdxMeta(i, false, 0));
+                H[i].idx() = rotate(1 + wp_initial_loop_offset, i);
             }
 
             // Sort the S tuples lexicographical
@@ -841,9 +793,7 @@ struct prefix_doubling_impl {
                             auto const& n = neighbor_names[l];
                             auto unrotated_i = unrotate(k, n.idx());
 
-                            if (uint64_t(unrotated_i.assert_not_rotated()) ==
-                                uint64_t(last_i.assert_not_rotated()) +
-                                    k_length) {
+                            if (unrotated_i == uint64_t(last_i) + k_length) {
                                 tuple[l + 1] = unmarked(n.name());
                                 last_i = unrotated_i;
                             } else {
@@ -880,7 +830,7 @@ struct prefix_doubling_impl {
                            SB_FORCE_INLINE { return a.name() < b.name(); });
 
                 for (size_t i = 0; i < N; i++) {
-                    out_sa[i] = F[i].idx().assert_not_rotated();
+                    out_sa[i] = F[i].idx();
                 }
                 return;
             }
