@@ -38,12 +38,12 @@ struct a_size_helper_type {
     }
     inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, uint64_t a,
                                                    uint64_t b) {
-        size_t const k_length = pow_a_k(k);
+        uint64_t const k_length = pow_a_k(k);
 
-        size_t const high_a = a % k_length;
-        size_t const high_b = b % k_length;
-        size_t const low_a = a / k_length;
-        size_t const low_b = b / k_length;
+        uint64_t const high_a = a % k_length;
+        uint64_t const high_b = b % k_length;
+        uint64_t const low_a = a / k_length;
+        uint64_t const low_b = b / k_length;
 
         bool const high_diff = high_a < high_b;
         bool const high_eq = high_a == high_b;
@@ -58,14 +58,19 @@ struct a_size_helper_type<2> {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << k;
     }
+    inline SB_FORCE_INLINE static uint64_t rotate(uint64_t const k,
+                                                  uint64_t v) {
+        auto const anti_k = util::bits_of<uint64_t> - k;
+        return (v << anti_k) | (v >> k);
+    }
+    inline SB_FORCE_INLINE static uint64_t unrotate(uint64_t const k,
+                                                    uint64_t v) {
+        auto const anti_k = util::bits_of<uint64_t> - k;
+        return (v >> anti_k) | (v << k);
+    }
     inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, uint64_t a,
                                                    uint64_t b) {
-        auto const anti_k = util::bits_of<size_t> - k;
-
-        size_t ar = (a << anti_k) | (a >> k);
-        size_t br = (b << anti_k) | (b >> k);
-
-        return ar < br;
+        return rotate(k, a) < rotate(k, b);
     }
 };
 
@@ -73,6 +78,14 @@ template <>
 struct a_size_helper_type<4> {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << (k << 1);
+    }
+    inline SB_FORCE_INLINE static uint64_t rotate(uint64_t const k,
+                                                  uint64_t v) {
+        a_size_helper_type<2>::rotate(k << 1, v);
+    }
+    inline SB_FORCE_INLINE static uint64_t unrotate(uint64_t const k,
+                                                    uint64_t v) {
+        a_size_helper_type<2>::unrotate(k << 1, v);
     }
     inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, uint64_t a,
                                                    uint64_t b) {
