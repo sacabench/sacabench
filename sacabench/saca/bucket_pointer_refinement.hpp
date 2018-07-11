@@ -8,12 +8,12 @@
 
 #include <math.h>
 
-#include <util/alphabet.hpp>
-#include <util/compare.hpp>
-#include <util/container.hpp>
 #include <saca/bucket_pointer_refinement/bucketsort.hpp>
 #include <saca/bucket_pointer_refinement/insertionsort.hpp>
 #include <saca/bucket_pointer_refinement/ternary_quicksort.hpp>
+#include <util/alphabet.hpp>
+#include <util/compare.hpp>
+#include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -117,8 +117,11 @@ public:
                          bucket_idx < bucket_idx_end; ++bucket_idx) {
                         if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
                             // if the bucket has at least 1 element
-                            span<sa_index> sub_bucket = sa.slice(buckets[bucket_idx], buckets[bucket_idx + 1]);
-                            //sa_index offset = find_offset<sa_index>(bucketsort_depth, bucketsort_depth, bptr, sub_bucket);
+                            span<sa_index> sub_bucket = sa.slice(
+                                buckets[bucket_idx], buckets[bucket_idx + 1]);
+                            // sa_index offset =
+                            // find_offset<sa_index>(bucketsort_depth,
+                            // bucketsort_depth, bptr, sub_bucket);
                             sa_index offset = bucketsort_depth;
                             refine_single_bucket<sa_index>(
                                 offset, bucketsort_depth, bptr,
@@ -244,9 +247,9 @@ public:
      *  suffixes
      */
     template <typename sa_index>
-    inline static sa_index
-    find_offset(sa_index offset, size_t step_size, util::span<sa_index> bptr,
-                util::span<sa_index> bucket) {
+    inline static sa_index find_offset(sa_index offset, size_t step_size,
+                                       util::span<sa_index> bptr,
+                                       util::span<sa_index> bucket) {
         bool sortable = false;
         while (true) {
             // check if bucket is sortable
@@ -336,8 +339,7 @@ public:
         if (bucket.size() < INSSORT_THRESHOLD) {
             insertion_sort(bucket, util::compare_key(sort_key));
         } else {
-            ternary_quicksort(
-                bucket, util::compare_key(sort_key));
+            ternary_quicksort(bucket, util::compare_key(sort_key));
         }
 
         /* As a consequence of sorting, bucket pointers might have changed.
@@ -352,18 +354,19 @@ public:
         size_t current_bucket;
 
         // for suffixes with bptr[suffix] > end
-        while (left_idx >= start && (current_bucket = bptr[bucket[left_idx - 1] + offset]) > end) {
-            do {
-                bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
+        while (left_idx >= start && (current_bucket = bptr[bucket[left_idx - 1]
+        + offset]) > end) { do { bptr[bucket[left_idx - 1]] = right_idx +
+        bucket_start - 1;
                 --left_idx;
-            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] == current_bucket);
-            right_idx = left_idx;
+            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] ==
+        current_bucket); right_idx = left_idx;
         }
 
         // for suffixes with start <= bptr[suffix] <= end
         right_idx = left_idx;
-        while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] >= start && bptr[bucket[left_idx - 1] + offset] <= end) {
-            bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
+        while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] >= start
+        && bptr[bucket[left_idx - 1] + offset] <= end) { bptr[bucket[left_idx -
+        1]] = right_idx + bucket_start - 1;
             --left_idx;
         }
 
@@ -376,8 +379,8 @@ public:
             do {
                 bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
                 --left_idx;
-            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] == current_bucket);
-            right_idx = left_idx;
+            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] ==
+        current_bucket); right_idx = left_idx;
         }
         */
 
