@@ -9,7 +9,6 @@
 #include <optional>
 
 #include <util/is_sorted.hpp>
-#include <util/ringbuffer.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/introsort.hpp>
 #include <util/sort/multikey_quicksort.hpp>

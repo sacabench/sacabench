@@ -354,7 +354,7 @@ public:
     inline void traverse(util::span<suffix_index_type> bucket) const {
         size_t n = m_root.traverse(m_input_text.size(), bucket);
         DCHECK_EQ(n, bucket.size());
-        DCHECK(is_partially_suffix_sorted(bucket, input_text));
+        DCHECK(is_partially_suffix_sorted(bucket, m_input_text));
 
         // "Use" `n` so that the compiler doesn't warn
         // about it being unused.
