@@ -223,82 +223,6 @@ private:
             }
         }
 
-        /// \brief   This is the main tree construction method. It inserts the
-        ///          new_element either as a child to this node or into a child
-        ///          of this node.
-        ///
-        /// \returns 0, if the node was successfully inserted. Otherwise the
-        ///          length of the LCP with the existing path.
-        inline std::pair<size_t, size_t>
-        insert(const util::string_span input_text, const size_t new_element) {
-            // Scan the children to find the right edge.
-            // TODO: Replace by binary search since the children are sorted by
-            // their edge labels.
-            for (node& child : children) {
-
-                // Check if an edge exists with the correct character label.
-                if (child.incoming_char == input_text[new_element + lcp]) {
-                    // TODO: Replace recursive call here with iterative
-                    //       approach?
-
-                    // Case 1: There is an edge with the correct edge label. We
-                    // have to assume, that the LCP matches. Once we reach a
-                    // leaf we will see if that assessment was correct.
-                    return child.insert(input_text, new_element);
-                }
-            }
-
-            // We know, that no edge exists for the suffix to insert. Therefore,
-            // we can just create a leaf and add it as a child of this node.
-
-            const size_t si = get_any_leaf_si(input_text.size());
-            if (can_contain(input_text, new_element, si)) {
-                if (is_leaf()) {
-                    // Case 4: This node is itself a leaf. We then make this
-                    // node an inner node and insert a dummy leaf with no
-                    // edge label.
-
-                    logger::get() << "Blind: Case 4.\n";
-
-                    node n = node::new_leaf(input_text, si);
-                    n.incoming_char = util::SENTINEL;
-                    add_child(std::move(n));
-                }
-
-                // Case 3: There is no edge yet for this character. Insert a
-                // leaf below this node.
-
-                node n = node::new_leaf(input_text, new_element);
-                n.incoming_char = input_text[new_element + lcp];
-                add_child(std::move(n));
-
-                logger::get() << "Blind: Case 3.\n";
-
-                return std::make_pair(0, 0);
-            } else {
-                // Case 5: We know, that there is an usable edge existing at
-                // each level, but one of the LCPs is not identical. We can
-                // now compute the LCP of this node and the
-                // to-be-newly-inserted node. We then return to the tree
-                // root and try again, now with the information, how long
-                // the LCP will be.
-
-                logger::get() << "Blind: Case 5.\n";
-
-                const util::string_span this_lcp = input_text.slice(si);
-                const util::string_span new_lcp = input_text.slice(new_element);
-                size_t lcp_len;
-                for (lcp_len = 0; this_lcp[lcp_len] == new_lcp[lcp_len];
-                     ++lcp_len) {
-                }
-
-                // LCP can't be 0, because then we would have inserted a
-                // new edge.
-                DCHECK_GT(lcp_len, 0);
-                return std::make_pair(lcp_len, si);
-            }
-        }
-
         /// \brief Traverses the trie in order and saves the indices into the
         ///        bucket.
         inline size_t traverse(const size_t text_size,
@@ -340,14 +264,88 @@ public:
         m_root.print(out, m_input_text, 0);
     }
 
-    /// \brief Insert an element into the correct place of the blind trie.
-    inline void insert(const size_t new_element) {
-        const auto leaf_data = m_root.insert(m_input_text, new_element);
-        if (leaf_data.first > 0) {
-            m_root.second_pass_insert(m_input_text, new_element,
-                                      leaf_data.first, leaf_data.second);
+    /// \brief   This is the main tree construction method. It inserts the
+    ///          new_element either as a child to this node or into a child
+    ///          of this node.
+    ///
+    /// \returns 0, if the node was successfully inserted. Otherwise the
+    ///          length of the LCP with the existing path.
+    inline std::pair<size_t, size_t>
+    insert(const util::string_span input_text, const size_t new_element) {
+        node current& = m_root;
+
+        bool child_found = false;
+        while(child_found) {
+            // Scan the children to find the right edge.
+            // TODO: Replace by binary search since the children are sorted by
+            // their edge labels.
+            child_found = false;
+            for (node& child : m_root.children) {
+
+                // Check if an edge exists with the correct character label.
+                if (child.incoming_char == input_text[new_element + lcp]) {
+
+                    // Case 1: There is an edge with the correct edge label. We
+                    // have to assume, that the LCP matches. Once we reach a
+                    // leaf we will see if that assessment was correct.
+                    child_found = true;
+                    current = child;
+                    break;
+                }
+            }
+        }
+
+        // We know, that no edge exists for the suffix to insert. Therefore,
+        // we can just create a leaf and add it as a child of this node.
+
+        const size_t si = get_any_leaf_si(input_text.size());
+        if (can_contain(input_text, new_element, si)) {
+            if (is_leaf()) {
+                // Case 4: This node is itself a leaf. We then make this
+                // node an inner node and insert a dummy leaf with no
+                // edge label.
+
+                logger::get() << "Blind: Case 4.\n";
+
+                node n = node::new_leaf(input_text, si);
+                n.incoming_char = util::SENTINEL;
+                add_child(std::move(n));
+            }
+
+            // Case 3: There is no edge yet for this character. Insert a
+            // leaf below this node.
+
+            node n = node::new_leaf(input_text, new_element);
+            n.incoming_char = input_text[new_element + lcp];
+            add_child(std::move(n));
+
+            logger::get() << "Blind: Case 3.\n";
+
+            return std::make_pair(0, 0);
+        } else {
+            // Case 5: We know, that there is an usable edge existing at
+            // each level, but one of the LCPs is not identical. We can
+            // now compute the LCP of this node and the
+            // to-be-newly-inserted node. We then return to the tree
+            // root and try again, now with the information, how long
+            // the LCP will be.
+
+            logger::get() << "Blind: Case 5.\n";
+
+            const util::string_span this_lcp = input_text.slice(si);
+            const util::string_span new_lcp = input_text.slice(new_element);
+            size_t lcp_len;
+            for (lcp_len = 0; this_lcp[lcp_len] == new_lcp[lcp_len];
+                 ++lcp_len) {
+            }
+
+            // LCP can't be 0, because then we would have inserted a
+            // new edge.
+            DCHECK_GT(lcp_len, 0);
+            return std::make_pair(lcp_len, si);
         }
     }
+
 
     /// \brief Traverse the blind trie in order and copy the suffixes into
     ///        bucket.
