@@ -521,7 +521,7 @@ struct prefix_doubling_impl {
                 m_S_end++;
 
                 auto& new_p_elem = m_disc_h[m_P_end];
-                new_p_elem.name() = name;
+                new_p_elem.name2() = name;
                 new_p_elem.idx() = idx;
                 m_P_end++;
                 debug_print("AppP"_s);
@@ -559,6 +559,10 @@ struct prefix_doubling_impl {
         size_t k_length = a_size_helper::pow_a_k(k);
         size_t prev_k = k - 1;
         size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
+
+        for (auto& pe : pu.P()) {
+            pe.name() = pe.name2();
+        }
 
         std::cout << "prev:    k = " << prev_k
                   << ", k_length = " << prev_k_length << "\n";
