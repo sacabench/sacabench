@@ -16,7 +16,7 @@ namespace sacabench::bucket_pointer_refinement::sort {
 /// \brief The amount of elements in the array, from which median_of_nine is
 ///        used instead of median_of_three.
 constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
-constexpr size_t INSSORT_THRESHOLD = 15;
+constexpr size_t INSSORT_THRESHOLD = 40;
 
 /**\brief Returns pseudo-median according to three values
  * \param array array of elements
