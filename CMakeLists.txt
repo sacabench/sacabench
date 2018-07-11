@@ -41,7 +41,7 @@ set(SACA_BENCH_DEBUG_FLAGS "")
 set(SACA_BENCH_RELEASE_FLAGS "")
 
 ELSE()
-set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wpedantic;-Wextra;-Werror=return-type")
+set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wpedantic;-Wextra;-Werror=return-type;-fdiagnostics-color=auto")
 if (SACA_WERROR)
     set(SACA_BENCH_FLAGS "${SACA_BENCH_FLAGS};-Werror")
 endif()
