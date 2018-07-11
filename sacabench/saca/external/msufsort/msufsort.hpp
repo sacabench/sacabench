@@ -24,12 +24,12 @@ public:
 private:
     static void msufsort_ref(unsigned char* text, unsigned int* sa,
                              unsigned int n) {
-        MSufSort* m_suffixSorter = new MSufSort;
-        m_suffixSorter->Sort(text, n);
+        MSufSort m_suffixSorter;
+        m_suffixSorter.Sort(text, n);
 
         // calculate SA from ISA
         for (int32_t i = 0; i < n; ++i) {
-            sa[m_suffixSorter->ISA(i) - 1] = i;
+            sa[m_suffixSorter.ISA(i) - 1] = i;
         }
     }
 };
