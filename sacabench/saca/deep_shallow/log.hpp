@@ -130,19 +130,19 @@ public:
     }
 
     template <typename T>
-    inline logger& operator<<(const T& c) {
+    inline logger& operator<<(const T&) {
         return *this;
     }
 
     inline void flush() {}
 
-    inline void sorted_elements_blind(const size_t n) {}
-    inline void sorted_elements_quick(const size_t n) {}
-    inline void sorted_elements_induction(const size_t n) {}
-    inline void time_spent_blind(const size_t n) {}
-    inline void time_spent_quick(const size_t n) {}
-    inline void time_spent_induction_sorting(const size_t n) {}
-    inline void time_spent_induction_testing(const size_t n) {}
+    inline void sorted_elements_blind(const size_t) {}
+    inline void sorted_elements_quick(const size_t) {}
+    inline void sorted_elements_induction(const size_t) {}
+    inline void time_spent_blind(const size_t) {}
+    inline void time_spent_quick(const size_t) {}
+    inline void time_spent_induction_sorting(const size_t) {}
+    inline void time_spent_induction_testing(const size_t) {}
 };
 
 template <typename Fn>
