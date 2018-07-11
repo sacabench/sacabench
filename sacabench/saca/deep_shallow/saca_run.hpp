@@ -9,7 +9,6 @@
 #include <optional>
 
 #include <util/is_sorted.hpp>
-#include <util/ringbuffer.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/introsort.hpp>
 #include <util/sort/multikey_quicksort.hpp>
@@ -21,6 +20,7 @@
 #include "anchor_data.hpp"
 #include "blind/sort.hpp"
 #include "bucket_data.hpp"
+#include "log.hpp"
 #include "parameters.hpp"
 
 namespace sacabench::deep_shallow {
@@ -52,7 +52,6 @@ private:
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
-
         // Create bucket_data_container object with the right size.
         bd = bucket_data_container<sa_index_type>(alphabet_size);
 
@@ -62,15 +61,26 @@ private:
 
         // Store the bucket bounds in bd.
         bd.set_bucket_bounds(bucket_bounds);
+
+        logger::get() << "bucket sorting phase done\n";
     }
 
     /// \brief Use Multikey-Quicksort to sort the bucket.
     inline void shallow_sort(const span<sa_index_type> bucket) {
         // We use multikey quicksort. Abort at depth DEEP_SORT_DEPTH.
-        util::sort::multikey_quicksort::multikey_quicksort<DEEP_SORT_DEPTH>(
-            bucket, input_text, [&](const span<sa_index_type> equal_partition) {
-                deep_sort(equal_partition, DEEP_SORT_DEPTH);
-            });
+        logger::get() << "using shallow sort on " << bucket.size()
+                      << " elements.\n";
+
+        size_t ns = duration([&]() {
+            util::sort::multikey_quicksort::multikey_quicksort<DEEP_SORT_DEPTH>(
+                bucket, input_text,
+                [&](const span<sa_index_type> equal_partition) {
+                    deep_sort(equal_partition, DEEP_SORT_DEPTH);
+                });
+        });
+
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
+        logger::get() << "Took " << ns << "ns.\n";
     }
 
     /// \brief Use Induce Sorting, Blind Sorting and Ternary Quicksort to sort
@@ -79,19 +89,52 @@ private:
     ///        bucket shares with each other.
     inline void deep_sort(const span<sa_index_type> bucket,
                           const size_t common_prefix_length) {
+        DCHECK_GE(bucket.size(), 2);
+
+        // Catch this common case and sort it efficiently.
+        if (bucket.size() == 2) {
+            if (input_text.slice(bucket[1]) < input_text.slice(bucket[0])) {
+                std::swap(bucket[0], bucket[1]);
+            }
+            return;
+        }
+
         // Try induced sorting. This call returns false, if no ANCHOR and
         // OFFSET are suitable. We then use blind-/quicksort.
-        bool induce_sorted_succeeded =
-            try_induced_sort(bucket, common_prefix_length);
+        bool induce_sorted_succeeded;
+
+        size_t induced_time = duration([&]() {
+            induce_sorted_succeeded =
+                try_induced_sort(bucket, common_prefix_length);
+        });
 
         if (!induce_sorted_succeeded) {
-            if (bucket.size() < max_blind_sort_size) {
+            logger::get() << "induce-check on " << bucket.size()
+                          << " elements took " << induced_time << "ns.\n";
+            logger::get().time_spent_induction_testing(induced_time);
+
+            if (blind::MIN_BLINDSORT_SIZE <= bucket.size() &&
+                bucket.size() < max_blind_sort_size) {
                 // If the bucket is small enough, we can use blind sorting.
-                blind_sort(bucket, common_prefix_length);
+                size_t blind_time = duration(
+                    [&]() { blind_sort(bucket, common_prefix_length); });
+                logger::get() << "using blind sort on " << bucket.size()
+                              << " elements took " << blind_time << "ns.\n";
+                logger::get().sorted_elements_blind(bucket.size());
+                logger::get().time_spent_blind(blind_time);
             } else {
                 // In this case, we use simple quicksort.
-                simple_sort(bucket, common_prefix_length);
+                size_t quick_time = duration(
+                    [&]() { simple_sort(bucket, common_prefix_length); });
+                logger::get() << "using quick sort on " << bucket.size()
+                              << " elements took " << quick_time << ".\n";
+                logger::get().sorted_elements_quick(bucket.size());
+                logger::get().time_spent_quick(quick_time);
             }
+        } else {
+            logger::get() << "induce-sorted.\n";
+            logger::get().sorted_elements_induction(bucket.size());
+            logger::get().time_spent_induction_sorting(induced_time);
         }
     }
 
@@ -101,10 +144,29 @@ private:
         blind::sort(input_text, bucket, common_prefix_length);
     }
 
+    /// \brief Use ternary quicksort to sort the bucket.
+    inline void simple_sort(span<sa_index_type> bucket,
+                            const sa_index_type common_prefix_length) {
+        const auto compare_suffix = [&](const sa_index_type a,
+                                        const sa_index_type b) {
+            DCHECK_LT(a + common_prefix_length, input_text.size());
+            DCHECK_LT(b + common_prefix_length, input_text.size());
+
+            const util::string_span as =
+                input_text.slice(a + common_prefix_length);
+            const util::string_span bs =
+                input_text.slice(b + common_prefix_length);
+            return as < bs;
+        };
+        util::sort::ternary_quicksort::ternary_quicksort(bucket,
+                                                         compare_suffix);
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
+    }
+
     inline bool try_induced_sort(const span<sa_index_type> bucket,
                                  const sa_index_type common_prefix_length) {
         // Try every suffix index, which is to be sorted
-        for (const sa_index_type& si : bucket) {
+        for (const size_t& si : bucket) {
 
             // Check, if there is a suitable entry in anchor_data.
             const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
@@ -113,12 +175,12 @@ private:
                 // Test, if the suffix is in the valid range, that means
                 // entry_in_offset \in [leftmost_suffix, leftmost_suffix +
                 // common_prefix_length]
-                const auto leftmost_suffix = leftmost_suffix_opt.value();
+                const size_t leftmost_suffix = leftmost_suffix_opt.value();
                 if (si < leftmost_suffix &&
                     leftmost_suffix < si + common_prefix_length) {
 
                     // This is the position the found bucket starts in si.
-                    const auto relation = leftmost_suffix - si;
+                    const size_t relation = leftmost_suffix - si;
 
                     // Use suffix array with front bit as tag.
                     auto tagged_sa =
@@ -147,7 +209,7 @@ private:
                     // This function returns true, if `to_find` is a member of
                     // the bucket to be sorted.
                     const auto contains = [&](const sa_index_type to_find) {
-                        for (const sa_index_type& bsi : bucket) {
+                        for (const size_t& bsi : bucket) {
                             if (to_find == bsi + relation) {
                                 return true;
                             }
@@ -207,11 +269,14 @@ private:
 
                         // Insert the correct index into the to-be-sorted
                         // bucket.
-                        bucket[i] = tagged_sa[leftmost].number() - relation;
+                        bucket[i] =
+                            size_t(tagged_sa[leftmost].number()) - relation;
 
                         // Un-tag the number, so that the SA is valid again.
                         tagged_sa[leftmost].template set<0>(false);
                     }
+
+                    DCHECK(is_partially_suffix_sorted(bucket, input_text));
 
                     // The bucket has been sorted with induced sorting.
                     return true;
@@ -220,23 +285,6 @@ private:
         }
 
         return false;
-    }
-
-    /// \brief Use ternary quicksort to sort the bucket.
-    inline void simple_sort(span<sa_index_type> bucket,
-                            const sa_index_type common_prefix_length) {
-        const auto compare_suffix = [&](const sa_index_type a,
-                                        const sa_index_type b) {
-            DCHECK_LT(a + common_prefix_length, input_text.size());
-            DCHECK_LT(b + common_prefix_length, input_text.size());
-
-            const util::string_span as =
-                input_text.slice(a + common_prefix_length);
-            const util::string_span bs =
-                input_text.slice(b + common_prefix_length);
-            return as < bs;
-        };
-        util::sort::introsort(bucket, compare_suffix);
     }
 
     /// \brief Iteratively sort all buckets.
@@ -262,8 +310,12 @@ private:
                 const span<sa_index_type> bucket =
                     suffix_array.slice(bucket_start, bucket_end);
 
-                // Shallow sort it.
-                shallow_sort(bucket);
+                if (bucket.size() <= 2) {
+                    simple_sort(bucket, 2);
+                } else {
+                    // Shallow sort it.
+                    shallow_sort(bucket);
+                }
 
                 // Debug check: the bucket is correctly suffix sorted.
                 // FIXME: get rid of the obnoxious debug warning.
@@ -272,6 +324,8 @@ private:
                 for (sa_index_type i = 0; i < bucket.size(); ++i) {
                     ad.update_anchor(bucket[i], bucket_start + i);
                 }
+
+                DCHECK(is_partially_suffix_sorted(bucket, input_text));
             }
 
             // Mark this bucket as sorted.
@@ -293,8 +347,8 @@ public:
 
         // Catch corner cases, where input is smaller than bucket-prefix-size.
         if (text.size() < 3) {
-            // Use Multikey-Quicksort.
-            blind_sort(sa, 0);
+            // Use Quicksort.
+            simple_sort(sa, 0);
         } else {
             // Use bucket sort to sort `sa` by the first two characters.
             bucket_sort();
