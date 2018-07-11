@@ -1,4 +1,8 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
 #include <saca_k_reference.hpp>
+#pragma GCC diagnostic pop
+
 #include "../external_saca.hpp"
 
 namespace sacabench::reference_sacas {
