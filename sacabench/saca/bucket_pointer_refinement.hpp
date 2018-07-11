@@ -11,15 +11,17 @@
 #include <util/alphabet.hpp>
 #include <util/compare.hpp>
 #include <util/container.hpp>
-#include <util/sort/bucketsort.hpp>
-#include <util/sort/insertionsort.hpp>
-#include <util/sort/ternary_quicksort.hpp>
+#include <saca/bucket_pointer_refinement/bucketsort.hpp>
+#include <saca/bucket_pointer_refinement/insertionsort.hpp>
+#include <saca/bucket_pointer_refinement/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
 namespace sacabench::bucket_pointer_refinement {
+
+using namespace sacabench::bucket_pointer_refinement::sort;
 
 class bucket_pointer_refinement {
 public:
@@ -80,7 +82,7 @@ public:
 
         util::container<sa_index> bptr =
             util::make_container<sa_index>(n + 2 * bucketsort_depth);
-        auto buckets = util::sort::bucketsort_presort_lightweight(
+        auto buckets = bucketsort_presort_lightweight(
             input, alphabet.max_character_value(), bucketsort_depth, sa, bptr);
 
         /**
@@ -337,9 +339,9 @@ public:
 
         // sort the given bucket by using sort_key for each suffix
         if (bucket.size() < INSSORT_THRESHOLD) {
-            util::sort::insertion_sort(bucket, util::compare_key(sort_key));
+            insertion_sort(bucket, util::compare_key(sort_key));
         } else {
-            util::sort::ternary_quicksort::ternary_quicksort(
+            ternary_quicksort(
                 bucket, util::compare_key(sort_key));
         }
 

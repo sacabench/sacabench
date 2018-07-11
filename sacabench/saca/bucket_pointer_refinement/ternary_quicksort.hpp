@@ -8,13 +8,15 @@
 #pragma once
 
 #include <util/compare.hpp>
+#include <util/sort/insertionsort.hpp>
 #include <util/span.hpp>
 
-namespace sacabench::util::sort::ternary_quicksort {
+namespace sacabench::bucket_pointer_refinement::sort {
 
 /// \brief The amount of elements in the array, from which median_of_nine is
 ///        used instead of median_of_three.
 constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
+constexpr size_t INSSORT_THRESHOLD = 15;
 
 /**\brief Returns pseudo-median according to three values
  * \param array array of elements
@@ -24,7 +26,7 @@ constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
  * which chooses the median of the first, middle and last element of the array
  */
 template <typename content, typename Compare>
-content median_of_three(span<content> array, Compare cmp) {
+inline content median_of_three(span<content> array, Compare cmp) {
     using std::max;
     using std::min;
 
@@ -44,7 +46,7 @@ content median_of_three(span<content> array, Compare cmp) {
  * according to Bentley and McIlroy "Engineering a Sort Function".
  */
 template <typename content, typename Compare>
-content median_of_nine(span<content> array, Compare cmp) {
+inline content median_of_nine(span<content> array, Compare cmp) {
     using std::max;
     using std::min;
 
@@ -72,8 +74,8 @@ content median_of_nine(span<content> array, Compare cmp) {
  *
  */
 template <typename content, typename Compare>
-std::pair<size_t, size_t> partition(span<content> array, Compare cmp,
-                                    const content& pivot_element) {
+inline std::pair<size_t, size_t> partition(span<content> array, Compare cmp,
+                                           const content& pivot_element) {
     const auto less = cmp;
     const auto equal = util::as_equal(cmp);
     const auto greater = util::as_greater(cmp);
@@ -170,6 +172,11 @@ void ternary_quicksort(span<content> array, Compare cmp) {
         if (cmp(array[1], array[0])) {
             std::swap(array[0], array[1]);
         }
+        return;
+    }
+
+    if (n < INSSORT_THRESHOLD) {
+        sacabench::util::sort::insertion_sort(array, cmp);
         return;
     }
 
