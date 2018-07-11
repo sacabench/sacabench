@@ -9,7 +9,7 @@ target_include_directories(
         $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-set(MB_DC3_GLOBAL_FLAGS "-w)
+set(MB_DC3_GLOBAL_FLAGS "-w")
 
 target_compile_options(
     reference_dc3 PRIVATE
