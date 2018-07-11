@@ -326,6 +326,7 @@ public:
             return static_cast<size_t>(bptr[suffix + offset]);
         };
 
+        // TODO: move to end somehow
         find_offset(offset, step_size, bptr, bucket, sort_key);
 
         // sort the given bucket by using sort_key for each suffix
@@ -341,25 +342,25 @@ public:
          */
 
         /*
-        constexpr size_t start = 0;
-        const size_t end = bucket.size() - 1;
-        size_t left_idx = start;
+        constexpr size_t start = 1;
+        const size_t end = bucket.size();
+        size_t left_idx = end;
         size_t right_idx = end;
         size_t current_bucket;
 
         // for suffixes with bptr[suffix] > end
-        while (left_idx >= start && (current_bucket = bptr[bucket[left_idx] + offset]) > end) {
+        while (left_idx >= start && (current_bucket = bptr[bucket[left_idx - 1] + offset]) > end) {
             do {
-                bptr[bucket[left_idx]] = right_idx;
+                bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
                 --left_idx;
-            } while (left_idx >= start && bptr[bucket[left_idx] + offset] == current_bucket);
+            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] == current_bucket);
             right_idx = left_idx;
         }
 
         // for suffixes with start <= bptr[suffix] <= end
         right_idx = left_idx;
-        while (left_idx >= start && bptr[bucket[left_idx] + offset] >= start && bptr[bucket[left_idx] + offset] <= end) {
-            bptr[bucket[left_idx]] = right_idx;
+        while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] >= start && bptr[bucket[left_idx - 1] + offset] <= end) {
+            bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
             --left_idx;
         }
 
@@ -368,15 +369,14 @@ public:
         size_t middle_left_idx = left_idx;
         right_idx = left_idx;
         while (left_idx >= start) {
-            current_bucket = bptr[bucket[left_idx] + offset];
+            current_bucket = bptr[bucket[left_idx - 1] + offset];
             do {
-                bptr[bucket[left_idx]] = right_idx;
+                bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
                 --left_idx;
-            } while (left_idx >= start && bptr[bucket[left_idx] + offset] == current_bucket);
+            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] == current_bucket);
             right_idx = left_idx;
         }
         */
-        bptr[-1] = 0;
 
         /* right_bounds indicates jumps between buckets:
          * right_bounds[i] = false: suffix i and i+1 are in the same bucket
