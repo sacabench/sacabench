@@ -370,6 +370,8 @@ public:
         size_t current_bucket;
 
         // for suffixes with bptr[suffix] > end
+        // This while block seems to cause damage to bptr which is not recoverable by the following naive attempt
+        /*
         while (left_idx >= start &&
                (current_bucket = bptr[bucket[left_idx - 1] + offset]) > end) {
             do {
@@ -402,6 +404,7 @@ public:
                      bptr[bucket[left_idx - 1] + offset] == current_bucket);
             right_idx = left_idx;
         }
+        */
 
         /* right_bounds indicates jumps between buckets:
          * right_bounds[i] = false: suffix i and i+1 are in the same bucket
@@ -409,7 +412,7 @@ public:
          * TODO: Find a more memory efficient solution
          */
 
-        /*
+        ///*
         util::container<uint8_t> right_bounds =
             util::make_container<uint8_t>(bucket.size());
         std::fill(right_bounds.begin(), right_bounds.end(), false);
@@ -455,21 +458,21 @@ public:
             // finally update bptr
             bptr[bucket[current_bucket_position]] = current_sub_bucket_key;
         } while (current_bucket_position > 0);
-        */
+        //*/
 
         /* Refine all sub buckets */
 
         // increase offset for next level
         // offset += step_size;
 
-        size_t start_of_bucket = 0;
-        size_t end_of_bucket;
+        ssize_t start_of_bucket = 0;
+        ssize_t end_of_bucket;
 
         // from left to right: refine all buckets
         while (start_of_bucket < bucket.size()) {
-            end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) -
-                            bucket_start;
+            end_of_bucket = bptr[bucket[start_of_bucket]] - bucket_start;
             // Sort sub-buckets recursively
+            /*
             if (start_of_bucket >= middle_left_idx &&
                 start_of_bucket <= middle_right_idx) {
                 refine_single_bucket<sa_index>(
@@ -477,11 +480,12 @@ public:
                     start_of_bucket + bucket_start,
                     bucket.slice(start_of_bucket, ++end_of_bucket));
             } else {
+            */
                 refine_single_bucket<sa_index>(
                     offset + static_cast<sa_index>(step_size), step_size, bptr,
                     start_of_bucket + bucket_start,
                     bucket.slice(start_of_bucket, ++end_of_bucket));
-            }
+            //}
             // jump to the first index of the following sub bucket
             start_of_bucket = end_of_bucket;
         }
