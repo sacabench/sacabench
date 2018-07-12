@@ -56,9 +56,9 @@ namespace sacabench::util {
 #define SB_NO_INLINE __attribute__((noinline))
 
 #ifdef DEBUG
-#define SB_NOEXCEPT noexcept
+#define SB_NOEXCEPT 
 #else
-#define SB_NOEXCEPT
+#define SB_NOEXCEPT noexcept
 #endif
 
 } // namespace util
