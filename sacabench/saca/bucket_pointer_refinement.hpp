@@ -133,6 +133,7 @@ public:
             }
         }
 
+        std::cout << bptr << std::endl;
         /**
          * Phase 3
          * Perform copy step by Seward
@@ -288,18 +289,26 @@ public:
                                             util::span<sa_index> bucket) {
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
+        std::cout << "Old offset: " << offset << std::endl;
+        offset = find_offset(offset, step_size, bptr, bucket);
+        std::cout << "New offset: " << offset << std::endl;
+
         auto sort_key = [bptr, &offset](size_t suffix) {
             DCHECK_LT(suffix + offset, bptr.size());
             return static_cast<size_t>(bptr[suffix + offset]);
         };
-
-        offset = find_offset(offset, step_size, bptr, bucket);
 
         if (sort_key(bucket[0]) > sort_key(bucket[1])) {
             sa_index tmp = bucket[0];
             bucket[0] = bucket[1];
             bucket[1] = tmp;
         }
+
+        std::cout << "Sort keys:  {" << bucket[0] << " -> " << sort_key(bucket[0]);
+        for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
+            std::cout << ", " << bucket[suffix_idx] << " -> " << sort_key(bucket[suffix_idx]);
+        }
+        std::cout << "}" << std::endl;
 
         bptr[bucket[0]] = bucket_start;
         bptr[bucket[1]] = bucket_start + 1;
@@ -318,25 +327,31 @@ public:
                                      util::span<ssize_t> bptr,
                                      size_t bucket_start,
                                      util::span<sa_index> bucket) {
-        //std::cout << "Bucket " << bucket << " unrefined (starting at "
-                  //<< bucket_start << ")" << std::endl;
-        //std::cout << "BPTR: " << bptr << std::endl;
         // this bucket is already sorted
         if (bucket.size() < 2) {
             bptr[bucket[0]] = bucket_start;
-            //std::cout << std::endl;
             return;
         } else if (bucket.size() == 2) {
+            std::cout << "Bucket " << bucket << " unrefined (starting at "
+                << bucket_start << ")" << std::endl;
             refine_size_2_bucket(offset, step_size, bptr, bucket_start, bucket);
-            //std::cout << "Refined to: " << bucket << std::endl;
-            //std::cout << std::endl;
+            std::cout << "Refined to: " << bucket << std::endl;
+            std::cout << "Updated BPTR:  {" << bptr[bucket[0]];
+            for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
+                std::cout << ", " << bptr[bucket[suffix_idx]];
+            }
+            std::cout << "}" << std::endl << std::endl;
             return;
         }
 
+        std::cout << "Bucket " << bucket << " unrefined (starting at "
+                  << bucket_start << ")" << std::endl;
+        //std::cout << "BPTR: " << bptr << std::endl;
+
         // TODO: move to end somehow
-        //std::cout << "Old offset " << offset << std::endl;
+        std::cout << "Old offset " << offset << std::endl;
         offset = find_offset(offset, step_size, bptr, bucket);
-        //std::cout << "New offset " << offset << std::endl;
+        std::cout << "New offset " << offset << std::endl;
 
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
@@ -352,17 +367,18 @@ public:
             ternary_quicksort(bucket, util::compare_key(sort_key));
         }
 
-        //std::cout << "Refined to: " << bucket << std::endl;
-        //std::cout << "Sort keys:  {" << sort_key(bucket[0]);
-        //for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
-            //std::cout << ", " << sort_key(bucket[suffix_idx]);
-        //}
-        //std::cout << "}" << std::endl << std::endl;
+        std::cout << "Refined to: " << bucket << std::endl;
+        std::cout << "Sort keys:  {" << bucket[0] << " -> " << sort_key(bucket[0]);
+        for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
+            std::cout << ", " << bucket[suffix_idx] << " -> " << sort_key(bucket[suffix_idx]);
+        }
+        std::cout << "}" << std::endl;
 
         /* As a consequence of sorting, bucket pointers might have changed.
          * We have to update the bucket pointers for further use.
          */
 
+        /*
         constexpr size_t start = 1;
         const size_t end = bucket.size();
         size_t left_idx = end;
@@ -371,7 +387,7 @@ public:
 
         // for suffixes with bptr[suffix] > end
         // This while block seems to cause damage to bptr which is not recoverable by the following naive attempt
-        /*
+
         while (left_idx >= start &&
                (current_bucket = bptr[bucket[left_idx - 1] + offset]) > end) {
             do {
@@ -460,6 +476,13 @@ public:
         } while (current_bucket_position > 0);
         //*/
 
+        std::cout << "Refined to: " << bucket << std::endl;
+        std::cout << "Updated BPTR:  {" << bptr[bucket[0]];
+        for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
+            std::cout << ", " << bptr[bucket[suffix_idx]];
+        }
+        std::cout << "}" << std::endl << std::endl;
+
         /* Refine all sub buckets */
 
         // increase offset for next level
@@ -472,20 +495,10 @@ public:
         while (start_of_bucket < bucket.size()) {
             end_of_bucket = bptr[bucket[start_of_bucket]] - bucket_start;
             // Sort sub-buckets recursively
-            /*
-            if (start_of_bucket >= middle_left_idx &&
-                start_of_bucket <= middle_right_idx) {
-                refine_single_bucket<sa_index>(
+            refine_single_bucket<sa_index>(
                     offset + static_cast<sa_index>(step_size), step_size, bptr,
                     start_of_bucket + bucket_start,
                     bucket.slice(start_of_bucket, ++end_of_bucket));
-            } else {
-            */
-                refine_single_bucket<sa_index>(
-                    offset + static_cast<sa_index>(step_size), step_size, bptr,
-                    start_of_bucket + bucket_start,
-                    bucket.slice(start_of_bucket, ++end_of_bucket));
-            //}
             // jump to the first index of the following sub bucket
             start_of_bucket = end_of_bucket;
         }
