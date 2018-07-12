@@ -189,7 +189,7 @@ public:
 
             left_scan_idx = buckets[c_cur * in_l1_bucket];
             while (left_scan_idx < lmu[c_cur]) {
-                if (suffix_idx = sa[left_scan_idx]) {
+                if ((suffix_idx = sa[left_scan_idx])) {
                     c_pre = input[--suffix_idx];
                     if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
                         sa[lmu[c_pre]++] = suffix_idx;
@@ -216,7 +216,7 @@ public:
             right_scan_idx = buckets[(c_cur + 1) * in_l1_bucket];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
-                if (suffix_idx = sa[right_scan_idx]) {
+                if ((suffix_idx = sa[right_scan_idx])) {
                     c_pre = input[--suffix_idx];
                     if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
                         sa[--rmu[c_pre]] = suffix_idx;
