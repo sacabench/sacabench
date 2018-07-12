@@ -55,4 +55,10 @@ namespace sacabench::util {
 #define SB_FORCE_INLINE __attribute__((always_inline))
 #define SB_NO_INLINE __attribute__((noinline))
 
+#ifdef DEBUG
+#define SB_NOEXCEPT noexcept
+#else
+#define SB_NOEXCEPT
+#endif
+
 } // namespace util
