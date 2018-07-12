@@ -382,19 +382,6 @@ struct prefix_doubling_impl {
         return v;
     }
 
-    /// Marks elements as not unique by setting the highest extra bit
-    inline static void mark_not_unique(util::span<hybrid_tuple> U) {
-        for (size_t i = 1; i < U.size(); i++) {
-            auto& a = U[i - 1].name();
-            auto& b = U[i].name();
-
-            if (unmarked(a) == unmarked(b)) {
-                a = marked(a);
-                b = marked(b);
-            }
-        }
-    }
-
     /// Helper class to contain the logical S,U,P and F arrays.
     ///
     /// It provides different views to the underlying allocation, depending
@@ -617,7 +604,7 @@ struct prefix_doubling_impl {
                          SB_FORCE_INLINE { return a.idx() < b.idx(); });
     }
 
-    inline static bool
+    inline static void
     rename_inplace_and_mark_non_unique(util::span<hybrid_tuple> H) {
         // A name is determined as follows:
         // `last_pair` contains the last `S` tuple looked at, or
@@ -632,9 +619,6 @@ struct prefix_doubling_impl {
         // We skip `name=0`, because we want to reserve
         // it for the sentinel value.
         //
-        // In `only_unique` we keep track of whether we've seen a tuple more
-        // than once.
-        //
         // Example:
         //
         // Text: ababab$
@@ -645,31 +629,36 @@ struct prefix_doubling_impl {
         // | ((b, a), 1) => (4, 1) |
         // | ((b, a), 3) => (4, 3) |
         // | ((b, $), 5) => (6, 5) |
-        // only_unique = false
 
         name_type name = 0;
         auto last_pair_arr = make_sentinel_tuple();
         auto last_pair = util::span(last_pair_arr);
-        bool only_unique = true;
 
         for (size_t i = 0; i < H.size(); i++) {
+            bool duplicate = false;
             auto pair = H[i].names();
             if (pair != last_pair) {
                 name = i + 1;
                 last_pair.copy_from(pair);
             } else {
-                only_unique = false;
+                duplicate = true;
             }
             H[i].name() = name;
-        }
+            if (duplicate) {
+                auto& a = H[i - 1].name();
+                auto& b = H[i].name();
 
-        return only_unique;
+                a = marked(a);
+                b = marked(b);
+            }
+        }
     }
 
     /// Create a unique name for each S tuple.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static void rename2_inplace(util::span<hybrid_tuple> H) {
+    inline static void
+    rename2_inplace_and_mark_non_unique(util::span<hybrid_tuple> H) {
         /// Names are formed by taking the name of the first tuple element,
         /// and adding a offset that increments if the second element changes.
         ///
@@ -688,6 +677,7 @@ struct prefix_doubling_impl {
         auto last_pair = util::span(last_pair_arr);
 
         for (size_t i = 0; i < H.size(); i++) {
+            bool duplicate = false;
             auto pair = H[i].names();
 
             if (pair[0] != last_pair[0]) {
@@ -697,9 +687,18 @@ struct prefix_doubling_impl {
             } else if (pair.slice(1) != last_pair.slice(1)) {
                 name_offset = name_counter;
                 last_pair.copy_from(pair);
+            } else {
+                duplicate = true;
             }
             H[i].name() = pair[0] + name_offset;
             name_counter += 1;
+            if (duplicate) {
+                auto& a = H[i - 1].name();
+                auto& b = H[i].name();
+
+                a = marked(a);
+                b = marked(b);
+            }
         }
     }
 
@@ -788,11 +787,8 @@ struct prefix_doubling_impl {
                 auto UP = disc_h.phase_1_PU(P_size, F_size);
 
                 // Mark all not unique names in U by setting their extra bit.
-                mark_not_unique(
-                    UP.U()); // TODO: mark during init and later this loop
-
-                // std::cout << "loop: " << (1 + wp_initial_loop_offset - k) <<
-                // "\n";
+                // NB: Happens automatically during renaming now.
+                // mark_not_unique(UP.U());
 
                 // Merge the previous unique names from P
                 // into U and sort them by index.
@@ -889,7 +885,7 @@ struct prefix_doubling_impl {
                 });
 
             // Rename S tuple into U tuple
-            rename2_inplace(PSF.S());
+            rename2_inplace_and_mark_non_unique(PSF.S());
         }
     }
 };
