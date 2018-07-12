@@ -100,7 +100,7 @@ struct prefix_doubling_impl {
     }
 
     using a_size_helper = a_size_helper_type<sa_index, a_size>;
-    static constexpr bool USE_WORDPACKING = true;
+    static constexpr bool USE_WORDPACKING = false;
     static constexpr size_t WP_SIZE = 4;
 
     /// The type to use for lexicographical sorted "names".
@@ -551,51 +551,55 @@ struct prefix_doubling_impl {
                                                            size_t k) {
         // TODO: Change to just merge later
 
-        // size_t k_length = a_size_helper::pow_a_k(k);
-        // size_t prev_k = k - 1;
-        // size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
-
         for (auto& pe : pu.P()) {
             pe.name() = pe.name2();
         }
 
-        /*
+        size_t k_length = a_size_helper::pow_a_k(k);
+        size_t prev_k = k - 1;
+        size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
+
         std::cout << "prev:    k = " << prev_k
                   << ", k_length = " << prev_k_length << "\n";
         std::cout << "current: k = " << k << ", k_length = " << k_length
                   << "\n";
         std::cout << "P idx, idx % " << prev_k_length << ", idx % " << k_length
-                  << ":\n"
-                  << debug_container(pu.P(), [](auto& x) { return x.idx(); })
-                  << "\n";
-        std::cout << debug_container(pu.P(), [&](auto& x) {
-            return x.idx() % prev_k_length;
+                  << ":\n";
+
+        std::cout << debug_container(pu.P(), [k](auto& x) {
+            return unrotate(k, x.idx());
         }) << "\n";
+
         std::cout << debug_container(pu.P(), [&](auto& x) {
-            return x.idx() % k_length;
+            return unrotate(k, x.idx()) % prev_k_length;
         }) << "\n";
-        // Sort <U?> by its i position mapped to the tuple
-        // (i % (2**k), i / (2**k), implemented as a single
-        // integer value
-        sorting_algorithm::sort(
-            pu.U(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                return a_size_helper::idx_compare(k, a.idx(), b.idx());
-            });
-        std::cout << "sorted U idx, idx % " << k_length << ":\n"
-                  << debug_container(pu.U(), [](auto& x) { return x.idx(); })
-                  << "\n";
+
+        std::cout << debug_container(pu.P(), [&](auto& x) {
+            return unrotate(k, x.idx()) % k_length;
+        }) << "\n";
+
+        sorting_algorithm::sort(pu.U(), [](auto const& a, auto const& b) {
+            return a.idx() < b.idx();
+        });
+
+        std::cout << "sorted U idx, idx % " << k_length << ":\n";
+
+        std::cout << debug_container(pu.U(), [k](auto& x) {
+            return unrotate(k, x.idx());
+        }) << "\n";
+
         std::cout << debug_container(pu.U(), [&](auto& x) {
-            return x.idx() % k_length;
+            return unrotate(k, x.idx()) % k_length;
         }) << "\n";
+
         std::cout << "\n";
-        */
 
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
         // integer value
-        sorting_algorithm::sort(
-            pu.PU(), [k](auto const& a, auto const& b)
-                         SB_FORCE_INLINE { return a.idx() < b.idx(); });
+        sorting_algorithm::sort(pu.PU(), [](auto const& a, auto const& b) {
+            return a.idx() < b.idx();
+        });
     }
 
     inline static void
