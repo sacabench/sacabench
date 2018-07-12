@@ -11,6 +11,7 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/signed_size_type.hpp>
+#include "gsize.hpp"
 
 #include <tudocomp_stat/StatPhase.hpp>
 
@@ -70,8 +71,7 @@ namespace sacabench::gsaca {
                 group_end_temp = values.group_end;
 
                 // Mark index of start of current group in GSIZE to check it later on.
-                sa_index group_start_marker = static_cast<sa_index>(0);
-                values.GSIZE[values.group_start] = group_start_marker;
+                values.GSIZE.set_group_start_marker_at_index(values.group_start);
 
 
                 // Compute the prev pointer of the indices of current group.
@@ -118,7 +118,7 @@ namespace sacabench::gsaca {
             sacabench::util::container<sa_index> ISA;
             sacabench::util::container<sa_index> PREV;
             sacabench::util::container<sa_index> GLINK;
-            sacabench::util::container<sa_index> GSIZE;
+            GSIZE_Compare<sa_index> GSIZE;
             sa_index group_start = 0;
             sa_index group_end = 0;
         };
@@ -169,7 +169,7 @@ namespace sacabench::gsaca {
                                                     size_t number_of_chars) {
 
             // Initalise ISA, GLINK, GSIZE and PREV.
-            values.GSIZE = sacabench::util::make_container<sa_index>(number_of_chars);
+            values.GSIZE.setup(number_of_chars);
             values.ISA = sacabench::util::make_container<sa_index>(number_of_chars);
             values.GLINK = sacabench::util::make_container<sa_index>(number_of_chars);
             values.PREV = sacabench::util::make_container<sa_index>(number_of_chars);
@@ -192,7 +192,8 @@ namespace sacabench::gsaca {
                 if (chars_count[index] > 0) {
                     // The char at the current index occures in the word.
                     chars_cumulative[index] = cumulative_count;
-                    values.GSIZE[cumulative_count] = static_cast<sa_index>(chars_count[index]);
+                    auto value = static_cast<sa_index>(chars_count[index]);
+                    values.GSIZE.set_value_at_index(cumulative_count, value);
                     cumulative_count += chars_count[index];
                 }
             }
@@ -233,7 +234,8 @@ namespace sacabench::gsaca {
                     if (values.ISA[previous_suffix] <= values.group_end) {
 
                         if (values.ISA[previous_suffix] >= values.group_start) {
-                            values.GSIZE[values.ISA[previous_suffix]] = static_cast<sa_index>(1);
+                            auto index = values.ISA[previous_suffix];
+                            values.GSIZE.set_value_at_index(index, 1);
                         }
                         break;
                     }
@@ -257,8 +259,7 @@ namespace sacabench::gsaca {
                 values.ISA[current_suffix] = values.group_end;
 
                 // Check if the current index is marked as the start of the current group.
-                sa_index group_start_marker = 0;
-                if (values.GSIZE[index] == group_start_marker) {
+                if (values.GSIZE.is_marked_as_group_start(index)) {
 
                     // Move marked first suffixes to end of current group.
                     auto new_index = values.group_start + group_size;
@@ -334,7 +335,7 @@ namespace sacabench::gsaca {
 
                     // Save the number of suffixes moved to the end of their group in GSIZE.
                     auto number_of_suffixes_moved_to_end = saved_group_end - values.group_end;
-                    values.GSIZE[values.group_end] = number_of_suffixes_moved_to_end;
+                    values.GSIZE.set_value_at_index(values.group_end, number_of_suffixes_moved_to_end);
 
                     // Increment number_of_splitted_groups to count them.
                     number_of_splitted_groups++;
@@ -358,7 +359,8 @@ namespace sacabench::gsaca {
             for (size_t index = number_of_splitted_groups; index > 0; index--) {
 
                 // Recalculate group_end.
-                values.group_end = values.group_start + values.GSIZE[values.group_start];
+                auto gsize_value = values.GSIZE.get_value_at_index(values.group_start);
+                values.group_end = values.group_start + gsize_value;
 
                 // Update GSIZE and move suffix to back by switching it with the last element of current group.
                 for (size_t index = values.group_end - static_cast<sa_index>(1); index >= values.group_start; index--) {
@@ -368,10 +370,12 @@ namespace sacabench::gsaca {
                     auto start_index = values.GLINK[current_suffix];
 
                     // Decrement size of current group by one.
-                    values.GSIZE[start_index]--;
+                    auto new_value = values.GSIZE.get_value_at_index(start_index) - static_cast<sa_index>(1);
+                    values.GSIZE.set_value_at_index(start_index, new_value);
 
                     // Calculate end index from start_index and size of the current group.
-                    auto end_index = start_index + values.GSIZE[start_index];
+                    auto gsize_value = values.GSIZE.get_value_at_index(start_index);
+                    size_t end_index = start_index + gsize_value;
 
                     // Move the current_suffix to back by exchanging it with last suffix of its group.
                     auto groupstart_suffix = out_sa[end_index];
@@ -390,7 +394,8 @@ namespace sacabench::gsaca {
                     sa_index start_index = values.GLINK[current_suffix];
 
                     // Calculate last index of group and set it as the GLINK value of current_suffix.
-                    sa_index end_index = start_index + values.GSIZE[start_index];
+                    auto gsize_value = values.GSIZE.get_value_at_index(start_index);
+                    size_t end_index = start_index + gsize_value;
                     values.GLINK[current_suffix] = end_index;
                 }
 
@@ -402,7 +407,8 @@ namespace sacabench::gsaca {
                     sa_index start_index = values.GLINK[current_suffix];
 
                     // Increase GSIZE of current group.
-                    values.GSIZE[start_index]++;
+                    auto new_value = values.GSIZE.get_value_at_index(start_index) + static_cast<sa_index>(1);
+                    values.GSIZE.set_value_at_index(start_index, new_value);
                 }
 
                 // Update group_start for processing the next group.

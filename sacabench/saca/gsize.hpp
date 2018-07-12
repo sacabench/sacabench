@@ -79,14 +79,14 @@ public:
 
     inline void set_value_at_index(size_t index, sa_index value) {
 
-        if (value == 0) {
+        if (value == static_cast<sa_index>(0)) {
             private_GSIZE_BOOL[2 * index] = false;                      // Mark group size as 0.
             private_GSIZE_BOOL[2 * index + 1] = false;                  // Mark end of group sequence.
             return;
         }
 
         private_GSIZE_BOOL[2 * index] = true;                           // Mark begin of group.
-        if (value > 1) {
+        if (value > static_cast<sa_index>(1)) {
             private_GSIZE_BOOL[2 * index + 1] = false;                  // Mark begin of group not as end if there are more members.
         }
 
