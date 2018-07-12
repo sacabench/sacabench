@@ -277,7 +277,7 @@ struct prefix_doubling_impl {
             }
 
             h.s_names(i).copy_from(p);
-            h.s_idx(i) = rotate(1 + wp_initial_loop_offset, i);
+            h.s_idx(i) = rotate(1 + wp_initial_loop_offset - 1, i);
         }
 
         // We iterate up to ceil(log_a(N)) times - but because we
@@ -302,6 +302,10 @@ struct prefix_doubling_impl {
                 });
 
             // loop_phase.split("Rename S tuples");
+
+            for (auto& e : h.hybrids()) {
+                e.idx() = rotate(k, unrotate(k - 1, e.idx()));
+            }
 
             // Rename the S tuples into P
             bool only_unique = rename_inplace(h.hybrids());
@@ -329,10 +333,6 @@ struct prefix_doubling_impl {
                 h.hybrids(), [k](auto const& a, auto const& b)
                                  SB_FORCE_INLINE { return a.idx() < b.idx(); });
 
-            for (auto& e : h.hybrids()) {
-                e.idx() = rotate(k + 1, unrotate(k, e.idx()));
-            }
-
             // loop_phase.split("Pair names");
 
             for (size_t j = 0; j < N; j++) {
@@ -345,8 +345,8 @@ struct prefix_doubling_impl {
                 for (size_t l = 1; l < trunc_size; l++) {
                     auto const idx = h.p_idx(j + l);
 
-                    if (unrotate(k + 1, idx) ==
-                        uint64_t(unrotate(k + 1, last_idx)) + k_length) {
+                    if (unrotate(k, idx) ==
+                        uint64_t(unrotate(k, last_idx)) + k_length) {
                         t[l] = h.p_name(j + l);
                         last_idx = idx;
                     } else {
