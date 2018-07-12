@@ -1,0 +1,43 @@
+/*******************************************************************************
+ * Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
+ * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ ******************************************************************************/
+
+#include <util/alphabet.hpp>
+#include <util/bits.hpp>
+#include <util/sa_check.hpp>
+#include <util/saca.hpp>
+
+#include "${SACA_HEADER}"
+#include "../../bigtest/bigtest_driver.hpp"
+#include <gtest/gtest.h>
+
+TEST(bigtest, ${safe_type}) {
+#ifdef DEBUG
+    const auto SIZES = { 10, 20, 50, 100 };
+#else
+    const auto SIZES = { 10, 20, 50, 100, 200 };
+#endif
+
+    for(size_t size : SIZES) {
+      const auto concrete_bigtest = [&size](const std::string& filename) {
+          run_bigtest<${SACA_TYPE}, size_t>(filename, size * 1024 * 1024, true);
+      };
+
+      concrete_bigtest("downloads/cc_commoncrawl.ascii.200MB");
+      concrete_bigtest("downloads/pc_dblp.200MB");
+      concrete_bigtest("downloads/pc_dna.200MB");
+      concrete_bigtest("downloads/pc_english.200MB");
+      concrete_bigtest("downloads/pc_proteins.200MB");
+      concrete_bigtest("downloads/pcr_cere.200MB");
+      concrete_bigtest("downloads/pcr_einstein.en.txt.200MB");
+      concrete_bigtest("downloads/pcr_fib41.200MB");
+      concrete_bigtest("downloads/pcr_kernel.200MB");
+      concrete_bigtest("downloads/pcr_para.200MB");
+      concrete_bigtest("downloads/pcr_rs.13.200MB");
+      concrete_bigtest("downloads/pcr_tm29.200MB");
+      concrete_bigtest("downloads/pc_sources.200MB");
+      concrete_bigtest("downloads/tagme_wiki_disamb30.200MB");
+      concrete_bigtest("downloads/wiki_all_vital.txt.200MB");
+    }
+}

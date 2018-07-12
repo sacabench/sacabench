@@ -24,36 +24,18 @@ public:
         : depth(0), input_text(_input_text) {}
 
     // The depth at which we compare.
-    index_type depth;
+    size_t depth;
+
+    inline bool all_sorted() const {
+        return false;
+    }
 
     // This returns true, if a < b.
-    inline bool operator()(const index_type& a, const index_type& b) const {
-        const bool a_is_too_short = static_cast<size_t>(depth + a) >= input_text.size();
-        const bool b_is_too_short = static_cast<size_t>(depth + b) >= input_text.size();
-
-        if (a_is_too_short) {
-            if (b_is_too_short) {
-                // but if both are over the edge, one cannot be smaller.
-                return false;
-            }
-
-            // b should be larger
-            return true;
-        }
-
-        if (b_is_too_short) {
-            // a should be larger
-            return false;
-        }
-
+    inline bool operator()(const size_t& a, const size_t& b) const {
+        DCHECK(!all_sorted());
         DCHECK_LT(depth + a, input_text.size());
         DCHECK_LT(depth + b, input_text.size());
-
-        const character at_a = this->input_text[depth + a];
-        const character at_b = this->input_text[depth + b];
-        const bool diff = at_a < at_b;
-
-        return diff;
+        return this->input_text[depth + a] < this->input_text[depth + b];
     }
 
 private:
@@ -75,27 +57,50 @@ struct default_recursion_function {
 };
 
 // Our internal sort function.
-template <typename index_type,
-          typename recursion_function = default_recursion_function<index_type>>
-inline void multikey_quicksort_internal(
-    span<index_type> array,
-    compare_one_character_at_depth<index_type>& key_func,
-    const std::optional<size_t> abort_at_depth = std::nullopt,
-    recursion_function fn = recursion_function()) {
+template <size_t abort_at_depth, typename index_type,
+          typename Compare = compare_one_character_at_depth<index_type>,
+          typename Fn = default_recursion_function<index_type>>
+inline void multikey_quicksort_internal(span<index_type> array,
+                                        Compare& key_func, Fn fn = Fn()) {
     // If the set size is only one element, we don't need to sort.
     if (array.size() < 2) {
         return;
     }
 
-    // FIXME: Choose a simple pivot element.
+    // Choose a simple pivot element.
     const index_type pivot_element =
         (array.size() >= 9)
             ? sort::ternary_quicksort::median_of_nine(array, key_func)
             : array[0];
 
     // Swap elements using ternary quicksort partitioning.
-    auto bounds =
-        sort::ternary_quicksort::partition(array, key_func, pivot_element);
+    std::pair<size_t, size_t> bounds;
+    const size_t d = key_func.depth;
+
+    // Skip recursion if no smaller/bigger partitions are found.
+    for (;; ++key_func.depth) {
+        if(key_func.all_sorted()) {
+            // This checks if the comparison depth is larger than the text size.
+            key_func.depth = d;
+            return;
+        }
+
+        bounds =
+            sort::ternary_quicksort::partition(array, key_func, pivot_element);
+
+        // If the less/greater partitions aren't empty, continue with recursion.
+        if (bounds.first != 0 || bounds.second != array.size()) {
+            break;
+        }
+
+        // If we reached the abort depth, switch to the user supplied
+        // "deep sorting" algorithm
+        if (abort_at_depth != 0 && key_func.depth >= abort_at_depth) {
+            fn(array);
+            key_func.depth = d;
+            return;
+        }
+    }
 
     // Invariant: 0 .. bounds[0] is lesser than pivot_element
     // bounds[0] .. bounds[1] is equal to the pivot_element
@@ -105,17 +110,19 @@ inline void multikey_quicksort_internal(
     auto greater = array.slice(bounds.second);
 
     // Recursively sort the lesser and greater partitions by the same depth.
-    multikey_quicksort_internal(lesser, key_func, abort_at_depth, fn);
-    multikey_quicksort_internal(greater, key_func, abort_at_depth, fn);
+    multikey_quicksort_internal<abort_at_depth>(lesser, key_func, fn);
+    multikey_quicksort_internal<abort_at_depth>(greater, key_func, fn);
 
-    // Sort the equal partition by the next character.
-    ++key_func.depth;
-    if (abort_at_depth.has_value() && key_func.depth >= static_cast<const index_type>(abort_at_depth.value())) {
-        fn(equal);
-    } else {
-        multikey_quicksort_internal(equal, key_func, abort_at_depth, fn);
+    if(equal.size() > 1) {
+        // Sort the equal partition by the next character.
+        ++key_func.depth;
+        if (abort_at_depth != 0 && key_func.depth >= abort_at_depth) {
+            fn(equal);
+        } else {
+            multikey_quicksort_internal<abort_at_depth>(equal, key_func, fn);
+        }
     }
-    --key_func.depth;
+    key_func.depth = d;
 }
 
 // Sort the suffix indices in array by comparing one character in
@@ -127,19 +134,39 @@ inline void multikey_quicksort(span<index_type> array,
     auto key_func = generate_multikey_key_function<index_type>(input_text);
 
     // Call internal function.
-    multikey_quicksort_internal(array, key_func);
+    multikey_quicksort_internal<0>(array, key_func);
+}
+// Sort the suffix indices in array by comparing one character according to
+// the submitted compare_func. compare_func needs depth-attribute (used for
+// comparing current index) in order to work properly.
+template <typename index_type, typename Compare>
+inline void multikey_quicksort(span<index_type> array,
+                               const string_span input_text,
+                               Compare& key_func) {
+    multikey_quicksort_internal<0, index_type, Compare>(array, key_func);
+}
+
+// Sort the suffix indices in array by comparing one character in
+// input_text according to the submitted compare function. Abort at depth
+// max_depth and call deep_sort instead.
+template <size_t abort_at_depth, typename index_type, typename Fn,
+          typename Compare>
+inline void multikey_quicksort(span<index_type> array,
+                               const string_span input_text, Fn fn,
+                               Compare& key_func) {
+    // Call internal function.
+    multikey_quicksort_internal<abort_at_depth>(array, key_func, fn);
 }
 
 // Sort the suffix indices in array by comparing one character in
 // input_text. Abort at depth max_depth and call deep_sort instead.
-template <typename index_type, typename recursion_function>
+template <size_t abort_at_depth, typename index_type, typename Fn>
 inline void multikey_quicksort(span<index_type> array,
-                               const string_span input_text,
-                               const size_t max_depth, recursion_function fn) {
+                               const string_span input_text, Fn fn) {
     // Generate key function which compares only the character at position 0.
     auto key_func = generate_multikey_key_function<index_type>(input_text);
 
     // Call internal function.
-    multikey_quicksort_internal(array, key_func, max_depth, fn);
+    multikey_quicksort_internal<abort_at_depth>(array, key_func, fn);
 }
 } // namespace sacabench::util::sort::multikey_quicksort

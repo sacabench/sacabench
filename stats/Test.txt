@@ -1,0 +1,111 @@
+{
+    "memFinal": 8744,
+    "memOff": 0,
+    "memPeak": 126323,
+    "stats": [
+        {
+            "key": "algorithm_name",
+            "value": "BPR"
+        }
+    ],
+    "sub": [
+        {
+            "memFinal": 15560,
+            "memOff": 9280,
+            "memPeak": 117043,
+            "stats": [
+                {
+                    "key": "text_size",
+                    "value": "1942"
+                },
+                {
+                    "key": "extra_sentinels",
+                    "value": "0"
+                },
+                {
+                    "key": "sa_index_bit_size",
+                    "value": "64"
+                }
+            ],
+            "sub": [
+                {
+                    "memFinal": 17478,
+                    "memOff": 72,
+                    "memPeak": 17502,
+                    "stats": [],
+                    "sub": [],
+                    "timeEnd": 6084097.620464,
+                    "timeStart": 6084097.548633,
+                    "title": "Allocate SA and Text container"
+                },
+                {
+                    "memFinal": 0,
+                    "memOff": 17550,
+                    "memPeak": 0,
+                    "stats": [],
+                    "sub": [],
+                    "timeEnd": 6084097.65033,
+                    "timeStart": 6084097.629765,
+                    "title": "Initialize Text"
+                },
+                {
+                    "memFinal": 0,
+                    "memOff": 17550,
+                    "memPeak": 0,
+                    "stats": [],
+                    "sub": [],
+                    "timeEnd": 6084098.119685,
+                    "timeStart": 6084097.972151,
+                    "title": "Apply effective Alphabet"
+                },
+                {
+                    "memFinal": 0,
+                    "memOff": 17550,
+                    "memPeak": 99493,
+                    "stats": [],
+                    "sub": [
+                        {
+                            "memFinal": 82968,
+                            "memOff": 0,
+                            "memPeak": 82968,
+                            "stats": [],
+                            "sub": [],
+                            "timeEnd": 6084117.48517,
+                            "timeStart": 6084098.132542,
+                            "title": "Phase 1.1"
+                        },
+                        {
+                            "memFinal": 15560,
+                            "memOff": 82968,
+                            "memPeak": 15560,
+                            "stats": [],
+                            "sub": [],
+                            "timeEnd": 6084119.520665,
+                            "timeStart": 6084117.49802,
+                            "title": "Phase 1.2"
+                        },
+                        {
+                            "memFinal": -98528,
+                            "memOff": 98528,
+                            "memPeak": 965,
+                            "stats": [],
+                            "sub": [],
+                            "timeEnd": 6084135.870921,
+                            "timeStart": 6084119.525966,
+                            "title": "Phase 2"
+                        }
+                    ],
+                    "timeEnd": 6084135.872585,
+                    "timeStart": 6084098.124602,
+                    "title": "Algorithm"
+                }
+            ],
+            "timeEnd": 6084135.912486,
+            "timeStart": 6084097.511225,
+            "title": "SACA"
+        }
+    ],
+    "timeEnd": 6084135.991076,
+    "timeStart": 6084097.351304,
+    "title": "CLI"
+}

@@ -9,6 +9,19 @@
 
 using namespace sacabench::util;
 
+TEST(Bits, next_pow2) {
+    ASSERT_EQ(next_pow2(0), 1);
+    ASSERT_EQ(next_pow2(1), 1);
+    ASSERT_EQ(next_pow2(2), 2);
+    ASSERT_EQ(next_pow2(3), 4);
+    ASSERT_EQ(next_pow2(4), 4);
+    ASSERT_EQ(next_pow2(5), 8);
+    ASSERT_EQ(next_pow2(6), 8);
+    ASSERT_EQ(next_pow2(7), 8);
+    ASSERT_EQ(next_pow2(8), 8);
+    ASSERT_EQ(next_pow2(9), 16);
+}
+
 TEST(Bits, bits_of) {
     ASSERT_EQ(bits_of<uint64_t>, 64u);
     ASSERT_EQ(bits_of<uint32_t>, 32u);

@@ -152,31 +152,46 @@ public:
         return r;
     }
 
-    inline friend bool operator==(span<T> const& lhs, span<T> const& rhs) {
-        return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-    }
-
-    inline friend bool operator!=(span<T> const& lhs, span<T> const& rhs) {
-        return !(lhs == rhs);
-    }
-
-    inline friend bool operator<(span<T> const& lhs, span<T> const& rhs) {
-        return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-                                            rhs.end());
-    }
-
-    inline friend bool operator>(span<T> const& lhs, span<T> const& rhs) {
-        return rhs < lhs;
-    }
-
-    inline friend bool operator<=(span<T> const& lhs, span<T> const& rhs) {
-        return !(lhs > rhs);
-    }
-
-    inline friend bool operator>=(span<T> const& lhs, span<T> const& rhs) {
-        return !(lhs < rhs);
+    /// Copy the contents of another container into this one
+    template<typename U>
+    inline void copy_from(U&& other) {
+        DCHECK_EQ(size(), other.size());
+        for (size_t i = 0; i < size(); i++) {
+            (*this)[i] = other[i];
+        }
     }
 };
+
+template <typename T>
+inline SB_FORCE_INLINE bool operator==(span<T> const& lhs, span<T> const& rhs) {
+    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <typename T>
+inline SB_FORCE_INLINE bool operator!=(span<T> const& lhs, span<T> const& rhs) {
+    return !(lhs == rhs);
+}
+
+template <typename T>
+inline SB_FORCE_INLINE bool operator<(span<T> const& lhs, span<T> const& rhs) {
+    return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+                                        rhs.end());
+}
+
+template <typename T>
+inline SB_FORCE_INLINE bool operator>(span<T> const& lhs, span<T> const& rhs) {
+    return rhs < lhs;
+}
+
+template <typename T>
+inline SB_FORCE_INLINE bool operator<=(span<T> const& lhs, span<T> const& rhs) {
+    return !(lhs > rhs);
+}
+
+template <typename T>
+inline SB_FORCE_INLINE bool operator>=(span<T> const& lhs, span<T> const& rhs) {
+    return !(lhs < rhs);
+}
 
 } // namespace sacabench::util
 

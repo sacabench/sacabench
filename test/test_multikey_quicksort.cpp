@@ -7,12 +7,36 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <random>
-#include <util/is_sorted.hpp>
 #include <util/sa_check.hpp>
+#include <util/is_sorted.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/string.hpp>
 
 using namespace sacabench::util;
+
+constexpr auto test_strlen = [](size_t strl) {
+    // Initialize random number generator.
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist('a', 'd');
+
+    // Test with 1000 different random arrays.
+    for (size_t k = 0; k < 1000; ++k) {
+        std::vector<character> input;
+        std::vector<size_t> array;
+
+        // Insert 1000 random numbers.
+        for (size_t i = 0; i < strl; ++i) {
+            input.push_back(dist(gen));
+            array.push_back(i);
+        }
+        input.push_back(SENTINEL);
+        array.push_back(strl);
+
+        sort::multikey_quicksort::multikey_quicksort(span(array), span(input));
+        ASSERT_TRUE(sa_check(span(array), span(input)));
+    }
+};
 
 TEST(multikey_quicksort, test_compare_function) {
     const auto input = "acba"_s;
@@ -34,108 +58,7 @@ TEST(multikey_quicksort, test_compare_function) {
     // a == acba
     ASSERT_FALSE(less(3, 0));
     ASSERT_FALSE(less(0, 3));
-
-    // $ < a
-    ASSERT_TRUE(less(4, 3));
-    ASSERT_FALSE(less(3, 4));
-
-    // $$ < acba
-    ASSERT_TRUE(less(5, 0));
-    ASSERT_FALSE(less(0, 5));
-
-    // $ < $$ ?
-    ASSERT_FALSE(less(4, 5));
-    ASSERT_FALSE(less(5, 4));
 }
-
-TEST(multikey_quicksort, abc) {
-    const string_span input = "abc"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    ASSERT_EQ(array.size(), input.size());
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, ba) {
-    const string_span input = "ba"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, baca) {
-    const string_span input = "baca"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, aaaabcas) {
-    const string_span input = "aaaabcas"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-TEST(multikey_quicksort, caabaccaabacaa) {
-    const string_span input = "caabaccaabacaa"_s;
-
-    std::vector<size_t> array;
-    for (size_t i = 0; i < input.size(); ++i) {
-        array.push_back(i);
-    }
-
-    sort::multikey_quicksort::multikey_quicksort(span(array), input);
-    ASSERT_TRUE(sa_check(span(array), input));
-}
-
-constexpr auto test_strlen = [](size_t strl) {
-    // Initialize random number generator.
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist('a', 'd');
-
-    // Test with 1000 different random arrays.
-    for (size_t k = 0; k < 1000; ++k) {
-        std::vector<character> input;
-        std::vector<size_t> array;
-
-        // Insert 1000 random numbers.
-        for (size_t i = 0; i < strl; ++i) {
-            input.push_back(dist(gen));
-            array.push_back(i);
-        }
-
-        // for(size_t aa = 0; aa < input.size(); ++aa) {
-        //     std::cout << input[aa];
-        // }
-        // std::cout << std::endl;
-
-        sort::multikey_quicksort::multikey_quicksort(span(array), span(input));
-        ASSERT_TRUE(sa_check(span(array), span(input)));
-    }
-};
 
 TEST(multikey_quicksort, random_string_3) { test_strlen(3); }
 
@@ -152,7 +75,7 @@ TEST(multikey_quicksort, random_string_8) { test_strlen(8); }
 TEST(multikey_quicksort, random_string_1000) { test_strlen(1000); }
 
 TEST(multikey_quicksort, deep_sort_gfedcbaaaa) {
-    const string_span input = "gfedcbaaaa"_s;
+    const string_span input = "gfedcbaaaa\0"_s;
 
     std::vector<size_t> array;
     for (size_t i = 0; i < input.size(); ++i) {
@@ -163,7 +86,7 @@ TEST(multikey_quicksort, deep_sort_gfedcbaaaa) {
 
     auto deep_sort = [&](span<size_t>) { used_deep_sort = true; };
 
-    sort::multikey_quicksort::multikey_quicksort(span(array), input, 2,
+    sort::multikey_quicksort::multikey_quicksort<2>(span(array), input,
                                                  deep_sort);
     ASSERT_TRUE(used_deep_sort);
 }

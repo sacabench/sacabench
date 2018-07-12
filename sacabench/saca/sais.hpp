@@ -188,9 +188,9 @@ public:
             }
         }
 
-        
+
         span<ssize> s1 = SA.slice(s.size() - n1, s.size());
-        
+
         if (name < n1) {
             run_saca<span<ssize const>>(s1, SA, name - 1);
         } else {

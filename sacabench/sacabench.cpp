@@ -43,12 +43,15 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     std::string output_binary_filename = "";
     std::string algorithm = "";
     std::string benchmark_filename = "";
+    std::vector<std::string> blacklist = {};
     bool check_sa = false;
     uint32_t out_fixed_bits = 0;
     std::string prefix_size = "";
+    size_t prefix = -1;
     bool force_overwrite = false;
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
+    bool plot = false;
     {
         construct.add_option("algorithm", algorithm, "Which algorithm to run.")
             ->required();
@@ -95,6 +98,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
+
+        construct.add_flag("-z,--plot", plot, "Plot measurements.");
     }
 
     CLI::App& demo =
@@ -124,6 +129,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
+        batch.add_option("--blacklist", blacklist,
+                         "Blacklist algorithms from execution");
+        batch.add_flag("-z,--plot", plot, "Plot measurements.");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -205,7 +213,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 {
                     std::unique_ptr<util::text_initializer> text;
                     std::string stdin_buf;
-                    size_t prefix = -1;
 
                     if (prefix_size.size() > 0) {
                         try {
@@ -345,7 +352,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cerr << "Loading input..." << std::endl;
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
-        size_t prefix = -1;
 
         if (prefix_size.size() > 0) {
             try {
@@ -391,6 +397,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         nlohmann::json stat_array = nlohmann::json::array();
 
         for (const auto& algo : saca_list) {
+            if (std::find(blacklist.begin(), blacklist.end(),
+                          algo->name().data()) != blacklist.end()) {
+                continue;
+            }
             nlohmann::json alg_array = nlohmann::json::array();
 
             for (uint32_t i = 0; i < repetition_count; i++) {
@@ -441,6 +451,47 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                                  std::ios_base::trunc);
                 write_bench(benchmark_file);
             }
+        }
+    }
+
+    if (plot) {
+        size_t text_size;
+        if (input_filename == "-") {
+            auto stdin_buf =
+                std::string(std::istreambuf_iterator<char>(std::cin), {});
+            auto text = std::make_unique<util::text_initializer_from_span>(
+                util::string_span((util::character const*)stdin_buf.data(),
+                                  stdin_buf.size()),
+                prefix);
+            text_size = text->text_size();
+
+        } else {
+            auto text = std::make_unique<util::text_initializer_from_file>(
+                input_filename, prefix);
+            text_size = text->text_size();
+        }
+
+        std::string r_command =
+            "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+        std::cout << "plot benchmark...";
+        if (batch) {
+            r_command += " 1 " + input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
+            int i = system(r_command.c_str());
+            (void)i; // suppress  warning
+            std::cout << "saved as: " << benchmark_filename << ".pdf"
+                      << std::endl;
+        } else if (out_benchmark) {
+            r_command += " 0 " + input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
+            int i = system(r_command.c_str());
+            (void)i; // suppress  warning
+            std::cout << "saved as: " << benchmark_filename << ".pdf"
+                      << std::endl;
+        } else {
+            std::cout << "not able to plot." << std::endl;
         }
     }
 
