@@ -36,7 +36,7 @@ namespace sacabench::gsaca {
          * \param out_sa Space for the resulting suffix array.
          */
         template<typename sa_index>
-        inline static void construct_sa(sacabench::util::string_span text_with_sentinels,
+        /*inline*/ __attribute__((noinline)) static void construct_sa(sacabench::util::string_span text_with_sentinels,
                                         util::alphabet const& alphabet,
                                         sacabench::util::span<sa_index> out_sa) {
 
@@ -110,7 +110,7 @@ namespace sacabench::gsaca {
     private:
 
         template<typename sa_index>
-        inline static sa_index prev_const() {
+        /*inline*/ __attribute__((noinline)) static sa_index prev_const() {
             return std::numeric_limits<sa_index>::max();
         }
 
@@ -135,36 +135,45 @@ namespace sacabench::gsaca {
         };
 
         template<typename sa_index>
-        inline static void print(gsaca_values<sa_index>& values,
+        /*inline*/ __attribute__((noinline)) static void print(gsaca_values<sa_index>& values,
                                  size_t number_of_chars,
                                  std::string message) {
 
             std::cout << message << std::endl;
 
-            std::cout << "  GSIZE:  ";
+            std::cout << "  GSIZE:          ";
             for (size_t index = 0; index < number_of_chars; index++) {
                 std::cout << values.GSIZE[index] << ", ";
             }
             std::cout << std::endl;
 
-            std::cout << "  GLINK:  ";
+            std::cout << "  GLINK:          ";
             for (size_t index = 0; index < number_of_chars; index++) {
                 std::cout << values.GLINK[index] << ", ";
             }
             std::cout << std::endl;
 
-            std::cout << "  PREV:   ";
+            std::cout << "  PREV:           ";
             for (size_t index = 0; index < number_of_chars; index++) {
                 std::cout << values.PREV[index] << ", ";
             }
             std::cout << std::endl;
+
+            std::cout << "  ISA:            ";
+            for (size_t index = 0; index < number_of_chars; index++) {
+                std::cout << values.ISA[index] << ", ";
+            }
+            std::cout << std::endl;
+
+            std::cout << "  group_start:    " << values.group_start << std::endl;
+            std::cout << "  group_end:      " << values.group_end << std::endl;
         }
 
         /**
          * \brief This function sets up the shared values ISA, GLINK and GSIZE.
          */
         template<typename sa_index>
-        inline static void build_initial_structures(sacabench::util::string_span text,
+        /*inline*/ __attribute__((noinline)) static void build_initial_structures(sacabench::util::string_span text,
                                                     util::alphabet const& alphabet,
                                                     sacabench::util::span<sa_index> out_sa,
                                                     gsaca_values<sa_index> &values,
@@ -219,26 +228,67 @@ namespace sacabench::gsaca {
          * \brief This function calcualtes the prev pointer.
          */
         template<typename sa_index>
-        inline static void compute_prev_pointer(sacabench::util::span<sa_index> out_sa,
+        /*inline*/ __attribute__((noinline)) static void compute_prev_pointer(sacabench::util::span<sa_index> out_sa,
                                                 gsaca_values<sa_index> &values,
                                                 size_t number_of_chars) {
+/*
+            print(values, number_of_chars, "Start of prev pointer calculation.");
 
             for (auto index = values.group_end; index >= values.group_start; --index) {
+
+                print(values, number_of_chars, "For loop of caluclation with index " + std::to_string(index));
+
                 sa_index suffix = out_sa[index];
                 sa_index previous_suffix = suffix - static_cast<sa_index>(1);
+
+                std::cout << "Current suffix is at index: " << suffix << std::endl;
+                std::cout << "Previous suffix is at index: " << previous_suffix << std::endl;
+
                 for (previous_suffix = suffix - static_cast<sa_index>(1);
                         previous_suffix < static_cast<sa_index>(number_of_chars);
                         previous_suffix = values.PREV[previous_suffix]) {
 
+                    print(values, number_of_chars, "For loop for previous suffix: " + std::to_string(previous_suffix));
+
                     if (values.ISA[previous_suffix] <= values.group_end) {
+
+                        print(values, number_of_chars, "ISA of previous suffix is smaller or equal to group end.");
+
                         if (values.ISA[previous_suffix] >= values.group_start) {
+
+                            print(values, number_of_chars, "ISA of previous suffix is greater or equal to group start.");
+
                             values.GSIZE[values.ISA[previous_suffix]] = static_cast<sa_index>(1);
+
+                            print(values, number_of_chars, "Updated GSIZE at index: " + values.ISA[previous_suffix]);
                         }
                         break;
                     }
                 }
+
                 values.PREV[suffix] = previous_suffix;
+                print(values, number_of_chars, "Finished calculation of prev pointer of suffix at index: " + suffix);
             }
+            */
+           for (sa_index index = 1; index < number_of_chars; index++) {
+               values.PREV[index] = prev_pointer(index, values);
+               //print(values, number_of_chars, "Prev pointer of " + std::to_string(index) + " is " + std::to_string(values.PREV[index]));
+           }
+
+        }
+
+        template<typename sa_index>
+        inline static sa_index prev_pointer(sa_index position,
+                                            gsaca_values<sa_index> &values) {
+
+            auto current_glink_value = values.GLINK[position];
+
+            for (sa_index index = position - static_cast<sa_index>(1); index >= 0; index--) {
+                if (values.GLINK[index] <= current_glink_value) {
+                    return index;
+                }
+            }
+            return prev_const<sa_index>();
         }
 
         /**
@@ -250,7 +300,7 @@ namespace sacabench::gsaca {
          * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
          */
         template<typename sa_index>
-        inline static void calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa,
+        /*inline*/ __attribute__((noinline)) static void calculate_all_prev_pointer(sacabench::util::span<sa_index> out_sa,
                                                       gsaca_values<sa_index> &values) {
 
             for (size_t index = values.group_start; index <= values.group_end; index++) {
@@ -277,7 +327,7 @@ namespace sacabench::gsaca {
          * \brief Helperfunction to calculate prev pointer with the function calculate_all_prev_pointer.
          */
         template<typename sa_index>
-        inline static size_t compute_prev_pointer(size_t current_index,
+        /*inline*/ __attribute__((noinline)) static size_t compute_prev_pointer(size_t current_index,
                                                   gsaca_values<sa_index> &values) {
 
             size_t previous_index = current_index - 1;
@@ -291,7 +341,7 @@ namespace sacabench::gsaca {
         }
 
         template<typename sa_index>
-        inline static void update_group_structure(sacabench::util::span<sa_index> out_sa,
+        /*inline*/ __attribute__((noinline)) static void update_group_structure(sacabench::util::span<sa_index> out_sa,
                                                   gsaca_values<sa_index> &values) {
 
             sa_index group_size = 0;
@@ -321,7 +371,7 @@ namespace sacabench::gsaca {
         }
 
         template<typename sa_index>
-        inline static void reorder_suffixes(sacabench::util::span<sa_index> out_sa,
+        /*inline*/ __attribute__((noinline)) static void reorder_suffixes(sacabench::util::span<sa_index> out_sa,
                                             gsaca_values<sa_index> &values,
                                             size_t &number_of_splitted_groups,
                                             size_t group_start_temp) {
@@ -397,7 +447,7 @@ namespace sacabench::gsaca {
          * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
          */
         template<typename sa_index>
-        inline static void rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
+        /*inline*/ __attribute__((noinline)) static void rearrange_suffixes(sacabench::util::span<sa_index> out_sa,
                                               gsaca_values<sa_index> &values,
                                               size_t number_of_splitted_groups) {
 
@@ -465,7 +515,7 @@ namespace sacabench::gsaca {
          * "Linear-time Suffix Sorting - A new approach for suffix array construction" by Uwe Baier.
          */
         template<typename sa_index>
-        inline static void sort_suffixes(sacabench::util::span<sa_index> out_sa,
+        /*inline*/ __attribute__((noinline)) static void sort_suffixes(sacabench::util::span<sa_index> out_sa,
                                          gsaca_values<sa_index> &values,
                                          size_t number_of_chars) {
 
