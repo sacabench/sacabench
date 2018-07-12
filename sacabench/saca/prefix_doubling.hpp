@@ -177,8 +177,8 @@ struct prefix_doubling_impl {
     /// returning true if all names are unique.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    template <typename callback>
-    inline static bool rename_inplace(util::span<hybrid_tuple> H, callback cb) {
+    inline static bool rename_inplace_and_rotate_idx(util::span<hybrid_tuple> H,
+                                                     size_t k) {
         // A name is determined as follows:
         // `last_pair` contains the last `S` tuple looked at, or
         // ($, $) initially.
@@ -221,7 +221,7 @@ struct prefix_doubling_impl {
                 only_unique = false;
             }
             H[i].name() = name;
-            cb(H[i]);
+            H[i].idx() = rotate(k, unrotate(k - 1, H[i].idx()));
         }
 
         return only_unique;
@@ -306,9 +306,7 @@ struct prefix_doubling_impl {
             // loop_phase.split("Rename S tuples");
 
             // Rename the S tuples into P
-            bool only_unique = rename_inplace(h.hybrids(), [k](auto& e) {
-                e.idx() = rotate(k, unrotate(k - 1, e.idx()));
-            });
+            bool only_unique = rename_inplace_and_rotate_idx(h.hybrids(), k);
 
             // loop_phase.split("Check unique");
 
@@ -619,6 +617,55 @@ struct prefix_doubling_impl {
                          SB_FORCE_INLINE { return a.idx() < b.idx(); });
     }
 
+    inline static bool
+    rename_inplace_and_mark_non_unique(util::span<hybrid_tuple> H) {
+        // A name is determined as follows:
+        // `last_pair` contains the last `S` tuple looked at, or
+        // ($, $) initially.
+        //
+        // We iterate over all tuples in `S`, and set `name` to the current
+        // iteration index + 1 each time we see a different tuple.
+        //
+        // Since the tuple in S are sorted, `name`s are therefore always
+        // integer that sort to the same positions as their tuple would.
+        //
+        // We skip `name=0`, because we want to reserve
+        // it for the sentinel value.
+        //
+        // In `only_unique` we keep track of whether we've seen a tuple more
+        // than once.
+        //
+        // Example:
+        //
+        // Text: ababab$
+        // |      S            P   |
+        // | ((a, b), 0) => (1, 0) |
+        // | ((a, b), 2) => (1, 2) |
+        // | ((a, b), 4) => (1, 4) |
+        // | ((b, a), 1) => (4, 1) |
+        // | ((b, a), 3) => (4, 3) |
+        // | ((b, $), 5) => (6, 5) |
+        // only_unique = false
+
+        name_type name = 0;
+        auto last_pair_arr = make_sentinel_tuple();
+        auto last_pair = util::span(last_pair_arr);
+        bool only_unique = true;
+
+        for (size_t i = 0; i < H.size(); i++) {
+            auto pair = H[i].names();
+            if (pair != last_pair) {
+                name = i + 1;
+                last_pair.copy_from(pair);
+            } else {
+                only_unique = false;
+            }
+            H[i].name() = name;
+        }
+
+        return only_unique;
+    }
+
     /// Create a unique name for each S tuple.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
@@ -715,7 +762,7 @@ struct prefix_doubling_impl {
                 });
 
             // Rename the S tuples into U
-            rename_inplace(H, [](auto&) {});
+            rename_inplace_and_mark_non_unique(H);
         }
 
         size_t P_size = 0;
