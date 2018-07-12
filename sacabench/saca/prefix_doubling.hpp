@@ -516,7 +516,7 @@ struct prefix_doubling_impl {
                 m_S_end++;
 
                 auto& new_p_elem = m_disc_h[m_P_end];
-                new_p_elem.name2() = name;
+                new_p_elem.name() = name;
                 new_p_elem.idx() = idx;
                 m_P_end++;
                 debug_print("AppP"_s);
@@ -550,11 +550,6 @@ struct prefix_doubling_impl {
     inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
                                                            size_t k) {
         // TODO: Change to just merge later
-
-        for (auto& pe : pu.P()) {
-            pe.name() = pe.name2();
-        }
-
         size_t k_length = a_size_helper::pow_a_k(k);
         size_t prev_k = k - 1;
         size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
@@ -563,26 +558,197 @@ struct prefix_doubling_impl {
                   << ", k_length = " << prev_k_length << "\n";
         std::cout << "current: k = " << k << ", k_length = " << k_length
                   << "\n";
-        std::cout << "P idx, idx % " << prev_k_length << ", idx % " << k_length
-                  << ":\n";
+        std::cout << "P real_idx, idx, idx % " << prev_k_length << ", idx % "
+                  << k_length << ":\n";
 
+        std::cout << "all before name, idx:\n";
+        std::cout << debug_container(pu.P(), [k](auto& x) { return x.name(); })
+                  << "\n";
         std::cout << debug_container(pu.P(), [k](auto& x) {
             return unrotate(k, x.idx());
         }) << "\n";
 
-        std::cout << debug_container(pu.P(), [&](auto& x) {
-            return unrotate(k, x.idx()) % prev_k_length;
-        }) << "\n";
+        auto print_p_ = [=](auto P) {
+            /*
+            std::cout << debug_container(P, [k](auto& x) { return x.idx();
+            })
+                      << "\n";
 
-        std::cout << debug_container(pu.P(), [&](auto& x) {
-            return unrotate(k, x.idx()) % k_length;
-        }) << "\n";
+            std::cout << debug_container(P, [k](auto& x) {
+                return unrotate(k, x.idx());
+            }) << "\n";
+            */
 
-        sorting_algorithm::sort(pu.U(), [](auto const& a, auto const& b) {
-            return a.idx() < b.idx();
-        });
+            std::cout << debug_container(P, [&](auto& x) {
+                return unrotate(k, x.idx()) % prev_k_length;
+            }) << "\n";
 
-        std::cout << "sorted U idx, idx % " << k_length << ":\n";
+            std::cout << debug_container(P, [&](auto& x) {
+                return unrotate(k, x.idx()) % k_length;
+            }) << "\n";
+
+            std::cout << debug_container(P, [&](auto& x) {
+                return unrotate(k, x.idx()) % k_length -
+                       (unrotate(k, x.idx()) % prev_k_length);
+            }) << "\n";
+
+            std::cout << debug_container(P, [&](auto& x) {
+                return (unrotate(k, x.idx()) % k_length -
+                        (unrotate(k, x.idx()) % prev_k_length)) /
+                       prev_k_length;
+            }) << "\n";
+        };
+
+        print_p_(pu.P());
+        std::cout << "\n";
+
+        auto print_p = [=](auto P) {
+            print_p_(P);
+
+            // TODO: This should technically just be
+            // a size_t array of length a_size initialized with 0.
+            auto bucket_sizes = make_sentinel_tuple();
+            for (size_t i = 0; i < P.size(); i++) {
+                auto idx = (unrotate(k, P[i].idx()) % k_length -
+                            (unrotate(k, P[i].idx()) % prev_k_length)) /
+                           prev_k_length;
+                bucket_sizes[idx]++;
+            }
+
+            std::cout << "bucket sizes: ";
+            std::cout << util::span(bucket_sizes) << "\n";
+
+            for (size_t i = 1; i < a_size; i++) {
+                bucket_sizes[i] += bucket_sizes[i - 1];
+            }
+
+            std::cout << "bucket end offsets: ";
+            std::cout << util::span(bucket_sizes) << "\n";
+
+            for (size_t i = a_size - 1; i > 0; i--) {
+                bucket_sizes[i] = bucket_sizes[i - 1];
+            }
+            bucket_sizes[0] = 0;
+
+            std::cout << "bucket start offsets: ";
+            std::cout << util::span(bucket_sizes) << "\n";
+
+            {
+                auto bs = bucket_sizes;
+                for (size_t i = 0; i < P.size(); i++) {
+                    auto idx = (unrotate(k, P[i].idx()) % k_length -
+                                (unrotate(k, P[i].idx()) % prev_k_length)) /
+                               prev_k_length;
+
+                    P[bs[idx]++].name2() = P[i].name();
+                }
+            }
+
+            {
+                auto bs = bucket_sizes;
+                for (size_t i = 0; i < P.size(); i++) {
+                    auto idx = (unrotate(k, P[i].idx()) % k_length -
+                                (unrotate(k, P[i].idx()) % prev_k_length)) /
+                               prev_k_length;
+                    P[bs[idx]++].name() = P[i].idx();
+                }
+            }
+
+            for (size_t i = 0; i < P.size(); i++) {
+                P[i].idx() = P[i].name();
+                P[i].name() = P[i].name2();
+            }
+
+            print_p_(P);
+
+            std::cout << "\n";
+        };
+        {
+            auto P = pu.P();
+            uint64_t last_phase = -1;
+            uint64_t last_phase_start = 0;
+
+            for (size_t i = 0; i < P.size(); i++) {
+                auto current_phase = unrotate(k, P[i].idx()) % prev_k_length;
+                if (current_phase != last_phase) {
+                    if (last_phase != uint64_t(-1)) {
+                        print_p(P.slice(last_phase_start, i));
+                    }
+                    last_phase_start = i;
+                    last_phase = current_phase;
+                }
+            }
+            if (last_phase != uint64_t(-1)) {
+                print_p(P.slice(last_phase_start));
+            }
+            std::cout << "all after name, idx:\n";
+            std::cout << debug_container(P, [k](auto& x) { return x.name(); })
+                      << "\n";
+            std::cout << debug_container(P, [k](auto& x) {
+                return unrotate(k, x.idx());
+            }) << "\n";
+            print_p_(pu.P());
+
+            sorting_algorithm::sort(P, [](auto const& a, auto const& b) {
+                return a.idx() < b.idx();
+            });
+            std::cout << "SHOULD BE all after name, idx:\n";
+            std::cout << debug_container(P, [k](auto& x) { return x.name(); })
+                      << "\n";
+            std::cout << debug_container(P, [k](auto& x) {
+                return unrotate(k, x.idx());
+            }) << "\n";
+            print_p_(pu.P());
+
+            std::cout << "\n";
+        }
+
+        {
+            for (size_t i = 1; i < pu.P().size(); i++) {
+                // DCHECK_LT(pu.P()[i - 1].idx(), pu.P()[i].idx());
+            }
+
+            sorting_algorithm::sort(pu.U(), [](auto const& a, auto const& b) {
+                return a.idx() < b.idx();
+            });
+
+            auto PU = pu.PU();
+            size_t const p_end = pu.P().size();
+            size_t const u_end = PU.size();
+
+            auto merge = [=](auto assign) {
+                size_t pi = 0;
+                size_t ui = p_end;
+
+                size_t i = 0;
+                while ((pi < p_end) && (ui < u_end)) {
+                    if (PU[pi].idx() < PU[ui].idx()) {
+                        assign(PU[i++], PU[pi++]);
+                    } else {
+                        assign(PU[i++], PU[ui++]);
+                    }
+                }
+                while (pi < p_end) {
+                    assign(PU[i++], PU[pi++]);
+                }
+                while (ui < u_end) {
+                    assign(PU[i++], PU[ui++]);
+                }
+            };
+            merge([](auto& dst, auto& src) { dst.name2() = src.name(); });
+            merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
+            for (size_t i = 0; i < PU.size(); i++) {
+                PU[i].idx() = PU[i].name();
+                PU[i].name() = PU[i].name2();
+            }
+        }
+
+        /*
+
+        std::cout << "sorted U real_idx, idx, idx % " << k_length << ":\n";
+
+        std::cout << debug_container(pu.U(), [k](auto& x) { return x.idx(); })
+                  << "\n";
 
         std::cout << debug_container(pu.U(), [k](auto& x) {
             return unrotate(k, x.idx());
@@ -591,6 +757,7 @@ struct prefix_doubling_impl {
         std::cout << debug_container(pu.U(), [&](auto& x) {
             return unrotate(k, x.idx()) % k_length;
         }) << "\n";
+        */
 
         std::cout << "\n";
 
