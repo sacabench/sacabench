@@ -6,6 +6,13 @@
 
 #pragma once
 
+/**
+ * \brief Stores the GSIZE list needed for algorithm GSACA.
+ *
+ * This class stores the GSIZE list and handles getting and setting values from and to it.
+ * The group size is stored as the number of elements of that group at the index of the first group member.
+ * The indices of the other group members are filled with 0.
+ */
 template<typename sa_index>
 class GSIZE {
 private:
@@ -34,6 +41,16 @@ public:
     }
 };
 
+/**
+ * \brief Stores the GSIZE list needed for algorithm GSACA.
+ *
+ * This class stores the GSIZE list and handles getting and setting values from and to it.
+ * Two bits are used to store the group size information, thus the needed space is much smaller.
+ * The first bit markes wether the element at the given index is a start of the group (1)
+ * or if it is an element within the group (0).
+ * The second bit markes the end of a group, it does not matter if there is a 0 as first bit after this.
+ * Thus there are additional calculations needed.
+ */
 template<typename sa_index>
 class GSIZE_BOOL {
 private:
@@ -109,7 +126,14 @@ public:
     }
 };
 
-// BI-SIMULATION
+/**
+ * \brief Stores the GSIZE list needed for algorithm GSACA.
+ *
+ * This class uses both the implementation of GSIZE as a container of sa_index-type numbers
+ * and the implementation of GSIZE as a vector with bool values.
+ * The values are compared, thus this is a kind of bi-simulation to check wether both implementations work the same.
+ * Additional information about performed steps can be printed to the console.
+ */
 template<typename sa_index>
 class GSIZE_Compare {
 private:
