@@ -36,6 +36,7 @@ struct a_size_helper_type {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return util::powi(a_size, k);
     }
+    /*
     inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, sa_index a,
                                                    sa_index b) {
         uint64_t const k_length = pow_a_k(k);
@@ -51,6 +52,7 @@ struct a_size_helper_type {
 
         return high_diff | (high_eq & low_diff);
     }
+    */
 };
 
 template <typename sa_index>
@@ -68,10 +70,6 @@ struct a_size_helper_type<sa_index, 2> {
         auto const anti_k = util::bits_of<sa_index> - k;
         return (v >> anti_k) | (v << k);
     }
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, sa_index a,
-                                                   sa_index b) {
-        return rotate(k, a) < rotate(k, b);
-    }
 };
 
 template <typename sa_index>
@@ -86,10 +84,6 @@ struct a_size_helper_type<sa_index, 4> {
     inline SB_FORCE_INLINE static sa_index unrotate(uint64_t const k,
                                                     sa_index v) {
         return a_size_helper_type<sa_index, 2>::unrotate(k << 1, v);
-    }
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, sa_index a,
-                                                   sa_index b) {
-        return a_size_helper_type<sa_index, 2>::idx_compare(k << 1, a, b);
     }
 };
 
