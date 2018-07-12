@@ -14,7 +14,7 @@
  * The indices of the other group members are filled with 0.
  */
 template<typename sa_index>
-class GSIZE {
+class GSIZE_LIST {
 private:
     sacabench::util::container<sa_index> private_GSIZE;
     sa_index group_start_marker = 0;
@@ -83,28 +83,35 @@ public:
     }
 
     inline sa_index get_value_at_index(size_t index) {
-        if (private_GSIZE_BOOL[2 * index] == false) {                   // Check if first bit is 0.
+        // Check if first bit is 0.
+        if (private_GSIZE_BOOL[2 * index] == false) {
             return 0;
         }
 
-        if (private_GSIZE_BOOL[2 * index + 1] == true) {                // Check if the first group member is marked as end.
+        // Check if the first group member is marked as end.
+        if (private_GSIZE_BOOL[2 * index + 1] == true) {
             return 1;
         }
 
-        return calculate_value(index);                                  // Calculate the value.
+        // Calculate the value.
+        return calculate_value(index);
     }
 
     inline void set_value_at_index(size_t index, sa_index value) {
 
         if (value == static_cast<sa_index>(0)) {
-            private_GSIZE_BOOL[2 * index] = false;                      // Mark group size as 0.
-            private_GSIZE_BOOL[2 * index + 1] = false;                  // Mark end of group sequence.
+            // Mark group size as 0.
+            private_GSIZE_BOOL[2 * index] = false;
+            // Mark end of group sequence.
+            private_GSIZE_BOOL[2 * index + 1] = false;
             return;
         }
 
-        private_GSIZE_BOOL[2 * index] = true;                           // Mark begin of group.
+        // Mark begin of group.
+        private_GSIZE_BOOL[2 * index] = true;
         if (value > static_cast<sa_index>(1)) {
-            private_GSIZE_BOOL[2 * index + 1] = false;                  // Mark begin of group not as end if there are more members.
+            // Mark begin of group not as end if there are more members.
+            private_GSIZE_BOOL[2 * index + 1] = false;
         }
 
         sa_index loop_index = 1;
@@ -114,7 +121,8 @@ public:
             loop_index += 1;
         }
 
-        private_GSIZE_BOOL[2 * (index + value - 1) + 1] = true;         // Mark end of group sequence.
+        // Mark end of group sequence.
+        private_GSIZE_BOOL[2 * (index + value - 1) + 1] = true;
     }
 
     inline bool is_marked_as_group_start(size_t index) {
@@ -138,14 +146,14 @@ template<typename sa_index>
 class GSIZE_Compare {
 private:
     GSIZE_BOOL<sa_index> gsize_bool;
-    GSIZE<sa_index> gsize;
+    GSIZE_LIST<sa_index> gsize_list;
 
 public:
     bool logging = false;
 
     inline void setup(size_t number_of_chars) {
         gsize_bool.setup(number_of_chars);
-        gsize.setup(number_of_chars);
+        gsize_list.setup(number_of_chars);
     }
 
     inline sa_index get_value_at_index(size_t index) {
@@ -153,11 +161,11 @@ public:
         if (logging) { std::cout << "Getting value at index " << index << std::endl; }
 
         auto gsize_bool_result = gsize_bool.get_value_at_index(index);
-        auto gsize_result = gsize.get_value_at_index(index);
-        if (gsize_bool_result != gsize_result) {
+        auto gsize_list_result = gsize_list.get_value_at_index(index);
+        if (gsize_bool_result != gsize_list_result) {
             std::cout << "ERROR ON GSIZE AT POSITION " << index << std::endl;
         }
-        return gsize_result;
+        return gsize_list_result;
     }
 
     inline void set_value_at_index(size_t index, sa_index value) {
@@ -165,7 +173,7 @@ public:
         if (logging) { std::cout << "Setting value at index " << index << " to " << value << std::endl; }
 
         gsize_bool.set_value_at_index(index, value);
-        gsize.set_value_at_index(index, value);
+        gsize_list.set_value_at_index(index, value);
     }
 
     inline bool is_marked_as_group_start(size_t index) {
@@ -173,11 +181,11 @@ public:
         if (logging) { std::cout << "Checking group_start_marker at index " << index << std::endl; }
 
         auto gsize_bool_result = gsize_bool.is_marked_as_group_start(index);
-        auto gsize_result = gsize.is_marked_as_group_start(index);
-        if (gsize_bool_result != gsize_result) {
+        auto gsize_list_result = gsize_list.is_marked_as_group_start(index);
+        if (gsize_bool_result != gsize_list_result) {
             std::cout << "ERROR ON GSIZE GROUPSTART-MARKER AT POSITION " << index << std::endl;
         }
-        return gsize_result;
+        return gsize_list_result;
     }
 
     inline void set_group_start_marker_at_index(size_t index) {
@@ -185,6 +193,6 @@ public:
         if (logging) { std::cout << "Setting group_start_marker at index " << index << std::endl; }
 
         gsize_bool.set_group_start_marker_at_index(index);
-        gsize.set_group_start_marker_at_index(index);
+        gsize_list.set_group_start_marker_at_index(index);
     }
 };
