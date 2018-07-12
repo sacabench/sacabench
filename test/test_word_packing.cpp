@@ -44,3 +44,33 @@ TEST(word_packing, test_with_sentinel) {
         std::cout<<elem<<std::endl;
     }
 }*/
+/*
+//Failure: abcdefgh#defgh_abcde
+TEST(word_packing, test_with_sentinel) {
+
+    string test_span = "abcdefgh#defgh_abcde"_s;
+    auto result_set = make_container<size_t>(test_span.size());
+    auto alp = apply_effective_alphabet(test_span);
+    word_packing(test_span,result_set,alp,0,0);
+    
+    for(auto elem : result_set)
+    {
+        std::cout<<elem<<std::endl;
+    }
+}*/
+TEST(word_packing, greece) {
+
+    string test_span = "Εαμ ανσιλλαε περισυλα συαφιθαθε εξ, δυο ιδ ρεβυμ σομ"_s;
+    auto result_set = make_container<size_t>(test_span.size());
+    auto alp = apply_effective_alphabet(test_span);
+    word_packing(test_span,result_set,alp,0,0);
+    for(auto elem : test_span)
+    {
+        std::cout<<size_t(elem)<<std::endl;
+    }
+    std::cout<<"__________________"<<std::endl;
+    for(auto elem : result_set)
+    {
+        std::cout<<elem<<std::endl;
+    }
+}
