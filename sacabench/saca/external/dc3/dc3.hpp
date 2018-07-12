@@ -7,17 +7,18 @@
 
 #pragma once
 
-#include "../../../../external/reference_impls/dc3/drittel.C"
-#include "../external_saca.hpp"
 #include <cstdint>
+
 #include <util/alphabet.hpp>
+#include "drittel.h"
+#include "../external_saca.hpp"
 
 namespace sacabench::reference_sacas {
 
 class dc3 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 3;
-    static constexpr char const* NAME = "Reference-DC3";
+    static constexpr char const* NAME = "DC3_ref";
     static constexpr char const* DESCRIPTION =
         "Difference Cover Modulo 3 Reference implementation";
 
@@ -27,14 +28,15 @@ public:
                                     util::span<sa_index> out_sa) {
 
         tdc::StatPhase::pause_tracking();
-        
+
         //length of text with extra sentinals
-        int n = text_with_sentinels.size();
+        size_t n = text_with_sentinels.size();
         if (n <= 4) {
+            tdc::StatPhase::resume_tracking();
             return;
         }
 
-        //creates arrays of type int for input text and out_sa 
+        //creates arrays of type int for input text and out_sa
         auto s = std::make_unique<int[]>(n);
         auto SA = std::make_unique<int[]>(n);
 
@@ -42,7 +44,7 @@ public:
         for (size_t index = 0; index < n; index++) {
             s[index] = static_cast<int>(text_with_sentinels[index]);
         }
-        
+
         //alphabet size
         int K = alphabet.max_character_value();
 

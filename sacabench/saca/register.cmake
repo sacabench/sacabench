@@ -6,8 +6,7 @@ SACA_REGISTER("saca/external/deep_shallow.hpp"
 
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
-    
-    
+
 SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
     sacabench::reference_sacas::msufsort)
 
@@ -37,11 +36,14 @@ SACA_REGISTER("saca/external/dc3/dc3.hpp"
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
     sacabench::deep_shallow::saca)
 
-SACA_REGISTER("saca/deep_shallow/blind/sort.hpp"
-    sacabench::deep_shallow::blind::saca)
+#SACA_REGISTER("saca/deep_shallow/blind/sort.hpp"
+#    sacabench::deep_shallow::blind::saca)
 
 SACA_REGISTER("saca/bucket_pointer_refinement.hpp"
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement)
+
+SACA_REGISTER("saca/external/bucket_pointer_refinement/bucket_pointer_refinement_wrapper.hpp"
+    sacabench::bucket_pointer_refinement_ext::bucket_pointer_refinement_ext)
 
 SACA_REGISTER("saca/m_suf_sort.hpp"
     sacabench::m_suf_sort::m_suf_sort2)
@@ -50,7 +52,10 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_doubling)
 
 SACA_REGISTER("saca/prefix_doubling.hpp"
-    sacabench::prefix_doubling::prefix_doubling_discarding)
+    sacabench::prefix_doubling::prefix_discarding_2)
+
+SACA_REGISTER("saca/prefix_doubling.hpp"
+    sacabench::prefix_doubling::prefix_discarding_4)
 
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
@@ -75,10 +80,10 @@ SACA_REGISTER("saca/sacak.hpp"
 
 SACA_REGISTER("saca/dc3.hpp"
     sacabench::dc3::dc3)
-    
+
 SACA_REGISTER("saca/div_suf_sort/saca.hpp"
     sacabench::div_suf_sort::div_suf_sort)
-    
+
 SACA_REGISTER("saca/nzSufSort.hpp"
     sacabench::nzsufsort::nzsufsort)
 

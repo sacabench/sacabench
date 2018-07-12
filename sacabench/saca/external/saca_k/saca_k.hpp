@@ -1,4 +1,9 @@
-#include "../../../../external/reference_impls/saca_k_reference.hpp"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#include <saca_k_reference.hpp>
+#pragma GCC diagnostic pop
+
 #include "../external_saca.hpp"
 
 namespace sacabench::reference_sacas {
@@ -6,7 +11,7 @@ using namespace sacabench::util;
 class saca_k {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "Reference-SACA-K";
+    static constexpr char const* NAME = "SACA-K_ref";
     static constexpr char const* DESCRIPTION =
         "Reference Implementation of SACA-K by G. Nong.";
 

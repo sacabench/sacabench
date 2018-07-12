@@ -67,54 +67,57 @@ namespace sacabench::nzsufsort {
                     is_text_reverted = true;
                 }
                 
-                // calculate position arrays of s-type-positions
-                size_t mod_0 = count_s_type_pos/3 + (count_s_type_pos % 3 > 0);
+                // calculate position array of s-type-positions with i mod 3 != 0
                 size_t mod_1 = count_s_type_pos/3 + (count_s_type_pos % 3 > 1);
                 size_t mod_2 = count_s_type_pos/3;
-                util::span<sa_index> p_0 = out_sa.slice(0, mod_0);
-                util::span<sa_index> p_12 = out_sa.slice(mod_0, count_s_type_pos);
-                util::span<sa_index> u = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
-                util::span<sa_index> v = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1);
-                util::span<sa_index> w = out_sa.slice(count_s_type_pos+mod_0+mod_1, count_s_type_pos+mod_0+mod_1+mod_2);
+                util::span<sa_index> p_12 = out_sa.slice(0, mod_1+mod_2);
                 phase.split("Calculate position arrays");
-                calculate_position_arrays(text, p_0, p_12, u, v, w, count_s_type_pos);
+                calculate_p_12(text, p_12, count_s_type_pos);
                 
-                //TODO sort p_0 and p_12 with radix sort
+                //TODO sort p_12 with radix sort
                 auto comp = [&](size_t i, size_t j) {
                     util::string_span t_1 = retrieve_s_string<util::character>(text, i, 3);
                     util::string_span t_2 = retrieve_s_string<util::character>(text, j, 3);
                     return comp_z_strings(t_1, t_2);
                 };
-                phase.split("Sort position arrays");
-                std::sort(p_0.begin(), p_0.end(), comp);
+                phase.split("Sort p_12");
                 std::sort(p_12.begin(), p_12.end(), comp);
                 
-                //calculate t_0 and t_12 in the begin of out_sa
-                phase.split("Calculate reduced texts t_0 and t_12");
-                determine_leq<util::character>(text, out_sa, 0, mod_0, mod_0, count_s_type_pos-mod_0, count_s_type_pos);
-                util::span<sa_index> t_0 = out_sa.slice(0, mod_0);
-                util::span<sa_index> t_12 = out_sa.slice(mod_0, count_s_type_pos);
+                //calculate t_12 in the begin of out_sa
+                phase.split("Calculate reduced text t_12");
+                calculate_t_12<util::character>(text, out_sa, 0, mod_1+mod_2, count_s_type_pos);
+                util::span<sa_index> t_12 = p_12;
                 
                 //calculate SA(t_12) by calling the lightweight variant of DC3
-                /*TODO: calculate t_12 first, then call lightweight_dc3 with 3 spans 
-                  each of size n/3. Then calculate t_0. */
                 phase.split("Call DC3-Lite");
-                auto u_1 = util::make_container<sa_index>(t_12.size());
-                auto v_1 = util::make_container<sa_index>(t_12.size());
-                dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u_1, v_1);
+                auto u = out_sa.slice(t_12.size(), 2*t_12.size());
+                auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
+                dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u, v);
                 for (size_t i = 0; i < t_12.size(); ++i) {
-                    t_12[i] = v_1[i];
+                    t_12[i] = v[i];
                 }
                 util::span<sa_index> sa_12 = t_12;
+                
+                //calculate t_0
+                phase.split("Calculate t_0");
+                size_t mod_0 = count_s_type_pos/3 + (count_s_type_pos % 3 > 0);
+                util::span<sa_index> p_0 = out_sa.slice(t_12.size(), t_12.size()+mod_0);
+                calculate_p_0(text, p_0, count_s_type_pos);
+                std::sort(p_0.begin(), p_0.end(), comp);
+                calculate_t_0<util::character>(text, out_sa, 0, sa_12.size(), sa_12.size(), 
+                    p_0.size(), count_s_type_pos);
+                util::span<sa_index> t_0 = p_0;
                 
                 //induce SA_0
                 phase.split("Induce SA_0");
                 util::span<sa_index> isa_12 = out_sa.slice(count_s_type_pos+mod_0, 2*count_s_type_pos);
+                util::span<sa_index> sa_0 = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
                 for (size_t i = 0; i < sa_12.size(); ++i) {
                     isa_12[sa_12[i]] = i;
                 }
-                util::induce_sa_dc<size_t>(t_0, isa_12, t_0);
-                util::span<sa_index> sa_0 = t_0;
+                util::induce_sa_dc<size_t>(t_0, isa_12, sa_0);
+                std::copy(sa_0.begin(), sa_0.end(), t_0.begin());
+                sa_0 = t_0;
                 
                 /* positions in sa_0 are multiplied by 3 so divide by 3 */
                 for (size_t i = 0; i < sa_0.size(); ++i) { sa_0[i] = sa_0[i]/3; }
@@ -123,10 +126,9 @@ namespace sacabench::nzsufsort {
                 phase.split("Calculate Position arrays again");
                 p_0 = out_sa.slice(count_s_type_pos, count_s_type_pos+mod_0);
                 p_12 = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1+mod_2);
-                util::span<sa_index> p_1 = out_sa.slice(count_s_type_pos+mod_0, count_s_type_pos+mod_0+mod_1);
-                util::span<sa_index> p_2 = out_sa.slice(count_s_type_pos+mod_0+mod_1, count_s_type_pos+mod_0+mod_1+mod_2);
                 
-                calculate_position_arrays(text, p_0, p_12, p_0, p_1, p_2, count_s_type_pos);
+                calculate_p_0(text, p_0, count_s_type_pos);
+                calculate_p_12(text, p_12, count_s_type_pos);
                 
                 phase.split("Update indices of SA_0 and SA_12 with position arrays");
                 for (size_t i = 0; i < sa_0.size(); ++i) {
@@ -140,6 +142,16 @@ namespace sacabench::nzsufsort {
                 // revert sa_0 and sa_12 so we can traverse them easier later
                 revert(sa_0);
                 revert(sa_12);
+                
+                // Swap sa_0 and sa_12
+                auto sa_0_tmp = out_sa.slice(count_s_type_pos, count_s_type_pos+sa_0.size());
+                auto sa_12_tmp = out_sa.slice(count_s_type_pos+sa_0.size(), 2*count_s_type_pos);
+                std::copy(sa_0.begin(), sa_0.end(), sa_0_tmp.begin());
+                std::copy(sa_12.begin(), sa_12.end(), sa_12_tmp.begin());
+                sa_0 = out_sa.slice(0, sa_0.size());
+                sa_12 = out_sa.slice(sa_0.size(), count_s_type_pos);
+                std::copy(sa_0_tmp.begin(), sa_0_tmp.end(), sa_0.begin());
+                std::copy(sa_12_tmp.begin(), sa_12_tmp.end(), sa_12.begin());
                 
                 // copy sa_0 and sa_12 into l-type-positions of out_sa
                 phase.split("Copy SA_0 and SA_12 into l-type-positions of out_sa");
@@ -316,7 +328,7 @@ namespace sacabench::nzsufsort {
                 util::span<sa_index> isa_012 = out_sa.slice(out_sa.size()-count_s_type_pos, out_sa.size());
                 for (size_t i = 0; i < sa_012.size(); ++i) {
                     sa_012[isa_012[i]] = i;
-                } 
+                }
                 
                 /* calculate position array of s-type-positions in right half */
                 phase.split("Calculate position array of s-type-positions");
@@ -405,28 +417,65 @@ namespace sacabench::nzsufsort {
                 }
             }
             
-            //TODO: we dont need the arrays mod_0, mod_1 and mod_2 since we can use p_0, p_1 and p_2
             template<typename T, typename sa_index>
-            static void calculate_position_arrays(const T& text, 
-                    const util::span<sa_index> p_0, const util::span<sa_index> p_12, 
-                    const util::span<sa_index> mod_0, const util::span<sa_index> mod_1, 
-                    const util::span<sa_index> mod_2, size_t count_s_type_pos) {    
-                // 
+            static void calculate_p_0(const T& text, 
+                    const util::span<sa_index> p_0, size_t count_s_type_pos) {
+                size_t size_mod_0 = count_s_type_pos/3 + (count_s_type_pos % 3 > 0);
+                auto mod_0 = p_0.slice(0, size_mod_0);
+                // field which indicates where next position must be saved 
                 size_t mod = (count_s_type_pos+3-1) % 3;  
+                /* fields which indicate how many position of mod_i are 
+                   currently saved */
                 size_t count_mod_0 = 0;
                 size_t count_mod_1 = 0;
                 size_t count_mod_2 = 0;  
 
+                // save s-type-positions in the correct arrays
                 util::character last_char = util::SENTINEL;
                 bool s_type = true;
-                
-                // save s-type-positions in the correct arrays
                 for (size_t i = text.size(); i > 0; --i) {
                     if (text[i-1] > last_char) { s_type = false; }
                     else if (text[i-1] < last_char) { s_type = true; }
                     
                     if (s_type) {
                         if (mod == 0) { mod_0[count_mod_0++] = i-1; }
+                        else if (mod == 1) { ++count_mod_1; }
+                        else { ++count_mod_2; }
+                        
+                        mod = (mod+3-1) % 3;
+                    }
+                    last_char = text[i-1];
+                }
+                
+                // arrays must be reverted, because we started at the last index
+                // TODO: since we know the memory sizes, we can save the positions directly at the right index
+                revert(mod_0);
+            }    
+            
+            template<typename T, typename sa_index>
+            static void calculate_p_12(const T& text, 
+                const util::span<sa_index> p_12, size_t count_s_type_pos) {
+                size_t size_mod_1 = count_s_type_pos/3 + (count_s_type_pos % 3 > 1);
+                size_t size_mod_2 = count_s_type_pos/3;
+                auto mod_1 = p_12.slice(0, size_mod_1);
+                auto mod_2 = p_12.slice(size_mod_1, size_mod_1+size_mod_2);
+                // field which indicates where next position must be saved 
+                size_t mod = (count_s_type_pos+3-1) % 3;  
+                /* fields which indicate how many position of mod_i are 
+                   currently saved */
+                size_t count_mod_0 = 0;
+                size_t count_mod_1 = 0;
+                size_t count_mod_2 = 0;  
+
+                // save s-type-positions in the correct arrays
+                util::character last_char = util::SENTINEL;
+                bool s_type = true;
+                for (size_t i = text.size(); i > 0; --i) {
+                    if (text[i-1] > last_char) { s_type = false; }
+                    else if (text[i-1] < last_char) { s_type = true; }
+                    
+                    if (s_type) {
+                        if (mod == 0) { ++count_mod_0; }
                         else if (mod == 1) { mod_1[count_mod_1++] = i-1; }
                         else { mod_2[count_mod_2++] = i-1; }
                         
@@ -437,36 +486,20 @@ namespace sacabench::nzsufsort {
                 
                 // arrays must be reverted, because we started at the last index
                 // TODO: since we know the memory sizes, we can save the positions directly at the right index
-                revert(mod_0);
                 revert(mod_1);
                 revert(mod_2);
-                
-                //copy positions in p_0 and p_12
-                for (size_t i = 0; i < p_0.size(); ++i) {
-                    p_0[i] = mod_0[i];
-                }
-                size_t count_p_12 = 0;
-                for (const auto elem : mod_1) {
-                    p_12[count_p_12++] = elem;
-                }
-                for(const auto elem : mod_2) {
-                    p_12[count_p_12++] = elem;
-                }
-
             }
             
             template<typename C, typename T, typename sa_index>
-            static void determine_leq(const T& text, util::span<sa_index> out_sa, size_t start_p_0, size_t length_p_0, size_t start_p_12, size_t length_p_12, size_t count_s_type_pos) {
+            static void calculate_t_12(const T& text, util::span<sa_index> out_sa, size_t start_p_12, 
+                    size_t length_p_12, size_t count_s_type_pos) {
                 // revert p_0 and p_12 so we can access them later from left to right
-                util::span<sa_index> p_0 = out_sa.slice(start_p_0, start_p_0+length_p_0);
                 util::span<sa_index> p_12 = out_sa.slice(start_p_12, start_p_12+length_p_12);
-                revert(p_0);
                 revert(p_12);
                 
-                // Copy p_0 and p_12 in L-type positions in out_sa
-                size_t curr_pos_p_0 = start_p_0+length_p_0;
+                // Copy p_12 in L-type positions in out_sa
                 size_t curr_pos_p_12 = start_p_12+length_p_12;
-                size_t start_pos_p_0 = -1;
+                size_t end_pos_p_12 = -1;
                 
                 util::character last_char = util::SENTINEL;
                 bool s_type = true;
@@ -475,15 +508,13 @@ namespace sacabench::nzsufsort {
                     else if (text[i-1] < last_char) { s_type = true; }
                     
                     if (!s_type) {
-                        if (curr_pos_p_12 > start_p_12) { out_sa[i-1] = out_sa[--curr_pos_p_12]; }
-                        else {
-                            if (curr_pos_p_0 == start_p_0+length_p_0) { start_pos_p_0 = i-1; }
-                            if (curr_pos_p_0 == 0) { break; }
-                            out_sa[i-1] = out_sa[--curr_pos_p_0]; 
+                        if (curr_pos_p_12 == 0) {
+                            end_pos_p_12 = i-1;
+                            break; 
                         }
+                        out_sa[i-1] = out_sa[--curr_pos_p_12];
                     }
                     last_char = text[i-1];
-                    if (curr_pos_p_0 == start_p_0) { break; }
                 }
                 
                 /* Determine lexicographical ranks of Positions p_12 and save
@@ -495,12 +526,11 @@ namespace sacabench::nzsufsort {
                 last_char = util::SENTINEL;
                 s_type = true;
                 for (size_t i = text.size(); i > 0; --i) {
-                    if (i-1 == start_pos_p_0) { break; }
-                    
                     if (text[i-1] > last_char) { s_type = false; }
                     else if (text[i-1] < last_char) { s_type = true; }
                     
                     if (!s_type) { 
+                        if (i-1 == end_pos_p_12) { break; }
                         auto curr_t = retrieve_s_string<C>(text, out_sa[i-1], 3);
                         if (!last_t.empty()) {
                             out_sa[out_sa[last_i-1]] = rank;
@@ -513,42 +543,14 @@ namespace sacabench::nzsufsort {
                 }
                 if (length_p_12 > 0) { out_sa[out_sa[last_i-1]] = rank; }
                 
-                /* Determine lexicographical ranks of Positions p_0 and save
-                   them in correct positions in out_sa */
-                rank = 1;
-                size_t count = 1;
-                
-                s_type = false;
-                last_t = retrieve_s_string<C>(text, out_sa[start_pos_p_0], 3);
-                last_i = start_pos_p_0+1;
-                for (size_t i = start_pos_p_0+1; i > 0; --i) {
-                    if (length_p_0 <= 1) { break; }
-                    if (count > length_p_0) { break; }
-                    
-                    if (text[i-1] > text[i]) { s_type = false; }
-                    else if (text[i-1] < text[i]) { s_type = true; }
-                    
-                    if (!s_type) { 
-                        auto curr_t = retrieve_s_string<C>(text, out_sa[i-1], 3);
-                        
-                        out_sa[out_sa[last_i-1]] = rank;
-                        if (comp_z_strings(last_t, curr_t)) { ++rank; }
-                        
-                        last_t = curr_t;
-                        last_i = i;
-                        
-                        ++count;
-                    }
-                }
-                out_sa[out_sa[last_i-1]] = rank;
-                
-                /* Determine t_0 and t_12 by looking up the lexicographical ranks 
+                /* Determine t_12 by looking up the lexicographical ranks 
                    in out_sa and save them in l-type-positions of out_sa in reverted order*/
                 size_t mod = (count_s_type_pos+3-1) % 3;  
                 last_char = util::SENTINEL;
                 s_type = true;
                 size_t last_l_type = -1;
                 
+                /* calculate first l-type-position */
                 util::character last_char_in_l_loop = util::SENTINEL;
                 bool s_type_in_l_loop = true;
                 for (size_t j = text.size(); j > 0; --j) {
@@ -561,29 +563,6 @@ namespace sacabench::nzsufsort {
                         break;
                     }
                     last_char_in_l_loop = text[j-1];
-                } 
-                            
-                for (size_t i = text.size(); i > 0; --i) {
-                    if (text[i-1] > last_char) { s_type = false; }
-                    else if (text[i-1] < last_char) { s_type = true; }
-                    
-                    if (s_type) { 
-                        if (mod == 0) {
-                            out_sa[last_l_type] = out_sa[i-1];
-                            s_type_in_l_loop = false;
-                            for (size_t j = last_l_type; j > 0; --j) {
-                                if (text[j-1] > text[j]) { s_type_in_l_loop = false; }
-                                else if (text[j-1] < text[j]) { s_type_in_l_loop = true; }
-                                
-                                if (!s_type_in_l_loop) { 
-                                    last_l_type = j-1;
-                                    break;
-                                }
-                            } 
-                        }
-                        mod = (mod+3-1) % 3; 
-                    }
-                    last_char = text[i-1];
                 } 
                 
                 mod = (count_s_type_pos+3-1) % 3;  
@@ -650,23 +629,148 @@ namespace sacabench::nzsufsort {
                     last_char = text[i-1];
                 }
                 
-                /* move t_0, t_1 and t_2 to the begin of out_sa */
-                for (size_t i = text.size()-1; i > text.size()-count_s_type_pos-1; --i) {
-                    out_sa[text.size()-(i+1)] = out_sa[i];
-                }
-                
-                /* sizes of t_0, t_1 and t_2 */
-                size_t size_t_0 = count_s_type_pos/3 + (count_s_type_pos % 3 > 0);
+                /* sizes of t_1 and t_2 */
                 size_t size_t_1 = count_s_type_pos/3 + (count_s_type_pos % 3 > 1);
                 size_t size_t_2 = count_s_type_pos/3;
                 
-                /* revert t_0, t_1 and t_2 */
-                util::span<sa_index> t_0 = out_sa.slice(0, size_t_0);
-                util::span<sa_index> t_1 = out_sa.slice(size_t_0, size_t_0+size_t_1);
-                util::span<sa_index> t_2 = out_sa.slice(size_t_0+size_t_1, size_t_0+size_t_1+size_t_2);
-                revert(t_0);
+                /* move t_1 and t_2 to the begin of out_sa */
+                for (size_t i = text.size()-1; i > text.size()-size_t_1-size_t_2-1; --i) {
+                    out_sa[text.size()-(i+1)] = out_sa[i];
+                }
+                
+                
+                /* revert t_1 and t_2 */
+                util::span<sa_index> t_1 = out_sa.slice(0, size_t_1);
+                util::span<sa_index> t_2 = out_sa.slice(size_t_1, size_t_1+size_t_2);
                 revert(t_1);
                 revert(t_2);
+            }
+            
+            template<typename C, typename T, typename sa_index>
+            static void calculate_t_0(const T& text, util::span<sa_index> out_sa, 
+                    size_t start_sa_12, size_t length_sa_12, size_t start_p_0, 
+                    size_t length_p_0, size_t count_s_type_pos) {
+                util::span<sa_index> sa_12 = out_sa.slice(start_sa_12, start_sa_12+length_sa_12);
+                util::span<sa_index> p_0 = out_sa.slice(start_p_0, start_p_0+length_p_0);
+                // revert p_0 we can access it later from left to right
+                revert(p_0);
+                
+                // Copy p_0 and sa_12 in L-type positions in out_sa
+                size_t curr_pos_p_0 = start_p_0+length_p_0;
+                size_t curr_pos_sa_12 = start_sa_12+length_sa_12;
+                size_t start_pos_sa_12 = -1;
+                
+                util::character last_char = util::SENTINEL;
+                bool s_type = true;
+                for (size_t i = text.size(); i > 0; --i) {
+                    if (text[i-1] > last_char) { s_type = false; }
+                    else if (text[i-1] < last_char) { s_type = true; }
+                    
+                    if (!s_type) {
+                        if (curr_pos_p_0 > start_p_0) { out_sa[i-1] = out_sa[--curr_pos_p_0]; }
+                        else {
+                            if (curr_pos_sa_12 == start_sa_12+length_sa_12) { start_pos_sa_12 = i-1; }
+                            if (curr_pos_sa_12 == 0) { break; }
+                            out_sa[i-1] = out_sa[--curr_pos_sa_12]; 
+                        }
+                    }
+                    last_char = text[i-1];
+                    if (curr_pos_sa_12 == start_sa_12) { break; }
+                }
+                
+                /* Determine lexicographical ranks of Positions p_0 and save
+                   them in correct positions in out_sa */
+                size_t rank = 1;
+                util::span<const C> last_t;
+                size_t last_i = -1;
+                
+                last_char = util::SENTINEL;
+                s_type = true;
+                for (size_t i = text.size(); i > 0; --i) {
+                    if (i-1 == start_pos_sa_12) { break; }
+                    
+                    if (text[i-1] > last_char) { s_type = false; }
+                    else if (text[i-1] < last_char) { s_type = true; }
+                    
+                    if (!s_type) { 
+                        auto curr_t = retrieve_s_string<C>(text, out_sa[i-1], 3);
+                        if (!last_t.empty()) {
+                            out_sa[out_sa[last_i-1]] = rank;
+                            if (comp_z_strings(last_t, curr_t)) { ++rank; }
+                        }
+                        last_t = curr_t;
+                        last_i = i;
+                    }
+                    last_char = text[i-1];
+                }
+                if (length_p_0 > 0) { out_sa[out_sa[last_i-1]] = rank; }
+                
+                /* Determine t_0 by looking up the lexicographical ranks 
+                   in out_sa and save them in l-type-positions of out_sa in reverted order*/
+                size_t mod = (count_s_type_pos+3-1) % 3;  
+                last_char = util::SENTINEL;
+                s_type = true;
+                size_t last_l_type = -1;
+                
+                /* calculate first l-type-position */
+                util::character last_char_in_l_loop = util::SENTINEL;
+                bool s_type_in_l_loop = true;
+                for (size_t j = text.size(); j > 0; --j) {
+                    if (text[j-1] > last_char_in_l_loop) { s_type_in_l_loop = false; }
+                    else if (text[j-1] < last_char_in_l_loop) { s_type_in_l_loop = true; }
+                    
+                    if (!s_type_in_l_loop) { 
+                        
+                        last_l_type = j-1;
+                        break;
+                    }
+                    last_char_in_l_loop = text[j-1];
+                } 
+                            
+                for (size_t i = text.size(); i > 0; --i) {
+                    if (text[i-1] > last_char) { s_type = false; }
+                    else if (text[i-1] < last_char) { s_type = true; }
+                    
+                    if (s_type) { 
+                        if (mod == 0) {
+                            out_sa[last_l_type] = out_sa[i-1];
+                            s_type_in_l_loop = false;
+                            for (size_t j = last_l_type; j > 0; --j) {
+                                if (text[j-1] > text[j]) { s_type_in_l_loop = false; }
+                                else if (text[j-1] < text[j]) { s_type_in_l_loop = true; }
+                                
+                                if (!s_type_in_l_loop) { 
+                                    last_l_type = j-1;
+                                    break;
+                                }
+                            } 
+                        }
+                        mod = (mod+3-1) % 3; 
+                    }
+                    last_char = text[i-1];
+                }
+
+                /* move l-type-positions to the end of out_sa */
+                size_t counter = text.size()-1;
+                last_char = util::SENTINEL;
+                s_type = true;
+                for (size_t i = text.size(); i > 0; --i) {
+                    if (text[i-1] > last_char) { s_type = false; }
+                    else if (text[i-1] < last_char) { s_type = true; }
+                    
+                    if (!s_type) { out_sa[counter--] = out_sa[i-1]; }
+                    last_char = text[i-1];
+                }
+                
+                /* move sa_12 and t_0 to the begin of out_sa */
+                size_t p_0_first = text.size()-length_p_0;
+                for (size_t i = length_p_0; i > 0; --i) {
+                    p_0[i-1] = out_sa[p_0_first+i-1];
+                }
+                size_t sa_12_first = text.size()-length_p_0-length_sa_12;
+                for (size_t i = length_sa_12; i > 0; --i) {
+                    sa_12[i-1] = out_sa[sa_12_first+i-1];
+                }
             }
             
             template<typename C, typename T>

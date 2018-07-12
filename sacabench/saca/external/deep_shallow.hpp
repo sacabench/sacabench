@@ -19,7 +19,7 @@ extern "C" int check_global_variables(void);
 namespace sacabench::reference_sacas {
 struct deep_shallow {
     static constexpr size_t EXTRA_SENTINELS = 575;
-    static constexpr char const* NAME = "Reference-Deep-Shallow";
+    static constexpr char const* NAME = "Deep-Shallow_ref";
     static constexpr char const* DESCRIPTION =
         "Reference implementation of Deep-Shallow";
 

@@ -7,24 +7,14 @@
 
 #pragma once
 
-#include <util/span.hpp>
 #include <util/compare.hpp>
+#include <util/span.hpp>
 
 namespace sacabench::util::sort::ternary_quicksort {
 
 /// \brief The amount of elements in the array, from which median_of_nine is
 ///        used instead of median_of_three.
 constexpr size_t MEDIAN_OF_NINE_THRESHOLD = 40;
-
-template <typename content, typename key_func_type>
-content min(key_func_type cmp, const content& a, const content& b) {
-    return (cmp(a, b) ? a : b);
-}
-
-template <typename content, typename key_func_type>
-content max(key_func_type cmp, const content& a, const content& b) {
-    return (cmp(a, b) ? b : a);
-}
 
 /**\brief Returns pseudo-median according to three values
  * \param array array of elements
@@ -33,14 +23,17 @@ content max(key_func_type cmp, const content& a, const content& b) {
  * Chooses the median of the given array by the median-of-three method
  * which chooses the median of the first, middle and last element of the array
  */
-template <typename content, typename key_func_type>
-content median_of_three(span<content> array, key_func_type cmp) {
+template <typename content, typename Compare>
+content median_of_three(span<content> array, Compare cmp) {
+    using std::max;
+    using std::min;
+
     const content& first = array[0];
     const content& middle = array[(array.size() - 1) / 2];
     const content& last = array[array.size() - 1];
 
-    return max(cmp, min(cmp, first, middle),
-               min(cmp, max(cmp, first, middle), last));
+    return max(min(first, middle, cmp), min(max(first, middle, cmp), last, cmp),
+               cmp);
 }
 
 /**\brief Returns pseudo-median according to nine values
@@ -50,18 +43,21 @@ content median_of_three(span<content> array, key_func_type cmp) {
  * Chooses the median of the given array by median-of-nine method
  * according to Bentley and McIlroy "Engineering a Sort Function".
  */
-template <typename content, typename key_func_type>
-content median_of_nine(span<content> array, key_func_type cmp) {
+template <typename content, typename Compare>
+content median_of_nine(span<content> array, Compare cmp) {
+    using std::max;
+    using std::min;
+
     size_t n = array.size() - 1;
     size_t step = (n / 8);
-    const content lower =
-        median_of_three(array.slice(0, 2 * step), cmp);
+
+    const content lower = median_of_three(array.slice(0, 2 * step), cmp);
     const content middle =
         median_of_three(array.slice((n / 2) - step, (n / 2) + step), cmp);
-    const content upper =
-        median_of_three(array.slice(n - 2 * step, n), cmp);
-    return max(cmp, min(cmp, lower, middle),
-               min(cmp, max(cmp, lower, middle), upper));
+    const content upper = median_of_three(array.slice(n - 2 * step, n), cmp);
+
+    return max(min(lower, middle, cmp),
+               min(max(lower, middle, cmp), upper, cmp), cmp);
 }
 
 /**\brief Swaps elements so that the given array is a correct ternary
@@ -75,8 +71,8 @@ content median_of_nine(span<content> array, key_func_type cmp) {
  *Swaps the elements until the array is a ternary partition.
  *
  */
-template <typename content, typename key_func_type>
-std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
+template <typename content, typename Compare>
+std::pair<size_t, size_t> partition(span<content> array, Compare cmp,
                                     const content& pivot_element) {
     const auto less = cmp;
     const auto equal = util::as_equal(cmp);
@@ -161,8 +157,8 @@ std::pair<size_t, size_t> partition(span<content> array, key_func_type cmp,
  *The comparing function should return for given a,b a value <0 when a < b,
  *vice versa.
  */
-template <typename content, typename key_func_type>
-void ternary_quicksort(span<content> array, key_func_type cmp) {
+template <typename content, typename Compare>
+void ternary_quicksort(span<content> array, Compare cmp) {
     size_t n = array.size();
 
     // recursion termination
@@ -179,8 +175,8 @@ void ternary_quicksort(span<content> array, key_func_type cmp) {
 
     // Choose pivot according to array size
     const content pivot = (n > MEDIAN_OF_NINE_THRESHOLD)
-                        ? median_of_nine(array, cmp)
-                        : median_of_three(array, cmp);
+                              ? median_of_nine(array, cmp)
+                              : median_of_three(array, cmp);
     auto result = partition(array, cmp, pivot);
     // sorts greater and less partiotion recursivly
     ternary_quicksort(array.slice(0, result.first), cmp);
