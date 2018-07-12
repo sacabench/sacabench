@@ -84,7 +84,6 @@ void saca_corner_cases_single_type(bool print_cases) {
     test("ananas"_s);
     test("abcdefgh#defgh_abcde"_s);
 
-
     test("abcdebcdeabcd"_s);
     test("foobar"_s);
     test("abcabcabcabc"_s);
