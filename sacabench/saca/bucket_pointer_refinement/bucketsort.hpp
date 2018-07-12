@@ -278,7 +278,7 @@ __attribute__((noinline)) container<lightweight_bucket>
 bucketsort_presort_lightweight(const string_span input,
                                const std::size_t max_character_code,
                                const std::size_t depth, span<index_type> sa,
-                               container<ssize_t>& bptr) {
+                               container<index_type>& bptr) {
     DCHECK_EQ(input.size(), sa.size());
     DCHECK_LE(depth, sa.size());
 

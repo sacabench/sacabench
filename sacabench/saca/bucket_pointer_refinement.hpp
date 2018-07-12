@@ -80,8 +80,8 @@ public:
          * determine initial buckets with bucketsort
          */
 
-        util::container<ssize_t> bptr =
-            util::make_container<ssize_t>(n + 2 * bucketsort_depth);
+        util::container<sa_index> bptr =
+            util::make_container<sa_index>(n + 2 * bucketsort_depth);
         auto buckets = bucketsort_presort_lightweight(
             input, alphabet.max_character_value(), bucketsort_depth, sa, bptr);
 
@@ -92,11 +92,10 @@ public:
 
         bpr.split("Phase 2");
         // set sentinel pointers in bptr --> buckets[0] already sorted
-        for (ssize_t sentinel_idx = 0; sentinel_idx < 2 * bucketsort_depth;
+        for (size_t sentinel_idx = 0; sentinel_idx < 2 * bucketsort_depth;
              ++sentinel_idx) {
             // not sure if there are cases where -1 is needed instead of 0
-            bptr[bptr.size() - sentinel_idx - 1] =
-                -2 * bucketsort_depth + sentinel_idx;
+            bptr[bptr.size() - sentinel_idx - 1] = 0;
         }
 
         // (buckets.size() - 1) because of trailing pseudo bucket
@@ -133,7 +132,6 @@ public:
             }
         }
 
-        std::cout << bptr << std::endl;
         /**
          * Phase 3
          * Perform copy step by Seward
@@ -191,7 +189,7 @@ public:
 
             left_scan_idx = buckets[c_cur * in_l1_bucket];
             while (left_scan_idx < lmu[c_cur]) {
-                if ((suffix_idx = sa[left_scan_idx])) {
+                if (suffix_idx = sa[left_scan_idx]) {
                     c_pre = input[--suffix_idx];
                     if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
                         sa[lmu[c_pre]++] = suffix_idx;
@@ -218,7 +216,7 @@ public:
             right_scan_idx = buckets[(c_cur + 1) * in_l1_bucket];
             while (left_scan_idx < right_scan_idx) {
                 --right_scan_idx;
-                if ((suffix_idx = sa[right_scan_idx])) {
+                if (suffix_idx = sa[right_scan_idx]) {
                     c_pre = input[--suffix_idx];
                     if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
                         sa[--rmu[c_pre]] = suffix_idx;
@@ -250,7 +248,7 @@ public:
      */
     template <typename sa_index>
     inline static sa_index find_offset(sa_index offset, size_t step_size,
-                                       util::span<ssize_t> bptr,
+                                       util::span<sa_index> bptr,
                                        util::span<sa_index> bucket) {
         bool sortable = false;
         while (true) {
@@ -284,31 +282,23 @@ public:
      */
     template <typename sa_index>
     inline static void refine_size_2_bucket(sa_index offset, size_t step_size,
-                                            util::span<ssize_t> bptr,
+                                            util::span<sa_index> bptr,
                                             size_t bucket_start,
                                             util::span<sa_index> bucket) {
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
-        std::cout << "Old offset: " << offset << std::endl;
-        offset = find_offset(offset, step_size, bptr, bucket);
-        std::cout << "New offset: " << offset << std::endl;
-
         auto sort_key = [bptr, &offset](size_t suffix) {
             DCHECK_LT(suffix + offset, bptr.size());
             return static_cast<size_t>(bptr[suffix + offset]);
         };
+
+        offset = find_offset(offset, step_size, bptr, bucket);
 
         if (sort_key(bucket[0]) > sort_key(bucket[1])) {
             sa_index tmp = bucket[0];
             bucket[0] = bucket[1];
             bucket[1] = tmp;
         }
-
-        std::cout << "Sort keys:  {" << bucket[0] << " -> " << sort_key(bucket[0]);
-        for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
-            std::cout << ", " << bucket[suffix_idx] << " -> " << sort_key(bucket[suffix_idx]);
-        }
-        std::cout << "}" << std::endl;
 
         bptr[bucket[0]] = bucket_start;
         bptr[bucket[1]] = bucket_start + 1;
@@ -324,41 +314,26 @@ public:
      */
     template <typename sa_index>
     static void refine_single_bucket(sa_index offset, size_t step_size,
-                                     util::span<ssize_t> bptr,
+                                     util::span<sa_index> bptr,
                                      size_t bucket_start,
                                      util::span<sa_index> bucket) {
         // this bucket is already sorted
         if (bucket.size() < 2) {
-            bptr[bucket[0]] = bucket_start;
             return;
         } else if (bucket.size() == 2) {
-            std::cout << "Bucket " << bucket << " unrefined (starting at "
-                << bucket_start << ")" << std::endl;
             refine_size_2_bucket(offset, step_size, bptr, bucket_start, bucket);
-            std::cout << "Refined to: " << bucket << std::endl;
-            std::cout << "Updated BPTR:  {" << bptr[bucket[0]];
-            for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
-                std::cout << ", " << bptr[bucket[suffix_idx]];
-            }
-            std::cout << "}" << std::endl << std::endl;
             return;
         }
-
-        std::cout << "Bucket " << bucket << " unrefined (starting at "
-                  << bucket_start << ")" << std::endl;
-        //std::cout << "BPTR: " << bptr << std::endl;
-
-        // TODO: move to end somehow
-        std::cout << "Old offset " << offset << std::endl;
-        offset = find_offset(offset, step_size, bptr, bucket);
-        std::cout << "New offset " << offset << std::endl;
 
         // sort_key maps a suffix s_i to the bucket identifier of suffix
         // s_{i+offset}. If no such suffix exists, it's assumed to be $.
         auto sort_key = [bptr, &offset](size_t suffix) {
             DCHECK_LT(suffix + offset, bptr.size());
-            return bptr[suffix + offset];
+            return static_cast<size_t>(bptr[suffix + offset]);
         };
+
+        // TODO: move to end somehow
+        offset = find_offset(offset, step_size, bptr, bucket);
 
         // sort the given bucket by using sort_key for each suffix
         if (bucket.size() < INSSORT_THRESHOLD) {
@@ -366,13 +341,6 @@ public:
         } else {
             ternary_quicksort(bucket, util::compare_key(sort_key));
         }
-
-        std::cout << "Refined to: " << bucket << std::endl;
-        std::cout << "Sort keys:  {" << bucket[0] << " -> " << sort_key(bucket[0]);
-        for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
-            std::cout << ", " << bucket[suffix_idx] << " -> " << sort_key(bucket[suffix_idx]);
-        }
-        std::cout << "}" << std::endl;
 
         /* As a consequence of sorting, bucket pointers might have changed.
          * We have to update the bucket pointers for further use.
@@ -386,24 +354,19 @@ public:
         size_t current_bucket;
 
         // for suffixes with bptr[suffix] > end
-        // This while block seems to cause damage to bptr which is not recoverable by the following naive attempt
-
-        while (left_idx >= start &&
-               (current_bucket = bptr[bucket[left_idx - 1] + offset]) > end) {
-            do {
-                bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
+        while (left_idx >= start && (current_bucket = bptr[bucket[left_idx - 1]
+        + offset]) > end) { do { bptr[bucket[left_idx - 1]] = right_idx +
+        bucket_start - 1;
                 --left_idx;
-            } while (left_idx >= start &&
-                     bptr[bucket[left_idx - 1] + offset] == current_bucket);
-            right_idx = left_idx;
+            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] ==
+        current_bucket); right_idx = left_idx;
         }
 
         // for suffixes with start <= bptr[suffix] <= end
         right_idx = left_idx;
-        while (left_idx >= start &&
-               bptr[bucket[left_idx - 1] + offset] >= start &&
-               bptr[bucket[left_idx - 1] + offset] <= end) {
-            bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
+        while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] >= start
+        && bptr[bucket[left_idx - 1] + offset] <= end) { bptr[bucket[left_idx -
+        1]] = right_idx + bucket_start - 1;
             --left_idx;
         }
 
@@ -416,9 +379,8 @@ public:
             do {
                 bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
                 --left_idx;
-            } while (left_idx >= start &&
-                     bptr[bucket[left_idx - 1] + offset] == current_bucket);
-            right_idx = left_idx;
+            } while (left_idx >= start && bptr[bucket[left_idx - 1] + offset] ==
+        current_bucket); right_idx = left_idx;
         }
         */
 
@@ -428,7 +390,6 @@ public:
          * TODO: Find a more memory efficient solution
          */
 
-        ///*
         util::container<uint8_t> right_bounds =
             util::make_container<uint8_t>(bucket.size());
         std::fill(right_bounds.begin(), right_bounds.end(), false);
@@ -474,31 +435,23 @@ public:
             // finally update bptr
             bptr[bucket[current_bucket_position]] = current_sub_bucket_key;
         } while (current_bucket_position > 0);
-        //*/
-
-        std::cout << "Refined to: " << bucket << std::endl;
-        std::cout << "Updated BPTR:  {" << bptr[bucket[0]];
-        for (size_t suffix_idx = 1; suffix_idx < bucket.size(); ++suffix_idx) {
-            std::cout << ", " << bptr[bucket[suffix_idx]];
-        }
-        std::cout << "}" << std::endl << std::endl;
 
         /* Refine all sub buckets */
 
         // increase offset for next level
-        // offset += step_size;
+        offset += step_size;
 
-        ssize_t start_of_bucket = 0;
-        ssize_t end_of_bucket;
+        size_t start_of_bucket = 0;
+        size_t end_of_bucket;
 
         // from left to right: refine all buckets
         while (start_of_bucket < bucket.size()) {
-            end_of_bucket = bptr[bucket[start_of_bucket]] - bucket_start;
+            end_of_bucket = static_cast<size_t>(bptr[bucket[start_of_bucket]]) -
+                            bucket_start;
             // Sort sub-buckets recursively
             refine_single_bucket<sa_index>(
-                    offset + static_cast<sa_index>(step_size), step_size, bptr,
-                    start_of_bucket + bucket_start,
-                    bucket.slice(start_of_bucket, ++end_of_bucket));
+                offset, step_size, bptr, start_of_bucket + bucket_start,
+                bucket.slice(start_of_bucket, ++end_of_bucket));
             // jump to the first index of the following sub bucket
             start_of_bucket = end_of_bucket;
         }
