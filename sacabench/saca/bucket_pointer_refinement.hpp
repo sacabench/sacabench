@@ -346,41 +346,41 @@ public:
          * We have to update the bucket pointers for further use.
          */
 
-        constexpr size_t start = 1;
-        const size_t end = bucket.size();
-        size_t left_idx = end;
-        size_t right_idx = end;
+        constexpr ssize_t start = 0;
+        const size_t end = bucket.size() - 1;
+        ssize_t left_idx = end;
+        ssize_t right_idx = end;
         size_t current_sort_key;
 
         // for suffixes with bptr[suffix] > end
         while (left_idx >= start &&
-               (current_sort_key = bptr[bucket[left_idx - 1] + offset]) > end + bucket_start - 1) {
+               (current_sort_key = bptr[bucket[left_idx] + offset]) > end + bucket_start) {
             do {
-                bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
+                bptr[bucket[left_idx]] = right_idx + bucket_start;
                 --left_idx;
             } while (left_idx >= start &&
-                     bptr[bucket[left_idx - 1] + offset] == current_sort_key);
+                     bptr[bucket[left_idx] + offset] == current_sort_key);
             right_idx = left_idx;
         }
 
         // for suffixes with start <= bptr[suffix] <= end
         right_idx = left_idx;
         while (left_idx >= start &&
-               bptr[bucket[left_idx - 1] + offset] >= start + bucket_start - 1 &&
-               bptr[bucket[left_idx - 1] + offset] <= end + bucket_start - 1) {
-            bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
+               bptr[bucket[left_idx] + offset] >= start + bucket_start &&
+               bptr[bucket[left_idx] + offset] <= end + bucket_start) {
+            bptr[bucket[left_idx]] = right_idx + bucket_start;
             --left_idx;
         }
 
         // for suffixes with bptr[suffix] < start
         right_idx = left_idx;
         while (left_idx >= start) {
-            current_sort_key = bptr[bucket[left_idx - 1] + offset];
+            current_sort_key = bptr[bucket[left_idx] + offset];
             do {
-                bptr[bucket[left_idx - 1]] = right_idx + bucket_start - 1;
+                bptr[bucket[left_idx]] = right_idx + bucket_start;
                 --left_idx;
             } while (left_idx >= start &&
-                     bptr[bucket[left_idx - 1] + offset] == current_sort_key);
+                     bptr[bucket[left_idx] + offset] == current_sort_key);
             right_idx = left_idx;
         }
 
