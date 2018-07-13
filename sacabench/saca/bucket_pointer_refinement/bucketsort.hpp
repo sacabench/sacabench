@@ -310,10 +310,10 @@ bucketsort_presort_lightweight(const string_span input,
         if ((index + 2 >= length) || (input[index] < input[index + 1] &&
                                       input[index] <= input[index + 2])) {
             // DCHECK_LT(index + 2, length);
-            sa[buckets_tmp[code]] = index;
+            sa[--buckets_tmp[code + 1]] = index;
         }
         bptr[index] = buckets[code + 1] - 1;
-        ++buckets_tmp[code];
+        //++buckets_tmp[code];
     }
 
     // same as above, but for substrings containing at least one $
@@ -321,9 +321,9 @@ bucketsort_presort_lightweight(const string_span input,
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
-        sa[buckets_tmp[code]] = index;
+        sa[--buckets_tmp[code + 1]] = index;
         bptr[index] = buckets[code + 1] - 1;
-        ++buckets_tmp[code];
+        //++buckets_tmp[code];
     }
 
     return buckets;
