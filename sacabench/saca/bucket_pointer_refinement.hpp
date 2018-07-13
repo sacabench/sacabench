@@ -25,7 +25,7 @@ using namespace sacabench::bucket_pointer_refinement::sort;
 
 class bucket_pointer_refinement {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "BPR";
     static constexpr char const* DESCRIPTION =
         "Bucket-Pointer Refinement according to Klaus-Bernd Schürmann";
