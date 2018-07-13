@@ -24,13 +24,6 @@ struct bucket {
     std::size_t position = 0;
 };
 
-/**
- * A lightweight_bucket does only store the position of the leftmost index
- * inside the bucket. The rightmost index can be derived looking at the
- * successor bucket's position.
- */
-using lightweight_bucket = std::size_t;
-
 /**\brief Determines sizes and positions of buckets containing suffixes
  *  which are equal to a given offset.
  * \param input Input text (of length n) whose suffixes are to be sorted.
@@ -115,9 +108,9 @@ inline container<bucket> get_buckets(const span_type input,
  * \return Starting position for each bucket in the suffix array as well as
  *  a pseudo starting position for one extra bucket at the end of the SA.
  */
-template <typename span_type>
-inline container<lightweight_bucket>
-get_lightweight_buckets(const span_type input,
+template <typename sa_index>
+inline container<sa_index>
+get_lightweight_buckets(const string_span input,
                         const std::size_t max_character_code,
                         const std::size_t depth) {
     DCHECK_GE(depth, 1);
@@ -126,7 +119,7 @@ get_lightweight_buckets(const span_type input,
     const std::size_t alphabet_size = max_character_code + 1;
     const std::size_t bucket_count = pow(alphabet_size, depth) + 1;
 
-    auto buckets = make_container<lightweight_bucket>(bucket_count);
+    auto buckets = make_container<sa_index>(bucket_count);
 
     /*
      * first step: count bucket sizes
@@ -197,11 +190,11 @@ get_lightweight_buckets(const span_type input,
  *
  * \return Size and starting position for each bucket in the suffix array.
  */
-template <typename index_type>
+template <typename sa_index>
 __attribute__((noinline)) container<bucket>
 bucketsort_presort(const string_span input,
                    const std::size_t max_character_code,
-                   const std::size_t depth, span<index_type> sa) {
+                   const std::size_t depth, span<sa_index> sa) {
     DCHECK_EQ(input.size(), sa.size());
     DCHECK_LE(depth, sa.size());
 
@@ -224,7 +217,7 @@ bucketsort_presort(const string_span input,
     std::size_t code = initial_code;
 
     // insert entries in suffix array
-    for (index_type index = 0; index < length - depth + 1; ++index) {
+    for (sa_index index = 0; index < length - depth + 1; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
@@ -235,7 +228,7 @@ bucketsort_presort(const string_span input,
     }
 
     // same as above, but for substrings containing at least one $
-    for (index_type index = length - depth + 1; index < length; ++index) {
+    for (sa_index index = length - depth + 1; index < length; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
@@ -273,16 +266,16 @@ bucketsort_presort(const string_span input,
  * \return Starting position for each bucket in the suffix array and
  *  starting position of a pseudo bucket at the end of the SA.
  */
-template <typename index_type>
-__attribute__((noinline)) container<lightweight_bucket>
+template <typename sa_index>
+__attribute__((noinline)) container<sa_index>
 bucketsort_presort_lightweight(const string_span input,
                                const std::size_t max_character_code,
-                               const std::size_t depth, span<index_type> sa,
-                               container<index_type>& bptr) {
+                               const std::size_t depth, span<sa_index> sa,
+                               container<sa_index>& bptr) {
     DCHECK_EQ(input.size(), sa.size());
     DCHECK_LE(depth, sa.size());
 
-    auto buckets = get_lightweight_buckets(input, max_character_code, depth);
+    auto buckets = get_lightweight_buckets<sa_index>(input, max_character_code, depth);
     auto buckets_tmp = buckets.make_copy();
 
     const std::size_t length = input.size();
@@ -312,7 +305,7 @@ bucketsort_presort_lightweight(const string_span input,
             // DCHECK_LT(index + 2, length);
             sa[--buckets_tmp[code + 1]] = index;
         }
-        bptr[index] = buckets[code + 1] - 1;
+        bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
         //++buckets_tmp[code];
     }
 
@@ -322,7 +315,7 @@ bucketsort_presort_lightweight(const string_span input,
         code %= code_modulo;
         code *= alphabet_size;
         sa[--buckets_tmp[code + 1]] = index;
-        bptr[index] = buckets[code + 1] - 1;
+        bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
         //++buckets_tmp[code];
     }
 
