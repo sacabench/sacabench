@@ -300,13 +300,12 @@ bucketsort_presort_lightweight(const string_span input,
         code %= code_modulo;
         code *= alphabet_size;
         code += input[index + depth - 1];
+        --buckets_tmp[code + 1];
         if ((index + 2 >= length) || (input[index] < input[index + 1] &&
                                       input[index] <= input[index + 2])) {
-            // DCHECK_LT(index + 2, length);
-            sa[--buckets_tmp[code + 1]] = index;
+            sa[buckets_tmp[code + 1]] = index;
         }
         bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
-        //++buckets_tmp[code];
     }
 
     // same as above, but for substrings containing at least one $
@@ -316,7 +315,6 @@ bucketsort_presort_lightweight(const string_span input,
         code *= alphabet_size;
         sa[--buckets_tmp[code + 1]] = index;
         bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
-        //++buckets_tmp[code];
     }
 
     return buckets;
