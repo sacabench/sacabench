@@ -13,64 +13,10 @@
 
 using namespace sacabench::util;
 using sacabench::util::word_packing;
-/*
-TEST(word_packing, simple) {
-    auto test_set = std::vector<size_t>{3,1,2,1,0};
-    auto result_set = std::vector<size_t>(5);
-    word_packing(test_set,result_set,4);
-}*/
-/*
-TEST(word_packing, string_test) {
-
-    string test_span = "hello world"_s;
-    auto result_set = make_container<size_t>(test_span.size());
-    auto alp = apply_effective_alphabet(test_span);
-        word_packing(test_span,result_set,alp,0,0);
-    for(auto elem : result_set)
-    {
-        std::cout<<elem<<std::endl;
-    }
-    std::cout<<"_____________"<<std::endl;
-
-}
-TEST(word_packing, test_with_sentinel) {
-
-    string test_span = "hello world"_s;
-    auto result_set = make_container<size_t>(test_span.size());
-    auto alp = apply_effective_alphabet(test_span);
-    word_packing(test_span,result_set,alp,0,1);
-    for(auto elem : result_set)
-    {
-        std::cout<<elem<<std::endl;
-    }
-}*/
-/*
-//Failure: abcdefgh#defgh_abcde
-TEST(word_packing, test_with_sentinel) {
-
-    string test_span = "abcdefgh#defgh_abcde"_s;
-    auto result_set = make_container<size_t>(test_span.size());
-    auto alp = apply_effective_alphabet(test_span);
-    word_packing(test_span,result_set,alp,0,0);
-    
-    for(auto elem : result_set)
-    {
-        std::cout<<elem<<std::endl;
-    }
-}*/
 TEST(word_packing, greece) {
 
     string test_span = "Εαμ ανσιλλαε περισυλα συαφιθαθε εξ, δυο ιδ ρεβυμ σομ"_s;
     auto result_set = make_container<size_t>(test_span.size());
     auto alp = apply_effective_alphabet(test_span);
     word_packing(test_span,result_set,alp,0,0);
-    for(auto elem : test_span)
-    {
-        std::cout<<size_t(elem)<<std::endl;
-    }
-    std::cout<<"__________________"<<std::endl;
-    for(auto elem : result_set)
-    {
-        std::cout<<elem<<std::endl;
-    }
 }

@@ -36,20 +36,18 @@ void word_packing(T text, util::container<sa_index>& result, alphabet alpha,
 
     sa_index n =
         text.size() -
-        sentinels; // alpha.size_without_sentinel();//text.size()-sentinels;
+        sentinels;
     for (sa_index index = 0; index < r && index < n; ++index) {
         result[0] += sa_index((text[index])) *
                      sa_index((own_pow(max_value, r - index - sa_index(1))));
     }
 
     for (size_t index = 1; index < n; ++index) {
-        //std::cout<<(result[index - 1] % (sa_index(size_t(pow(max_value, r - 1)))))<<std::endl;
         result[index] =
             (result[index - 1] % (sa_index(size_t(own_pow(max_value, r-sa_index(1)))))) *
                 max_value +
             (((index + r - 1) < n) ? sa_index(size_t(text[index + r - 1])) : sa_index(0));
     }
-    std::cout<<"Packed"<<std::endl;
 }
 //TODO Fast & inplace
 } // namespace sacabench::util

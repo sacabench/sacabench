@@ -136,7 +136,7 @@ public:
 
         // init additional arrays
         auto isa = util::make_container<sa_index>(n);
-        // init out_sa (necessary?)
+
         for (size_t i = 0; i < n; ++i) {
             out_sa[i] = i;
         }
@@ -152,8 +152,9 @@ public:
         auto compare_packed= compare_word_packed(isa);
         util::sort::ternary_quicksort::ternary_quicksort(
             out_sa, compare_packed);
-                        
+            
         calculate_equal_length(out_sa,isa,compare_packed);
+
         /*
         // comparing function for inital sort according to first character
         auto compare_first_char_function = compare_first_character(text);
@@ -163,6 +164,7 @@ public:
         */
         // Inital calculation of V and L
         //init_isa(text, out_sa, isa, h);
+        //SPEICHER HIER WEG
         init_isa_packed(out_sa,isa);
         bool is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);//false;
         // since we sorted accoring to first letter, increment h
@@ -333,7 +335,7 @@ private:
         }
     }
     template <typename key_func>
-    static void calculate_equal_length(util::span<sa_index> out_sa,util::container<sa_index>& isa, key_func cmp)
+    static void calculate_equal_length(util::span<sa_index> out_sa,util::container<sa_index>& isa, key_func& cmp)
     {
         sa_index n = out_sa.size();
         auto equal = util::as_equal(cmp);
@@ -375,7 +377,6 @@ private:
         static void init_isa_packed(util::span<sa_index> out_sa,
                                              util::container<sa_index>& isa)
         {
-            std::vector<size_t> test;
             size_t length_of_sorted_group=0;
             size_t length_of_unsorted_group=0;
             sa_index sorted_group_number=0;
@@ -389,23 +390,19 @@ private:
                         if(bool(isa[out_sa[index-counter]]&NEGATIVE_MASK))
                         {
                             isa[out_sa[index-counter]]=sorted_group_number;
-                            test.push_back(0);
                             sorted_group_number=index-counter-1;
                         }
                         else
                         {
                         isa[out_sa[index-counter]]=sorted_group_number;
-                        test.push_back(0);
                         }
                     }
                     length_of_unsorted_group=0;
                     length_of_sorted_group = out_sa[index]&REMOVE_NEGATIVE_MASK;
 
-                     test.push_back(0);
                     for(size_t counter=1;(counter<length_of_sorted_group)&&((counter+index)<out_sa.size());++counter)
                     {
                         isa[out_sa[index+counter]]=index+counter;
-                        test.push_back(0);
                     }
                     index+=length_of_sorted_group-1;
                 }
@@ -419,7 +416,6 @@ private:
                     for(size_t counter=0;counter<length_of_unsorted_group;++counter)
                     {
                         isa[out_sa[(out_sa.size()-1)-counter]]=out_sa.size()-1;
-                        test.push_back(0);
                     }
             }
         }
