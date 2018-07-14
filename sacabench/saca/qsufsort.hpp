@@ -15,7 +15,6 @@
 #include <util/string.hpp>
 #include <util/word_packing.hpp>
 
-
 namespace sacabench::qsufsort {
 
 // Compare function for inital sorting
@@ -30,10 +29,9 @@ public:
     const util::string_span input_text;
 };
 template <typename sa_index>
-struct compare_word_packed{
+struct compare_word_packed {
 public:
-    compare_word_packed(util::container<sa_index>& _isa)
-        : isa(_isa) {}
+    compare_word_packed(util::container<sa_index>& _isa) : isa(_isa) {}
     bool operator()(const sa_index& a, const sa_index& b) const {
         return (isa[a] < isa[b]);
     }
@@ -46,21 +44,15 @@ public:
     compare_ranks(util::container<sa_index>& _V, size_t& _h) : V(_V), h(_h) {}
 
     bool operator()(const sa_index& a, const sa_index& b) const {
-        //std::cout<<"Compare indices "<<a<<" and "<<b<<std::endl;
         bool a_out_of_bound = static_cast<size_t>(a) + h >= V.size();
         bool b_out_of_bound = static_cast<size_t>(b) + h >= V.size();
         if (a_out_of_bound && b_out_of_bound) {
-            //std::cout<<"Both out of bounds"<<std::endl;
             return false;
         } else if (a_out_of_bound) {
-            //std::cout<<"a out of bounds"<<std::endl;
             return true;
         } else if (b_out_of_bound) {
-          //  std::cout<<"b out of bounds"<<std::endl;
             return false;
         }
-        //std::cout<<"Origin values: "<<(V[static_cast<size_t>(a)])<<"("<<(static_cast<size_t>(a))<<")"<<" and "<<(V[static_cast<size_t>(b)])<<"("<<(static_cast<size_t>(b))<<")"<<std::endl;
-        //std::cout<<"Compare values: "<<(V[static_cast<size_t>(a) + h])<<"("<<(static_cast<size_t>(a) + h)<<")"<<" and "<<(V[static_cast<size_t>(b) + h])<<"("<<(static_cast<size_t>(b) + h)<<")"<<std::endl;
         return (V[static_cast<size_t>(a) + h] < V[static_cast<size_t>(b) + h]);
     }
     const util::container<sa_index>& V;
@@ -104,7 +96,8 @@ public:
     static void print_array(T& arr) {
         std::cout << "SA: ";
         for (size_t i = 0; i < arr.size(); i++) {
-            std::cout<<"("<<i<<")" << (bool(arr[i] & NEGATIVE_MASK) ? "-" : "")
+            std::cout << "(" << i << ")"
+                      << (bool(arr[i] & NEGATIVE_MASK) ? "-" : "")
                       << ssize_t(arr[i] & REMOVE_NEGATIVE_MASK) << ", ";
         }
         std::cout << std::endl;
@@ -118,12 +111,13 @@ public:
             std::cout << (bool(out[i] & NEGATIVE_MASK)
                               ? static_cast<sa_index>(i)
                               : arr[out[i]]);
-                              std::cout<<"("<<out[i]<<"), "    << std::endl;
+            std::cout << "(" << out[i] << "), " << std::endl;
         }
         std::cout << std::endl;
     }
 
-    static void construct_sa(util::string_span text, util::alphabet const& alpha,
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alpha,
                              util::span<sa_index> out_sa) {
         tdc::StatPhase qss("Initialization");
         size_t n = text.size();
@@ -140,39 +134,29 @@ public:
         for (size_t i = 0; i < n; ++i) {
             out_sa[i] = i;
         }
-        util::word_packing(text,isa,alpha,1,1);
-
-
-
+        util::word_packing(text, isa, alpha, 1, 1);
         // init h (checked prefix length)
         size_t h = 0;
         // for are more readible while condition
 
         qss.split("First sorting");
-        auto compare_packed= compare_word_packed(isa);
-        util::sort::ternary_quicksort::ternary_quicksort(
-            out_sa, compare_packed);
-            
-        calculate_equal_length(out_sa,isa,compare_packed);
+        auto compare_packed = compare_word_packed(isa);
+        util::sort::ternary_quicksort::ternary_quicksort(out_sa,
+                                                         compare_packed);
 
-        /*
-        // comparing function for inital sort according to first character
-        auto compare_first_char_function = compare_first_character(text);
-        // Sort according to first character
-        util::sort::ternary_quicksort::ternary_quicksort(
-            out_sa, compare_first_char_function);
-        */
-        // Inital calculation of V and L
-        //init_isa(text, out_sa, isa, h);
-        //SPEICHER HIER WEG
-        init_isa_packed(out_sa,isa);
-        bool is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);//false;
+        // Calculate length of equal groups into out_sa
+        calculate_equal_length(out_sa, isa, compare_packed);
+        // Init ISA with first ranks after sorting
+        init_isa_packed(out_sa, isa);
+
+        // more readible while condition
+        bool is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);
         // since we sorted accoring to first letter, increment h
         ++h;
         // comparing function, which compares the (i+h)-th ranks
         auto compare_function = compare_ranks<sa_index>(isa, h);
         while (!is_sorted) {
-            qss.split("Update group numbers");
+            qss.split(("Update(h=" + std::to_string(h) + ")").c_str());
             size_t counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
@@ -193,9 +177,7 @@ public:
                     // jump over updates group
                     counter = tmp + 1;
                 }
-
             }
-            qss.split("Update group length");
             // update group sizes
             update_group_length(out_sa, isa);
             // prefix doubling
@@ -205,7 +187,7 @@ public:
         qss.split("ISA to SA");
         // transform isa to sa
         util::isa2sa_simple_scan(util::span<sa_index>(isa), out_sa);
-        
+
     } // construct_sa
 
 private:
@@ -272,8 +254,7 @@ private:
         // recursion termination
         if (n <= 1) {
             // if only one element is in partition, set its rank
-            if (n == 1)
-            {
+            if (n == 1) {
                 isa[full_array[start]] = start;
             }
             return;
@@ -335,90 +316,79 @@ private:
         }
     }
     template <typename key_func>
-    static void calculate_equal_length(util::span<sa_index> out_sa,util::container<sa_index>& isa, key_func& cmp)
-    {
+    static void calculate_equal_length(util::span<sa_index> out_sa,
+                                       util::container<sa_index>& isa,
+                                       key_func& cmp) {
         sa_index n = out_sa.size();
         auto equal = util::as_equal(cmp);
-        size_t counter =1;
-        sa_index start =0;
-        for(size_t index =1;index<n;++index)
-        {
-            if(!equal(out_sa[index-1],out_sa[index]))
-            {
+        size_t counter = 1;
+        sa_index start = 0;
+        for (size_t index = 1; index < n; ++index) {
+            //if sorted increment counter
+            if (!equal(out_sa[index - 1], out_sa[index])) {
                 ++counter;
-            }
-            else
-            {
-                if(index+1>=n||!equal(out_sa[index],out_sa[index+1]))
-                {
-                if(counter>1)
-                {
-                    isa[(out_sa[start])]=start;//start;
-                    out_sa[start]=(counter-1)|NEGATIVE_MASK;
-                    start=index+1;
+            } else {
+                if (index + 1 >= n ||
+                    !equal(out_sa[index], out_sa[index + 1])) {
+                    if (counter > 1) {
+                        //write group number in isa, 
+                        //because it will be overwritten
+                        isa[(out_sa[start])] = start; 
+                        //write length in out_sa
+                        out_sa[start] = (counter - 1) | NEGATIVE_MASK;
+                        start = index + 1;
+                    }
+                    if (counter == 1) {
+                        isa[out_sa[start]] = 1 | NEGATIVE_MASK;
+                        start = index + 1;
+                    }
+                    counter = 0;
                 }
-                if(counter==1)
-                {
-                    isa[out_sa[start]]=1|NEGATIVE_MASK;
-                    start=index+1;
-                }
-                counter = 0;
-                }
-
             }
         }
-        if(counter!=0)
-        {
-            isa[(out_sa[start])]=start;
-            out_sa[start]=(counter)|NEGATIVE_MASK;
+        if (counter != 0) {
+            isa[(out_sa[start])] = start;
+            out_sa[start] = (counter) | NEGATIVE_MASK;
         }
-
     }
-        static void init_isa_packed(util::span<sa_index> out_sa,
-                                             util::container<sa_index>& isa)
-        {
-            size_t length_of_sorted_group=0;
-            size_t length_of_unsorted_group=0;
-            sa_index sorted_group_number=0;
-            for(size_t index =0;index<out_sa.size();++index)
-            {
-                if(bool(out_sa[index] & NEGATIVE_MASK))
-                {
-                    sorted_group_number=index-1;
-                    for(size_t counter=1;counter<=length_of_unsorted_group;++counter)
-                    {
-                        if(bool(isa[out_sa[index-counter]]&NEGATIVE_MASK))
-                        {
-                            isa[out_sa[index-counter]]=sorted_group_number;
-                            sorted_group_number=index-counter-1;
-                        }
-                        else
-                        {
-                        isa[out_sa[index-counter]]=sorted_group_number;
-                        }
+    static void init_isa_packed(util::span<sa_index> out_sa,
+                                util::container<sa_index>& isa) {
+        size_t length_of_sorted_group = 0;
+        size_t length_of_unsorted_group = 0;
+        sa_index sorted_group_number = 0;
+        for (size_t index = 0; index < out_sa.size(); ++index) {
+            if (bool(out_sa[index] & NEGATIVE_MASK)) {
+                sorted_group_number = index - 1;
+                //write unsorted group numbers
+                for (size_t counter = 1; counter <= length_of_unsorted_group;
+                     ++counter) {
+                    if (bool(isa[out_sa[index - counter]] & NEGATIVE_MASK)) {
+                        isa[out_sa[index - counter]] = sorted_group_number;
+                        sorted_group_number = index - counter - 1;
+                    } else {
+                        isa[out_sa[index - counter]] = sorted_group_number;
                     }
-                    length_of_unsorted_group=0;
-                    length_of_sorted_group = out_sa[index]&REMOVE_NEGATIVE_MASK;
-
-                    for(size_t counter=1;(counter<length_of_sorted_group)&&((counter+index)<out_sa.size());++counter)
-                    {
-                        isa[out_sa[index+counter]]=index+counter;
-                    }
-                    index+=length_of_sorted_group-1;
                 }
-                else
-                {
-                    length_of_unsorted_group++;
+                length_of_unsorted_group = 0;
+                length_of_sorted_group = out_sa[index] & REMOVE_NEGATIVE_MASK;
+                //write sorted group numbers
+                for (size_t counter = 1; (counter < length_of_sorted_group) &&
+                                         ((counter + index) < out_sa.size());
+                     ++counter) {
+                    isa[out_sa[index + counter]] = index + counter;
                 }
-            }
-            if(length_of_unsorted_group>0)
-            {
-                    for(size_t counter=0;counter<length_of_unsorted_group;++counter)
-                    {
-                        isa[out_sa[(out_sa.size()-1)-counter]]=out_sa.size()-1;
-                    }
+                index += length_of_sorted_group - 1;
+            } else {
+                length_of_unsorted_group++;
             }
         }
+        if (length_of_unsorted_group > 0) {
+            for (size_t counter = 0; counter < length_of_unsorted_group;
+                 ++counter) {
+                isa[out_sa[(out_sa.size() - 1) - counter]] = out_sa.size() - 1;
+            }
+        }
+    }
 
 }; // class qsufsort_sub
 class qsufsort {

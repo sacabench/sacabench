@@ -11,18 +11,16 @@
 
 namespace sacabench::util {
 template <typename sa_index>
-sa_index own_pow(sa_index base, sa_index exp)
-{
-    if(exp==sa_index(0)) return 1;
-    sa_index result =1;
-    for(sa_index index =0; index<exp;++index)
-    {
-        result=result*base;
+sa_index own_pow(sa_index base, sa_index exp) {
+    if (exp == sa_index(0))
+        return 1;
+    sa_index result = 1;
+    for (sa_index index = 0; index < exp; ++index) {
+        result = result * base;
     }
     return result;
 }
-    
-    
+
 template <typename T, typename sa_index>
 void word_packing(T text, util::container<sa_index>& result, alphabet alpha,
                   size_t sentinels, size_t needed_tag_bits) {
@@ -31,23 +29,26 @@ void word_packing(T text, util::container<sa_index>& result, alphabet alpha,
         alpha = apply_effective_alphabet(string(text));
     }
     sa_index max_value = alpha.max_character_value() + 1;
+    // nicer solutions are welcome...
+    auto r = static_cast<sa_index>(static_cast<size_t>(
+        (log(std::numeric_limits<sa_index>::max() >> needed_tag_bits) /
+         log(static_cast<size_t>(max_value)))));
 
-    auto r =static_cast<sa_index> (static_cast<size_t>((log(std::numeric_limits<sa_index>::max() >> needed_tag_bits) / log(static_cast<size_t>(max_value)))));
-
-    sa_index n =
-        text.size() -
-        sentinels;
+    sa_index n = text.size() - sentinels;
+    // Pack first index "by hand"
     for (sa_index index = 0; index < r && index < n; ++index) {
         result[0] += sa_index((text[index])) *
                      sa_index((own_pow(max_value, r - index - sa_index(1))));
     }
-
+    // Pack other indices accoring to their predecessor
     for (size_t index = 1; index < n; ++index) {
         result[index] =
-            (result[index - 1] % (sa_index(size_t(own_pow(max_value, r-sa_index(1)))))) *
+            (result[index - 1] %
+             (sa_index(size_t(own_pow(max_value, r - sa_index(1)))))) *
                 max_value +
-            (((index + r - 1) < n) ? sa_index(size_t(text[index + r - 1])) : sa_index(0));
+            (((index + r - 1) < n) ? sa_index(size_t(text[index + r - 1]))
+                                   : sa_index(0));
     }
 }
-//TODO Fast & inplace
+// TODO Fast & inplace
 } // namespace sacabench::util
