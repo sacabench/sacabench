@@ -283,7 +283,7 @@ extract_all_stats <- function(json_name, pareto = F, logarithmic = F, plot_scatt
     if(memory_additional == T){
       algorithm = data[[no_algos]][[1]]$sub[[1]]$sub[[4]]
     }else{
-      algorithm = data[[no_algos]][[1]]
+      algorithm = data[[no_algos]][[1]]$sub[[1]]
     }
     
     #runtime
