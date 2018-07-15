@@ -228,7 +228,6 @@ public:
     static inline void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
-        tdc::StatPhase init("Initialization");
         // Check if sa_index type fits for text.size(), END symbol and sign bit
         DCHECK(util::assert_text_length<sa_index>(text.size()+1, 1u));
 
@@ -268,9 +267,17 @@ public:
         // TODO: optimization: only rank necessary type l lists, not all
         // util::character last_char = 0;
 
-        init.split("ISA Construction");
+        // vectors for suffixes to be refined and
+        // for suffixes to be sorted by induction
+        std::vector<sa_index> to_be_refined_;
+        std::vector<pair_si<sa_index>> sorting_induced_;
+
         // begin main loop:
         while (attr.chain_stack.size() > 0) {
+            // clear vectors (possibly filled from previous iteration)
+            to_be_refined_.clear();
+            sorting_induced_.clear();
+
             // top & pop = get first element of stack and remove it from stack
             std::pair<sa_index, sa_index> current_chain =
                 attr.chain_stack.top();
@@ -297,10 +304,6 @@ public:
                 assign_rank(chain_index, false, attr);
                 continue;
             }
-
-            // else follow the chain and refine it
-            std::vector<sa_index> to_be_refined_;
-            std::vector<pair_si<sa_index>> sorting_induced_;
 
             // follow the chain
             while (true) {
@@ -367,8 +370,6 @@ public:
             // Debug information: global_rank at text.size()? (Next rank would be invalid)
             std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
         #endif
-
-        init.split("ISA to SA");
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
         // (try 2 other options)
