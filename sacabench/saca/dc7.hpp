@@ -41,28 +41,34 @@ public:
     }
 
 private:
-    template <typename C, typename T, typename S>
+    template <typename C, typename sa_index, typename T, typename S>
     static void determine_tuples(const T& INPUT_STRING, S& tuples_124,
-                                 size_t alphabet_size) {
+                                 size_t& alphabet_size) {
 
-        size_t n = INPUT_STRING.size() - 6;
+        sa_index n = INPUT_STRING.size() - 6;
         // Container to store all tuples with the same length as
 
         // Tuples contains six chararcters and the start position
         // i mod 3 = 1 || 2 || 4
         auto tuples_124_to_be_sorted = sacabench::util::make_container<
-            std::tuple<C, C, C, C, C, C, C, size_t>>(tuples_124.size());
+            std::tuple<C, C, C, C, C, C, C, sa_index>>(tuples_124.size());
 
-        size_t counter = 0;
+        sa_index counter = 0;
+        sa_index one     = 1;
+        sa_index two     = 2;
+        sa_index three   = 3;
+        sa_index four    = 4;
+        sa_index five    = 5;
+        sa_index six     = 6;
 
-        for (size_t i = 1; i < n; ++i) {
+        for (sa_index i = 1; i < n; ++i) {
             if (((i % 7) == 1) || ((i % 7) == 2) || ((i % 7) == 4)) {
                 tuples_124_to_be_sorted[counter++] =
-                    std::tuple<C, C, C, C, C, C, C, size_t>(
-                        INPUT_STRING[i], INPUT_STRING[i + 1],
-                        INPUT_STRING[i + 2], INPUT_STRING[i + 3],
-                        INPUT_STRING[i + 4], INPUT_STRING[i + 5],
-                        INPUT_STRING[i + 6], i);
+                    std::tuple<C, C, C, C, C, C, C, sa_index>(
+                        INPUT_STRING[i], INPUT_STRING[i + one],
+                        INPUT_STRING[i + two], INPUT_STRING[i + three],
+                        INPUT_STRING[i + four], INPUT_STRING[i + five],
+                        INPUT_STRING[i + six], i);
             }
         }
 
@@ -71,7 +77,7 @@ private:
         std::sort(tuples_124_to_be_sorted.begin(),
                   tuples_124_to_be_sorted.end());
 
-        for (size_t i = 0; i < tuples_124_to_be_sorted.size(); ++i) {
+        for (sa_index i = 0; i < tuples_124_to_be_sorted.size(); ++i) {
             tuples_124[i] = std::get<7>(tuples_124_to_be_sorted[i]);
         }
         (void)alphabet_size;
@@ -95,16 +101,16 @@ private:
                         false);*/
     }
 
-    template <typename T, typename S, typename L>
+    template<typename sa_index, typename T, typename S, typename L>
     static void determine_leq(const T& INPUT_STRING, const S& tuples_124,
-                              L& t_124, const size_t start_of_pos_2,
-                              const size_t start_of_pos_4, bool& recursion,
+                              L& t_124, const size_t& start_of_pos_2,
+                              const size_t& start_of_pos_4, bool& recursion,
                               size_t& alphabet_size) {
 
         DCHECK_MSG(tuples_124.size() == t_124.size(),
                    "tuples_124 must have the same length as t_124");
 
-        size_t leq_name = 1;
+        sa_index leq_name = 1;
 
         size_t pos_to_store_leq;
         for (size_t i = 0; i < tuples_124.size(); ++i) {
@@ -182,7 +188,7 @@ private:
         const size_t start_of_pos_4 = 2 * start_of_pos_2 - (((n % 7) == 2));
 
         // determine positions and calculate the sorted order
-        determine_tuples<C>(text, tuples_124, alphabet_size);
+        determine_tuples<C, sa_index>(text, tuples_124, alphabet_size);
 
         // empty SA which should be filled correctly with lexicographical
         // names of triplets (+7 because of dummy 7-tuple)
@@ -197,7 +203,7 @@ private:
         alphabet_size = span_t_124.size();
 
         // fill t_124 with lexicographical names
-        determine_leq(text, tuples_124, span_t_124, start_of_pos_2,
+        determine_leq<sa_index>(text, tuples_124, span_t_124, start_of_pos_2,
                       start_of_pos_4, recursion, alphabet_size);
 
         util::span<sa_index> sa_124 = util::span(&out_sa[0], t_124.size() - 7);
@@ -525,10 +531,9 @@ private:
         // 0 = 0, 1 = 124, 2 = 3, 3 = 4, 4 = 5
         std::queue<u_int8_t> queue;
 
-        // container to compare the two compared SAs
-        auto to_be_compared =
-            sacabench::util::make_container<std::vector<C>>(2);
-
+        // array to compare the two compared SAs
+        std::array<std::vector<C>, 2> to_be_compared;
+        
         // Loop until the SA is filled
         for (sa_index sa_ind = 0; sa_ind < sa.size(); ++sa_ind) {
             // fill the queue with SA-numbers, which are not yet compared
