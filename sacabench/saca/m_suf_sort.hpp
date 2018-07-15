@@ -241,27 +241,52 @@ public:
                                        text};
 
         // make complete rtl scan for type s/type l suffixes
-        std::vector<sa_index> type_s_indices_;
-        bool is_last_type_l = false;
 
-        type_s_indices_.push_back(text.size() - 1);
+        bool is_last_type_l = false;
+        // array to contain uchain links (last elements)
+        auto init_uchain_links_ = util::make_container<sa_index>(alphabet.size_with_sentinel());
+        for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
+            init_uchain_links_[i] = END<sa_index>;
+        }
+        // array to contain heads of uchains (rightmost elements)
+        auto head_uchains_ = util::make_container<sa_index>(alphabet.size_with_sentinel());
+        for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
+            head_uchains_[i] = END<sa_index>;
+        }
+        // put head of sentinel chain in array (as it is not included in rtl scan)
+        head_uchains_[0] = text.size()-1;
+
         for (util::ssize i = text.size() - 2; i > -1; i--) {
             // collect all type s suffix indices
             bool is_current_type_l = util::get_type_rtl_dynamic(
                 text.slice(0, text.size() - 1), i, is_last_type_l);
             if (!is_current_type_l) {
-                type_s_indices_.push_back(i);
+                // get last linked element of corresponding chain:
+                const auto last_linked = init_uchain_links_[text[i]];
+                // if this is first occurence, put it into head array
+                if(last_linked == END<sa_index>) {
+                    head_uchains_[text[i]] = i;
+                }
+                // if its not a head, link elements
+                else {
+                    attr.isa.set_link(init_uchain_links_[text[i]], i);
+                }
+                // and put new last element to link array
+                init_uchain_links_[text[i]] = i;
             }
             // update last type
             is_last_type_l = is_current_type_l;
         }
-        util::span<sa_index> type_s_indices =
-            util::span<sa_index>(type_s_indices_);
-        // initial length (offset) for u-chains is 0 (0 common prefix
-        // characters)
-        sa_index length = 0;
-        // fill chain_stack initially with length 1- u-Chains of type s indices
-        refine_uChain(attr, type_s_indices, length);
+        // fill stack with initial u-chains by simply iterating over head array
+        // begin with greatest (last) element
+        for(util::ssize i = alphabet.size_with_sentinel()-1; i>=0; i--) {
+            sa_index current_head = head_uchains_[i];
+            if(current_head == END<sa_index>) {
+                continue;
+            }
+            std::pair<sa_index, sa_index> new_chain(head_uchains_[i], 1);
+            attr.chain_stack.push(new_chain);
+        }
 
         // initialize last chain character value
         // TODO: optimization: only rank necessary type l lists, not all
