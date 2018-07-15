@@ -22,10 +22,8 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_bpr2_Util
   reference_bpr2_Standard
   msufsort
-  msufsort
-  reference_bpr2_SuffixArray
-  reference_bpr2_Util
-  reference_bpr2_Standard
+  reference_dc3
+  reference_saca_k
   ${CMAKE_DL_LIBS}
 )
 

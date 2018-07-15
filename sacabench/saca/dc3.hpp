@@ -200,7 +200,7 @@ private:
 
         //-----------------------Phase 3------------------------------//
         dc3.split("Phase 3");
-        
+
         // merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
         if constexpr (rec) {
 
@@ -209,13 +209,13 @@ private:
                     sacabench::util::span(&text[0], text.size()), sa_0,
                     triplets_12, isa_12, out_sa,
                     std::less<sacabench::util::span<const size_t>>(),
-                    get_substring_recursion);
+                    [](auto a, auto b, auto c) {return get_substring_recursion(a, b, c);});
             } else {
                 merge_sa_dc<const size_t>(
                     sacabench::util::span(&text[0], text.size()), sa_0,
                     triplets_12, span_t_12, out_sa,
                     std::less<sacabench::util::span<const size_t>>(),
-                    get_substring_recursion);
+                    [](auto a, auto b, auto c) {return get_substring_recursion(a, b, c);});
             }
 
         } else {
@@ -223,13 +223,13 @@ private:
                 merge_sa_dc<const sacabench::util::character>(
                     sacabench::util::span(&text[0], text.size()), sa_0,
                     triplets_12, isa_12, out_sa,
-                    std::less<sacabench::util::string_span>(), get_substring);
+                    std::less<sacabench::util::string_span>(), [](auto a, auto b, auto c) {return get_substring(a, b, c);});
 
             } else {
                 merge_sa_dc<const sacabench::util::character>(
                     sacabench::util::span(&text[0], text.size()), sa_0,
                     triplets_12, span_t_12, out_sa,
-                    std::less<sacabench::util::string_span>(), get_substring);
+                    std::less<sacabench::util::string_span>(), [](auto a, auto b, auto c) {return get_substring(a, b, c);});
             }
         }
     }
@@ -351,7 +351,7 @@ private:
         }else{
             ++j;
         }
-        
+
 
         for (size_t index = 0; index < sa.size(); ++index) {
             if (i < sa_0.size() && j < sa_12.size()) {
@@ -368,7 +368,7 @@ private:
                 if (sa_12[j] % 3 == 1) {
                     position_j_isa = start_pos_mod_2 + (sa_12[j] + 1) / 3;
                     position_i_isa = (sa_0[i] + 1) / 3;
-                    
+
                     if(position_i_isa >= isa_12.size() || position_j_isa >= isa_12.size()){
                         position_i_isa = 0;
                         position_j_isa = 0;

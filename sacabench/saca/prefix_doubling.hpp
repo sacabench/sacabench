@@ -93,6 +93,8 @@ template <typename sa_index, size_t a_size,
           typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
     using a_size_helper = a_size_helper_type<a_size>;
+    static constexpr bool USE_WORDPACKING = true;
+    static constexpr size_t WP_SIZE = 4;
 
     /// The type to use for lexicographical sorted "names".
     /// For discarding, is required to have a width of at least 1 bit more than
@@ -221,14 +223,35 @@ struct prefix_doubling_impl {
         // Allocate the hybrid array.
         auto h = HArray(N);
 
+        // How many bytes to initially pack into a word
+        // TODO: Only works with power-of-two sizes
+        size_t wp_initial_loop_offset = 0;
+        if constexpr (USE_WORDPACKING) {
+            wp_initial_loop_offset = WP_SIZE / a_size;
+        }
+
         // Create the initial S array of character tuples + text
         // position
         for (size_t i = 0; i < N; ++i) {
             auto p = make_sentinel_tuple();
-            size_t trunc_size = std::min(a_size, N - i);
-            for (size_t j = 0; j < trunc_size; j++) {
-                p[j] = text[i + j];
+
+            if constexpr (USE_WORDPACKING) {
+                for (size_t j = 0; j < a_size * WP_SIZE; j++) {
+                    uint64_t v = p[j / WP_SIZE];
+                    v <<= 8;
+                    if ((i + j) < N) {
+                        v |= text[i + j];
+                    }
+                    p[j / WP_SIZE] = v;
+                }
+            } else {
+                for (size_t j = 0; j < a_size; j++) {
+                    if ((i + j) < N) {
+                        p[j] = text[i + j];
+                    }
+                }
             }
+
             h.s_names(i).copy_from(p);
             h.s_idx(i) = i;
         }
@@ -236,7 +259,7 @@ struct prefix_doubling_impl {
         // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
-        for (size_t k = 1;; k++) {
+        for (size_t k = 1 + wp_initial_loop_offset;; k++) {
             phase.split("Iteration");
 
             // TODO: check new condition
@@ -583,6 +606,13 @@ struct prefix_doubling_impl {
         // Allocate all logical arrays
         auto disc_h = DiscardingHArray(N);
 
+        // How many bytes to initially pack into a word
+        // TODO: Only works with power-of-two sizes
+        size_t wp_initial_loop_offset = 0;
+        if constexpr (USE_WORDPACKING) {
+            wp_initial_loop_offset = WP_SIZE / a_size;
+        }
+
         {
             auto H = disc_h.phase_0_H();
 
@@ -590,10 +620,24 @@ struct prefix_doubling_impl {
             // position
             for (size_t i = 0; i < N; ++i) {
                 auto p = make_sentinel_tuple();
-                size_t trunc_size = std::min(a_size, N - i);
-                for (size_t j = 0; j < trunc_size; j++) {
-                    p[j] = text[i + j];
+
+                if constexpr (USE_WORDPACKING) {
+                    for (size_t j = 0; j < a_size * WP_SIZE; j++) {
+                        uint64_t v = p[j / WP_SIZE];
+                        v <<= 8;
+                        if ((i + j) < N) {
+                            v |= text[i + j];
+                        }
+                        p[j / WP_SIZE] = v;
+                    }
+                } else {
+                    for (size_t j = 0; j < a_size; j++) {
+                        if ((i + j) < N) {
+                            p[j] = text[i + j];
+                        }
+                    }
                 }
+
                 H[i].names().copy_from(p);
                 H[i].idx() = i;
             }
@@ -614,7 +658,7 @@ struct prefix_doubling_impl {
         // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
         // we don't need to check for it explicitly
-        for (size_t k = 1;; k++) {
+        for (size_t k = 1 + wp_initial_loop_offset;; k++) {
             phase.split("Iteration");
 
             // TODO: check new condition
