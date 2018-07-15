@@ -243,16 +243,17 @@ public:
         // make complete rtl scan for type s/type l suffixes
 
         bool is_last_type_l = false;
+
+        auto memory_ = util::make_container<sa_index>(2*alphabet.size_with_sentinel());
         // array to contain uchain links (last elements)
-        auto init_uchain_links_ = util::make_container<sa_index>(alphabet.size_with_sentinel());
+        auto init_uchain_links_ = memory_.slice(0, alphabet.size_with_sentinel());
+        // array to contain heads of uchains (rightmost elements)
+        auto head_uchains_ = memory_.slice(alphabet.size_with_sentinel());
         for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
             init_uchain_links_[i] = END<sa_index>;
-        }
-        // array to contain heads of uchains (rightmost elements)
-        auto head_uchains_ = util::make_container<sa_index>(alphabet.size_with_sentinel());
-        for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
             head_uchains_[i] = END<sa_index>;
         }
+        
         // put head of sentinel chain in array (as it is not included in rtl scan)
         head_uchains_[0] = text.size()-1;
 
