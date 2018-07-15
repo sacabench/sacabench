@@ -32,7 +32,7 @@ public:
 
     template <typename T>
     static size_t get_type(T s, ssize position) {
-        if (position == s.size() - 1 || s[position] < s[position + 1]) {
+        if (static_cast<size_t>(position) == s.size() - 1 || s[position] < s[position + 1]) {
             return S_Type;
         }
         else if (s[position] > s[position + 1]) {
