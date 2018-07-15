@@ -26,26 +26,21 @@ public:
     static const size_t S_Type = 1;
 
     template <typename T>
-    static void compute_types(span<size_t> t, span<size_t> p_1,
-                              T s) {
-        t[s.size() - 1] = S_Type;
-
-        for (ssize i = s.size() - 2; i >= 0; i--) {
-            if (s.at(i + 1) < s.at(i)) {
-                t[i] = L_Type;
-                if (t[i + 1] == S_Type) {
-                    p_1[i + 1] = 1;
-                }
-            } else if (s.at(i + 1) > s.at(i)) {
-                t[i] = S_Type;
-            } else {
-                t[i] = t[i + 1];
-            }
-        }
+    static bool is_LMS(T s, ssize position) {
+        return (position > 0) && (get_type(s, position) == S_Type && get_type(s, position - 1) == L_Type);
     }
 
-    static bool is_LMS(span<size_t> p_1, ssize position) {
-        return (position > 0) && (p_1[position] == 1);
+    template <typename T>
+    static size_t get_type(T s, ssize position) {
+        if (position == s.size() - 1 || s[position] < s[position + 1]) {
+            return S_Type;
+        }
+        else if (s[position] > s[position + 1]) {
+            return L_Type;
+        }
+        else {
+            return get_type(s, position + 1);
+        }
     }
 
     template <typename T>
@@ -53,7 +48,7 @@ public:
                                  bool end) {
         size_t sum = 0;
 
-        for (size_t i = 0; i <= K; i++) {
+        for (size_t i = 0; i < K; i++) {
             buckets[i] = 0;
         }
 
@@ -63,7 +58,7 @@ public:
         }
 
         // sum up to bucket ends
-        for (size_t i = 0; i <= K; i++) {
+        for (size_t i = 0; i < K; i++) {
             sum += buckets[i];
             buckets[i] = (end ? sum : sum - buckets[i]);
         }
@@ -71,15 +66,14 @@ public:
 
     template <typename T>
     static void induce_L_Types(T s, span<size_t> buckets, size_t K,
-                               bool end, span<ssize> SA,
-                               span<size_t> t) {
+                               bool end, span<ssize> SA) {
         generate_buckets(s, buckets, K, end);
         for (size_t i = 0; i < s.size(); i++) {
             ssize pre_index =
                 SA[i] - 1; // pre index of the ith suffix array position
 
             if (pre_index >= 0 &&
-                t[pre_index] == L_Type) { // pre index is type L
+                get_type(s, pre_index) == L_Type) { // pre index is type L
                 SA[buckets[s.at(pre_index)]++] =
                     pre_index; // "sort" index in the bucket
             }
@@ -88,13 +82,12 @@ public:
 
     template <typename T>
     static void induce_S_Types(T s, span<size_t> buckets, size_t K,
-                               bool end, span<ssize> SA,
-                               span<size_t> t) {
+                               bool end, span<ssize> SA) {
         generate_buckets(s, buckets, K, end);
         for (ssize i = s.size() - 1; i >= 0; i--) {
             ssize pre_index = SA[i] - 1;
 
-            if (pre_index >= 0 && t[pre_index] == S_Type) {
+            if (pre_index >= 0 && get_type(s, pre_index) == S_Type) {
                 SA[--buckets[s.at(pre_index)]] = pre_index;
             }
         }
@@ -103,13 +96,7 @@ public:
     template <typename T>
     static void run_saca(T s, span<ssize> SA, size_t K) {
         tdc::StatPhase sais("Main Phase");
-
-        container<size_t> t = make_container<size_t>(s.size());
-        container<size_t> p_1 = make_container<size_t>(s.size());
-        container<size_t> buckets = make_container<size_t>(K + 1);
-
-        sais.split("Compute Types / Classify Characters");
-        compute_types(t, p_1, s);
+        container<size_t> buckets = make_container<size_t>(K);
 
         sais.split("Vorbereitung der Induzierung");
         generate_buckets(s, buckets, K, true);
@@ -120,21 +107,21 @@ public:
         // iterate from left to right (starting by 1 cause 0 can never be LMS)
         // and put LMS to end of the bucket and move bucket's tail backwards
         for (size_t i = 1; i < s.size(); i++) {
-            if (is_LMS(p_1, i)) {
+            if (is_LMS(s, i)) {
                 SA[--buckets[s.at(i)]] = i;
             }
         }
 
         sais.split("LMS-Induzierung");
         // sort LMS substrings
-        induce_L_Types(s, buckets, K, false, SA, t);
-        induce_S_Types(s, buckets, K, true, SA, t);
+        induce_L_Types(s, buckets, K, false, SA);
+        induce_S_Types(s, buckets, K, true, SA);
 
         // because we have at most n/2 LMS, we can store the sorted indices in
         // the first half of the SA
         ssize n1 = 0;
         for (size_t i = 0; i < s.size(); i++) {
-            if (is_LMS(p_1, SA[i]) == 1 || s.size() == 1) {
+            if (is_LMS(s, SA[i]) == 1 || s.size() == 1) {
                 SA[n1++] = SA[i];
             }
         }
@@ -158,12 +145,12 @@ public:
             for (size_t j = 0; j < s.size(); j++) {
                 if (previous_LMS == -1 ||
                     s.at(current_LMS + j) != s.at(previous_LMS + j) ||
-                    t[current_LMS + j] != t[previous_LMS + j]) {
+                    get_type(s, current_LMS + j) != get_type(s, previous_LMS + j)) {
                     diff = true;
                     break;
                 } else if (j > 0 &&
-                           (is_LMS(p_1, current_LMS + j) ||
-                            is_LMS(p_1,
+                           (is_LMS(s, current_LMS + j) ||
+                            is_LMS(s,
                                    previous_LMS +
                                        j))) { // check if next LMS is reached
                     break;                    // no diff was found
@@ -192,7 +179,7 @@ public:
         span<ssize> s1 = SA.slice(s.size() - n1, s.size());
 
         if (name < n1) {
-            run_saca<span<ssize const>>(s1, SA, name - 1);
+            run_saca<span<ssize const>>(s1, SA, name);
         } else {
             for (ssize i = 0; i < n1; i++) {
                 SA[s1[i]] = i;
@@ -204,7 +191,7 @@ public:
         generate_buckets(s, buckets, K, true);
         size_t j;
         for (size_t i = 1, j = 0; i < s.size(); i++) {
-            if (is_LMS(p_1, i)) {
+            if (is_LMS(s, i)) {
                 s1[j++] = i;
             }
         }
@@ -220,16 +207,21 @@ public:
             SA[--buckets[s.at(j)]] = j;
         }
 
-        induce_L_Types(s, buckets, K, false, SA, t);
-        induce_S_Types(s, buckets, K, true, SA, t);
+        induce_L_Types(s, buckets, K, false, SA);
+        induce_S_Types(s, buckets, K, true, SA);
     }
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
+
         container<ssize> SA = make_container<ssize>(text.size());
-        run_saca<string_span>(text, SA, alphabet.max_character_value());
+
+        if (text.size() > 1) {
+            run_saca<string_span>(text, SA, alphabet.size_with_sentinel());
+        }
+
         for (size_t i = 0; i < text.size(); i++) {
             DCHECK_LE(static_cast<size_t>(SA[i]), std::numeric_limits<sa_index>::max());
             out_sa[i] = static_cast<sa_index>(SA[i]);
