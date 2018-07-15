@@ -82,7 +82,6 @@ public:
     const util::container<sa_index> V;
     const size_t h;
 };
-static std::vector<int> count_hits = std::vector<int>(1);
 template <typename sa_index>
 class qsufsort_sub {
 public:
@@ -121,7 +120,6 @@ public:
                              util::span<sa_index> out_sa) {
         tdc::StatPhase qss("Initialization");
         size_t n = text.size();
-        count_hits.resize(n);
         // check if n is too big
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1));
         // catch trivial cases
@@ -143,7 +141,7 @@ public:
         auto compare_packed = compare_word_packed(isa);
         util::sort::ternary_quicksort::ternary_quicksort(out_sa,
                                                          compare_packed);
-
+        qss.split("Init ISA");
         // Calculate length of equal groups into out_sa
         calculate_equal_length(out_sa, isa, compare_packed);
         // Init ISA with first ranks after sorting
@@ -308,10 +306,8 @@ private:
 
             if (bool(out_sa[index] & NEGATIVE_MASK)) {
                 isa[index] = end;
-                count_hits[index] = count_hits[index] + 1;
             } else {
                 isa[out_sa[index]] = end;
-                count_hits[index] = count_hits[index] + 1;
             }
         }
     }
