@@ -276,9 +276,9 @@ private:
 
         // Choose pivot according to array size
         const sa_index pivot =
-            (n > util::sort::ternary_quicksort::MEDIAN_OF_NINE_THRESHOLD)
-                ? util::sort::ternary_quicksort::median_of_nine(out_sa, cmp)
-                : util::sort::ternary_quicksort::median_of_three(out_sa, cmp);
+            (n > util::sort::MEDIAN_OF_NINE_THRESHOLD)
+                ? util::sort::median_of_nine(out_sa, cmp)
+                : util::sort::median_of_three(out_sa, cmp);
         auto result =
             util::sort::ternary_quicksort::partition(out_sa, cmp, pivot);
         // sorts less partition recursivly
@@ -327,9 +327,9 @@ private:
                 if (index + 1 >= n ||
                     !equal(out_sa[index], out_sa[index + 1])) {
                     if (counter > 1) {
-                        //write group number in isa, 
+                        //write group number in isa,
                         //because it will be overwritten
-                        isa[(out_sa[start])] = start; 
+                        isa[(out_sa[start])] = start;
                         //write length in out_sa
                         out_sa[start] = (counter - 1) | NEGATIVE_MASK;
                         start = index + 1;

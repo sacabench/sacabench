@@ -1,7 +1,7 @@
 #pragma once
 
 // Uncomment to activate logging
-// #define SB_DSLOG
+#define SB_DSLOG
 
 // Include headers
 #ifdef SB_DSLOG
@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <util/macros.hpp>
 #endif
 
 namespace sacabench::deep_shallow {
@@ -111,7 +112,7 @@ public:
 };
 
 template <typename Fn>
-inline double duration(Fn fn) {
+SB_NO_INLINE double duration(Fn fn) {
     const auto start = std::chrono::steady_clock::now();
     fn();
     const auto end = std::chrono::steady_clock::now();

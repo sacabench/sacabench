@@ -12,6 +12,7 @@
 
 #include <util/assertions.hpp>
 #include <util/sort/ternary_quicksort.hpp>
+#include <util/sort/common.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -70,7 +71,7 @@ inline void multikey_quicksort_internal(span<index_type> array,
     // Choose a simple pivot element.
     const index_type pivot_element =
         (array.size() >= 9)
-            ? sort::ternary_quicksort::median_of_nine(array, key_func)
+            ? sort::median_of_nine(array, key_func)
             : array[0];
 
     // Swap elements using ternary quicksort partitioning.
