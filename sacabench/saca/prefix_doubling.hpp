@@ -554,8 +554,10 @@ struct prefix_doubling_impl {
         size_t prev_k = k - 1;
         size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
 
-        std::cout << "--------------------------------------------------------\n";
-        std::cout << "prev:    k = " << prev_k
+        /*
+        std::cout <<
+        "--------------------------------------------------------\n"; std::cout
+        << "prev:    k = " << prev_k
                   << ", k_length = " << prev_k_length << "\n";
         std::cout << "current: k = " << k << ", k_length = " << k_length
                   << "\n";
@@ -568,6 +570,7 @@ struct prefix_doubling_impl {
         std::cout << debug_container(pu.P(), [k](auto& x) {
             return unrotate(k, x.idx());
         }) << "\n";
+        */
 
         auto print_p_ = [=](auto P) {
             /*
@@ -580,6 +583,7 @@ struct prefix_doubling_impl {
             }) << "\n";
             */
 
+            /*
             std::cout << debug_container(P, [&](auto& x) {
                 return unrotate(k, x.idx()) % prev_k_length;
             }) << "\n";
@@ -598,10 +602,11 @@ struct prefix_doubling_impl {
                         (unrotate(k, x.idx()) % prev_k_length)) /
                        prev_k_length;
             }) << "\n";
+            */
         };
 
         print_p_(pu.P());
-        std::cout << "\n";
+        // std::cout << "\n";
 
         auto print_p = [=](auto P) {
             print_p_(P);
@@ -616,23 +621,23 @@ struct prefix_doubling_impl {
                 bucket_sizes[idx]++;
             }
 
-            std::cout << "bucket sizes: ";
-            std::cout << util::span(bucket_sizes) << "\n";
+            // std::cout << "bucket sizes: ";
+            // std::cout << util::span(bucket_sizes) << "\n";
 
             for (size_t i = 1; i < a_size; i++) {
                 bucket_sizes[i] += bucket_sizes[i - 1];
             }
 
-            std::cout << "bucket end offsets: ";
-            std::cout << util::span(bucket_sizes) << "\n";
+            // std::cout << "bucket end offsets: ";
+            // std::cout << util::span(bucket_sizes) << "\n";
 
             for (size_t i = a_size - 1; i > 0; i--) {
                 bucket_sizes[i] = bucket_sizes[i - 1];
             }
             bucket_sizes[0] = 0;
 
-            std::cout << "bucket start offsets: ";
-            std::cout << util::span(bucket_sizes) << "\n";
+            // std::cout << "bucket start offsets: ";
+            // std::cout << util::span(bucket_sizes) << "\n";
 
             {
                 auto bs = bucket_sizes;
@@ -662,24 +667,25 @@ struct prefix_doubling_impl {
 
             print_p_(P);
 
-            std::cout << "\n";
+            // std::cout << "\n";
         };
         {
             auto P = pu.P();
             print_p(P);
+            /*
             std::cout << "all after name, idx:\n";
             std::cout << debug_container(P, [k](auto& x) { return x.name(); })
                       << "\n";
             std::cout << debug_container(P, [k](auto& x) {
                 return unrotate(k, x.idx());
             }) << "\n";
+            */
             print_p_(pu.P());
 
             /*
             sorting_algorithm::sort(P, [](auto const& a, auto const& b) {
                 return a.idx() < b.idx();
             });
-            */
             std::cout << "SHOULD BE all after name, idx:\n";
             std::cout << debug_container(P, [k](auto& x) { return x.name(); })
                       << "\n";
@@ -689,6 +695,7 @@ struct prefix_doubling_impl {
             print_p_(pu.P());
 
             std::cout << "\n";
+            */
         }
 
         {
@@ -747,7 +754,7 @@ struct prefix_doubling_impl {
         }) << "\n";
         */
 
-        std::cout << "\n";
+        // std::cout << "\n";
 
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
