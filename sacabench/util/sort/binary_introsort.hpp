@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "heapsort.hpp"
+#include "insertionsort.hpp"
 #include <util/bits.hpp>
 #include <util/is_sorted.hpp>
 #include <util/macros.hpp>
@@ -22,35 +24,18 @@ using util::ssize;
 template <typename Content, typename Compare>
 class introsort_run {
 private:
-    static constexpr size_t INSERTIONSORT_THRESHOLD = 310;
+    static constexpr size_t INSERTIONSORT_THRESHOLD = 60;
 
     const Compare less;
     const size_t max_depth;
 
     inline void insertion_sort(util::span<Content> data) const SB_NOEXCEPT {
         DCHECK_LT(data.size(), INSERTIONSORT_THRESHOLD);
-
-        // Invariant: data[0 .. end_of_sorted_partition] is already correctly
-        // sorted.
-        for (size_t end_of_sorted_partition = 1;
-             end_of_sorted_partition < data.size(); ++end_of_sorted_partition) {
-            DCHECK(is_sorted(data.slice(0, end_of_sorted_partition), less));
-
-            // end_of_sorted_partition is now the new element.
-            // bubble it up to the front.
-            for (ssize i = end_of_sorted_partition; i > 0; --i) {
-
-                // Check if they defy the ordering and swap them if needed
-                if (less(data[i], data[i - 1])) {
-                    std::swap(data[i], data[i - 1]);
-                }
-            }
-        }
+        insertion_sort_hybrid<Content, Compare>(data, less);
     }
 
     inline void heapsort(util::span<Content> data) const SB_NOEXCEPT {
-        // FIXME
-        std::sort(data.begin(), data.end());
+        sort::heapsort(data, less);
     }
 
     inline size_t partition(util::span<Content> data,
@@ -108,7 +93,7 @@ private:
 
 public:
     inline introsort_run(util::span<Content> _data, Compare _less)
-        : less(_less), max_depth(ceil_log2(_data.size())) {
+        : less(_less), max_depth(2 * ceil_log2(_data.size())) {
         if (_data.size() > 1) {
             sort(_data, 0);
         }
