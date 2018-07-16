@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 #include <util/alphabet.hpp>
 #include <util/sort/bucketsort.hpp>
+#include <saca/bucket_pointer_refinement/bucketsort.hpp>
 #include <util/string.hpp>
 
 TEST(Bucketsort, function_call) {
@@ -27,6 +28,24 @@ TEST(Bucketsort, function_call) {
     std::cout << std::endl;
 }
 
+TEST(Bucketsort, function_call_lightweight) {
+    sacabench::util::string input =
+        sacabench::util::make_string("caabaccaabacaa");
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+
+    auto sa = sacabench::util::make_container<uint8_t>(input.size());
+    auto bptr = sacabench::util::make_container<uint8_t>(input.size());
+    sacabench::util::span<uint8_t> sa_span = sa;
+    sacabench::bucket_pointer_refinement::sort::bucketsort_presort_lightweight(input,
+            a.size_without_sentinel(), 2, sa_span, bptr);
+
+    std::cout << "Suffix Array: ";
+    for (auto const& c : sa)
+        std::cout << (uint32_t) c << ' ';
+    std::cout << std::endl;
+}
+
 TEST(Bucketsort, bucket_sizes) {
     sacabench::util::string input = "blablablub"_s;
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
@@ -39,6 +58,28 @@ TEST(Bucketsort, bucket_sizes) {
     ASSERT_EQ(buckets.at(2).count, (size_t)4);
     ASSERT_EQ(buckets.at(3).count, (size_t)3);
     ASSERT_EQ(buckets.at(4).count, (size_t)1);
+}
+
+TEST(Bucketsort, lightweight_bucket_positions){
+    sacabench::util::string input = "blablablub"_s;
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+    size_t depth = 1;
+    auto buckets = sacabench::bucket_pointer_refinement::sort::get_lightweight_buckets<size_t>(input, a.max_character_value(), depth);
+    ASSERT_EQ(buckets.at(0), (size_t) 0);
+    ASSERT_EQ(buckets.at(1), (size_t) 0);
+    ASSERT_EQ(buckets.at(2), (size_t) 2);
+    ASSERT_EQ(buckets.at(3), (size_t) 6);
+    ASSERT_EQ(buckets.at(4), (size_t) 9);
+    ASSERT_EQ(buckets.at(5), (size_t) 10);
+}
+
+TEST(Bucketsort, sentinels){
+    sacabench::util::string input = {'\0', '\0', '\0', '\0'};
+    size_t depth = 2;
+    auto buckets = sacabench::util::sort::get_buckets(input, 0, depth);
+    ASSERT_EQ(buckets.size(), (size_t) 1);
+    ASSERT_EQ(buckets.at(0).count, (size_t) 4);
 }
 
 TEST(Bucketsort_kd, function_call) {
