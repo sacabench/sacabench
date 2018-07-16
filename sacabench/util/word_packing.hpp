@@ -21,6 +21,22 @@ sa_index own_pow(sa_index base, sa_index exp) {
     return result;
 }
 
+/**\brief Transforms a given text with word packing technique
+ * \param text Given Text
+ * \param result Container to save the result in
+ * \param alpha Alphabet belonging to text
+ * \param sentinels Number of sentinels
+ * \param needed_tag_bits Number of reserved bits at the end
+ * 
+ * This method transforms a given text by packing as much as possible 
+ * characters into one register. By doing this, comparing two indices
+ * at the packed array allows you to use information about the 
+ * following indices as well, without changing the original order.
+ * Note that the type stored in the result array doesnt have to 
+ * match to sa_index. A bigger type allows to pack more characters in
+ * one register, leading to include more indices to compare at once, but
+ * for the cost of higher memory usage.
+ */
 template <typename T, typename sa_index>
 void word_packing(T text, util::container<sa_index>& result, alphabet alpha,
                   size_t sentinels, size_t needed_tag_bits) {
@@ -33,7 +49,6 @@ void word_packing(T text, util::container<sa_index>& result, alphabet alpha,
     auto r = static_cast<sa_index>(static_cast<size_t>(
         (log(std::numeric_limits<sa_index>::max() >> needed_tag_bits) /
          log(static_cast<size_t>(max_value)))));
-
     sa_index n = text.size() - sentinels;
     // Pack first index "by hand"
     for (sa_index index = 0; index < r && index < n; ++index) {
