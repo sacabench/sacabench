@@ -26,18 +26,6 @@ void isa2sa_simple_scan(const T &isa, T &sa) {
     }
 }
 
-/**\brief Transforms inverse Suffix Array to Suffix Array
- * \param isa calculated ISA
- * \param sa memory block for resulting SA
- *
- * This method transforms the ISA to SA using a simple scan from right to left
- */
-template <typename T, typename I>
-void isa2sa_simple_scan(const I &isa, T &sa) {
-    for (size_t i = 0; i < isa.size(); ++i) {
-        sa[isa[i]] = i;
-    }
-}
 
 /**\brief Transforms inverse Suffix Array to Suffix Array, using no extra space
  * \param isa calculated ISA
