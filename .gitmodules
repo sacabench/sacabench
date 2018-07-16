@@ -10,6 +10,3 @@
 [submodule "external/datasets"]
 	path = external/datasets
 	url = https://github.com/tudocomp/datasets.git
-[submodule "external/ips4o"]
-	path = external/ips4o
-	url = https://github.com/SaschaWitt/ips4o

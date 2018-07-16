@@ -18,6 +18,7 @@
 #include <util/string.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
+#include <../external/ips4o/ips4o.hpp>
 
 namespace sacabench::bucket_pointer_refinement {
 
@@ -324,7 +325,8 @@ public:
         if (bucket.size() < INSSORT_THRESHOLD) {
             insertion_sort(bucket, util::compare_key(sort_key));
         } else {
-            ternary_quicksort(bucket, util::compare_key(sort_key));
+            // ternary_quicksort(bucket, util::compare_key(sort_key));
+            ips4o::sort(bucket.begin(), bucket.end(), util::compare_key(sort_key));
         }
 
         /* As a consequence of sorting, bucket pointers might have changed.
