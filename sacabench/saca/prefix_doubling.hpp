@@ -70,6 +70,11 @@ struct a_size_helper_type<sa_index, 2> {
         auto const anti_k = util::bits_of<sa_index> - k;
         return (v >> anti_k) | (v << k);
     }
+    inline SB_FORCE_INLINE static size_t index_phase(sa_index idx, uint64_t k) {
+        size_t k_length = pow_a_k(k);
+        size_t prev_k_length = pow_a_k(k - 1);
+        return (idx % k_length - (idx % prev_k_length)) / prev_k_length;
+    }
 };
 
 template <typename sa_index>
@@ -84,6 +89,11 @@ struct a_size_helper_type<sa_index, 4> {
     inline SB_FORCE_INLINE static sa_index unrotate(uint64_t const k,
                                                     sa_index v) {
         return a_size_helper_type<sa_index, 2>::unrotate(k << 1, v);
+    }
+    inline SB_FORCE_INLINE static size_t index_phase(sa_index idx, uint64_t k) {
+        size_t k_length = pow_a_k(k);
+        size_t prev_k_length = pow_a_k(k - 1);
+        return (idx % k_length - (idx % prev_k_length)) / prev_k_length;
     }
 };
 
@@ -553,46 +563,61 @@ struct prefix_doubling_impl {
         }
     };
 
+    class p_bucket_sizes {
+        std::array<size_t, a_size> m_bucket_sizes;
+        bool m_finalized = false;
+
+    public:
+        inline p_bucket_sizes() {
+            for (auto& e : m_bucket_sizes) {
+                e = 0;
+            }
+        }
+        inline void count(size_t idx) {
+            DCHECK_EQ(m_finalized, false);
+            DCHECK_LT(idx, a_size);
+            m_bucket_sizes[idx]++;
+        }
+        inline void finalize() {
+            DCHECK_EQ(m_finalized, false);
+            for (size_t i = 1; i < a_size; i++) {
+                m_bucket_sizes[i] += m_bucket_sizes[i - 1];
+            }
+
+            for (size_t i = a_size - 1; i > 0; i--) {
+                m_bucket_sizes[i] = m_bucket_sizes[i - 1];
+            }
+            m_bucket_sizes[0] = 0;
+            m_finalized = true;
+        }
+        inline size_t insert(size_t idx) { return m_bucket_sizes[idx]++; }
+
+        DCHECK_EQ(m_finalized, true);
+    };
+
     /// Merges the (name,index) tuples from P into U,
     /// and ensures the combined U is sorted according to `k`.
     template <typename pu_type>
     inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
                                                            size_t k) {
-        size_t k_length = a_size_helper::pow_a_k(k);
-        size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
-
-        // TODO: Mod-k-length operation that uses bit shifts
-        // or rather bit masks
         // TODO: calculate bucket_sizes while pushing.
 
         auto p_buckets = [=](auto P) {
             // TODO: This should technically just be
             // a size_t array of length a_size initialized with 0.
-            auto bucket_sizes = make_sentinel_tuple();
+
+            auto bucket_sizes = p_bucket_sizes();
             for (size_t i = 0; i < P.size(); i++) {
-                auto idx =
-                    (P[i].idx() % k_length - (P[i].idx() % prev_k_length)) /
-                    prev_k_length;
-                bucket_sizes[idx]++;
+                auto idx = a_size_helper::index_phase(P[i].idx(), k);
+                bucket_sizes.count(idx);
             }
-
-            for (size_t i = 1; i < a_size; i++) {
-                bucket_sizes[i] += bucket_sizes[i - 1];
-            }
-
-            for (size_t i = a_size - 1; i > 0; i--) {
-                bucket_sizes[i] = bucket_sizes[i - 1];
-            }
-            bucket_sizes[0] = 0;
+            bucket_sizes.finalize();
 
             auto merge = [=](auto assign) {
                 auto bs = bucket_sizes;
                 for (size_t i = 0; i < P.size(); i++) {
-                    auto idx =
-                        (P[i].idx() % k_length - (P[i].idx() % prev_k_length)) /
-                        prev_k_length;
-
-                    assign(P[bs[idx]++], P[i]);
+                    auto idx = a_size_helper::index_phase(P[i].idx(), k);
+                    assign(P[bs.insert(idx)], P[i]);
                 }
             };
 
