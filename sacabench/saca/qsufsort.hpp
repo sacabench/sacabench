@@ -208,7 +208,7 @@ private:
         update_group_length(out_sa, isa);
     }
 
-    static void update_group_length(util::span<sa_index> out_sa,
+    inline static void update_group_length(util::span<sa_index> out_sa,
                                     util::container<sa_index>& isa) {
         size_t n = out_sa.size();
         size_t sorted_counter = 0;
@@ -295,7 +295,7 @@ private:
         return;
     }
 
-    static void update_equal_partition_ranks(util::span<sa_index> out_sa,
+    inline static void update_equal_partition_ranks(util::span<sa_index> out_sa,
                                              util::container<sa_index>& isa,
                                              sa_index start, sa_index end) {
 
