@@ -554,6 +554,7 @@ struct prefix_doubling_impl {
         size_t prev_k = k - 1;
         size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
 
+        std::cout << "--------------------------------------------------------\n";
         std::cout << "prev:    k = " << prev_k
                   << ", k_length = " << prev_k_length << "\n";
         std::cout << "current: k = " << k << ", k_length = " << k_length
@@ -665,22 +666,7 @@ struct prefix_doubling_impl {
         };
         {
             auto P = pu.P();
-            uint64_t last_phase = -1;
-            uint64_t last_phase_start = 0;
-
-            for (size_t i = 0; i < P.size(); i++) {
-                auto current_phase = unrotate(k, P[i].idx()) % prev_k_length;
-                if (current_phase != last_phase) {
-                    if (last_phase != uint64_t(-1)) {
-                        print_p(P.slice(last_phase_start, i));
-                    }
-                    last_phase_start = i;
-                    last_phase = current_phase;
-                }
-            }
-            if (last_phase != uint64_t(-1)) {
-                print_p(P.slice(last_phase_start));
-            }
+            print_p(P);
             std::cout << "all after name, idx:\n";
             std::cout << debug_container(P, [k](auto& x) { return x.name(); })
                       << "\n";
@@ -689,9 +675,11 @@ struct prefix_doubling_impl {
             }) << "\n";
             print_p_(pu.P());
 
+            /*
             sorting_algorithm::sort(P, [](auto const& a, auto const& b) {
                 return a.idx() < b.idx();
             });
+            */
             std::cout << "SHOULD BE all after name, idx:\n";
             std::cout << debug_container(P, [k](auto& x) { return x.name(); })
                       << "\n";
