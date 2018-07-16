@@ -25,7 +25,7 @@ namespace sacabench::util {
         msg << " in file " << __FILE__ << ":" << __LINE__;                     \
         msg << ":\n";                                                          \
         msg << ("the check failed: " #x);                                      \
-        msg << ", we got " << y << " vs " << z;                                \
+        msg << ", we got " << (y) << " vs " << (z);                                \
         throw std::runtime_error(msg.str());                                   \
     }
 /// Macro for checking a boolean value.
