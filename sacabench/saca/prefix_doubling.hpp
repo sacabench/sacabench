@@ -100,15 +100,6 @@ struct a_size_helper_type<sa_index, 4> {
 template <typename sa_index, size_t a_size,
           typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
-    template <typename T, typename F>
-    inline static auto debug_container(util::span<T> s, F f) {
-        util::container<decltype(f(s[0]))> tmp(s.size());
-        for (size_t i = 0; i < s.size(); i++) {
-            tmp[i] = f(s[i]);
-        }
-        return tmp;
-    }
-
     using a_size_helper = a_size_helper_type<sa_index, a_size>;
     static constexpr bool USE_WORDPACKING = false;
     static constexpr size_t WP_SIZE = 4;
@@ -450,52 +441,16 @@ struct prefix_doubling_impl {
             size_t m_S_end = 0;
             size_t m_F_end = 0;
 
-            template <typename V>
-            inline void debug_print_name(V const& v) {
-                std::cout << "[";
-                for (auto& e : v) {
-                    std::cout << "(" << unmarked(e.name()) << ",_," << e.idx()
-                              << "),";
-                }
-                std::cout << "]";
-            }
-            template <typename V>
-            inline void debug_print_names(V const& v) {
-                std::cout << "[";
-                for (auto& e : v) {
-                    std::cout << "(" << unmarked(e.names()[0]) << ","
-                              << unmarked(e.names()[1]) << "," << e.idx()
-                              << "),";
-                }
-                std::cout << "]";
-            }
-
             inline auto p_span() { return m_disc_h.slice(0, m_P_end); }
             inline auto s_span() { return m_disc_h.slice(m_P_end, m_S_end); }
             inline auto f_span() { return m_disc_h.slice(m_S_end, m_F_end); }
             inline auto u_span() { return m_disc_h.slice(m_U_start, m_U_end); }
 
         public:
-            inline void debug_print(util::string_span msg) {
-                /*
-                std::cout << msg << "\n  P";
-                debug_print_name(p_span());
-                std::cout << "\n  S";
-                debug_print_names(s_span());
-                std::cout << "\n  U";
-                debug_print_name(u_span());
-                std::cout << "\n  F";
-                debug_print_name(f_span());
-                std::cout << "\n\n";
-                */
-                (void)msg;
-            }
-
             inline phase_2_U2PSF_type(util::span<hybrid_tuple> disc_h,
                                       size_t F_size) {
                 m_disc_h = disc_h;
                 m_U_end = disc_h.size() - F_size;
-                debug_print("INIT"_s);
             }
 
             inline bool has_next_u_elem() { return m_U_start != m_U_end; }
@@ -507,16 +462,12 @@ struct prefix_doubling_impl {
                 size_t end = std::min(m_U_start + 1 + n, m_U_end);
                 return m_disc_h.slice(start, end);
             }
-            inline void drop_u_elem() {
-                m_U_start++;
-                debug_print("DROP"_s);
-            }
+            inline void drop_u_elem() { m_U_start++; }
             inline void append_f(sa_index name, sa_index idx) {
                 auto& new_f_elem = m_disc_h[m_F_end];
                 new_f_elem.name() = name;
                 new_f_elem.idx() = idx;
                 m_F_end++;
-                debug_print("AppF"_s);
             }
             inline void append_s(util::span<sa_index> names, sa_index idx) {
                 m_disc_h[m_F_end] = m_disc_h[m_S_end];
@@ -526,7 +477,6 @@ struct prefix_doubling_impl {
                 new_s_elem.names().copy_from(names);
                 new_s_elem.idx() = idx;
                 m_S_end++;
-                debug_print("AppS"_s);
             }
             inline void append_p(sa_index name, sa_index idx) {
                 m_disc_h[m_F_end] = m_disc_h[m_S_end];
@@ -538,7 +488,6 @@ struct prefix_doubling_impl {
                 new_p_elem.name() = name;
                 new_p_elem.idx() = idx;
                 m_P_end++;
-                debug_print("AppP"_s);
             }
             inline size_t additional_f_size() { return m_F_end - m_S_end; }
             inline size_t p_size() { return m_P_end; }
@@ -895,7 +844,6 @@ struct prefix_doubling_impl {
             // or to F or P.
             size_t count = 0;
             while (U2PSF.has_next_u_elem()) {
-                U2PSF.debug_print("LOOP"_s);
                 // Get the name at U[j], and check if its unique,
                 // while also removing the extra bit in any case.
                 auto const& next_u_elem = U2PSF.get_next_u_elem();
