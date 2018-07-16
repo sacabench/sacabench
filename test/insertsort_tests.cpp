@@ -1,6 +1,4 @@
 /*******************************************************************************
- * test/insertsort_tests.cpp
- *
  * Copyright (C) 2018 Rosa Pink
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
