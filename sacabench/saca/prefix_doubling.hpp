@@ -558,10 +558,12 @@ struct prefix_doubling_impl {
     template <typename pu_type>
     inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
                                                            size_t k) {
-        // TODO: Change to just merge later
         size_t k_length = a_size_helper::pow_a_k(k);
-        size_t prev_k = k - 1;
         size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
+
+        // TODO: Mod-k-length operation that uses bit shifts
+        // or rather bit masks
+        // TODO: calculate bucket_sizes while pushing.
 
         auto p_buckets = [=](auto P) {
             // TODO: This should technically just be
@@ -574,23 +576,14 @@ struct prefix_doubling_impl {
                 bucket_sizes[idx]++;
             }
 
-            // std::cout << "bucket sizes: ";
-            // std::cout << util::span(bucket_sizes) << "\n";
-
             for (size_t i = 1; i < a_size; i++) {
                 bucket_sizes[i] += bucket_sizes[i - 1];
             }
-
-            // std::cout << "bucket end offsets: ";
-            // std::cout << util::span(bucket_sizes) << "\n";
 
             for (size_t i = a_size - 1; i > 0; i--) {
                 bucket_sizes[i] = bucket_sizes[i - 1];
             }
             bucket_sizes[0] = 0;
-
-            // std::cout << "bucket start offsets: ";
-            // std::cout << util::span(bucket_sizes) << "\n";
 
             auto merge = [=](auto assign) {
                 auto bs = bucket_sizes;
