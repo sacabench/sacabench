@@ -25,7 +25,7 @@ namespace sacabench::util {
         msg << " in file " << __FILE__ << ":" << __LINE__;                     \
         msg << ":\n";                                                          \
         msg << ("the check failed: " #x);                                      \
-        msg << ", we got " << (y) << " vs " << (z);                                \
+        msg << ", we got " << (y) << " vs " << (z);                            \
         throw std::runtime_error(msg.str());                                   \
     }
 /// Macro for checking a boolean value.
@@ -73,14 +73,16 @@ namespace sacabench::util {
 
 template <typename integer_type>
 bool can_represent_all_values(uint64_t distinct_values) {
-    return static_cast<uint64_t>(std::numeric_limits<integer_type>::max()) >= (distinct_values - 1);
+    return static_cast<uint64_t>(std::numeric_limits<integer_type>::max()) >=
+           (distinct_values - 1);
 }
 
 /// \brief Call this function once at the start of your SACA to check if the
 ///        amount of bits your algorithm uses for metadata (tagging, ...) is
 ///        usable because the text is short enough.
-template<typename integer_type>
-inline bool assert_text_length(const size_t text_length, const size_t reserved_bits) {
+template <typename integer_type>
+inline bool assert_text_length(const size_t text_length,
+                               const size_t reserved_bits) {
 
     // Actually, max_text_len is one larger than this number.
     // But because size_t is the largest type we know, and the text_length is
