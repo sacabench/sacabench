@@ -70,7 +70,8 @@ struct a_size_helper_type<sa_index, 2> {
         auto const anti_k = util::bits_of<sa_index> - k;
         return (v >> anti_k) | (v << k);
     }
-    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k, sa_index idx) {
+    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k,
+                                                     sa_index idx) {
         sa_index k_mask = pow_a_k(k) - 1;
         return (idx & k_mask) >> (k - 1);
     }
@@ -89,7 +90,8 @@ struct a_size_helper_type<sa_index, 4> {
                                                     sa_index v) {
         return a_size_helper_type<sa_index, 2>::unrotate(k << 1, v);
     }
-    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k, sa_index idx) {
+    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k,
+                                                     sa_index idx) {
         sa_index k_mask = pow_a_k(k) - 1;
         return (idx & k_mask) >> ((k - 1) << 1);
     }
