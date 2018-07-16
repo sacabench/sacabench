@@ -102,6 +102,7 @@ struct prefix_doubling_impl {
     using a_size_helper = a_size_helper_type<sa_index, a_size>;
     static constexpr bool USE_WORDPACKING = false;
     static constexpr size_t WP_SIZE = 4;
+    static constexpr bool HAS_SCRATCH_2 = a_size > 2;
 
     /// The type to use for lexicographical sorted "names".
     /// For discarding, is required to have a width of at least 1 bit more than
@@ -133,14 +134,22 @@ struct prefix_doubling_impl {
 
         inline sa_index& idx() { return m_data[a_size]; }
         inline name_type& name() { return m_data[0]; }
-        inline name_type& name2() { return m_data[1]; }
+        inline name_type& scratch1() { return m_data[1]; }
+        inline name_type& scratch2() {
+            DCHECK_GT(sa_index, 2);
+            return m_data[2];
+        }
         inline util::span<name_type> names() {
             return util::span<name_type>(m_data).slice(0, a_size);
         }
 
         inline sa_index const& idx() const { return m_data[a_size]; }
         inline name_type const& name() const { return m_data[0]; }
-        inline name_type const& name2() const { return m_data[1]; }
+        inline name_type const& scratch1() const { return m_data[1]; }
+        inline name_type const& scratch2() const {
+            DCHECK_GT(sa_index, 2);
+            return m_data[2];
+        }
         inline util::span<name_type const> names() const {
             return util::span<name_type const>(m_data).slice(0, a_size);
         }
@@ -583,30 +592,36 @@ struct prefix_doubling_impl {
             // std::cout << "bucket start offsets: ";
             // std::cout << util::span(bucket_sizes) << "\n";
 
-            {
+            auto merge = [=](auto assign) {
                 auto bs = bucket_sizes;
                 for (size_t i = 0; i < P.size(); i++) {
                     auto idx = (unrotate(k, P[i].idx()) % k_length -
                                 (unrotate(k, P[i].idx()) % prev_k_length)) /
                                prev_k_length;
 
-                    P[bs[idx]++].name2() = P[i].name();
+                    assign(P[bs[idx]++], P[i]);
                 }
-            }
+            };
 
-            {
-                auto bs = bucket_sizes;
+            if constexpr (HAS_SCRATCH_2) {
+                merge([](auto& dst, auto& src) {
+                    dst.scratch1() = src.name();
+                    dst.scratch2() = src.idx();
+                });
+
                 for (size_t i = 0; i < P.size(); i++) {
-                    auto idx = (unrotate(k, P[i].idx()) % k_length -
-                                (unrotate(k, P[i].idx()) % prev_k_length)) /
-                               prev_k_length;
-                    P[bs[idx]++].name() = P[i].idx();
+                    P[i].idx() = P[i].scratch2();
+                    P[i].name() = P[i].scratch1();
                 }
-            }
+            } else {
+                merge(
+                    [](auto& dst, auto& src) { dst.scratch1() = src.name(); });
+                merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
 
-            for (size_t i = 0; i < P.size(); i++) {
-                P[i].idx() = P[i].name();
-                P[i].name() = P[i].name2();
+                for (size_t i = 0; i < P.size(); i++) {
+                    P[i].idx() = P[i].name();
+                    P[i].name() = P[i].scratch1();
+                }
             }
         };
 
@@ -643,20 +658,32 @@ struct prefix_doubling_impl {
                     assign(PU[i++], PU[ui++]);
                 }
             };
-            merge([](auto& dst, auto& src) { dst.name2() = src.name(); });
-            merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
-            for (size_t i = 0; i < PU.size(); i++) {
-                PU[i].idx() = PU[i].name();
-                PU[i].name() = PU[i].name2();
+
+            // For a_size = 2, we only have a single field as scratch space,
+            // so we need to run the merge step twice.
+            // for a_size > 2, we have two free fields, and can do it in one
+            // iteration.
+            if constexpr (HAS_SCRATCH_2) {
+                merge([](auto& dst, auto& src) {
+                    dst.scratch1() = src.name();
+                    dst.scratch2() = src.idx();
+                });
+
+                for (size_t i = 0; i < PU.size(); i++) {
+                    PU[i].idx() = PU[i].scratch2();
+                    PU[i].name() = PU[i].scratch1();
+                }
+            } else {
+                merge(
+                    [](auto& dst, auto& src) { dst.scratch1() = src.name(); });
+                merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
+
+                for (size_t i = 0; i < PU.size(); i++) {
+                    PU[i].idx() = PU[i].name();
+                    PU[i].name() = PU[i].scratch1();
+                }
             }
         }
-
-        // Sort <U?> by its i position mapped to the tuple
-        // (i % (2**k), i / (2**k), implemented as a single
-        // integer value
-        sorting_algorithm::sort(pu.PU(), [](auto const& a, auto const& b) {
-            return a.idx() < b.idx();
-        });
     }
 
     inline static void
