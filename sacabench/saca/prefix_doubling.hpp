@@ -598,7 +598,7 @@ struct prefix_doubling_impl {
             size_t const p_end = pu.P().size();
             size_t const u_end = PU.size();
 
-            auto merge = [=, p_end, u_end](auto assign) {
+            auto merge = [PU, p_end, u_end](auto assign) {
                 size_t pi = 0;
                 size_t ui = p_end;
 
