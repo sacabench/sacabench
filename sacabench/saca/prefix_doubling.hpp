@@ -136,7 +136,7 @@ struct prefix_doubling_impl {
         inline name_type& name() { return m_data[0]; }
         inline name_type& scratch1() { return m_data[1]; }
         inline name_type& scratch2() {
-            DCHECK_GT(sa_index, 2);
+            DCHECK_GT(a_size, 2);
             return m_data[2];
         }
         inline util::span<name_type> names() {
@@ -147,7 +147,7 @@ struct prefix_doubling_impl {
         inline name_type const& name() const { return m_data[0]; }
         inline name_type const& scratch1() const { return m_data[1]; }
         inline name_type const& scratch2() const {
-            DCHECK_GT(sa_index, 2);
+            DCHECK_GT(a_size, 2);
             return m_data[2];
         }
         inline util::span<name_type const> names() const {
@@ -568,9 +568,9 @@ struct prefix_doubling_impl {
             // a size_t array of length a_size initialized with 0.
             auto bucket_sizes = make_sentinel_tuple();
             for (size_t i = 0; i < P.size(); i++) {
-                auto idx = (unrotate(k, P[i].idx()) % k_length -
-                            (unrotate(k, P[i].idx()) % prev_k_length)) /
-                           prev_k_length;
+                auto idx =
+                    (P[i].idx() % k_length - (P[i].idx() % prev_k_length)) /
+                    prev_k_length;
                 bucket_sizes[idx]++;
             }
 
@@ -595,9 +595,9 @@ struct prefix_doubling_impl {
             auto merge = [=](auto assign) {
                 auto bs = bucket_sizes;
                 for (size_t i = 0; i < P.size(); i++) {
-                    auto idx = (unrotate(k, P[i].idx()) % k_length -
-                                (unrotate(k, P[i].idx()) % prev_k_length)) /
-                               prev_k_length;
+                    auto idx =
+                        (P[i].idx() % k_length - (P[i].idx() % prev_k_length)) /
+                        prev_k_length;
 
                     assign(P[bs[idx]++], P[i]);
                 }
@@ -610,7 +610,7 @@ struct prefix_doubling_impl {
                 });
 
                 for (size_t i = 0; i < P.size(); i++) {
-                    P[i].idx() = P[i].scratch2();
+                    P[i].idx() = rotate(k, P[i].scratch2());
                     P[i].name() = P[i].scratch1();
                 }
             } else {
@@ -619,7 +619,7 @@ struct prefix_doubling_impl {
                 merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
 
                 for (size_t i = 0; i < P.size(); i++) {
-                    P[i].idx() = P[i].name();
+                    P[i].idx() = rotate(k, P[i].name());
                     P[i].name() = P[i].scratch1();
                 }
             }
@@ -900,7 +900,7 @@ struct prefix_doubling_impl {
                         U2PSF.append_f(c, i);
                     } else {
                         // partially discard tuple
-                        U2PSF.append_p(c, rotate(k + 1, i));
+                        U2PSF.append_p(c, i);
                     }
                     count = 0;
                 } else {
