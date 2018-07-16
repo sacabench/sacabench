@@ -70,10 +70,9 @@ struct a_size_helper_type<sa_index, 2> {
         auto const anti_k = util::bits_of<sa_index> - k;
         return (v >> anti_k) | (v << k);
     }
-    inline SB_FORCE_INLINE static size_t index_phase(sa_index idx, uint64_t k) {
-        size_t k_length = pow_a_k(k);
-        size_t prev_k_length = pow_a_k(k - 1);
-        return (idx % k_length - (idx % prev_k_length)) / prev_k_length;
+    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k, sa_index idx) {
+        sa_index k_mask = pow_a_k(k) - 1;
+        return (idx & k_mask) >> (k - 1);
     }
 };
 
@@ -90,10 +89,9 @@ struct a_size_helper_type<sa_index, 4> {
                                                     sa_index v) {
         return a_size_helper_type<sa_index, 2>::unrotate(k << 1, v);
     }
-    inline SB_FORCE_INLINE static size_t index_phase(sa_index idx, uint64_t k) {
-        size_t k_length = pow_a_k(k);
-        size_t prev_k_length = pow_a_k(k - 1);
-        return (idx % k_length - (idx % prev_k_length)) / prev_k_length;
+    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k, sa_index idx) {
+        sa_index k_mask = pow_a_k(k) - 1;
+        return (idx & k_mask) >> ((k - 1) << 1);
     }
 };
 
@@ -611,7 +609,7 @@ struct prefix_doubling_impl {
             auto merge = [=](auto assign) {
                 auto bs = Pbs;
                 for (size_t i = 0; i < P.size(); i++) {
-                    auto idx = a_size_helper::index_phase(P[i].idx(), k);
+                    auto idx = a_size_helper::index_phase(k, P[i].idx());
                     assign(P[bs.insert(idx)], P[i]);
                 }
             };
@@ -914,7 +912,7 @@ struct prefix_doubling_impl {
                         // partially discard tuple
                         U2PSF.append_p(c, i);
 
-                        Pbs.count(a_size_helper::index_phase(i, k + 1));
+                        Pbs.count(a_size_helper::index_phase(k + 1, i));
                     }
                     count = 0;
                 } else {
