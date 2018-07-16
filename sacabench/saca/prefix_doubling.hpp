@@ -554,63 +554,7 @@ struct prefix_doubling_impl {
         size_t prev_k = k - 1;
         size_t prev_k_length = a_size_helper::pow_a_k(k - 1);
 
-        /*
-        std::cout <<
-        "--------------------------------------------------------\n"; std::cout
-        << "prev:    k = " << prev_k
-                  << ", k_length = " << prev_k_length << "\n";
-        std::cout << "current: k = " << k << ", k_length = " << k_length
-                  << "\n";
-        std::cout << "P real_idx, idx, idx % " << prev_k_length << ", idx % "
-                  << k_length << ":\n";
-
-        std::cout << "all before name, idx:\n";
-        std::cout << debug_container(pu.P(), [k](auto& x) { return x.name(); })
-                  << "\n";
-        std::cout << debug_container(pu.P(), [k](auto& x) {
-            return unrotate(k, x.idx());
-        }) << "\n";
-        */
-
-        auto print_p_ = [=](auto P) {
-            /*
-            std::cout << debug_container(P, [k](auto& x) { return x.idx();
-            })
-                      << "\n";
-
-            std::cout << debug_container(P, [k](auto& x) {
-                return unrotate(k, x.idx());
-            }) << "\n";
-            */
-
-            /*
-            std::cout << debug_container(P, [&](auto& x) {
-                return unrotate(k, x.idx()) % prev_k_length;
-            }) << "\n";
-
-            std::cout << debug_container(P, [&](auto& x) {
-                return unrotate(k, x.idx()) % k_length;
-            }) << "\n";
-
-            std::cout << debug_container(P, [&](auto& x) {
-                return unrotate(k, x.idx()) % k_length -
-                       (unrotate(k, x.idx()) % prev_k_length);
-            }) << "\n";
-
-            std::cout << debug_container(P, [&](auto& x) {
-                return (unrotate(k, x.idx()) % k_length -
-                        (unrotate(k, x.idx()) % prev_k_length)) /
-                       prev_k_length;
-            }) << "\n";
-            */
-        };
-
-        print_p_(pu.P());
-        // std::cout << "\n";
-
-        auto print_p = [=](auto P) {
-            print_p_(P);
-
+        auto p_buckets = [=](auto P) {
             // TODO: This should technically just be
             // a size_t array of length a_size initialized with 0.
             auto bucket_sizes = make_sentinel_tuple();
@@ -664,45 +608,14 @@ struct prefix_doubling_impl {
                 P[i].idx() = P[i].name();
                 P[i].name() = P[i].name2();
             }
-
-            print_p_(P);
-
-            // std::cout << "\n";
         };
+
         {
             auto P = pu.P();
-            print_p(P);
-            /*
-            std::cout << "all after name, idx:\n";
-            std::cout << debug_container(P, [k](auto& x) { return x.name(); })
-                      << "\n";
-            std::cout << debug_container(P, [k](auto& x) {
-                return unrotate(k, x.idx());
-            }) << "\n";
-            */
-            print_p_(pu.P());
-
-            /*
-            sorting_algorithm::sort(P, [](auto const& a, auto const& b) {
-                return a.idx() < b.idx();
-            });
-            std::cout << "SHOULD BE all after name, idx:\n";
-            std::cout << debug_container(P, [k](auto& x) { return x.name(); })
-                      << "\n";
-            std::cout << debug_container(P, [k](auto& x) {
-                return unrotate(k, x.idx());
-            }) << "\n";
-            print_p_(pu.P());
-
-            std::cout << "\n";
-            */
+            p_buckets(P);
         }
 
         {
-            for (size_t i = 1; i < pu.P().size(); i++) {
-                // DCHECK_LT(pu.P()[i - 1].idx(), pu.P()[i].idx());
-            }
-
             sorting_algorithm::sort(pu.U(), [](auto const& a, auto const& b) {
                 return a.idx() < b.idx();
             });
@@ -737,24 +650,6 @@ struct prefix_doubling_impl {
                 PU[i].name() = PU[i].name2();
             }
         }
-
-        /*
-
-        std::cout << "sorted U real_idx, idx, idx % " << k_length << ":\n";
-
-        std::cout << debug_container(pu.U(), [k](auto& x) { return x.idx(); })
-                  << "\n";
-
-        std::cout << debug_container(pu.U(), [k](auto& x) {
-            return unrotate(k, x.idx());
-        }) << "\n";
-
-        std::cout << debug_container(pu.U(), [&](auto& x) {
-            return unrotate(k, x.idx()) % k_length;
-        }) << "\n";
-        */
-
-        // std::cout << "\n";
 
         // Sort <U?> by its i position mapped to the tuple
         // (i % (2**k), i / (2**k), implemented as a single
