@@ -680,7 +680,7 @@ struct prefix_doubling_impl {
                 });
 
                 for (size_t i = 0; i < PU.size(); i++) {
-                    PU[i].idx() = PU[i].scratch2();
+                    PU[i].idx() = unrotate(k, PU[i].scratch2());
                     PU[i].name() = PU[i].scratch1();
                 }
             } else {
@@ -689,7 +689,7 @@ struct prefix_doubling_impl {
                 merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
 
                 for (size_t i = 0; i < PU.size(); i++) {
-                    PU[i].idx() = PU[i].name();
+                    PU[i].idx() = unrotate(k, PU[i].name());
                     PU[i].name() = PU[i].scratch1();
                 }
             }
@@ -902,7 +902,7 @@ struct prefix_doubling_impl {
 
                 name_type c = unmarked(next_u_elem.name());
                 bool const is_uniq = !is_marked(next_u_elem.name());
-                auto const i = unrotate(k, next_u_elem.idx());
+                auto const i = next_u_elem.idx();
 
                 if (is_uniq) {
                     U2PSF.drop_u_elem();
@@ -930,11 +930,10 @@ struct prefix_doubling_impl {
                         auto last_i = i;
                         for (size_t l = 0; l < neighbor_names.size(); l++) {
                             auto const& n = neighbor_names[l];
-                            auto unrotated_i = unrotate(k, n.idx());
 
-                            if (unrotated_i == uint64_t(last_i) + k_length) {
+                            if (n.idx() == uint64_t(last_i) + k_length) {
                                 tuple[l + 1] = unmarked(n.name());
-                                last_i = unrotated_i;
+                                last_i = n.idx();
                             } else {
                                 break;
                             }
