@@ -568,10 +568,12 @@ struct prefix_doubling_impl {
         bool m_finalized = false;
 
     public:
-        inline p_bucket_sizes() {
+        inline p_bucket_sizes() { reset(); }
+        inline void reset() {
             for (auto& e : m_bucket_sizes) {
                 e = 0;
             }
+            m_finalized = false;
         }
         inline void count(size_t idx) {
             DCHECK_EQ(m_finalized, false);
@@ -590,31 +592,24 @@ struct prefix_doubling_impl {
             m_bucket_sizes[0] = 0;
             m_finalized = true;
         }
-        inline size_t insert(size_t idx) { return m_bucket_sizes[idx]++; }
-
-        DCHECK_EQ(m_finalized, true);
+        inline size_t insert(size_t idx) {
+            DCHECK_EQ(m_finalized, true);
+            return m_bucket_sizes[idx]++;
+        }
     };
 
     /// Merges the (name,index) tuples from P into U,
     /// and ensures the combined U is sorted according to `k`.
     template <typename pu_type>
-    inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
-                                                           size_t k) {
-        // TODO: calculate bucket_sizes while pushing.
-
-        auto p_buckets = [=](auto P) {
-            // TODO: This should technically just be
-            // a size_t array of length a_size initialized with 0.
-
-            auto bucket_sizes = p_bucket_sizes();
-            for (size_t i = 0; i < P.size(); i++) {
-                auto idx = a_size_helper::index_phase(P[i].idx(), k);
-                bucket_sizes.count(idx);
-            }
-            bucket_sizes.finalize();
+    inline static void
+    sort_U_by_index_and_merge_P_into_it(pu_type& pu, size_t k,
+                                        p_bucket_sizes const& Pbs) {
+        // Bucket-sort the entries in P for the k+1 order
+        {
+            auto P = pu.P();
 
             auto merge = [=](auto assign) {
-                auto bs = bucket_sizes;
+                auto bs = Pbs;
                 for (size_t i = 0; i < P.size(); i++) {
                     auto idx = a_size_helper::index_phase(P[i].idx(), k);
                     assign(P[bs.insert(idx)], P[i]);
@@ -641,18 +636,15 @@ struct prefix_doubling_impl {
                     P[i].name() = P[i].scratch1();
                 }
             }
-        };
-
-        {
-            auto P = pu.P();
-            p_buckets(P);
         }
 
-        {
-            sorting_algorithm::sort(pu.U(), [](auto const& a, auto const& b) {
-                return a.idx() < b.idx();
-            });
+        // Sort U
+        sorting_algorithm::sort(pu.U(), [](auto const& a, auto const& b) {
+            return a.idx() < b.idx();
+        });
 
+        // Merge the adjacent P and U arrays in place
+        {
             auto PU = pu.PU();
             size_t const p_end = pu.P().size();
             size_t const u_end = PU.size();
@@ -866,6 +858,7 @@ struct prefix_doubling_impl {
 
         size_t P_size = 0;
         size_t F_size = 0;
+        auto Pbs = p_bucket_sizes();
 
         // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
@@ -892,7 +885,8 @@ struct prefix_doubling_impl {
 
                 // Merge the previous unique names from P
                 // into U and sort them by index.
-                sort_U_by_index_and_merge_P_into_it(UP, k);
+                sort_U_by_index_and_merge_P_into_it(UP, k, Pbs);
+                Pbs.reset();
             }
 
             auto U2PSF = disc_h.phase_2_U2PSF(F_size);
@@ -919,6 +913,8 @@ struct prefix_doubling_impl {
                     } else {
                         // partially discard tuple
                         U2PSF.append_p(c, i);
+
+                        Pbs.count(a_size_helper::index_phase(i, k + 1));
                     }
                     count = 0;
                 } else {
@@ -953,6 +949,7 @@ struct prefix_doubling_impl {
 
             F_size += U2PSF.additional_f_size();
             P_size = U2PSF.p_size();
+            Pbs.finalize();
 
             auto PSF = disc_h.phase_3_PSF(P_size, F_size);
 
