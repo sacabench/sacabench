@@ -18,7 +18,7 @@
 #include <util/string.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
-#include <../external/ips4o/ips4o.hpp>
+#include "../external/ips4o/ips4o.hpp"
 
 namespace sacabench::bucket_pointer_refinement {
 
