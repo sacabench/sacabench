@@ -13,7 +13,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-#include "../../external/ips4o/ips4o.hpp"
+#include "../external/ips4o/ips4o.hpp"
 #pragma GCC diagnostic pop
 
 namespace sacabench::util::sort {
