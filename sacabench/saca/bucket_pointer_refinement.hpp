@@ -16,12 +16,9 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/sort/ips4o.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#include "../../external/ips4o/ips4o.hpp"
-#pragma GCC diagnostic pop
 
 namespace sacabench::bucket_pointer_refinement {
 
@@ -329,7 +326,7 @@ public:
             insertion_sort(bucket, util::compare_key(sort_key));
         } else {
             // ternary_quicksort(bucket, util::compare_key(sort_key));
-            ips4o::sort(bucket.begin(), bucket.end(), util::compare_key(sort_key));
+            util::sort::ips4o_sort(bucket, util::compare_key(sort_key));
         }
 
         /* As a consequence of sorting, bucket pointers might have changed.
