@@ -10,7 +10,7 @@
 #include "trie.hpp"
 
 #include <util/alphabet.hpp>
-#include <util/sort/introsort.hpp>
+#include <util/sort/binary_introsort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -30,7 +30,8 @@ inline void sort(const util::string_span text,
     // Sort `bucket` such that the smallest suffixes (greatest index) are
     // inserted first.
     size_t ns = duration([&]() {
-        util::sort::introsort(bucket, std::greater<suffix_index_type>());
+        using util::sort::binary_introsort::sort;
+        sort(bucket, std::greater<suffix_index_type>());
     });
     logger::get() << "Initial sorting took " << ns << "ns.\n";
 
