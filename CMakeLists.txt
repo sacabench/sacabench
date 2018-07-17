@@ -70,5 +70,6 @@ add_subdirectory(external/reference_impls/saca_k)
 add_subdirectory(sacabench)
 add_subdirectory(test)
 add_subdirectory(bigtest)
+add_subdirectory(external/ips4o)
 
 ################################################################################
