@@ -45,13 +45,6 @@ public:
             DCHECK_EQ(text.size(), out_sa.size());
             // Create container for l/s types
             tdc::StatPhase dss("Initialize DivSufSort");
-            auto sa_type_container = util::make_container<bool>(text.size());
-            // auto sa_types = util::span<bool>(sa_type_container);
-
-            // Compute l/s types for given text; TODO: Replace with version from
-            // 'extract_types.hpp' after RTL-Insertion was merged.
-            get_types_tmp<sa_index>(text, sa_type_container);
-
             // Initialize buckets: alphabet_size slots for l-buckets,
             // alphabet_size² for s-buckets
 
@@ -91,13 +84,12 @@ public:
                     rms_suf, alphabet.max_character_value(), bkts);
 
                 // Compute ISA
-
+                dss.split("Sort RMS-Suffixes");
                 compute_initial_isa<sa_index>(rms_suf.relative_indices,
                                               rms_suf.partial_isa);
 
                 sort_rms_suffixes<sa_index>(rms_suf);
-                sort_rms_indices_to_order<sa_index>(rms_suf, rms_count,
-                                                    sa_type_container, out_sa);
+                sort_rms_indices_to_order<sa_index>(rms_suf, rms_count, out_sa);
 
                 // Check if order correct
                 // check_sorted_rms(text, rms_suf.relative_indices);
