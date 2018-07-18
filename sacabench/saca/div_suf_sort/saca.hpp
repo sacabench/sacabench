@@ -85,11 +85,6 @@ public:
 
             if (rms_count > 0) {
                 insert_into_buckets<sa_index>(rms_suf, bkts);
-                check_rel_ind(rms_suf.relative_indices,
-                              rms_suf.absolute_indices);
-                check_rms_buckets(text, rms_suf.relative_indices,
-                                  rms_suf.absolute_indices, bkts,
-                                  alphabet.max_character_value());
                 dss.split("Sort RMS-Substrings");
                 // auto substrings = extract_rms_substrings(rms_suf);
                 sort_rms_substrings<sa_index>(
@@ -110,7 +105,7 @@ public:
                     rms_count, bkts, alphabet.max_character_value(), out_sa);
             }
             dss.split("Inducing L/S-Suffixes");
-            induce_s_suffixes<sa_index>(text, sa_type_container, bkts, out_sa,
+            induce_s_suffixes<sa_index>(text, bkts, out_sa,
                                         alphabet.max_character_value());
 
             induce_l_suffixes<sa_index>(text, bkts, out_sa);
