@@ -158,7 +158,7 @@ private:
                 input_text.slice(b + common_prefix_length);
             return as < bs;
         };
-        util::sort::ternary_quicksort::ternary_quicksort(bucket,
+        util::sort::binary_introsort::sort(bucket,
                                                          compare_suffix);
         DCHECK(is_partially_suffix_sorted(bucket, input_text));
     }

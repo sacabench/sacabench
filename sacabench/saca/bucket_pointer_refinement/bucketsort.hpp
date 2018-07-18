@@ -7,10 +7,11 @@
 #pragma once
 
 #include "util/assertions.hpp"
-#include "util/kd_array.hpp"
 #include <math.h>
 
-namespace sacabench::util::sort {
+namespace sacabench::bucket_pointer_refinement::sort {
+
+using namespace util;
 
 /**\brief Holds information about a bucket inside the suffix array.
  *
@@ -93,7 +94,8 @@ inline container<bucket> get_buckets(const span_type input,
 
     return buckets;
 }
-/**\brief Determines sizes and positions of buckets containing suffixes
+
+/**\brief Determines positions of buckets containing suffixes
  *  which are equal to a given offset.
  * \param input Input text (of length n) whose suffixes are to be sorted.
  *  The input text has to use an effective alphabet with characters
@@ -103,22 +105,21 @@ inline container<bucket> get_buckets(const span_type input,
  * \param depth The offset which is used to match suffixes into buckets.
  *  Suffixes with equal length-depth-prefix are matched to the same bucket.
  *
- * \return Size and starting position for each bucket in the suffix array.
+ * \return Starting position for each bucket in the suffix array as well as
+ *  a pseudo starting position for one extra bucket at the end of the SA.
  */
-template <typename span_type, size_t depth>
-inline kd_array<bucket, depth>
-get_buckets_kd(const span_type input, const std::size_t max_character_code) {
+template <typename sa_index>
+inline container<sa_index>
+get_lightweight_buckets(const string_span input,
+                        const std::size_t max_character_code,
+                        const std::size_t depth) {
     DCHECK_GE(depth, 1);
 
     const std::size_t length = input.size();
     const std::size_t alphabet_size = max_character_code + 1;
-    const std::size_t bucket_count = pow(alphabet_size, depth);
-    std::array<size_t, depth> dimensions;
-    for (size_t dim = 0; dim < depth; ++dim) {
-        dimensions[dim] = alphabet_size;
-    }
+    const std::size_t bucket_count = pow(alphabet_size, depth) + 1;
 
-    kd_array<bucket, depth> buckets(std::move(dimensions));
+    auto buckets = make_container<sa_index>(bucket_count);
 
     /*
      * first step: count bucket sizes
@@ -141,7 +142,7 @@ get_buckets_kd(const span_type input, const std::size_t max_character_code) {
         code %= code_modulo;
         code *= alphabet_size;
         code += input[index + depth - 1];
-        ++buckets.get_mut_direct_unsafe(code).count;
+        ++buckets[code];
     }
 
     // same as above, but for substrings containing at least one $
@@ -151,7 +152,7 @@ get_buckets_kd(const span_type input, const std::size_t max_character_code) {
         code *= alphabet_size;
         // the index overlaps input bounds, therefore we assume to add
         // a 0.
-        ++buckets.get_mut_direct_unsafe(code).count;
+        ++buckets[code];
     }
 
     /*
@@ -159,10 +160,13 @@ get_buckets_kd(const span_type input, const std::size_t max_character_code) {
      */
 
     // calculate positions for all buckets
+    size_t next_bucket_start = buckets[0];
+    size_t current_bucket_size = 0;
+    buckets[0] = 0;
     for (size_t index = 1; index < bucket_count; ++index) {
-        buckets.get_mut_direct_unsafe(index).position =
-            buckets.get_mut_direct_unsafe(index - 1).position +
-            buckets.get_mut_direct_unsafe(index - 1).count;
+        current_bucket_size = buckets[index];
+        buckets[index] = next_bucket_start;
+        next_bucket_start += current_bucket_size;
     }
 
     return buckets;
@@ -186,11 +190,11 @@ get_buckets_kd(const span_type input, const std::size_t max_character_code) {
  *
  * \return Size and starting position for each bucket in the suffix array.
  */
-template <typename index_type>
-inline container<bucket>
+template <typename sa_index>
+__attribute__((noinline)) container<bucket>
 bucketsort_presort(const string_span input,
                    const std::size_t max_character_code,
-                   const std::size_t depth, span<index_type> sa) {
+                   const std::size_t depth, span<sa_index> sa) {
     DCHECK_EQ(input.size(), sa.size());
     DCHECK_LE(depth, sa.size());
 
@@ -213,18 +217,18 @@ bucketsort_presort(const string_span input,
     std::size_t code = initial_code;
 
     // insert entries in suffix array
-    for (index_type index = 0; index < length - depth + 1; ++index) {
+    for (std::size_t index = 0; index < length - depth + 1; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
-        code += input[static_cast<size_t>(index) + depth - 1];
+        code += input[index + depth - 1];
         bucket& current_bucket = buckets[code];
         sa[current_bucket.position] = index;
         ++current_bucket.position;
     }
 
     // same as above, but for substrings containing at least one $
-    for (index_type index = length - depth + 1; index < length; ++index) {
+    for (std::size_t index = length - depth + 1; index < length; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
@@ -251,29 +255,32 @@ bucketsort_presort(const string_span input,
  * \param depth The offset which is used to match suffixes into buckets.
  *  Suffixes with equal length-depth-prefix are matched to the same bucket.
  * \param sa A container (of length n) for the suffix array.
+ * \param bptr A container (of length n) for suffix to bucket mapping
  *
  * Bucketsort sorts all suffixes of the input text into buckets within the
  * suffix array. After a call of the function, the suffix array contains all
  * buckets in sorted ascending order. The suffixes within each bucket are
  * not necessarily sorted.
+ * Additionally fills the bptr with determined suffix positions.
  *
- * \return Size and starting position for each bucket in the suffix array.
+ * \return Starting position for each bucket in the suffix array and
+ *  starting position of a pseudo bucket at the end of the SA.
  */
-template <typename index_type, size_t depth>
-inline kd_array<bucket, depth>
-bucketsort_presort_kd(const string_span input,
-                      const std::size_t max_character_code,
-                      span<index_type> sa) {
+template <typename sa_index>
+__attribute__((noinline)) container<sa_index>
+bucketsort_presort_lightweight(const string_span input,
+                               const std::size_t max_character_code,
+                               const std::size_t depth, span<sa_index> sa,
+                               container<sa_index>& bptr) {
     DCHECK_EQ(input.size(), sa.size());
     DCHECK_LE(depth, sa.size());
 
-    auto buckets =
-        get_buckets_kd<string_span, depth>(input, max_character_code);
+    auto buckets = get_lightweight_buckets<sa_index>(input, max_character_code, depth);
+    auto buckets_tmp = buckets.make_copy();
 
     const std::size_t length = input.size();
     // the real alphabet includes $, so it has one more character
     const std::size_t alphabet_size = max_character_code + 1;
-    const std::size_t bucket_count = pow(alphabet_size, depth);
 
     // calculate modulo for code computation
     const std::size_t code_modulo = pow(alphabet_size, depth - 1);
@@ -288,99 +295,29 @@ bucketsort_presort_kd(const string_span input,
     std::size_t code = initial_code;
 
     // insert entries in suffix array
-    for (index_type index = 0; index < length - depth + 1; ++index) {
+    for (size_t index = 0; index < length - depth + 1; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
-        code += input[static_cast<size_t>(index) + depth - 1];
-        bucket& current_bucket = buckets.get_mut_direct_unsafe(code);
-        sa[current_bucket.position] = index;
-        ++current_bucket.position;
+        code += input[index + depth - 1];
+        --buckets_tmp[code + 1];
+        if ((index + 2 >= length) || (input[index] < input[index + 1] &&
+                                      input[index] <= input[index + 2])) {
+            sa[buckets_tmp[code + 1]] = index;
+        }
+        bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
     }
 
     // same as above, but for substrings containing at least one $
-    for (index_type index = length - depth + 1; index < length; ++index) {
+    for (size_t index = length - depth + 1; index < length; ++index) {
         // induce code for nth suffix from (n-1)th suffix
         code %= code_modulo;
         code *= alphabet_size;
-        bucket& current_bucket = buckets.get_mut_direct_unsafe(code);
-        sa[current_bucket.position] = index;
-        ++current_bucket.position;
-    }
-
-    // determine leftmost index of each bucket
-    for (size_t index = 0; index < bucket_count; ++index) {
-        buckets.get_mut_direct_unsafe(index).position -=
-            buckets.get_mut_direct_unsafe(index).count;
+        sa[--buckets_tmp[code + 1]] = index;
+        bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
     }
 
     return buckets;
 }
 
-/// This is the recursiv helper function for the function bucket sort.
-/// Do not use this function directly, instead use
-/// void bucket_sort(container<string>& strings, size_t maxDepth,
-/// container<string>& result).
-inline void bucket_sort_recursiv(span<string const> const strings,
-                                 size_t currentDepth, size_t maxDepth,
-                                 span<string> result) {
-    DCHECK_EQ(strings.size(), result.size());
-
-    // check end of recursion
-    if (currentDepth == maxDepth) {
-        for (size_t i = 0; i < strings.size(); i++) {
-            // TODO: Is this copy needed?
-            result[i] = strings[i].make_copy();
-        }
-        return;
-    }
-    if (strings.size() == 1) {
-        // TODO: Is this copy needed?
-        result[0] = strings[0].make_copy();
-        return;
-    }
-    if (strings.size() == 0) {
-        return;
-    }
-
-    // build new buckets
-    // TODO: Don't keep alphabet size hardcoded to 256 here
-    container<std::vector<string>> newBuckets =
-        make_container<std::vector<string>>(256);
-    for (string const& currentString : strings) {
-        util::character currentChar = currentString.at(currentDepth);
-        // TODO: Is this copy needed?
-        newBuckets[currentChar].push_back(currentString.make_copy());
-    }
-
-    // new recursion
-    for (std::vector<string>& bucket : newBuckets) {
-        // Split the current result slice like this:
-        // [              result              ]
-        // =>
-        // [ result_for_this_bucket ][ result ]
-        // |-     bucket.size()    -|
-
-        auto result_for_this_bucket = result.slice(0, bucket.size());
-        result = result.slice(bucket.size());
-
-        bucket_sort_recursiv(bucket, currentDepth + 1, maxDepth,
-                             result_for_this_bucket);
-    }
-}
-
-/**\brief Sorts the given strings to a given number of chars.
- * \param strings The strings to be sorted.
- * \param maxDepth The number of chars until which the strings will be sorted.
- * \param result The place in which the sorted strings will be saved.
- *
- * Bucketsort sorts the given strings by placing them into buckets with the same
- * prefix. The result contains all buckets in sorted ascending order. The
- * strings within each bucket are not necessarily sorted.
- */
-inline void bucket_sort(span<string const> const strings, size_t maxDepth,
-                        span<string> result) {
-    DCHECK_EQ(strings.size(), result.size());
-    bucket_sort_recursiv(strings, 0, maxDepth, result);
-}
 } // namespace sacabench::util::sort
