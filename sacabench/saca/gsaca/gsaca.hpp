@@ -118,7 +118,7 @@ namespace sacabench::gsaca {
             sacabench::util::container<sa_index> ISA;
             sacabench::util::container<sa_index> PREV;
             sacabench::util::container<sa_index> GLINK;
-            GSIZE_BOOL<sa_index> GSIZE;
+            GSIZE_LIST<sa_index> GSIZE;
             sa_index group_start = 0;
             sa_index group_end = 0;
         };
