@@ -27,7 +27,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     CLI::App app{"CLI for SACABench."};
     app.require_subcommand();
-    app.set_failure_message(CLI::FailureMessage::help);
+    app.failure_message(CLI::FailureMessage::help);
 
     CLI::App& list =
         *app.add_subcommand("list", "List all implemented algorithms.");
@@ -54,6 +54,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     uint32_t repetition_count = 1;
     bool plot = false;
     {
+        construct.set_config("--config", "",
+                             "Read an config file for CLI args");
         construct.add_option("algorithm", algorithm, "Which algorithm to run.")
             ->required();
         construct
@@ -109,14 +111,17 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     CLI::App& batch = *app.add_subcommand(
         "batch", "Measure runtime and memory usage for all algorithms.");
     {
+        batch.set_config("--config", "", "Read an config file for CLI args");
+
         batch
             .add_option("input", input_filename,
                         "Path to input file, or - for STDIN.")
             ->required();
         batch.add_flag("-c,--check", check_sa, "Check the constructed SA.");
-        batch.add_option("-b,--benchmark", benchmark_filename,
-                         "Record benchmark and output as JSON. Takes path "
-                         "to output file, or - for STDOUT");
+        auto b_opt =
+            batch.add_option("-b,--benchmark", benchmark_filename,
+                             "Record benchmark and output as JSON. Takes path "
+                             "to output file, or - for STDOUT");
         batch.add_flag("-f,--force", force_overwrite,
                        "Overwrite existing files instead of raising an error.");
         batch.add_option("-m,--minimum_sa_bits", sa_minimum_bits,
@@ -130,11 +135,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
-        CLI::Option* wlist = batch.add_option("--whitelist", whitelist,
-                         "Execute only specific algorithms");
-        batch.add_option("--blacklist", blacklist,
-                         "Blacklist algorithms from execution")->excludes(wlist);
-        batch.add_flag("-z,--plot", plot, "Plot measurements.");
+        CLI::Option* wlist = batch.add_option(
+            "--whitelist", whitelist, "Execute only specific algorithms");
+        batch
+            .add_option("--blacklist", blacklist,
+                        "Blacklist algorithms from execution")
+            ->excludes(wlist);
+        batch.add_flag("-z,--plot", plot, "Plot measurements.")->needs(b_opt);
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -402,7 +409,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         for (const auto& algo : saca_list) {
             if (!whitelist.empty()) {
                 if (std::find(whitelist.begin(), whitelist.end(),
-                            algo->name().data()) == whitelist.end()) {
+                              algo->name().data()) == whitelist.end()) {
                     continue;
                 }
             }
@@ -487,6 +494,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             r_command += " 1 " + input_filename + " " +
                          std::to_string(text_size) +
                          "'  ..//stats/stat_plot.R test.Rout";
+            // TODO: Check return value
             int i = system(r_command.c_str());
             (void)i; // suppress  warning
             std::cout << "saved as: " << benchmark_filename << ".pdf"
@@ -495,6 +503,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             r_command += " 0 " + input_filename + " " +
                          std::to_string(text_size) +
                          "'  ..//stats/stat_plot.R test.Rout";
+            // TODO: Check return value
             int i = system(r_command.c_str());
             (void)i; // suppress  warning
             std::cout << "saved as: " << benchmark_filename << ".pdf"
