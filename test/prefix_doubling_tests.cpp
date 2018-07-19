@@ -4,16 +4,14 @@
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
 
-#include <gtest/gtest.h>
 #include "test/saca.hpp"
+#include <gtest/gtest.h>
 
 #include <saca/prefix_doubling.hpp>
 
 using namespace sacabench::prefix_doubling;
 
-TEST(prefix_doubling, naive) {
-    test::saca_corner_cases<prefix_doubling>();
-}
+TEST(prefix_doubling, naive) { test::saca_corner_cases<prefix_doubling>(); }
 
 TEST(prefix_doubling, discarding_2) {
     test::saca_corner_cases<prefix_discarding_2>();
@@ -32,10 +30,8 @@ struct prefix_doubling_4 {
     static void construct_sa(sacabench::util::string_span text,
                              sacabench::util::alphabet const&,
                              sacabench::util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 4>::doubling(text, out_sa);
+        prefix_doubling_impl<sa_index, 4, ips4o_sorter>::doubling(text, out_sa);
     }
 };
 
-TEST(prefix_doubling, naive4) {
-    test::saca_corner_cases<prefix_doubling_4>();
-}
+TEST(prefix_doubling, naive4) { test::saca_corner_cases<prefix_doubling_4>(); }
