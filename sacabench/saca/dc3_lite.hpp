@@ -136,10 +136,11 @@ namespace sacabench::dc3_lite {
                 for (size_t i = 0; i < tmp_1.size(); ++i) { text_1[i] = tmp_1[i]; }
                 for (size_t i = 0; i < tmp_2.size(); ++i) { text_1[start_pos_mod_2+i] = tmp_2[i]; }
                 
-                //Next step: Induce SA_0 with SA_12
-                phase.split("Induce SA_0");
+                //Calculate ISA_12
                 for (size_t i = 0; i < u_1.size(); ++i) { u_1[v_1[i]] = i; }
                 
+                //Induce SA_0 with SA_12
+                phase.split("Induce SA_0");
                 auto text_0 = new_text.slice(0, end_pos_of_0);
                 auto v_0 = util::span<sa_index>(out_sa).slice(0, end_pos_of_0);
                 util::induce_sa_dc<sa_index>(text_0, u_1, v_0);

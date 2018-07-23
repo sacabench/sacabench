@@ -85,18 +85,30 @@ namespace sacabench::nzsufsort {
                 
                 //calculate t_12 in the begin of out_sa
                 phase.split("Calculate reduced text t_12");
-                calculate_t_12<util::character>(text, out_sa, 0, mod_1+mod_2, count_s_type_pos);
+                bool recursion = false;
+                calculate_t_12<util::character>(text, out_sa, 0, mod_1+mod_2, count_s_type_pos, recursion);
                 util::span<sa_index> t_12 = p_12;
                 
                 //calculate SA(t_12) by calling the lightweight variant of DC3
                 phase.split("Call DC3-Lite");
-                auto u = out_sa.slice(t_12.size(), 2*t_12.size());
-                auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
-                dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u, v, text.size()+1);
-                for (size_t i = 0; i < t_12.size(); ++i) {
-                    t_12[i] = v[i];
+                std::cout << "t_12: " << t_12 << std::endl;
+                if (recursion) {
+                    auto u = out_sa.slice(t_12.size(), 2*t_12.size());
+                    auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
+                    dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u, v, text.size()+1);
+                    for (size_t i = 0; i < t_12.size(); ++i) {
+                        t_12[i] = v[i];
+                    }
+                }
+                else {
+                    auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
+                    std::copy(t_12.begin(), t_12.end(), v.begin());
+                    for (size_t i = 0; i < t_12.size(); ++i) {
+                        t_12[v[i]-(sa_index)1] = i;
+                    }
                 }
                 util::span<sa_index> sa_12 = t_12;
+                std::cout << "sa_12: " << sa_12 << std::endl;
                 
                 //calculate t_0
                 phase.split("Calculate t_0");
@@ -492,7 +504,7 @@ namespace sacabench::nzsufsort {
             
             template<typename C, typename T, typename sa_index>
             static void calculate_t_12(const T& text, util::span<sa_index> out_sa, size_t start_p_12, 
-                    size_t length_p_12, size_t count_s_type_pos) {
+                    size_t length_p_12, size_t count_s_type_pos, bool& recursion) {
                 // revert p_0 and p_12 so we can access them later from left to right
                 util::span<sa_index> p_12 = out_sa.slice(start_p_12, start_p_12+length_p_12);
                 revert(p_12);
@@ -535,6 +547,7 @@ namespace sacabench::nzsufsort {
                         if (!last_t.empty()) {
                             out_sa[out_sa[last_i-1]] = rank;
                             if (comp_z_strings(last_t, curr_t)) { ++rank; }
+                            else { recursion = true; }
                         }
                         last_t = curr_t;
                         last_i = i;

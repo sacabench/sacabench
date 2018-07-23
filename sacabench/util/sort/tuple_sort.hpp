@@ -201,4 +201,55 @@ void radixsort_with_key(S& input, S& result, const size_t radix_size,
         std::copy(result.begin(), result.end(), input.begin());
     }
 }
+
+template <typename S, typename Key>
+void msd_radixsort_with_key(S& input, S& result, const size_t radix_size, 
+        const size_t index, const size_t max_index, Key key_function) {
+    DCHECK_MSG(input.size() == result.size(),
+               "input must have the same length as result");
+               
+    auto buckets = util::container<size_t>(radix_size);
+        
+    // generate Buckets
+    for(size_t i = 0; i < input.size(); ++i){
+        ++buckets[key_function(input[i], index)];
+    }
+    size_t sum = 0;
+    for(size_t i = 0; i < buckets.size(); ++i){
+        sum += buckets[i];
+        buckets[i] = sum-buckets[i];
+    }
+    
+    // partition input elements by key
+    for(size_t i = 0; i < input.size(); ++i){
+        result[buckets[key_function(input[i], index)]++] = input[i];
+    }
+    
+    if (index == max_index) { return; }
+    
+    // collect elements
+    std::copy(result.begin(), result.end(), input.begin());
+    
+    // recurse when bucket size > 1
+    for (size_t i = 0; i < buckets.size()-1; i++) {
+        if (buckets[i+1]-buckets[i] > 1) {
+            auto input_rec = input.slice(buckets[i], buckets[i+1]);
+            auto result_rec = result.slice(buckets[i], buckets[i+1]);
+            msd_radixsort_with_key(input_rec, result_rec, radix_size,
+                index+1, max_index, key_function);
+        }
+    }
+    if (input.size()-buckets[radix_size] > 1) {
+        auto input_rec = input.slice(buckets[radix_size], input.size());
+        auto result_rec = result.slice(buckets[radix_size], input.size());
+        msd_radixsort_with_key(input_rec, result_rec, radix_size,
+            index+1, max_index, key_function);
+    }
+}
+
+template <typename S, typename Key>
+void radixsort_for_big_alphabet(S& input, S& buckets, const size_t max_index, 
+        Key key_function) {
+            
+}
 } // namespace sacabench::util

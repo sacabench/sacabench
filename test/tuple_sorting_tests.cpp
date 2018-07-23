@@ -131,3 +131,32 @@ TEST(tuple_sort, triple_with_key) {
         ASSERT_EQ(result_12[i], expected[i]);
     }
 }
+
+TEST(tuple_sort, msd_triple_with_key) {
+    using namespace sacabench::util;
+    
+    sacabench::util::container<size_t> input_string = {3, 1, 1, 2, 1, 3, 3,
+            1, 1, 2, 1, 3, 1, 1};
+            
+    //positions i mod 3 != 0 of input_string
+    sacabench::util::container<size_t> positions_mod_12 = {1,2,4,5,7,8,10,11,13}; 
+    //container for sorted indices
+    sacabench::util::container<size_t> result_12 = sacabench::util::container<size_t>(positions_mod_12.size()); 
+    
+    auto key_function = [&](size_t i, size_t p) {
+        if (i+p < input_string.size()) {
+            return input_string[i+p];
+        }
+        else { return (size_t)0; }
+    };
+    
+    radixsort_with_key(positions_mod_12, result_12, 4, 2, key_function);
+    
+    //expected values for induced SA with DC
+    auto expected = sacabench::util::container<size_t> {13, 1, 7, 2, 8, 10, 4, 11, 5};
+    
+    //compare results with expected values
+    for(size_t i = 0; i < result_12.size(); ++i){
+        ASSERT_EQ(result_12[i], expected[i]);
+    }
+}
