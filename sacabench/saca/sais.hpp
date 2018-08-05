@@ -99,10 +99,8 @@ public:
     static void run_saca(T s, span<sa_index> SA, size_t K) {
 
         container<sa_index> buckets = make_container<sa_index>(K);
-
         // bit vector for now and on the fly computation later
         container<bool> t = make_container<bool>(SA.size());
-
 
         compute_types(t, s);
 
@@ -150,7 +148,7 @@ public:
             for (size_t j = 0; j < s.size(); j++) {
                 if (previous_LMS == -1 ||
                     s.at(current_LMS + j) != s.at(previous_LMS + j) ||
-                    get_type(s, current_LMS + j) != get_type(s, previous_LMS + j)) {
+                    t[current_LMS + j] != t[previous_LMS + j]) {
                     diff = true;
                     break;
                 } else if (j > 0 &&
