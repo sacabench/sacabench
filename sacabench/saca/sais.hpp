@@ -150,7 +150,7 @@ public:
             for (size_t j = 0; j < s.size(); j++) {
                 if (previous_LMS == -1 ||
                     s.at(current_LMS + j) != s.at(previous_LMS + j) ||
-                    t[current_LMS + j] != t[previous_LMS + j]) {
+                    get_type(s, current_LMS + j) != get_type(s, previous_LMS + j)) {
                     diff = true;
                     break;
                 } else if (j > 0 &&
