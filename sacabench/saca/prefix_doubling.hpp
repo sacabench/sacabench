@@ -31,23 +31,20 @@ struct std_sorting_algorithm {
     }
 };
 
-template <size_t a_size>
+template <typename sa_index, size_t a_size>
 struct a_size_helper_type {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return util::powi(a_size, k);
     }
-    template <typename T>
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
-                                                   T const& b) {
-        size_t const k_length = pow_a_k(k);
+    /*
+    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, sa_index a,
+                                                   sa_index b) {
+        uint64_t const k_length = pow_a_k(k);
 
-        size_t const ai = a.idx();
-        size_t const bi = b.idx();
-
-        size_t const high_a = ai % k_length;
-        size_t const high_b = bi % k_length;
-        size_t const low_a = ai / k_length;
-        size_t const low_b = bi / k_length;
+        sa_index const high_a = a % k_length;
+        sa_index const high_b = b % k_length;
+        sa_index const low_a = a / k_length;
+        sa_index const low_b = b / k_length;
 
         bool const high_diff = high_a < high_b;
         bool const high_eq = high_a == high_b;
@@ -55,46 +52,58 @@ struct a_size_helper_type {
 
         return high_diff | (high_eq & low_diff);
     }
+    */
 };
 
-template <>
-struct a_size_helper_type<2> {
+template <typename sa_index>
+struct a_size_helper_type<sa_index, 2> {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << k;
     }
-    template <typename T>
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
-                                                   T const& b) {
-        auto const anti_k = util::bits_of<size_t> - k;
-
-        size_t const ai = a.idx();
-        size_t const bi = b.idx();
-
-        size_t ar = (ai << anti_k) | (ai >> k);
-        size_t br = (bi << anti_k) | (bi >> k);
-
-        return ar < br;
+    inline SB_FORCE_INLINE static sa_index rotate(uint64_t const k,
+                                                  sa_index v) {
+        auto const anti_k = util::bits_of<sa_index> - k;
+        return (v << anti_k) | (v >> k);
+    }
+    inline SB_FORCE_INLINE static sa_index unrotate(uint64_t const k,
+                                                    sa_index v) {
+        auto const anti_k = util::bits_of<sa_index> - k;
+        return (v >> anti_k) | (v << k);
+    }
+    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k,
+                                                     sa_index idx) {
+        sa_index k_mask = pow_a_k(k) - 1;
+        return (idx & k_mask) >> (k - 1);
     }
 };
 
-template <>
-struct a_size_helper_type<4> {
+template <typename sa_index>
+struct a_size_helper_type<sa_index, 4> {
     inline SB_FORCE_INLINE static uint64_t pow_a_k(uint64_t k) {
         return 1ull << (k << 1);
     }
-    template <typename T>
-    inline SB_FORCE_INLINE static bool idx_compare(uint64_t const k, T const& a,
-                                                   T const& b) {
-        return a_size_helper_type<2>::idx_compare(k << 1, a, b);
+    inline SB_FORCE_INLINE static sa_index rotate(uint64_t const k,
+                                                  sa_index v) {
+        return a_size_helper_type<sa_index, 2>::rotate(k << 1, v);
+    }
+    inline SB_FORCE_INLINE static sa_index unrotate(uint64_t const k,
+                                                    sa_index v) {
+        return a_size_helper_type<sa_index, 2>::unrotate(k << 1, v);
+    }
+    inline SB_FORCE_INLINE static size_t index_phase(uint64_t const k,
+                                                     sa_index idx) {
+        sa_index k_mask = pow_a_k(k) - 1;
+        return (idx & k_mask) >> ((k - 1) << 1);
     }
 };
 
 template <typename sa_index, size_t a_size,
           typename sorting_algorithm = std_sorting_algorithm>
 struct prefix_doubling_impl {
-    using a_size_helper = a_size_helper_type<a_size>;
+    using a_size_helper = a_size_helper_type<sa_index, a_size>;
     static constexpr bool USE_WORDPACKING = true;
     static constexpr size_t WP_SIZE = 4;
+    static constexpr bool HAS_SCRATCH_2 = a_size > 2;
 
     /// The type to use for lexicographical sorted "names".
     /// For discarding, is required to have a width of at least 1 bit more than
@@ -110,22 +119,41 @@ struct prefix_doubling_impl {
         return a;
     }
 
+    inline static sa_index rotate(size_t k, sa_index v) {
+        return a_size_helper::rotate(k, v);
+    }
+
+    inline static sa_index unrotate(size_t k, sa_index v) {
+        return a_size_helper::unrotate(k, v);
+    }
+
     class hybrid_tuple {
         std::array<sa_index, a_size + 1> m_data;
 
     public:
         inline hybrid_tuple() = default;
 
+        inline sa_index& idx() { return m_data[a_size]; }
+        inline name_type& name() { return m_data[0]; }
+        inline name_type& scratch1() { return m_data[1]; }
+        inline name_type& scratch2() {
+            DCHECK_GT(a_size, 2);
+            return m_data[2];
+        }
         inline util::span<name_type> names() {
             return util::span<name_type>(m_data).slice(0, a_size);
         }
-        inline name_type& name() { return m_data[0]; }
-        inline sa_index& idx() { return m_data[a_size]; }
+
+        inline sa_index const& idx() const { return m_data[a_size]; }
+        inline name_type const& name() const { return m_data[0]; }
+        inline name_type const& scratch1() const { return m_data[1]; }
+        inline name_type const& scratch2() const {
+            DCHECK_GT(a_size, 2);
+            return m_data[2];
+        }
         inline util::span<name_type const> names() const {
             return util::span<name_type const>(m_data).slice(0, a_size);
         }
-        inline name_type const& name() const { return m_data[0]; }
-        inline sa_index const& idx() const { return m_data[a_size]; }
     };
 
     /// Hybrid array. Each entry stores either a `(atuple, idx)` or a `(name,
@@ -153,7 +181,8 @@ struct prefix_doubling_impl {
     /// returning true if all names are unique.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static bool rename_inplace(util::span<hybrid_tuple> H) {
+    inline static bool rename_inplace_and_rotate_idx(util::span<hybrid_tuple> H,
+                                                     size_t k) {
         // A name is determined as follows:
         // `last_pair` contains the last `S` tuple looked at, or
         // ($, $) initially.
@@ -196,6 +225,7 @@ struct prefix_doubling_impl {
                 only_unique = false;
             }
             H[i].name() = name;
+            H[i].idx() = rotate(k, unrotate(k - 1, H[i].idx()));
         }
 
         return only_unique;
@@ -253,7 +283,7 @@ struct prefix_doubling_impl {
             }
 
             h.s_names(i).copy_from(p);
-            h.s_idx(i) = i;
+            h.s_idx(i) = rotate(1 + wp_initial_loop_offset - 1, i);
         }
 
         // We iterate up to ceil(log_a(N)) times - but because we
@@ -280,7 +310,7 @@ struct prefix_doubling_impl {
             // loop_phase.split("Rename S tuples");
 
             // Rename the S tuples into P
-            bool only_unique = rename_inplace(h.hybrids());
+            bool only_unique = rename_inplace_and_rotate_idx(h.hybrids(), k);
 
             // loop_phase.split("Check unique");
 
@@ -291,7 +321,7 @@ struct prefix_doubling_impl {
                 phase.log("prefix_size", k_length);
 
                 for (size_t i = 0; i < N; i++) {
-                    out_sa[i] = h.p_idx(i);
+                    out_sa[i] = unrotate(k, h.p_idx(i));
                 }
                 return;
             }
@@ -302,9 +332,8 @@ struct prefix_doubling_impl {
             // (i % (2**k), i / (2**k), implemented as a single
             // integer value
             sorting_algorithm::sort(
-                h.hybrids(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                    return a_size_helper::idx_compare(k, a, b);
-                });
+                h.hybrids(), [k](auto const& a, auto const& b)
+                                 SB_FORCE_INLINE { return a.idx() < b.idx(); });
 
             // loop_phase.split("Pair names");
 
@@ -312,13 +341,14 @@ struct prefix_doubling_impl {
                 auto t = make_sentinel_tuple();
                 t[0] = h.p_name(j);
 
-                size_t last_idx = h.p_idx(j);
+                auto last_idx = h.p_idx(j);
 
                 size_t trunc_size = std::min(a_size, N - j);
                 for (size_t l = 1; l < trunc_size; l++) {
-                    size_t const idx = h.p_idx(j + l);
+                    auto const idx = h.p_idx(j + l);
 
-                    if (idx == last_idx + k_length) {
+                    if (unrotate(k, idx) ==
+                        uint64_t(unrotate(k, last_idx)) + k_length) {
                         t[l] = h.p_name(j + l);
                         last_idx = idx;
                     } else {
@@ -354,19 +384,6 @@ struct prefix_doubling_impl {
         v = v & ~unique_mask();
         DCHECK(!is_marked(v));
         return v;
-    }
-
-    /// Marks elements as not unique by setting the highest extra bit
-    inline static void mark_not_unique(util::span<hybrid_tuple> U) {
-        for (size_t i = 1; i < U.size(); i++) {
-            auto& a = U[i - 1].name();
-            auto& b = U[i].name();
-
-            if (unmarked(a) == unmarked(b)) {
-                a = marked(a);
-                b = marked(b);
-            }
-        }
     }
 
     /// Helper class to contain the logical S,U,P and F arrays.
@@ -424,52 +441,16 @@ struct prefix_doubling_impl {
             size_t m_S_end = 0;
             size_t m_F_end = 0;
 
-            template <typename V>
-            inline void debug_print_name(V const& v) {
-                std::cout << "[";
-                for (auto& e : v) {
-                    std::cout << "(" << unmarked(e.name()) << ",_," << e.idx()
-                              << "),";
-                }
-                std::cout << "]";
-            }
-            template <typename V>
-            inline void debug_print_names(V const& v) {
-                std::cout << "[";
-                for (auto& e : v) {
-                    std::cout << "(" << unmarked(e.names()[0]) << ","
-                              << unmarked(e.names()[1]) << "," << e.idx()
-                              << "),";
-                }
-                std::cout << "]";
-            }
-
             inline auto p_span() { return m_disc_h.slice(0, m_P_end); }
             inline auto s_span() { return m_disc_h.slice(m_P_end, m_S_end); }
             inline auto f_span() { return m_disc_h.slice(m_S_end, m_F_end); }
             inline auto u_span() { return m_disc_h.slice(m_U_start, m_U_end); }
 
         public:
-            inline void debug_print(util::string_span msg) {
-                /*
-                std::cout << msg << "\n  P";
-                debug_print_name(p_span());
-                std::cout << "\n  S";
-                debug_print_names(s_span());
-                std::cout << "\n  U";
-                debug_print_name(u_span());
-                std::cout << "\n  F";
-                debug_print_name(f_span());
-                std::cout << "\n\n";
-                */
-                (void)msg;
-            }
-
             inline phase_2_U2PSF_type(util::span<hybrid_tuple> disc_h,
                                       size_t F_size) {
                 m_disc_h = disc_h;
                 m_U_end = disc_h.size() - F_size;
-                debug_print("INIT"_s);
             }
 
             inline bool has_next_u_elem() { return m_U_start != m_U_end; }
@@ -481,16 +462,12 @@ struct prefix_doubling_impl {
                 size_t end = std::min(m_U_start + 1 + n, m_U_end);
                 return m_disc_h.slice(start, end);
             }
-            inline void drop_u_elem() {
-                m_U_start++;
-                debug_print("DROP"_s);
-            }
+            inline void drop_u_elem() { m_U_start++; }
             inline void append_f(sa_index name, sa_index idx) {
                 auto& new_f_elem = m_disc_h[m_F_end];
                 new_f_elem.name() = name;
                 new_f_elem.idx() = idx;
                 m_F_end++;
-                debug_print("AppF"_s);
             }
             inline void append_s(util::span<sa_index> names, sa_index idx) {
                 m_disc_h[m_F_end] = m_disc_h[m_S_end];
@@ -500,7 +477,6 @@ struct prefix_doubling_impl {
                 new_s_elem.names().copy_from(names);
                 new_s_elem.idx() = idx;
                 m_S_end++;
-                debug_print("AppS"_s);
             }
             inline void append_p(sa_index name, sa_index idx) {
                 m_disc_h[m_F_end] = m_disc_h[m_S_end];
@@ -512,7 +488,6 @@ struct prefix_doubling_impl {
                 new_p_elem.name() = name;
                 new_p_elem.idx() = idx;
                 m_P_end++;
-                debug_print("AppP"_s);
             }
             inline size_t additional_f_size() { return m_F_end - m_S_end; }
             inline size_t p_size() { return m_P_end; }
@@ -537,26 +512,194 @@ struct prefix_doubling_impl {
         }
     };
 
+    class p_bucket_sizes {
+        std::array<size_t, a_size> m_bucket_sizes;
+        bool m_finalized = false;
+
+    public:
+        inline p_bucket_sizes() { reset(); }
+        inline void reset() {
+            for (auto& e : m_bucket_sizes) {
+                e = 0;
+            }
+            m_finalized = false;
+        }
+        inline void count(size_t idx) {
+            DCHECK_EQ(m_finalized, false);
+            DCHECK_LT(idx, a_size);
+            m_bucket_sizes[idx]++;
+        }
+        inline void finalize() {
+            DCHECK_EQ(m_finalized, false);
+            for (size_t i = 1; i < a_size; i++) {
+                m_bucket_sizes[i] += m_bucket_sizes[i - 1];
+            }
+
+            for (size_t i = a_size - 1; i > 0; i--) {
+                m_bucket_sizes[i] = m_bucket_sizes[i - 1];
+            }
+            m_bucket_sizes[0] = 0;
+            m_finalized = true;
+        }
+        inline size_t insert(size_t idx) {
+            DCHECK_EQ(m_finalized, true);
+            return m_bucket_sizes[idx]++;
+        }
+    };
+
     /// Merges the (name,index) tuples from P into U,
     /// and ensures the combined U is sorted according to `k`.
     template <typename pu_type>
-    inline static void sort_U_by_index_and_merge_P_into_it(pu_type& pu,
-                                                           size_t k) {
-        // TODO: Change to just merge later
+    inline static void
+    sort_U_by_index_and_merge_P_into_it(pu_type& pu, size_t k,
+                                        p_bucket_sizes const& Pbs) {
+        // Bucket-sort the entries in P for the k+1 order
+        {
+            auto P = pu.P();
 
-        // Sort <U?> by its i position mapped to the tuple
-        // (i % (2**k), i / (2**k), implemented as a single
-        // integer value
-        sorting_algorithm::sort(
-            pu.PU(), [k](auto const& a, auto const& b) SB_FORCE_INLINE {
-                return a_size_helper::idx_compare(k, a, b);
-            });
+            auto merge = [=](auto assign) {
+                auto bs = Pbs;
+                for (size_t i = 0; i < P.size(); i++) {
+                    auto idx = a_size_helper::index_phase(k, P[i].idx());
+                    assign(P[bs.insert(idx)], P[i]);
+                }
+            };
+
+            if constexpr (HAS_SCRATCH_2) {
+                merge([](auto& dst, auto& src) {
+                    dst.scratch1() = src.name();
+                    dst.scratch2() = src.idx();
+                });
+
+                for (size_t i = 0; i < P.size(); i++) {
+                    P[i].idx() = rotate(k, P[i].scratch2());
+                    P[i].name() = P[i].scratch1();
+                }
+            } else {
+                merge(
+                    [](auto& dst, auto& src) { dst.scratch1() = src.name(); });
+                merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
+
+                for (size_t i = 0; i < P.size(); i++) {
+                    P[i].idx() = rotate(k, P[i].name());
+                    P[i].name() = P[i].scratch1();
+                }
+            }
+        }
+
+        // Sort U
+        sorting_algorithm::sort(pu.U(), [](auto const& a, auto const& b) {
+            return a.idx() < b.idx();
+        });
+
+        // Merge the adjacent P and U arrays in place
+        {
+            auto PU = pu.PU();
+            size_t const p_end = pu.P().size();
+            size_t const u_end = PU.size();
+
+            auto merge = [PU, p_end, u_end](auto assign) {
+                size_t pi = 0;
+                size_t ui = p_end;
+
+                size_t i = 0;
+                while ((pi < p_end) && (ui < u_end)) {
+                    if (PU[pi].idx() < PU[ui].idx()) {
+                        assign(PU[i++], PU[pi++]);
+                    } else {
+                        assign(PU[i++], PU[ui++]);
+                    }
+                }
+                while (pi < p_end) {
+                    assign(PU[i++], PU[pi++]);
+                }
+                while (ui < u_end) {
+                    assign(PU[i++], PU[ui++]);
+                }
+            };
+
+            // For a_size = 2, we only have a single field as scratch space,
+            // so we need to run the merge step twice.
+            // for a_size > 2, we have two free fields, and can do it in one
+            // iteration.
+            if constexpr (HAS_SCRATCH_2) {
+                merge([](auto& dst, auto& src) {
+                    dst.scratch1() = src.name();
+                    dst.scratch2() = src.idx();
+                });
+
+                for (size_t i = 0; i < PU.size(); i++) {
+                    PU[i].idx() = unrotate(k, PU[i].scratch2());
+                    PU[i].name() = PU[i].scratch1();
+                }
+            } else {
+                merge(
+                    [](auto& dst, auto& src) { dst.scratch1() = src.name(); });
+                merge([](auto& dst, auto& src) { dst.name() = src.idx(); });
+
+                for (size_t i = 0; i < PU.size(); i++) {
+                    PU[i].idx() = unrotate(k, PU[i].name());
+                    PU[i].name() = PU[i].scratch1();
+                }
+            }
+        }
+    }
+
+    inline static void
+    rename_inplace_and_mark_non_unique(util::span<hybrid_tuple> H) {
+        // A name is determined as follows:
+        // `last_pair` contains the last `S` tuple looked at, or
+        // ($, $) initially.
+        //
+        // We iterate over all tuples in `S`, and set `name` to the current
+        // iteration index + 1 each time we see a different tuple.
+        //
+        // Since the tuple in S are sorted, `name`s are therefore always
+        // integer that sort to the same positions as their tuple would.
+        //
+        // We skip `name=0`, because we want to reserve
+        // it for the sentinel value.
+        //
+        // Example:
+        //
+        // Text: ababab$
+        // |      S            P   |
+        // | ((a, b), 0) => (1, 0) |
+        // | ((a, b), 2) => (1, 2) |
+        // | ((a, b), 4) => (1, 4) |
+        // | ((b, a), 1) => (4, 1) |
+        // | ((b, a), 3) => (4, 3) |
+        // | ((b, $), 5) => (6, 5) |
+
+        name_type name = 0;
+        auto last_pair_arr = make_sentinel_tuple();
+        auto last_pair = util::span(last_pair_arr);
+
+        for (size_t i = 0; i < H.size(); i++) {
+            bool duplicate = false;
+            auto pair = H[i].names();
+            if (pair != last_pair) {
+                name = i + 1;
+                last_pair.copy_from(pair);
+            } else {
+                duplicate = true;
+            }
+            H[i].name() = name;
+            if (duplicate) {
+                auto& a = H[i - 1].name();
+                auto& b = H[i].name();
+
+                a = marked(a);
+                b = marked(b);
+            }
+        }
     }
 
     /// Create a unique name for each S tuple.
     ///
     /// Precondition: The tuple in S are lexicographical sorted.
-    inline static void rename2_inplace(util::span<hybrid_tuple> H) {
+    inline static void
+    rename2_inplace_and_mark_non_unique(util::span<hybrid_tuple> H) {
         /// Names are formed by taking the name of the first tuple element,
         /// and adding a offset that increments if the second element changes.
         ///
@@ -575,6 +718,7 @@ struct prefix_doubling_impl {
         auto last_pair = util::span(last_pair_arr);
 
         for (size_t i = 0; i < H.size(); i++) {
+            bool duplicate = false;
             auto pair = H[i].names();
 
             if (pair[0] != last_pair[0]) {
@@ -584,9 +728,18 @@ struct prefix_doubling_impl {
             } else if (pair.slice(1) != last_pair.slice(1)) {
                 name_offset = name_counter;
                 last_pair.copy_from(pair);
+            } else {
+                duplicate = true;
             }
             H[i].name() = pair[0] + name_offset;
             name_counter += 1;
+            if (duplicate) {
+                auto& a = H[i - 1].name();
+                auto& b = H[i].name();
+
+                a = marked(a);
+                b = marked(b);
+            }
         }
     }
 
@@ -639,7 +792,7 @@ struct prefix_doubling_impl {
                 }
 
                 H[i].names().copy_from(p);
-                H[i].idx() = i;
+                H[i].idx() = rotate(1 + wp_initial_loop_offset, i);
             }
 
             // Sort the S tuples lexicographical
@@ -649,11 +802,12 @@ struct prefix_doubling_impl {
                 });
 
             // Rename the S tuples into U
-            rename_inplace(H);
+            rename_inplace_and_mark_non_unique(H);
         }
 
         size_t P_size = 0;
         size_t F_size = 0;
+        auto Pbs = p_bucket_sizes();
 
         // We iterate up to ceil(log_a(N)) times - but because we
         // always have a break condition in the loop body,
@@ -675,11 +829,13 @@ struct prefix_doubling_impl {
                 auto UP = disc_h.phase_1_PU(P_size, F_size);
 
                 // Mark all not unique names in U by setting their extra bit.
-                mark_not_unique(UP.U());
+                // NB: Happens automatically during renaming now.
+                // mark_not_unique(UP.U());
 
                 // Merge the previous unique names from P
                 // into U and sort them by index.
-                sort_U_by_index_and_merge_P_into_it(UP, k);
+                sort_U_by_index_and_merge_P_into_it(UP, k, Pbs);
+                Pbs.reset();
             }
 
             auto U2PSF = disc_h.phase_2_U2PSF(F_size);
@@ -688,14 +844,13 @@ struct prefix_doubling_impl {
             // or to F or P.
             size_t count = 0;
             while (U2PSF.has_next_u_elem()) {
-                U2PSF.debug_print("LOOP"_s);
                 // Get the name at U[j], and check if its unique,
                 // while also removing the extra bit in any case.
                 auto const& next_u_elem = U2PSF.get_next_u_elem();
 
                 name_type c = unmarked(next_u_elem.name());
                 bool const is_uniq = !is_marked(next_u_elem.name());
-                size_t const i = next_u_elem.idx();
+                auto const i = next_u_elem.idx();
 
                 if (is_uniq) {
                     U2PSF.drop_u_elem();
@@ -706,6 +861,8 @@ struct prefix_doubling_impl {
                     } else {
                         // partially discard tuple
                         U2PSF.append_p(c, i);
+
+                        Pbs.count(a_size_helper::index_phase(k + 1, i));
                     }
                     count = 0;
                 } else {
@@ -718,10 +875,11 @@ struct prefix_doubling_impl {
                         auto neighbor_names =
                             U2PSF.get_u_elems_after_next(tuple.size() - 1);
 
-                        size_t last_i = i;
+                        auto last_i = i;
                         for (size_t l = 0; l < neighbor_names.size(); l++) {
                             auto const& n = neighbor_names[l];
-                            if (n.idx() == last_i + k_length) {
+
+                            if (n.idx() == uint64_t(last_i) + k_length) {
                                 tuple[l + 1] = unmarked(n.name());
                                 last_i = n.idx();
                             } else {
@@ -731,13 +889,14 @@ struct prefix_doubling_impl {
                     }
 
                     U2PSF.drop_u_elem();
-                    U2PSF.append_s(tuple, i);
+                    U2PSF.append_s(tuple, rotate(k + 1, i));
                     count += 1;
                 }
             }
 
             F_size += U2PSF.additional_f_size();
             P_size = U2PSF.p_size();
+            Pbs.finalize();
 
             auto PSF = disc_h.phase_3_PSF(P_size, F_size);
 
@@ -770,7 +929,7 @@ struct prefix_doubling_impl {
                 });
 
             // Rename S tuple into U tuple
-            rename2_inplace(PSF.S());
+            rename2_inplace_and_mark_non_unique(PSF.S());
         }
     }
 };
