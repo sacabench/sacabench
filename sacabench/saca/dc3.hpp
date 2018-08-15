@@ -79,8 +79,6 @@ private:
             }
         }
 
-        // TODO: sort Tupels with radix_sort
-        // radix_sort(sa0_to_be_sorted, sa0);
         std::sort(triplets_12_to_be_sorted.begin(),
                   triplets_12_to_be_sorted.end());
 
@@ -103,6 +101,7 @@ private:
     static void determine_leq(const T& INPUT_STRING, const S& triplets_12,
                               L& t_12, bool& recursion, size_t alphabet_size) {
 
+        (void)alphabet_size;
         DCHECK_MSG(triplets_12.size() == t_12.size(),
                    "triplets_12 must have the same length as t_12");
 
@@ -130,7 +129,7 @@ private:
                 } else { // if lexicographical names are not uniqe set recursion
                          // = true
                     recursion = true;
-                    --alphabet_size;
+                    //--alphabet_size;
                 }
             }
         }
@@ -150,6 +149,7 @@ private:
     template <typename sa_index, bool rec, typename C, typename S>
     static void construct_sa_dc3(S& text, util::span<sa_index> out_sa,
                                  size_t alphabet_size) {
+        (void)alphabet_size;
 
         //-----------------------Phase 1------------------------------//
         tdc::StatPhase dc3("Phase 1");
@@ -172,7 +172,7 @@ private:
 
         // fill t_12 with lexicographical names
         auto span_t_12 = util::span(&t_12[0], t_12.size() - 3);
-        alphabet_size = span_t_12.size();
+        //alphabet_size = span_t_12.size();
         determine_leq<sa_index>(text, triplets_12, span_t_12, recursion,
                                 alphabet_size);
 
@@ -188,15 +188,10 @@ private:
 
         //-----------------------Phase2------------------------------//
         dc3.split("Phase 2");
-        // empty isa_12 which should be filled correctly with method
-        // determine_isa
-        auto isa_12 = sacabench::util::make_container<sa_index>(0);
 
         // if in recursion use temporary sa. Otherwise t_12
         if (recursion) {
-
-            isa_12 = sacabench::util::make_container<sa_index>(sa_12.size());
-            determine_sa(sa_12, isa_12);
+            determine_sa(sa_12, span_t_12);
 
             // index of the first value which represents the positions i mod 3 =
             // 2
@@ -205,13 +200,11 @@ private:
 
             sa_index one = 1;
             // correct the order of sa_12 with result of recursion
-            for (size_t i = 0; i < triplets_12.size(); ++i) {
-                if (i < end_of_mod_eq_1) {
-                    triplets_12[isa_12[i] - one] = 3 * i + 1;
-                } else {
-                    triplets_12[isa_12[i] - one] =
-                        3 * (i - end_of_mod_eq_1) + 2;
-                }
+            for (size_t i = 0; i < end_of_mod_eq_1; ++i) {
+                triplets_12[span_t_12[i] - one] = 3 * i + 1;
+            }
+            for (size_t i = end_of_mod_eq_1; i < triplets_12.size(); ++i) {
+                triplets_12[span_t_12[i] - one] = 3 * (i - end_of_mod_eq_1) + 2;
             }
         }
 
@@ -221,11 +214,7 @@ private:
 
         // fill sa_0 by inducing with characters at i mod 3 = 0 and ranks of
         // triplets beginning in positions i mod 3 != 0
-        if (recursion) {
-            induce_sa_dc<C, sa_index>(text, isa_12, sa_0);
-        } else {
-            induce_sa_dc<C, sa_index>(text, span_t_12, sa_0);
-        }
+        induce_sa_dc<C, sa_index>(text, span_t_12, sa_0);
 
         //-----------------------Phase 3------------------------------//
         dc3.split("Phase 3");
@@ -233,43 +222,19 @@ private:
         // merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
         if constexpr (rec) {
 
-            if (recursion) {
-                merge_sa_dc<const sa_index, sa_index>(
-                    sacabench::util::span(&text[0], text.size()), sa_0,
-                    triplets_12, isa_12, out_sa,
-                    std::less<sacabench::util::span<const sa_index>>(),
-                    [](auto a, auto b, auto c) {
-                        return get_substring_recursion<sa_index>(a, b, c);
-                    });
-            } else {
-                merge_sa_dc<const sa_index, sa_index>(
-                    sacabench::util::span(&text[0], text.size()), sa_0,
-                    triplets_12, span_t_12, out_sa,
-                    std::less<sacabench::util::span<const sa_index>>(),
-                    [](auto a, auto b, auto c) {
-                        return get_substring_recursion<sa_index>(a, b, c);
-                    });
-            }
+            merge_sa_dc<const sa_index, sa_index>(
+                sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
+                span_t_12, out_sa,
+                std::less<sacabench::util::span<const sa_index>>(),
+                [](auto a, auto b, auto c) {
+                    return get_substring_recursion<sa_index>(a, b, c);
+                });
 
         } else {
-            if (recursion) {
-                merge_sa_dc<const sacabench::util::character, sa_index>(
-                    sacabench::util::span(&text[0], text.size()), sa_0,
-                    triplets_12, isa_12, out_sa,
-                    std::less<sacabench::util::string_span>(),
-                    [](auto a, auto b, auto c) {
-                        return get_substring(a, b, c);
-                    });
-
-            } else {
-                merge_sa_dc<const sacabench::util::character, sa_index>(
-                    sacabench::util::span(&text[0], text.size()), sa_0,
-                    triplets_12, span_t_12, out_sa,
-                    std::less<sacabench::util::string_span>(),
-                    [](auto a, auto b, auto c) {
-                        return get_substring(a, b, c);
-                    });
-            }
+            merge_sa_dc<const sacabench::util::character, sa_index>(
+                sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
+                span_t_12, out_sa, std::less<sacabench::util::string_span>(),
+                [](auto a, auto b, auto c) { return get_substring(a, b, c); });
         }
     }
 
@@ -318,7 +283,6 @@ private:
         // index of first rank for triplets beginning in i mod 3 = 2
         size_t start_pos_mod_2 = isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
 
-        // TODO sort with radix sort
         auto comp = [&](size_t i, size_t j) {
             if (text[i] < text[j])
                 return true;
@@ -350,19 +314,16 @@ private:
             isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
 
         sa_index counter = 0;
-        for (size_t i = 0; i < text.size() - 2; i += 3) {
-            if (start_pos_mod_2 > i / 3) {
+        size_t i = 0;
+        for (i = 0; i < 3 * start_pos_mod_2; i += 3) {
                 sa_0_to_be_sorted[counter++] =
                     (std::tuple<C, sa_index, sa_index>(text[i], isa_12[i / 3],
-                                                       i));
-            } else {
+                                                       i));  
+        }
+        for (i = 3 * start_pos_mod_2; i < text.size() - 2; i += 3) {
                 sa_0_to_be_sorted[counter++] =
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
-            }
         }
-
-        // TODO: sort Tupels with radix_sort
-        // radix_sort(sa0_to_be_sorted, sa0);
 
         std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
