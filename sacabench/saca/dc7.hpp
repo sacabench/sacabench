@@ -72,8 +72,6 @@ private:
             }
         }
 
-        // TODO: sort Tupels with radix_sort
-        // radix_sort(sa0_to_be_sorted, sa0);
         std::sort(tuples_124_to_be_sorted.begin(),
                   tuples_124_to_be_sorted.end());
 
@@ -690,7 +688,7 @@ private:
             sa_all[i] = sa_6[j++];
         }
 
-        sort_step3<C, sa_index>(text, sa_all);
+        sort_merge_phase<C, sa_index>(text, sa_all);
 
         // shift values to merge. For example if SA_5 and SA_6 are compared,
         // the tupels with length std::get<5>(merge_table[6])=3 will be
@@ -756,7 +754,7 @@ private:
     }
 
     template <typename C, typename sa_index, typename T, typename S>
-    static void sort_step3(const T& text, S& sa_all) {
+    static void sort_merge_phase(const T& text, S& sa_all) {
 
         sa_index one = 1;
         sa_index two = 2;
