@@ -199,7 +199,7 @@ inline SB_FORCE_INLINE bool operator>=(span<T> const& lhs, span<T> const& rhs) {
 template <typename T>
 inline std::ostream& operator<<(std::ostream& out,
                                 sacabench::util::span<T> const& span) {
-    out << "{";
+    out << "[";
     bool first = true;
     for (auto const& e : span) {
         if (first) {
@@ -209,6 +209,6 @@ inline std::ostream& operator<<(std::ostream& out,
         }
         out << e;
     }
-    out << "}";
+    out << "]";
     return out;
 }
