@@ -54,12 +54,12 @@ private:
             std::tuple<C, C, C, C, C, C, C, sa_index>>(tuples_124.size());
 
         sa_index counter = 0;
-        sa_index one     = 1;
-        sa_index two     = 2;
-        sa_index three   = 3;
-        sa_index four    = 4;
-        sa_index five    = 5;
-        sa_index six     = 6;
+        sa_index one = 1;
+        sa_index two = 2;
+        sa_index three = 3;
+        sa_index four = 4;
+        sa_index five = 5;
+        sa_index six = 6;
 
         for (sa_index i = 1; i < n; ++i) {
             if (((i % 7) == 1) || ((i % 7) == 2) || ((i % 7) == 4)) {
@@ -101,7 +101,7 @@ private:
                         false);*/
     }
 
-    template<typename sa_index, typename T, typename S, typename L>
+    template <typename sa_index, typename T, typename S, typename L>
     static void determine_leq(const T& INPUT_STRING, const S& tuples_124,
                               L& t_124, const size_t& start_of_pos_2,
                               const size_t& start_of_pos_4, bool& recursion,
@@ -204,7 +204,7 @@ private:
 
         // fill t_124 with lexicographical names
         determine_leq<sa_index>(text, tuples_124, span_t_124, start_of_pos_2,
-                      start_of_pos_4, recursion, alphabet_size);
+                                start_of_pos_4, recursion, alphabet_size);
 
         util::span<sa_index> sa_124 = util::span(&out_sa[0], t_124.size() - 7);
 
@@ -322,6 +322,7 @@ private:
         //-----------------------Phase 3--------------------------------------//
         dc7.split("Phase 3");
 
+        //-------------------------with first approach------------------------//
         // merging the SA's of 7-tuples in i mod 7 = 1, 2, 4  and ranks of i mod
         // 3 = 0, 3, 5, 6
         if constexpr (rec) {
@@ -346,6 +347,33 @@ private:
                     start_of_pos_2, start_of_pos_4, out_sa);
             }
         }
+        /*
+        //------------------------with second approach------------------------//
+
+        if constexpr (rec) {
+            if (recursion) {
+                merge_sa_2<sa_index, sa_index>(
+                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, isa_124,
+                    start_of_pos_2, start_of_pos_4, out_sa);
+            } else {
+                merge_sa_2<sa_index, sa_index>(
+                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, span_t_124,
+                    start_of_pos_2, start_of_pos_4, out_sa);
+            }
+
+        } else {
+            if (recursion) {
+                merge_sa_2<sacabench::util::character, sa_index>(
+                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, isa_124,
+                    start_of_pos_2, start_of_pos_4, out_sa);
+            } else {
+                merge_sa_2<sacabench::util::character, sa_index>(
+                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, span_t_124,
+                    start_of_pos_2, start_of_pos_4, out_sa);
+            }
+        }
+
+        */
     }
 
     template <typename C, typename sa_index, typename T, typename I, typename S>
@@ -388,8 +416,6 @@ private:
                          const S& sa_3, const S& sa_5, const S& sa_6,
                          const I& isa_124, const size_t start_of_pos_2,
                          const size_t start_of_pos_4, SA& sa) {
-
-        // TODO: DCHECK_MSG(...)
 
         // shift values to merge. For example if SA_5 and SA_6 are compared,
         // the tupels with length std::get<5>(merge_table[6])=3 will be
@@ -533,7 +559,7 @@ private:
 
         // array to compare the two compared SAs
         std::array<std::vector<C>, 2> to_be_compared;
-        
+
         // Loop until the SA is filled
         for (sa_index sa_ind = 0; sa_ind < sa.size(); ++sa_ind) {
             // fill the queue with SA-numbers, which are not yet compared
@@ -617,7 +643,6 @@ private:
                 } else if (to_be_compared[0] > to_be_compared[1]) {
                     smallest = comp_2;
                 } else {
-
                     const sa_index index_1 =
                         all_sa[comp_1][counters[comp_1]] + length;
                     const sa_index index_2 =
@@ -666,6 +691,148 @@ private:
             }
             queue.pop();
             sa[sa_ind] = all_sa[smallest][counters[smallest]++];
+        }
+    }
+
+    template <typename C, typename sa_index, typename T, typename S,
+              typename S_124, typename I, typename SA>
+    static void merge_sa_2(const T& text, const S& sa_0, const S_124& sa_124,
+                           const S& sa_3, const S& sa_5, const S& sa_6,
+                           const I& isa_124, const size_t start_of_pos_2,
+                           const size_t start_of_pos_4, SA& sa) {
+
+        size_t size_sa_0 = sa_0.size();
+        size_t size_sa_124 = sa_124.size();
+        size_t size_sa_3 = sa_3.size();
+        size_t size_sa_5 = sa_5.size();
+
+        auto sa_all = sacabench::util::container<sa_index>(sa.size() + 1);
+
+        for (size_t i = 0; i < size_sa_0; ++i) {
+            sa_all[i] = sa_0[i];
+        }
+
+        size_t j = 0;
+        size_t pos_1 = size_sa_0;
+        size_t pos_2 = pos_1 + start_of_pos_2;
+        size_t pos_4 = pos_2 + size_sa_3 + start_of_pos_4 - start_of_pos_2;
+        for (size_t i = 0; i < sa_124.size(); ++i) {
+            if (sa_124[i] % 7 == 1) {
+                sa_all[pos_1++] = sa_124[i];
+            } else if (sa_124[i] % 7 == 2) {
+                sa_all[pos_2++] = sa_124[i];
+            } else {
+                sa_all[pos_4++] = sa_124[i];
+            }
+        }
+
+        j = 0;
+        for (size_t i = size_sa_0 + start_of_pos_4;
+             i < size_sa_0 + start_of_pos_4 + size_sa_3; ++i) {
+            sa_all[i] = sa_3[j++];
+        }
+
+        j = 0;
+        for (size_t i = size_sa_0 + size_sa_124 + size_sa_3;
+             i < size_sa_0 + size_sa_124 + size_sa_3 + size_sa_5; ++i) {
+            sa_all[i] = sa_5[j++];
+        }
+
+        j = 0;
+        for (size_t i = size_sa_0 + size_sa_124 + size_sa_3 + size_sa_5;
+             i < sa_all.size(); ++i) {
+            sa_all[i] = sa_6[j++];
+        }
+
+        sort_step3<C, sa_index>(text, sa_all);
+
+        // shift values to merge. For example if SA_5 and SA_6 are compared,
+        // the tupels with length std::get<5>(merge_table[6])=3 will be
+        // compared. If the tuples are the same, the ranks of the Difference
+        // Cover {1,2,4} at indexes 5+3=8 and 6+3=9 will be compared, which
+        // cannot be the same.
+        auto merge_table = sacabench::util::container<std::vector<u_int8_t>>(7);
+        merge_table[0] = {0, 1, 2, 1, 4, 4, 2};
+        merge_table[1] = {1, 0, 0, 1, 0, 3, 3};
+        merge_table[2] = {2, 0, 0, 6, 0, 6, 2};
+        merge_table[3] = {1, 1, 6, 0, 5, 6, 5};
+        merge_table[4] = {4, 0, 0, 5, 0, 4, 5};
+        merge_table[5] = {4, 3, 6, 6, 4, 0, 3};
+        merge_table[6] = {2, 3, 2, 5, 5, 3, 0};
+
+        auto same_suffixes = std::vector<std::vector<sa_index>>(1);
+        sa_index pos = 0;
+        same_suffixes[0].push_back({sa_all[0]});
+        // same_suffixes[0][0] = sa_all[0];
+        for (size_t i = 1; i < sa_all.size(); ++i) {
+            if (sacabench::util::span(&text[sa_all[i - 1]], 7) ==
+                sacabench::util::span(&text[sa_all[i]], 7)) {
+                same_suffixes[pos].push_back(sa_all[i]);
+            } else {
+                ++pos;
+                same_suffixes.push_back({sa_all[i]});
+            }
+        }
+
+        auto comp = [&](size_t i, size_t j) {
+            size_t length = merge_table[i % 7][j % 7];
+            size_t comp_pos_1;
+            size_t comp_pos_2;
+            if ((i + length) % 7 == 1) {
+                comp_pos_1 = 0;
+            } else if ((i + length) % 7 == 2) {
+                comp_pos_1 = start_of_pos_2;
+            } else
+                comp_pos_1 = start_of_pos_4;
+
+            if ((j + length) % 7 == 1) {
+                comp_pos_2 = 0;
+            } else if ((j + length) % 7 == 2) {
+                comp_pos_2 = start_of_pos_2;
+            } else
+                comp_pos_2 = start_of_pos_4;
+            return isa_124[comp_pos_1 + (i + length) / 7] <
+                   isa_124[comp_pos_2 + (j + length) / 7];
+        };
+
+        for (size_t i = 0; i < same_suffixes.size(); ++i) {
+            std::sort(same_suffixes[i].begin(), same_suffixes[i].end(), comp);
+        }
+
+        size_t counter = 0;
+        for (size_t i = 0; i < same_suffixes.size(); ++i) {
+            for (size_t j = 0; j < same_suffixes[i].size(); ++j) {
+                if (!(i == 0 && j == 0)) {
+                    sa[counter++] = same_suffixes[i][j];
+                }
+            }
+        }
+    }
+
+    template <typename C, typename sa_index, typename T, typename S>
+    static void sort_step3(const T& text, S& sa_all) {
+
+        sa_index one = 1;
+        sa_index two = 2;
+        sa_index three = 3;
+        sa_index four = 4;
+        sa_index five = 5;
+        sa_index six = 6;
+
+        auto tuples_to_be_sorted = sacabench::util::make_container<
+            std::tuple<C, C, C, C, C, C, C, sa_index>>(sa_all.size());
+
+        for (sa_index i = 0; i < sa_all.size(); ++i) {
+            tuples_to_be_sorted[i] = std::tuple<C, C, C, C, C, C, C, sa_index>(
+                text[sa_all[i]], text[sa_all[i] + one], text[sa_all[i] + two],
+                text[sa_all[i] + three], text[sa_all[i] + four],
+                text[sa_all[i] + five], text[sa_all[i] + six], sa_all[i]);
+        }
+
+        std::sort(tuples_to_be_sorted.begin(), tuples_to_be_sorted.end());
+
+        for (size_t i = 0; i < tuples_to_be_sorted.size(); ++i) {
+            sa_all[i] = std::get<7>(tuples_to_be_sorted[i]);
         }
     }
 
