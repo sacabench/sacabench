@@ -219,24 +219,21 @@ private:
         //------------------------Phase 2-------------------------------------//
         dc7.split("Phase 2");
 
-        // empty isa_124 which should be filled correctly with method
-        // determine_isa
-        sacabench::util::container<sa_index> isa_124;
-
         // if in recursion use temporary sa. Otherwise t_124
         if (recursion) {
-            isa_124 = sacabench::util::make_container<sa_index>(sa_124.size());
-            determine_sa(sa_124, isa_124);
+            determine_sa(sa_124, span_t_124);
 
             sa_index one = 1;
             // correct the order of sa_124 with result of recursion
             for (size_t i = 0; i < tuples_124.size(); ++i) {
                 if (i < start_of_pos_2) {
-                    tuples_124[isa_124[i] - one] = 7 * i + 1;
+                    tuples_124[span_t_124[i] - one] = 7 * i + 1;
                 } else if (i < start_of_pos_4) {
-                    tuples_124[isa_124[i] - one] = 7 * (i - start_of_pos_2) + 2;
+                    tuples_124[span_t_124[i] - one] =
+                        7 * (i - start_of_pos_2) + 2;
                 } else {
-                    tuples_124[isa_124[i] - one] = 7 * (i - start_of_pos_4) + 4;
+                    tuples_124[span_t_124[i] - one] =
+                        7 * (i - start_of_pos_4) + 4;
                 }
             }
         }
@@ -255,69 +252,37 @@ private:
         // empty sa_6 which should be filled correctly with method induce_sa_dc
         auto sa_6 = sacabench::util::make_container<sa_index>(length_t_6);
 
-        if (recursion) {
-            // fill sa_3 by inducing with characters at i mod 7 = 3 and ranks of
-            // tupels beginning in positions i mod 7 = 2
-            // start_pos: position, of ranks i mod 7 = 2 of t_124
-            induce_sa<C, sa_index>(text, isa_124, sa_3, start_of_pos_2 + 1, 3,
-                                   n);
+        // fill sa_3 by inducing with characters at i mod 7 = 3 and ranks of
+        // tupels beginning in positions i mod 7 = 2
+        // start_pos: position, of ranks i mod 7 = 2 of t_124
+        induce_sa<C, sa_index>(text, span_t_124, sa_3, start_of_pos_2 + 1, 3,
+                               n);
 
-            // fill sa_5 by inducing with characters at i mod 7 = 5 and ranks of
-            // tupels beginning in positions i mod 7 = 4
-            // start_pos: position, of ranks i mod 7 = 4 of t_124
-            induce_sa<C, sa_index>(text, isa_124, sa_5, start_of_pos_4 + 1, 5,
-                                   n);
+        // fill sa_5 by inducing with characters at i mod 7 = 5 and ranks of
+        // tupels beginning in positions i mod 7 = 4
+        // start_pos: position, of ranks i mod 7 = 4 of t_124
+        induce_sa<C, sa_index>(text, span_t_124, sa_5, start_of_pos_4 + 1, 5,
+                               n);
 
-            // fill sa_6 by inducing with characters at i mod 7 = 6 and ranks of
-            // tupels beginning in positions i mod 7 = 5
+        // fill sa_6 by inducing with characters at i mod 7 = 6 and ranks of
+        // tupels beginning in positions i mod 7 = 5
 
-            // empty isa which should be filled correctly with method
-            // induce_sa_dc
-            size_t length_t =
-                length_t_5 >= length_t_6 ? length_t_5 : length_t_6;
-            auto isa = sacabench::util::make_container<sa_index>(length_t);
-            util::span<sa_index> span_isa = util::span(&isa[0], length_t_5);
+        // empty isa which should be filled correctly with method
+        // induce_sa_dc
+        size_t length_t = length_t_5 >= length_t_6 ? length_t_5 : length_t_6;
+        auto isa = sacabench::util::make_container<sa_index>(length_t);
+        util::span<sa_index> span_isa = util::span(&isa[0], length_t_5);
 
-            determine_isa<sa_index>(sa_5, span_isa, 5);
-            u_int8_t start_pos = 1;
-            induce_sa<C, sa_index>(text, span_isa, sa_6, start_pos, 6, n);
+        determine_isa<sa_index>(sa_5, span_isa, 5);
+        u_int8_t start_pos = 1;
+        induce_sa<C, sa_index>(text, span_isa, sa_6, start_pos, 6, n);
 
-            // fill sa_0 by inducing with characters at i mod 7 = 0 and ranks of
-            // tupels beginning in positions i mod 7 = 6
-            span_isa = util::span(&isa[0], length_t_6);
-            determine_isa<sa_index>(sa_6, span_isa, 6);
-            start_pos = 0;
-            induce_sa<C, sa_index>(text, span_isa, sa_0, start_pos, 0, n);
-        } else {
-            induce_sa<C, sa_index>(text, span_t_124, sa_3, start_of_pos_2 + 1,
-                                   3, n);
-
-            // fill sa_5 by inducing with characters at i mod 7 = 5 and ranks of
-            // tupels beginning in positions i mod 7 = 4
-            // start_pos: position, of ranks i mod 7 = 4 of t_124
-            induce_sa<C, sa_index>(text, span_t_124, sa_5, start_of_pos_4 + 1,
-                                   5, n);
-
-            // fill sa_6 by inducing with characters at i mod 7 = 6 and ranks of
-            // tupels beginning in positions i mod 7 = 5
-
-            // empty isa_5 which should be filled correctly with method
-            // induce_sa
-            size_t length_t =
-                length_t_5 >= length_t_6 ? length_t_5 : length_t_6;
-            auto isa = sacabench::util::make_container<size_t>(length_t);
-            util::span<size_t> span_isa = util::span(&isa[0], length_t_5);
-            determine_isa<sa_index>(sa_5, span_isa, 5);
-            u_int8_t start_pos = 1;
-            induce_sa<C, sa_index>(text, span_isa, sa_6, start_pos, 6, n);
-
-            // fill sa_0 by inducing with characters at i mod 7 = 0 and ranks of
-            // tupels beginning in positions i mod 7 = 6
-            span_isa = util::span(&isa[0], length_t_6);
-            determine_isa<sa_index>(sa_6, span_isa, 6);
-            start_pos = 0;
-            induce_sa<C, sa_index>(text, span_isa, sa_0, start_pos, 0, n);
-        }
+        // fill sa_0 by inducing with characters at i mod 7 = 0 and ranks of
+        // tupels beginning in positions i mod 7 = 6
+        span_isa = util::span(&isa[0], length_t_6);
+        determine_isa<sa_index>(sa_6, span_isa, 6);
+        start_pos = 0;
+        induce_sa<C, sa_index>(text, span_isa, sa_0, start_pos, 0, n);
 
         //-----------------------Phase 3--------------------------------------//
         dc7.split("Phase 3");
@@ -326,54 +291,27 @@ private:
         // merging the SA's of 7-tuples in i mod 7 = 1, 2, 4  and ranks of i mod
         // 3 = 0, 3, 5, 6
         if constexpr (rec) {
-            if (recursion) {
-                merge_sa<sa_index, sa_index>(text, sa_0, tuples_124, sa_3, sa_5,
-                                             sa_6, isa_124, start_of_pos_2,
-                                             start_of_pos_4, out_sa);
-            } else {
-                merge_sa<sa_index, sa_index>(text, sa_0, tuples_124, sa_3, sa_5,
-                                             sa_6, span_t_124, start_of_pos_2,
-                                             start_of_pos_4, out_sa);
-            }
+            merge_sa<sa_index, sa_index>(text, sa_0, tuples_124, sa_3, sa_5,
+                                         sa_6, span_t_124, start_of_pos_2,
+                                         start_of_pos_4, out_sa);
 
         } else {
-            if (recursion) {
-                merge_sa<sacabench::util::character, sa_index>(
-                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, isa_124,
-                    start_of_pos_2, start_of_pos_4, out_sa);
-            } else {
-                merge_sa<sacabench::util::character, sa_index>(
-                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, span_t_124,
-                    start_of_pos_2, start_of_pos_4, out_sa);
-            }
+            merge_sa<sacabench::util::character, sa_index>(
+                text, sa_0, tuples_124, sa_3, sa_5, sa_6, span_t_124,
+                start_of_pos_2, start_of_pos_4, out_sa);
         }
-        /*
+
         //------------------------with second approach------------------------//
-
+        /*
         if constexpr (rec) {
-            if (recursion) {
-                merge_sa_2<sa_index, sa_index>(
-                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, isa_124,
-                    start_of_pos_2, start_of_pos_4, out_sa);
-            } else {
-                merge_sa_2<sa_index, sa_index>(
-                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, span_t_124,
-                    start_of_pos_2, start_of_pos_4, out_sa);
-            }
-
+            merge_sa_2<sa_index, sa_index>(text, sa_0, tuples_124, sa_3, sa_5,
+                                           sa_6, span_t_124, start_of_pos_2,
+                                           start_of_pos_4, out_sa);
         } else {
-            if (recursion) {
-                merge_sa_2<sacabench::util::character, sa_index>(
-                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, isa_124,
-                    start_of_pos_2, start_of_pos_4, out_sa);
-            } else {
-                merge_sa_2<sacabench::util::character, sa_index>(
-                    text, sa_0, tuples_124, sa_3, sa_5, sa_6, span_t_124,
-                    start_of_pos_2, start_of_pos_4, out_sa);
-            }
-        }
-
-        */
+            merge_sa_2<sacabench::util::character, sa_index>(
+                text, sa_0, tuples_124, sa_3, sa_5, sa_6, span_t_124,
+                start_of_pos_2, start_of_pos_4, out_sa);
+        }*/
     }
 
     template <typename C, typename sa_index, typename T, typename I, typename S>
@@ -401,15 +339,16 @@ private:
             }
         }
 
-        // TODO: sort Tupels with radix_sort
-        // radix_sort(sa0_to_be_sorted, sa0);
-
         std::sort(sa_to_be_sorted.begin(), sa_to_be_sorted.end());
         for (sa_index i = 0; i < sa_to_be_sorted.size(); ++i) {
             sa[i] = std::get<7>(sa_to_be_sorted[i]);
         }
     }
 
+    /*
+     *  1st approach (naive):
+     *  direct v-way merge
+     */ 
     template <typename C, typename sa_index, typename T, typename S,
               typename S_124, typename I, typename SA>
     static void merge_sa(const T& text, const S& sa_0, const S_124& sa_124,
@@ -694,6 +633,13 @@ private:
         }
     }
 
+    /*
+     *  2nd approach:
+     *  Divide sa_124 into three seperate lists S1, S2, S4
+     *  Concatenate all sorted suffixes
+     *  Sort stable after first 7 characters
+     *  v-way merge
+     */ 
     template <typename C, typename sa_index, typename T, typename S,
               typename S_124, typename I, typename SA>
     static void merge_sa_2(const T& text, const S& sa_0, const S_124& sa_124,
