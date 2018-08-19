@@ -10,6 +10,7 @@
 #include "util/bits.hpp"
 #include "heapsort.hpp"
 #include "insertionsort.hpp"
+#include "common.hpp"
 #include "ternary_quicksort.hpp"
 
 /** \file introsort.hpp
@@ -53,7 +54,7 @@ namespace sacabench::util::sort {
             else {
                 --depth_limit;
                 // Compute pivot element using median of three
-                auto pivot = sort::ternary_quicksort::median_of_three
+                auto pivot = sort::median_of_three
                         (data, compare_fun);
 
                 // Partition data with ternary_quicksort::partition

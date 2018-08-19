@@ -19,6 +19,6 @@ target_include_directories(
 set(MB_DS_GLOBAL_FLAGS "-w;-g;-O3;-fomit-frame-pointer;-W;-Wall;-Winline;-DNDEBUG")
 
 target_compile_options(
-    reference_saca_deep_shallow PUBLIC
+    reference_saca_deep_shallow PRIVATE
     ${MB_DS_GLOBAL_FLAGS}
 )

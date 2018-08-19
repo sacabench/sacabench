@@ -36,8 +36,8 @@ SACA_REGISTER("saca/external/dc3/dc3.hpp"
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
     sacabench::deep_shallow::saca)
 
-SACA_REGISTER("saca/deep_shallow/blind/sort.hpp"
-    sacabench::deep_shallow::blind::saca)
+#SACA_REGISTER("saca/deep_shallow/blind/sort.hpp"
+#    sacabench::deep_shallow::blind::saca)
 
 SACA_REGISTER("saca/bucket_pointer_refinement.hpp"
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement)

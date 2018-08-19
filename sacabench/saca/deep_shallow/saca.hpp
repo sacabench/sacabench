@@ -33,6 +33,8 @@ public:
         // Construct an object of type `saca_run`, which contains the algorithm.
         // This will construct the suffix array in `sa` using deep-shallow.
         saca_run<sa_index_type> r(text, alphabet.size_without_sentinel(), sa);
+
+        logger::get().flush();
     }
 };
 } // namespace sacabench::deep_shallow

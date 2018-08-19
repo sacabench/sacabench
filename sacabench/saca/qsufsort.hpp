@@ -13,8 +13,7 @@
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-
-#include <tudocomp_stat/StatPhase.hpp>
+#include <util/word_packing.hpp>
 
 namespace sacabench::qsufsort {
 
@@ -28,6 +27,15 @@ public:
         return (input_text[a] < input_text[b]);
     }
     const util::string_span input_text;
+};
+template <typename sa_index>
+struct compare_word_packed {
+public:
+    compare_word_packed(util::container<sa_index>& _isa) : isa(_isa) {}
+    bool operator()(const sa_index& a, const sa_index& b) const {
+        return (isa[a] < isa[b]);
+    }
+    util::container<sa_index>& isa;
 };
 
 template <typename sa_index>
@@ -74,7 +82,6 @@ public:
     const util::container<sa_index> V;
     const size_t h;
 };
-static std::vector<int> count_hits = std::vector<int>(1);
 template <typename sa_index>
 class qsufsort_sub {
 public:
@@ -88,7 +95,8 @@ public:
     static void print_array(T& arr) {
         std::cout << "SA: ";
         for (size_t i = 0; i < arr.size(); i++) {
-            std::cout << (bool(arr[i] & NEGATIVE_MASK) ? "-" : "")
+            std::cout << "(" << i << ")"
+                      << (bool(arr[i] & NEGATIVE_MASK) ? "-" : "")
                       << ssize_t(arr[i] & REMOVE_NEGATIVE_MASK) << ", ";
         }
         std::cout << std::endl;
@@ -96,22 +104,22 @@ public:
     // for trouble shooting
     template <typename T, typename S>
     static void print_isa(T& arr, S& out) {
-        std::cout << "V: ";
+        std::cout << "ISA: ";
         for (size_t i = 0; i < arr.size(); i++) {
+
             std::cout << (bool(out[i] & NEGATIVE_MASK)
                               ? static_cast<sa_index>(i)
-                              : arr[out[i]])
-                      << ", ";
+                              : arr[out[i]]);
+            std::cout << "(" << out[i] << "), " << std::endl;
         }
         std::cout << std::endl;
     }
 
-    static void construct_sa(util::string_span text, util::alphabet const&,
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& alpha,
                              util::span<sa_index> out_sa) {
-
         tdc::StatPhase qss("Initialization");
         size_t n = text.size();
-        count_hits.resize(n);
         // check if n is too big
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1));
         // catch trivial cases
@@ -120,30 +128,33 @@ public:
 
         // init additional arrays
         auto isa = util::make_container<sa_index>(n);
-        // init out_sa (necessary?)
+
         for (size_t i = 0; i < n; ++i) {
             out_sa[i] = i;
         }
+        util::word_packing(text, isa, alpha, 1, 1);
         // init h (checked prefix length)
         size_t h = 0;
         // for are more readible while condition
-        bool is_sorted = false;
+
         qss.split("First sorting");
-        // comparing function for inital sort according to first character
-        auto compare_first_char_function = compare_first_character(text);
-        // Sort according to first character
-        util::sort::ternary_quicksort::ternary_quicksort(
-            out_sa, compare_first_char_function);
-        // Inital calculation of V and L
-        init_isa(text, out_sa, isa, h);
+        auto compare_packed = compare_word_packed(isa);
+        util::sort::ternary_quicksort::ternary_quicksort(out_sa,
+                                                         compare_packed);
+        qss.split("Init ISA");
+        // Calculate length of equal groups into out_sa
+        calculate_equal_length(out_sa, isa, compare_packed);
+        // Init ISA with first ranks after sorting
+        init_isa_packed(out_sa, isa);
+
+        // more readible while condition
+        bool is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);
         // since we sorted accoring to first letter, increment h
         ++h;
         // comparing function, which compares the (i+h)-th ranks
         auto compare_function = compare_ranks<sa_index>(isa, h);
-
         while (!is_sorted) {
-
-            qss.split("Update group numbers");
+            qss.split(("Update(h=" + std::to_string(h) + ")").c_str());
             size_t counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
@@ -165,17 +176,16 @@ public:
                     counter = tmp + 1;
                 }
             }
-            qss.split("Update group length");
             // update group sizes
             update_group_length(out_sa, isa);
             // prefix doubling
             h = h * 2;
             is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);
         }
-
         qss.split("ISA to SA");
         // transform isa to sa
         util::isa2sa_simple_scan(util::span<sa_index>(isa), out_sa);
+
     } // construct_sa
 
 private:
@@ -198,7 +208,7 @@ private:
         update_group_length(out_sa, isa);
     }
 
-    static void update_group_length(util::span<sa_index> out_sa,
+    inline static void update_group_length(util::span<sa_index> out_sa,
                                     util::container<sa_index>& isa) {
         size_t n = out_sa.size();
         size_t sorted_counter = 0;
@@ -242,8 +252,9 @@ private:
         // recursion termination
         if (n <= 1) {
             // if only one element is in partition, set its rank
-            if (n == 1)
+            if (n == 1) {
                 isa[full_array[start]] = start;
+            }
             return;
         }
 
@@ -265,9 +276,9 @@ private:
 
         // Choose pivot according to array size
         const sa_index pivot =
-            (n > util::sort::ternary_quicksort::MEDIAN_OF_NINE_THRESHOLD)
-                ? util::sort::ternary_quicksort::median_of_nine(out_sa, cmp)
-                : util::sort::ternary_quicksort::median_of_three(out_sa, cmp);
+            (n > util::sort::MEDIAN_OF_NINE_THRESHOLD)
+                ? util::sort::median_of_nine(out_sa, cmp)
+                : util::sort::median_of_three(out_sa, cmp);
         auto result =
             util::sort::ternary_quicksort::partition(out_sa, cmp, pivot);
         // sorts less partition recursivly
@@ -284,7 +295,7 @@ private:
         return;
     }
 
-    static void update_equal_partition_ranks(util::span<sa_index> out_sa,
+    inline static void update_equal_partition_ranks(util::span<sa_index> out_sa,
                                              util::container<sa_index>& isa,
                                              sa_index start, sa_index end) {
 
@@ -295,10 +306,82 @@ private:
 
             if (bool(out_sa[index] & NEGATIVE_MASK)) {
                 isa[index] = end;
-                count_hits[index] = count_hits[index] + 1;
             } else {
                 isa[out_sa[index]] = end;
-                count_hits[index] = count_hits[index] + 1;
+            }
+        }
+    }
+    template <typename key_func>
+    static void calculate_equal_length(util::span<sa_index> out_sa,
+                                       util::container<sa_index>& isa,
+                                       key_func& cmp) {
+        sa_index n = out_sa.size();
+        auto equal = util::as_equal(cmp);
+        size_t counter = 1;
+        sa_index start = 0;
+        for (size_t index = 1; index < n; ++index) {
+            //if sorted increment counter
+            if (!equal(out_sa[index - 1], out_sa[index])) {
+                ++counter;
+            } else {
+                if (index + 1 >= n ||
+                    !equal(out_sa[index], out_sa[index + 1])) {
+                    if (counter > 1) {
+                        //write group number in isa,
+                        //because it will be overwritten
+                        isa[(out_sa[start])] = start;
+                        //write length in out_sa
+                        out_sa[start] = (counter - 1) | NEGATIVE_MASK;
+                        start = index + 1;
+                    }
+                    if (counter == 1) {
+                        isa[out_sa[start]] = 1 | NEGATIVE_MASK;
+                        start = index + 1;
+                    }
+                    counter = 0;
+                }
+            }
+        }
+        if (counter != 0) {
+            isa[(out_sa[start])] = start;
+            out_sa[start] = (counter) | NEGATIVE_MASK;
+        }
+    }
+    static void init_isa_packed(util::span<sa_index> out_sa,
+                                util::container<sa_index>& isa) {
+        size_t length_of_sorted_group = 0;
+        size_t length_of_unsorted_group = 0;
+        sa_index sorted_group_number = 0;
+        for (size_t index = 0; index < out_sa.size(); ++index) {
+            if (bool(out_sa[index] & NEGATIVE_MASK)) {
+                sorted_group_number = index - 1;
+                //write unsorted group numbers
+                for (size_t counter = 1; counter <= length_of_unsorted_group;
+                     ++counter) {
+                    if (bool(isa[out_sa[index - counter]] & NEGATIVE_MASK)) {
+                        isa[out_sa[index - counter]] = sorted_group_number;
+                        sorted_group_number = index - counter - 1;
+                    } else {
+                        isa[out_sa[index - counter]] = sorted_group_number;
+                    }
+                }
+                length_of_unsorted_group = 0;
+                length_of_sorted_group = out_sa[index] & REMOVE_NEGATIVE_MASK;
+                //write sorted group numbers
+                for (size_t counter = 1; (counter < length_of_sorted_group) &&
+                                         ((counter + index) < out_sa.size());
+                     ++counter) {
+                    isa[out_sa[index + counter]] = index + counter;
+                }
+                index += length_of_sorted_group - 1;
+            } else {
+                length_of_unsorted_group++;
+            }
+        }
+        if (length_of_unsorted_group > 0) {
+            for (size_t counter = 0; counter < length_of_unsorted_group;
+                 ++counter) {
+                isa[out_sa[(out_sa.size() - 1) - counter]] = out_sa.size() - 1;
             }
         }
     }

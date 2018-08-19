@@ -104,7 +104,7 @@ namespace sacabench::util::sort {
      */
     template<typename T, typename F=std::less<T>> inline void
         heapsort(span<T> data, F compare_fun=F()) {
-        build_max_heap(data);
+        build_max_heap(data, compare_fun);
         // Invariant: data[0...heap_size) unsorted,
         // data[heap_size, data.size()) sorted
         for (size_t heap_size = data.size(); heap_size != 1; --heap_size) {
