@@ -101,7 +101,7 @@ namespace sacabench::dc3_lite {
                     util::span<C> t_2 = retrieve_triplets<C>(text, pos_2, length);
                     return t_1 < t_2 
                         || (t_1 == t_2 && pos_1+length == text.size()); 
-                                /*If equal the last tuple must have lower
+                                /* If equal the last tuple must have lower
                                   priority to simulate dummy tuple */
                 };
                 

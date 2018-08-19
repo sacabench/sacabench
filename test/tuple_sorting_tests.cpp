@@ -138,7 +138,7 @@ TEST(tuple_sort, msd_radixsort_inplace_with_key) {
     sacabench::util::container<size_t> input_string = {3, 1, 1, 2, 1, 3, 3,
             1, 1, 2, 1, 3, 1, 1};
             
-    //positions i mod 3 != 0 of input_string
+    // positions i mod 3 != 0 of input_string
     sacabench::util::container<size_t> positions_mod_12 = {1,2,4,5,7,8,10,11,13}; 
     
     auto key_function = [&](size_t i, size_t p) {

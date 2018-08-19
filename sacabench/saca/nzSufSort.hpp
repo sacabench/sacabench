@@ -109,6 +109,9 @@ namespace sacabench::nzsufsort {
                     return (util::character)(alphabet.max_character_value()+1);
                 };
                 auto comp_function_12 = [&](size_t i, size_t j, size_t index, size_t length) {
+                    // suppress warnings
+                    (void) length;
+                    
                     size_t pos_1 = p_12[i]+(sa_index)index+(sa_index)1;
                     size_t pos_2 = p_12[j]+(sa_index)index+(sa_index)1;
                     util::span<const util::character> t_1;
@@ -177,7 +180,7 @@ namespace sacabench::nzsufsort {
                 }
                 if (h_0.size() > 0) { h_0[h_0.size()-1] = text.size()-p_0[p_0.size()-1]; }
                 
-                //sort p_0 with radixsort
+                // sort p_0 with radixsort
                 phase.split("sort p_0 with radixsort");
                 phase.log("max_length_0", max_length_0);
                 util::span<sa_index> to_be_sorted_0 = out_sa.slice(t_12.size()+mod_0, t_12.size()+2*mod_0);
@@ -191,6 +194,9 @@ namespace sacabench::nzsufsort {
                     return (util::character)(alphabet.max_character_value()+1);
                 };
                 auto comp_function_0 = [&](size_t i, size_t j, size_t index,size_t length) {
+                    // suppress warnings
+                    (void) length;
+                    
                     size_t pos_1 = p_0[i]+(sa_index)index+(sa_index)1;
                     size_t pos_2 = p_0[j]+(sa_index)index+(sa_index)1;
                     util::span<const util::character> t_1;
