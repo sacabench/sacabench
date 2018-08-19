@@ -17,6 +17,7 @@
 #include <util/alphabet.hpp>
 #include <util/induce_sa_dc.hpp>
 #include <util/compare.hpp>
+#include <util/sort/tuple_sort.hpp>
 
 #include <saca/dc3_lite.hpp>
 #include <tudocomp_stat/StatPhase.hpp>
@@ -26,7 +27,7 @@ namespace sacabench::nzsufsort {
 
     class nzsufsort {
         public:    
-            static constexpr size_t EXTRA_SENTINELS = 1;
+            static constexpr size_t EXTRA_SENTINELS = 3;
             static constexpr char const* NAME = "nzSufSort";
             static constexpr char const* DESCRIPTION =
                 "Optimal lightweight SACA by G. Nong and S. Zhang";
@@ -74,48 +75,151 @@ namespace sacabench::nzsufsort {
                 phase.split("Calculate position arrays");
                 calculate_p_12(text, p_12, count_s_type_pos);
                 
-                //TODO sort p_12 with radix sort
-                auto comp = [&](size_t i, size_t j) {
-                    util::string_span t_1 = retrieve_s_string<util::character>(text, i, 3);
-                    util::string_span t_2 = retrieve_s_string<util::character>(text, j, 3);
+                // calculate length of Z_3-Strings
+                phase.split("Calculate array of length of Z_3-Strings");
+                util::span<sa_index> h_12 = out_sa.slice(mod_1+mod_2, 2*(mod_1+mod_2));
+                size_t first_mod_2 = h_12.size()/2 + (h_12.size() % 2 != 0);
+                size_t max_length_12 = 0;
+                for (size_t i = 0; i < h_12.size(); ++i) {
+                    /* last positions in mod_1 and mod_2 group are excluded
+                       because these are the last positions */
+                    if ((0 <= i && i < first_mod_2-1) || (first_mod_2 <= i && i < h_12.size()-1)) {
+                        h_12[i] = p_12[i+1]-p_12[i]+(sa_index)1;
+                        if (h_12[i] > max_length_12) { max_length_12 = h_12[i]; }
+                    }
+                }
+                if (first_mod_2 < h_12.size()) {
+                    h_12[first_mod_2-1] = text.size()-p_12[first_mod_2-1];
+                }
+                if (h_12.size() > 0) {
+                    h_12[h_12.size()-1] = text.size()-p_12[h_12.size()-1];
+                }
+                
+                //sort p_12 with radix sort
+                phase.split("Sort p_12 with RadixSort");
+                phase.log("max_length_12", max_length_12);
+                util::span<sa_index> to_be_sorted_12 = out_sa.slice(2*(mod_1+mod_2), 3*(mod_1+mod_2));
+                for (size_t i = 0; i < to_be_sorted_12.size(); ++i) {
+                    to_be_sorted_12[i] = i;
+                }
+                auto key_function_12 = [&](size_t i, size_t p) {
+                    if (p < h_12[i]) {
+                        return text[p_12[i]+(sa_index)p];
+                    }
+                    return (util::character)(alphabet.max_character_value()+1);
+                };
+                auto comp_function_12 = [&](size_t i, size_t j, size_t index, size_t length) {
+                    size_t pos_1 = p_12[i]+(sa_index)index+(sa_index)1;
+                    size_t pos_2 = p_12[j]+(sa_index)index+(sa_index)1;
+                    util::span<const util::character> t_1;
+                    util::span<const util::character> t_2;
+                    if (pos_1 <= p_12[i]+h_12[i]) {
+                        t_1 = text.slice(pos_1, p_12[i]+h_12[i]);
+                    }
+                    else {
+                        t_1 = util::span<const util::character>(); 
+                    }
+                    if (pos_2 <= p_12[j]+h_12[j]) {
+                        t_2 = text.slice(pos_2, p_12[j]+h_12[j]);
+                    }
+                    else {
+                        t_2 = util::span<const util::character>(); 
+                    }
                     return comp_z_strings(t_1, t_2);
                 };
-                phase.split("Sort p_12");
-                std::sort(p_12.begin(), p_12.end(), comp);
+                util::msd_radixsort_inplace_with_key_and_no_recursion_on_specific_buckets(to_be_sorted_12, 
+                    alphabet.size_with_sentinel()+1, 0, max_length_12, alphabet.size_with_sentinel(), key_function_12,
+                    comp_function_12);
+                //update to_be_sorted_12 with positions in p_12
+                for (size_t i = 0; i < to_be_sorted_12.size(); ++i) {
+                    to_be_sorted_12[i] = p_12[to_be_sorted_12[i]];
+                }
+                std::copy(to_be_sorted_12.begin(), to_be_sorted_12.end(), p_12.begin());
                 
                 //calculate t_12 in the begin of out_sa
                 phase.split("Calculate reduced text t_12");
                 bool recursion = false;
-                calculate_t_12<util::character>(text, out_sa, 0, mod_1+mod_2, count_s_type_pos, recursion);
+                size_t rank = 1;
+                calculate_t_12<util::character>(text, out_sa, 0, mod_1+mod_2, count_s_type_pos, recursion, rank);
                 util::span<sa_index> t_12 = p_12;
                 
                 //calculate SA(t_12) by calling the lightweight variant of DC3
                 phase.split("Call DC3-Lite");
-                std::cout << "t_12: " << t_12 << std::endl;
+                auto u = out_sa.slice(t_12.size(), 2*t_12.size());
+                auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
                 if (recursion) {
-                    auto u = out_sa.slice(t_12.size(), 2*t_12.size());
-                    auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
-                    dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u, v, text.size()+1);
+                    dc3_lite::dc3_lite::lightweight_dc3<sa_index, sa_index>(t_12, t_12, u, v, rank);
                     for (size_t i = 0; i < t_12.size(); ++i) {
                         t_12[i] = v[i];
                     }
                 }
                 else {
-                    auto v = out_sa.slice(2*t_12.size(), 3*t_12.size());
                     std::copy(t_12.begin(), t_12.end(), v.begin());
                     for (size_t i = 0; i < t_12.size(); ++i) {
                         t_12[v[i]-(sa_index)1] = i;
                     }
                 }
                 util::span<sa_index> sa_12 = t_12;
-                std::cout << "sa_12: " << sa_12 << std::endl;
                 
-                //calculate t_0
-                phase.split("Calculate t_0");
+                //calculate position array p_0
+                phase.split("calculate length of Z_3-Strings");
                 size_t mod_0 = count_s_type_pos/3 + (count_s_type_pos % 3 > 0);
                 util::span<sa_index> p_0 = out_sa.slice(t_12.size(), t_12.size()+mod_0);
                 calculate_p_0(text, p_0, count_s_type_pos);
-                std::sort(p_0.begin(), p_0.end(), comp);
+                
+                //calculate length of Z_3-Strings
+                util::span<sa_index> h_0 = out_sa.slice(t_12.size()+2*mod_0, t_12.size()+3*mod_0);
+                size_t max_length_0 = 0;
+                
+                for (size_t i = 0; h_0.size() > 0 && i < h_0.size()-1; ++i) {
+                    h_0[i] = p_0[i+1]-p_0[i]+(sa_index)1;
+                    if (h_0[i] > max_length_0) { max_length_0 = h_0[i]; }
+                }
+                if (h_0.size() > 0) { h_0[h_0.size()-1] = text.size()-p_0[p_0.size()-1]; }
+                
+                //sort p_0 with radixsort
+                phase.split("sort p_0 with radixsort");
+                phase.log("max_length_0", max_length_0);
+                util::span<sa_index> to_be_sorted_0 = out_sa.slice(t_12.size()+mod_0, t_12.size()+2*mod_0);
+                for (size_t i = 0; i < to_be_sorted_0.size(); ++i) {
+                    to_be_sorted_0[i] = i;
+                }
+                auto key_function_0 = [&](size_t i, size_t p) {
+                    if (p < h_0[i]) {
+                        return text[p_0[i]+(sa_index)p];
+                    }
+                    return (util::character)(alphabet.max_character_value()+1);
+                };
+                auto comp_function_0 = [&](size_t i, size_t j, size_t index,size_t length) {
+                    size_t pos_1 = p_0[i]+(sa_index)index+(sa_index)1;
+                    size_t pos_2 = p_0[j]+(sa_index)index+(sa_index)1;
+                    util::span<const util::character> t_1;
+                    util::span<const util::character> t_2;
+                    if (pos_1 <= p_0[i]+h_0[i]) {
+                        t_1 = text.slice(pos_1, p_0[i]+h_0[i]);
+                    }
+                    else {
+                        t_1 = util::span<const util::character>(); 
+                    }
+                    if (pos_2 <= p_0[j]+h_0[j]) {
+                        t_2 = text.slice(pos_2, p_0[j]+h_0[j]);
+                    }
+                    else {
+                        t_2 = util::span<const util::character>(); 
+                    }
+                    return comp_z_strings(t_1, t_2);
+                };
+                util::msd_radixsort_inplace_with_key_and_no_recursion_on_specific_buckets(to_be_sorted_0, 
+                    alphabet.size_with_sentinel()+1, 0, max_length_0, alphabet.size_with_sentinel(), key_function_0,
+                    comp_function_0);
+                //update to_be_sorted_0 with positions in p_0
+                for (size_t i = 0; i < to_be_sorted_0.size(); ++i) {
+                    to_be_sorted_0[i] = p_0[to_be_sorted_0[i]];
+                }
+                std::copy(to_be_sorted_0.begin(), to_be_sorted_0.end(), p_0.begin());
+                
+                //calculate_t_0
+                phase.split("Calculate t_0");
                 calculate_t_0<util::character>(text, out_sa, 0, sa_12.size(), sa_12.size(), 
                     p_0.size(), count_s_type_pos);
                 util::span<sa_index> t_0 = p_0;
@@ -253,8 +357,6 @@ namespace sacabench::nzsufsort {
                     
                     const bool less_than = comp_z_strings(t_0, t_12);
                     const bool eq = util::as_equal(comp_z_strings)(t_0, t_12);
-                    // NB: This is a closure so that we can evaluate it later, because
-                    // evaluating it if `eq` is not true causes out-of-bounds errors.
                     const bool lesser_suf = out_sa[((size_t)out_sa[curr_pos_sa_0-1])+t_0.size()-1] >   // greater because sa_0 and sa_12 are stored from right to left
                             out_sa[((size_t)out_sa[curr_pos_sa_12-1])+t_12.size()-1];
                     
@@ -504,7 +606,7 @@ namespace sacabench::nzsufsort {
             
             template<typename C, typename T, typename sa_index>
             static void calculate_t_12(const T& text, util::span<sa_index> out_sa, size_t start_p_12, 
-                    size_t length_p_12, size_t count_s_type_pos, bool& recursion) {
+                    size_t length_p_12, size_t count_s_type_pos, bool& recursion, size_t& rank) {
                 // revert p_0 and p_12 so we can access them later from left to right
                 util::span<sa_index> p_12 = out_sa.slice(start_p_12, start_p_12+length_p_12);
                 revert(p_12);
@@ -531,7 +633,6 @@ namespace sacabench::nzsufsort {
                 
                 /* Determine lexicographical ranks of Positions p_12 and save
                    them in correct positions in out_sa */
-                size_t rank = 1;
                 util::span<const C> last_t;
                 size_t last_i = -1;
                 
@@ -663,9 +764,10 @@ namespace sacabench::nzsufsort {
             static void calculate_t_0(const T& text, util::span<sa_index> out_sa, 
                     size_t start_sa_12, size_t length_sa_12, size_t start_p_0, 
                     size_t length_p_0, size_t count_s_type_pos) {
+                
                 util::span<sa_index> sa_12 = out_sa.slice(start_sa_12, start_sa_12+length_sa_12);
                 util::span<sa_index> p_0 = out_sa.slice(start_p_0, start_p_0+length_p_0);
-                // revert p_0 we can access it later from left to right
+                // revert p_0 so we can access it later from left to right
                 revert(p_0);
                 
                 // Copy p_0 and sa_12 in L-type positions in out_sa
@@ -688,6 +790,7 @@ namespace sacabench::nzsufsort {
                         }
                     }
                     last_char = text[i-1];
+                    if (start_sa_12+length_sa_12 == 0) { start_pos_sa_12 = i-2; }
                     if (curr_pos_sa_12 == start_sa_12) { break; }
                 }
                 
@@ -705,7 +808,7 @@ namespace sacabench::nzsufsort {
                     if (text[i-1] > last_char) { s_type = false; }
                     else if (text[i-1] < last_char) { s_type = true; }
                     
-                    if (!s_type) { 
+                    if (!s_type) {
                         auto curr_t = retrieve_s_string<C>(text, out_sa[i-1], 3);
                         if (!last_t.empty()) {
                             out_sa[out_sa[last_i-1]] = rank;
@@ -833,5 +936,4 @@ namespace sacabench::nzsufsort {
                 return t_0_slice < t_12_slice || (t_0_slice == t_12_slice && t_0.size() > t_12.size());
             }
     }; // class nzsufsort
-
 } // namespace sacabench::nzsufsort
