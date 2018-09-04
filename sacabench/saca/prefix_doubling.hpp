@@ -18,18 +18,11 @@
 #include <util/compare.hpp>
 #include <util/container.hpp>
 #include <util/macros.hpp>
-#include <util/sort/std_sort.hpp>
+#include <util/sort/ips4o.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
 namespace sacabench::prefix_doubling {
-
-struct std_sorting_algorithm {
-    template <typename T, typename Compare>
-    SB_NO_INLINE static void sort(util::span<T> data, Compare comp) {
-        util::sort::std_sort(data, comp);
-    }
-};
 
 template <typename sa_index, size_t a_size>
 struct a_size_helper_type {
@@ -97,8 +90,7 @@ struct a_size_helper_type<sa_index, 4> {
     }
 };
 
-template <typename sa_index, size_t a_size,
-          typename sorting_algorithm = std_sorting_algorithm>
+template <typename sa_index, size_t a_size, typename sorting_algorithm>
 struct prefix_doubling_impl {
     using a_size_helper = a_size_helper_type<sa_index, a_size>;
     static constexpr bool USE_WORDPACKING = true;
@@ -934,6 +926,13 @@ struct prefix_doubling_impl {
     }
 };
 
+struct ips4o_sorter {
+    template <typename T, typename Compare>
+    SB_NO_INLINE static void sort(util::span<T> data, Compare comp) {
+        util::sort::ips4o_sort(data, comp);
+    }
+};
+
 struct prefix_doubling {
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "Doubling";
@@ -945,7 +944,7 @@ struct prefix_doubling {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 2>::doubling(text, out_sa);
+        prefix_doubling_impl<sa_index, 2, ips4o_sorter>::doubling(text, out_sa);
     }
 };
 
@@ -960,7 +959,8 @@ struct prefix_discarding_2 {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 2>::doubling_discarding(text, out_sa);
+        prefix_doubling_impl<sa_index, 2, ips4o_sorter>::doubling_discarding(
+            text, out_sa);
     }
 };
 
@@ -975,8 +975,8 @@ struct prefix_discarding_4 {
     static void construct_sa(util::string_span text,
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
-        prefix_doubling_impl<sa_index, 4>::doubling_discarding(text, out_sa);
+        prefix_doubling_impl<sa_index, 4, ips4o_sorter>::doubling_discarding(
+            text, out_sa);
     }
 };
-
 } // namespace sacabench::prefix_doubling
