@@ -5,7 +5,7 @@
 ################################################################################
 
 # Create Header-only library containing all SACA implementations and utility
-add_library(saca_bench_lib INTERFACE saca/gsaca/gsaca_new.hpp)
+add_library(saca_bench_lib INTERFACE)
 
 target_include_directories(saca_bench_lib INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
