@@ -66,6 +66,9 @@ SACA_REGISTER("saca/sads.hpp"
 SACA_REGISTER("saca/gsaca/gsaca.hpp"
     sacabench::gsaca::gsaca)
 
+SACA_REGISTER("saca/gsaca/gsaca_new.hpp"
+        sacabench::gsaca::gsaca_new)
+
 SACA_REGISTER("saca/dc7.hpp"
     sacabench::dc7::dc7)
 
