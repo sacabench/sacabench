@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <set>
 
 #include <CLI/CLI.hpp>
 
@@ -142,6 +143,22 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Blacklist algorithms from execution")
             ->excludes(wlist);
         batch.add_flag("-z,--plot", plot, "Plot measurements.")->needs(b_opt);
+    }
+
+    CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
+    std::string benchmark_source;
+    const std::set<std::string> benchmark_sources{"batch", "construct"};
+    {
+        plot_app
+            .add_set("benchmark_source", benchmark_source, benchmark_sources,
+                     "Where the benchmark_file originated")
+            ->required();
+        plot_app.add_option("input", input_filename, "Path to input file.")
+            ->required();
+        plot_app
+            .add_option("benchmark_file", benchmark_filename,
+                        "Path to benchmark json file.")
+            ->required();
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -470,9 +487,38 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
-    if (plot) {
+    auto do_plot = [](auto const& benchmark_filename,
+                      auto const& input_filename, bool batch, size_t text_size,
+                      bool out_benchmark) {
+        std::string r_command =
+            "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+        std::cerr << "plot benchmark...";
+        if (batch) {
+            r_command += " 1 " + input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
+        } else if (out_benchmark) {
+            r_command += " 0 " + input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
+        } else {
+            std::cerr << "not able to plot." << std::endl;
+            return;
+        }
+        int i = system(r_command.c_str());
+        if (i) {
+            // TODO: Check return value
+        }
+        std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
+    };
+
+    if (plot || plot_app) {
+        if (benchmark_filename == "-") {
+            abort(); // TODO: this can not work!;
+        }
         size_t text_size;
         if (input_filename == "-") {
+            abort(); // TODO: this can not work!
             auto stdin_buf =
                 std::string(std::istreambuf_iterator<char>(std::cin), {});
             auto text = std::make_unique<util::text_initializer_from_span>(
@@ -487,29 +533,20 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             text_size = text->text_size();
         }
 
-        std::string r_command =
-            "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
-        std::cout << "plot benchmark...";
-        if (batch) {
-            r_command += " 1 " + input_filename + " " +
-                         std::to_string(text_size) +
-                         "'  ..//stats/stat_plot.R test.Rout";
-            // TODO: Check return value
-            int i = system(r_command.c_str());
-            (void)i; // suppress  warning
-            std::cout << "saved as: " << benchmark_filename << ".pdf"
-                      << std::endl;
-        } else if (out_benchmark) {
-            r_command += " 0 " + input_filename + " " +
-                         std::to_string(text_size) +
-                         "'  ..//stats/stat_plot.R test.Rout";
-            // TODO: Check return value
-            int i = system(r_command.c_str());
-            (void)i; // suppress  warning
-            std::cout << "saved as: " << benchmark_filename << ".pdf"
-                      << std::endl;
-        } else {
-            std::cout << "not able to plot." << std::endl;
+        if (plot) {
+            do_plot(benchmark_filename, input_filename, batch, text_size,
+                    out_benchmark);
+        }
+        if (plot_app) {
+            if (benchmark_source == "batch") {
+                do_plot(benchmark_filename, input_filename, true, text_size,
+                        true);
+            } else if (benchmark_source == "construct") {
+                do_plot(benchmark_filename, input_filename, false, text_size,
+                        true);
+            } else {
+                abort();
+            }
         }
     }
 
