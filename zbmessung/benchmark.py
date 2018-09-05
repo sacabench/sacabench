@@ -31,21 +31,47 @@ sacabench_exec = "../build/sacabench/sacabench"
 
 def exceptions(f):
     if f == "pcr_cere.200MB":
-        return ["Deep-Shallow"]
+        return [
+            "Deep-Shallow", # took too long on 1MiB
+            "mSufSort", # took too long on 1MiB
+        ]
+    if f == "pcr_einstein.en.txt.200MB":
+        return [
+            "qsufsort", # failed sa_check
+        ]
+    if f == "pcr_fib41.200MB":
+        return [
+            "Naiv", # took too long on 1MiB
+        ]
+    if f == "pcr_para.200MB":
+        return [
+            "Deep-Shallow", # took too long on 1MiB
+        ]
 
     return []
 
 print("Benchmarking all from:")
 pprint.pprint(files)
+print("Blacklists:")
+blacklists = []
+for f in files:
+    blacklists += [(f, exceptions(f))]
+pprint.pprint(blacklists)
 print("--------------------------------------------")
 
 for f in files:
     full_f = "../external/datasets/downloads/" + f
-    full_json = "{}.json".format(f)
+    full_json = "measures/{}.json".format(f)
 
     print("Benching {}...".format(full_f))
 
-    blacklist = list(map(lambda x: "--blacklist='{}'".format(x), exceptions(f)))
+    blacklist = exceptions(f)
+    print("Blacklisting the following algorithms:")
+    pprint.pprint(blacklist)
+
+    blacklist_args = []
+    for blacklist_arg in map(lambda x: ["--blacklist", x], blacklist):
+        blacklist_args += blacklist_arg
 
     bench_cmd = [
         sacabench_exec,
@@ -53,9 +79,9 @@ for f in files:
 
         "--check",
         "--force",
-        "--prefix=1M",
-        "--benchmark={}".format(full_json),
-        *blacklist,
+        "--prefix", "1M",
+        "--benchmark", full_json,
+        *blacklist_args,
 
         full_f,
     ]
@@ -68,6 +94,14 @@ for f in files:
         full_json,
     ]
 
+    subprocess.run(["mkdir", "-p", "measures"], check=True)
+
+    print("Run {}".format(bench_cmd))
     subprocess.run(bench_cmd, check=True)
+
+    print("Run {}".format(plot_cmd))
     subprocess.run(plot_cmd, check=True)
+
+    subprocess.run(["mv", full_json + " .pdf", full_json + ".pdf"], check=True)
+
     print("--------------------------------------------")
