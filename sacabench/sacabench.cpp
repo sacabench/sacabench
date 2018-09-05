@@ -490,15 +490,21 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     auto do_plot = [](auto const& benchmark_filename,
                       auto const& input_filename, bool batch, size_t text_size,
                       bool out_benchmark) {
+        auto short_input_filename = input_filename;
+        auto last_pos = input_filename.rfind("/");
+        if (last_pos != std::string::npos) {
+            short_input_filename = input_filename.substr(last_pos + 1);
+        }
+
         std::string r_command =
             "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
         std::cerr << "plot benchmark...";
         if (batch) {
-            r_command += " 1 " + input_filename + " " +
+            r_command += " 1 " + short_input_filename + " " +
                          std::to_string(text_size) +
                          "'  ..//stats/stat_plot.R test.Rout";
         } else if (out_benchmark) {
-            r_command += " 0 " + input_filename + " " +
+            r_command += " 0 " + short_input_filename + " " +
                          std::to_string(text_size) +
                          "'  ..//stats/stat_plot.R test.Rout";
         } else {
