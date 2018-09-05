@@ -159,6 +159,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             .add_option("benchmark_file", benchmark_filename,
                         "Path to benchmark json file.")
             ->required();
+        plot_app.add_option("-p,--prefix", prefix_size,
+                            "Set the prefix size, if used by the benchmark.");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -203,6 +205,39 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << std::endl;
     };
 
+    auto parse_prefix_if_set = [](std::string const& prefix_size,
+                                  auto& prefix) {
+        if (prefix_size.size() > 0) {
+            try {
+                uint32_t unit_factor;
+                size_t input_prefix;
+                if (prefix_size[prefix_size.size() - 1] == 'K') {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size() - 1);
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1024;
+                } else if (prefix_size[prefix_size.size() - 1] == 'M') {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size() - 1);
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1024 * 1024;
+                } else {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size());
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1;
+                }
+                prefix = input_prefix * unit_factor;
+            } catch (const std::invalid_argument& ia) {
+                std::cerr << "ERROR: input prefix is not a "
+                             "valid prefix value."
+                          << std::endl;
+                return 1;
+            }
+        }
+        return 0;
+    };
+
     if (list) {
         implemented_algos();
     }
@@ -241,34 +276,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     std::unique_ptr<util::text_initializer> text;
                     std::string stdin_buf;
 
-                    if (prefix_size.size() > 0) {
-                        try {
-                            uint32_t unit_factor;
-                            size_t input_prefix;
-                            if (prefix_size[prefix_size.size() - 1] == 'K') {
-                                std::string number_part = prefix_size.substr(
-                                    0, prefix_size.size() - 1);
-                                input_prefix = std::stoi(number_part);
-                                unit_factor = 1024;
-                            } else if (prefix_size[prefix_size.size() - 1] ==
-                                       'M') {
-                                std::string number_part = prefix_size.substr(
-                                    0, prefix_size.size() - 1);
-                                input_prefix = std::stoi(number_part);
-                                unit_factor = 1024 * 1024;
-                            } else {
-                                std::string number_part =
-                                    prefix_size.substr(0, prefix_size.size());
-                                input_prefix = std::stoi(number_part);
-                                unit_factor = 1;
-                            }
-                            prefix = input_prefix * unit_factor;
-                        } catch (const std::invalid_argument& ia) {
-                            std::cerr << "ERROR: input prefix is not a "
-                                         "valid prefix value."
-                                      << std::endl;
-                            return 1;
-                        }
+                    if (parse_prefix_if_set(prefix_size, prefix)) {
+                        return 1;
                     }
 
                     if (input_filename == "-") {
@@ -380,33 +389,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
 
-        if (prefix_size.size() > 0) {
-            try {
-                uint32_t unit_factor;
-                size_t input_prefix;
-                if (prefix_size[prefix_size.size() - 1] == 'K') {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size() - 1);
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1024;
-                } else if (prefix_size[prefix_size.size() - 1] == 'M') {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size() - 1);
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1024 * 1024;
-                } else {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size());
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1;
-                }
-                prefix = input_prefix * unit_factor;
-            } catch (const std::invalid_argument& ia) {
-                std::cerr << "ERROR: input prefix is not a "
-                             "valid prefix value."
-                          << std::endl;
-                return 1;
-            }
+        if (parse_prefix_if_set(prefix_size, prefix)) {
+            return 1;
         }
 
         if (input_filename == "-") {
@@ -521,6 +505,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     if (plot || plot_app) {
         if (benchmark_filename == "-") {
             abort(); // TODO: this can not work!;
+        }
+        if (parse_prefix_if_set(prefix_size, prefix)) {
+            return 1;
         }
         size_t text_size;
         if (input_filename == "-") {

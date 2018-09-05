@@ -30,32 +30,46 @@ files = [
 sacabench_exec = "../build/sacabench/sacabench"
 
 def exceptions(f):
+    ret = []
+
     if f == "pcr_cere.200MB":
-        return [
+        ret = [
             "Deep-Shallow", # took too long on 1MiB
             "mSufSort", # took too long on 1MiB
         ]
     if f == "pcr_einstein.en.txt.200MB":
-        return [
+        ret = [
             "qsufsort", # failed sa_check
         ]
     if f == "pcr_fib41.200MB":
-        return [
+        ret = [
+            "Naiv", # took too long on 1MiB
+        ]
+    if f == "pcr_rs.13.200MB":
+        ret = [
+            "Naiv", # took too long on 1MiB
+        ]
+    if f == "pcr_tm29.200MB":
+        ret = [
             "Naiv", # took too long on 1MiB
         ]
     if f == "pcr_para.200MB":
-        return [
+        ret = [
             "Deep-Shallow", # took too long on 1MiB
         ]
 
-    return []
+    ret += ["Doubling"]
+
+    return ret
 
 print("Benchmarking all from:")
 pprint.pprint(files)
 print("Blacklists:")
 blacklists = []
 for f in files:
-    blacklists += [(f, exceptions(f))]
+    tmp = exceptions(f)
+    if len(tmp) != 0:
+        blacklists += [(f, exceptions(f))]
 pprint.pprint(blacklists)
 print("--------------------------------------------")
 
@@ -73,13 +87,15 @@ for f in files:
     for blacklist_arg in map(lambda x: ["--blacklist", x], blacklist):
         blacklist_args += blacklist_arg
 
+    prefix_size = "1M"
+
     bench_cmd = [
         sacabench_exec,
         "batch",
 
         "--check",
         "--force",
-        "--prefix", "1M",
+        "--prefix", prefix_size,
         "--benchmark", full_json,
         *blacklist_args,
 
@@ -92,6 +108,7 @@ for f in files:
         "batch",
         full_f,
         full_json,
+        "--prefix", prefix_size,
     ]
 
     subprocess.run(["mkdir", "-p", "measures"], check=True)
