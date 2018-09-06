@@ -53,6 +53,7 @@ def exceptions(f):
         ret = [
             "Naiv", # took too long on 1MiB
             "DSS", # took too long on 1MiB
+            "Deep-Shallow", # took too long on 1MiB
         ]
     if f == "pcr_para.200MB":
         ret = [
