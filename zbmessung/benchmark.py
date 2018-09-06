@@ -44,11 +44,13 @@ def exceptions(f):
         ret = [
             "Naiv", # took too long on 1MiB
             "Deep-Shallow", # took too long on 1MiB
+            "DSS", # took too long on 1MiB
         ]
     if f == "pcr_rs.13.200MB":
         ret = [
             "Naiv", # took too long on 1MiB
             "Deep-Shallow", # took too long on 1MiB
+            "DSS", # took too long on 1MiB
         ]
     if f == "pcr_tm29.200MB":
         ret = [
@@ -57,6 +59,11 @@ def exceptions(f):
             "Deep-Shallow", # took too long on 1MiB
         ]
     if f == "pcr_para.200MB":
+        ret = [
+            "Deep-Shallow", # took too long on 1MiB
+            "nzSufSort", # took too long on 1MiB
+        ]
+    if f == "pcr_einstein.en.txt.200MB":
         ret = [
             "Deep-Shallow", # took too long on 1MiB
         ]
