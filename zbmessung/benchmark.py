@@ -6,6 +6,8 @@ import os
 import argparse
 import json
 import statistics
+import datetime
+import sys
 
 # options
 # - sa_bits: 32, 40, 64
@@ -137,8 +139,24 @@ def handle_measure(args):
             full_f,
         ]
 
+        last_time = datetime.datetime.now()
+
+        def try_time():
+            nonlocal last_time
+            new_time = datetime.datetime.now()
+            if (new_time - last_time) >= datetime.timedelta(seconds=1):
+                last_time = new_time
+                print("<{}>".format(last_time))
+
+        try_time()
         print("Run {}".format(bench_cmd))
-        subprocess.run(bench_cmd, check=False)
+
+        p = subprocess.Popen(bench_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+        for line in iter(p.stdout.readline, b''):
+            try_time()
+            sys.stdout.write(line.decode("utf-8")),
+        p.stdout.close()
+        p.wait()
 
         print("--------------------------------------------")
 
@@ -282,8 +300,49 @@ def handle_tablegen(args):
     #pprint.pprint(matrix)
     generate_latex_table(matrix, algorithms, files)
 
+tmp = """
+'qsufsort_ref': {'all': [{'check_result': 'ok',
+                        'duration': 2856.753294944763,
+                        'extra_sentinels': '0',
+                        'mem_global_peak': 220200976,
+                        'mem_local_peak': 167772176,
+                        'mem_local_peak_plus_input_sa': 220200976},
+                        {'check_result': 'ok',
+                        'duration': 2842.0060551166534,
+                        'extra_sentinels': '0',
+                        'mem_global_peak': 220200976,
+                        'mem_local_peak': 167772176,
+                        'mem_local_peak_plus_input_sa': 220200976},
+                        {'check_result': 'ok',
+                        'duration': 2843.213814020157,
+                        'extra_sentinels': '0',
+                        'mem_global_peak': 220200976,
+                        'mem_local_peak': 167772176,
+                        'mem_local_peak_plus_input_sa': 220200976}],
+                'avg': {'check_result': 'ok',
+                        'duration': 2847.324388027191,
+                        'extra_sentinels': 0,
+                        'mem_global_peak': 220200976,
+                        'mem_local_peak': 167772176,
+                        'mem_local_peak_plus_input_sa': 220200976},
+                'data': 'exists',
+                'med': {'check_result': 'ok',
+                        'duration': 2843.213814020157,
+                        'extra_sentinels': 0,
+                        'mem_global_peak': 220200976,
+                        'mem_local_peak': 167772176,
+                        'mem_local_peak_plus_input_sa': 220200976}}}}
+
+"""
+
 def latex_rotate(s):
     return "\\rotatebox[origin=c]{{90}}{{{}}}".format(s)
+
+def latex_color(s, cname):
+    return "{{\\color{{{}}}{}}}".format(cname, s)
+
+def latex_colorbox(s, cname):
+    return "\\colorbox{{{}}}{{{}}}".format(cname, s)
 
 def nice_file(f):
     f = f.replace(".200MB", "")
@@ -299,8 +358,13 @@ def nice_algoname(n):
     n = "${}$".format(n)
     return n
 
-def generate_latex_table_single(data, algorithms, files, get_data):
+def generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit):
     out = ""
+    out += "\\subsection{{{}}}\n".format(title)
+    out += "\n{}\n".format(header_text).replace("%LABEL", label)
+    out += "\\begin{table}\n"
+    out += "\\caption{{{}{}}}\n".format(title, unit)
+    out += "\\label{{{}}}\n".format(label)
     out += "\\resizebox{\\textwidth}{!}{\n"
     out += "\\begin{tabular}{l" + "".join(["r" for e in files]) + "}\n"
     out += "\\toprule\n"
@@ -317,6 +381,7 @@ def generate_latex_table_single(data, algorithms, files, get_data):
     out += "\\bottomrule\n"
     out += "\\end{tabular}\n"
     out += "}\n"
+    out += "\\end{table}\n"
 
     return out
 
@@ -362,43 +427,72 @@ def generate_latex_table(data, algorithms, files):
 
             datapoints = set()
             for ai in algorithms:
-                if not data[f][algorithm_name]["data"] != "exists":
-                    d = data[f][algorithm_name][which][key]
-                    datapoints.add((d, algorithm_name))
+                if not data[f][ai]["data"] != "exists":
+                    d = data[f][ai][which][key]
+                    datapoints.add((d, ai))
 
             datapoints = list(sorted(datapoints, key = lambda t: t[0]))
-            #print(datapoints)
+            datapoints = [(d, n, i) for (i, (d, n)) in enumerate(datapoints)]
+            size = len(datapoints)
+
+            (d, i) = next((d, i) for (d, n, i) in datapoints if n == algorithm_name)
+            #print((d, i))
+            #print()
 
             raw = data[f][algorithm_name][which][key]
-            formated = fmt(raw)
+            assert raw == d
+
+            formated = fmt(d, i, size)
 
             return formated
 
         return ret
 
-    def time_fmt(d):
+    def time_fmt(d, i, size):
         d = d / 1000
         #d = d / 60
         d = "{:0.2f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
+
+        if i < 3:
+            d = latex_color(d, "green!60!black")
+        elif (size - (i + 1)) < 3:
+            d = latex_color(d, "red")
+
+        return d
+
+    def mem_fmt(d, i, size):
+        d = d / 1024
+        d = d / 1024
+        #d = d / 60
+        d = "{:0.2f}".format(d)
+        #d = latex_rotate("\\ " + d + "\\ ")
+
+        if i < 3:
+            d = latex_color(d, "green!60!black")
+        elif (size - (i + 1)) < 3:
+            d = latex_color(d, "red")
+
         return d
 
     batch = [
         #("Measured", if_check("data", "exists", "med")),
         ("\\sa Korrektheit", if_check("check_result", "ok", "med"), """
 Wir Überprüfen zunächst, ob alle Testdaten von allen Implementierungen
-korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\texttt{-{}-check} erzeugte Informationen:
-         """[1:-1]),
-        ("Laufzeit in Sekunden", tex_number("duration", time_fmt, "med"), """
-         """[1:-1]),
+korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\texttt{-{}-check} erzeugte Informationen und können in \\cref{%LABEL} eingesehen werden.
+         """[1:-1], "messung:tab:sa-chk", ""),
+        ("Laufzeit", tex_number("duration", time_fmt, "med"), """
+Wir betrachten nun in \\cref{%LABEL} die mediane Laufzeit, die jeder Algorithmus für die jeweiligen Testdaten erreicht hat.
+Pro Eingabe sind jeweils die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
+         """[1:-1], "messung:tab:duration", " in Sekunden"),
+        ("Speicherpeak", tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"), """
+\\Cref{%LABEL} entnehmen wir den mediane Speicherverbrauch. Der Wert setzt sich zusammen aus der Allokation für den Eingabetext inklusive der vom Algorithmus benötigten extra Sentinel Bytes, die Allokation für das Ausgabe \sa und dem vom Algorithmus selbst benötigten Speichers.
+Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
+         """[1:-1], "messung:tab:mem", " in MiB"),
     ]
 
-    for (title, get_data, header_text) in batch:
-        out = ""
-        out += "\\subsection{{{}}}\n".format(title)
-        out += "\n{}\n".format(header_text)
-        out += generate_latex_table_single(data, algorithms, files, get_data)
-
+    for (title, get_data, header_text, label, unit) in batch:
+        out = generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit)
         print(out)
 
 
