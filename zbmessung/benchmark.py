@@ -279,14 +279,17 @@ def handle_tablegen(args):
             #pprint.pprint([f, algorithm_name])
 
 
-    pprint.pprint(matrix)
+    #pprint.pprint(matrix)
     generate_latex_table(matrix, algorithms, files)
+
+def latex_rotate(s):
+    return "\\rotatebox[origin=c]{{90}}{{{}}}".format(s)
 
 def nice_file(f):
     f = f.replace(".200MB", "")
     f = f.replace("_", "\\_")
     f = "\\texttt{{{}}}".format(f)
-    f = "\\rotatebox[origin=c]{{90}}{{{}}}".format(f)
+    f = latex_rotate(f)
     return f
 
 def nice_algoname(n):
@@ -296,42 +299,9 @@ def nice_algoname(n):
     n = "${}$".format(n)
     return n
 
-def generate_latex_table(data, algorithms, files):
-    print("files", len(files))
-    print("algorithms", len(algorithms))
-
-    #sata[f][algorithm_name]["data"]
-
-    def if_check(key, cmp, which):
-        nonlocal data
-
-        def ret(f, algorithm_name):
-            nonlocal data
-            nonlocal cmp
-
-            if data[f][algorithm_name]["data"] != "exists":
-                return "{\color{darkgray}--}"
-
-            if data[f][algorithm_name][which][key] == cmp:
-                return "\\cmarkc"
-            else:
-                return "\\xmarkc"
-
-        return ret;
-
-    batch = [
-        #("Measured", if_check("data", "exists", "med")),
-        ("SA Check Result", if_check("check_result", "ok", "med")),
-    ]
-
-    for (title, get_data) in batch:
-        print(generate_latex_table_single(data, algorithms, files, get_data, title))
-
-def generate_latex_table_single(data, algorithms, files, get_data, title):
+def generate_latex_table_single(data, algorithms, files, get_data):
     out = ""
-
-    out += "\\subsection{{{}}}\n".format(title)
-
+    out += "\\resizebox{\\textwidth}{!}{\n"
     out += "\\begin{tabular}{l" + "".join(["r" for e in files]) + "}\n"
     out += "\\toprule\n"
 
@@ -346,8 +316,82 @@ def generate_latex_table_single(data, algorithms, files, get_data, title):
 
     out += "\\bottomrule\n"
     out += "\\end{tabular}\n"
+    out += "}\n"
 
     return out
+
+def generate_latex_table(data, algorithms, files):
+    #print("files", len(files))
+    #print("algorithms", len(algorithms))
+
+    #sata[f][algorithm_name]["data"]
+
+    def if_check(key, cmp, which):
+        nonlocal data
+
+        def ret(f, algorithm_name):
+            nonlocal data
+            nonlocal cmp
+            nonlocal which
+            nonlocal key
+
+            if data[f][algorithm_name]["data"] != "exists":
+                return "{\color{darkgray}--}"
+
+            if data[f][algorithm_name][which][key] == cmp:
+                return "\\cmarkc"
+            else:
+                return "\\xmarkc"
+
+        return ret
+
+    def tex_number(key, fmt, which):
+        nonlocal data
+
+        def ret(f, algorithm_name):
+            nonlocal data
+            nonlocal fmt
+            nonlocal which
+            nonlocal key
+
+            if data[f][algorithm_name]["data"] != "exists":
+                return "{\color{darkgray}--}"
+
+            raw = data[f][algorithm_name][which][key]
+            formated = fmt(raw)
+
+            return formated
+
+        return ret
+
+    def time_fmt(d):
+        d = d / 1000
+        #d = d / 60
+        d = d * 10
+        d = int(d)
+        d = d / 10
+        d = str(d)
+        #d = latex_rotate("\\ " + d + "\\ ")
+        return d
+
+    batch = [
+        #("Measured", if_check("data", "exists", "med")),
+        ("\\sa Korrektheit", if_check("check_result", "ok", "med"), """
+Wir Überprüfen zunächst, ob alle Testdaten von allen Implementierungen
+korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\texttt{-{}-check} erzeugte Informationen:
+         """[1:-1]),
+        ("Laufzeit in Sekunden", tex_number("duration", time_fmt, "med"), """
+         """[1:-1]),
+    ]
+
+    for (title, get_data, header_text) in batch:
+        out = ""
+        out += "\\subsection{{{}}}\n".format(title)
+        out += "\n{}\n".format(header_text)
+        out += generate_latex_table_single(data, algorithms, files, get_data)
+
+        print(out)
+
 
 # ------------------------------------------------------------------------------
 
