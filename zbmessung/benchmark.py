@@ -76,7 +76,7 @@ def save_json_to_file(d, p):
 
 def handle_measure(args):
     repetitions = args.repetitions
-    prefix_size = args.prefix_size
+    prefix_size = args.prefix
 
     print("Benchmarking all from:")
     pprint.pprint(files)
