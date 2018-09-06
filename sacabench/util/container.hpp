@@ -20,8 +20,9 @@ namespace sacabench::util {
 template <typename element_type>
 class container;
 
+inline bool s_allow_copy = false;
+
 class allow_container_copy {
-    inline static bool s_allow_copy = false;
     bool m_last_allow_copy;
 
     template <typename element_type>
