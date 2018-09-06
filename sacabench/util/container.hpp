@@ -63,7 +63,7 @@ private:
         IF_DEBUG({
             constexpr bool make_error = false;
 
-            if (!allow_container_copy::s_allow_copy && !other.empty()) {
+            if (!s_allow_copy && !other.empty()) {
                 std::stringstream ss;
 
                 bool possible_trigger = false;
