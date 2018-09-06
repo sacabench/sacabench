@@ -73,13 +73,12 @@ for f in files:
         blacklists += [(f, exceptions(f))]
 pprint.pprint(blacklists)
 
-prefix_size = "1M"
+prefix_size = "10M"
 repetitions = "3"
+make_plot = False
 
 print("Prefix size: {}".format(prefix_size))
 print("Repetitions: {}".format(repetitions))
-
-make_plot = True
 
 print("--------------------------------------------")
 
