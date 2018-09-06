@@ -16,19 +16,21 @@ import sys
 # - blacklist?
 
 files = [
-    "cc_commoncrawl.ascii.200MB",
     "pc_dblp.xml.200MB",
     "pc_dna.200MB",
     "pc_english.200MB",
     "pc_proteins.200MB",
+    "pc_sources.200MB",
+
     "pcr_cere.200MB",
-    "pcr_einstein.en.txt.200MB",
+    #"pcr_einstein.en.txt.200MB",
     "pcr_fib41.200MB",
     "pcr_kernel.200MB",
-    "pcr_para.200MB",
-    "pcr_rs.13.200MB",
-    "pcr_tm29.200MB",
-    "pc_sources.200MB",
+    #"pcr_para.200MB",
+    #"pcr_rs.13.200MB",
+    #"pcr_tm29.200MB",
+
+    "cc_commoncrawl.ascii.200MB",
     "tagme_wiki-disamb30.200MB",
     "wiki_all_vital.txt.200MB",
 ]
