@@ -37,10 +37,6 @@ def exceptions(f):
             "Deep-Shallow", # took too long on 1MiB
             "mSufSort", # took too long on 1MiB
         ]
-    if f == "pcr_einstein.en.txt.200MB":
-        ret = [
-            "qsufsort", # failed sa_check
-        ]
     if f == "pcr_fib41.200MB":
         ret = [
             "Naiv", # took too long on 1MiB
@@ -58,7 +54,7 @@ def exceptions(f):
             "Deep-Shallow", # took too long on 1MiB
         ]
 
-    ret += ["Doubling"]
+    ret += ["Doubling"] # redundant, and takes too long in general
 
     return ret
 
@@ -72,6 +68,8 @@ for f in files:
         blacklists += [(f, exceptions(f))]
 pprint.pprint(blacklists)
 print("--------------------------------------------")
+
+subprocess.run(["mkdir", "-p", "measures"], check=True)
 
 for f in files:
     full_f = "../external/datasets/downloads/" + f
@@ -111,10 +109,8 @@ for f in files:
         "--prefix", prefix_size,
     ]
 
-    subprocess.run(["mkdir", "-p", "measures"], check=True)
-
     print("Run {}".format(bench_cmd))
-    subprocess.run(bench_cmd, check=True)
+    subprocess.run(bench_cmd, check=False)
 
     print("Run {}".format(plot_cmd))
     subprocess.run(plot_cmd, check=True)
