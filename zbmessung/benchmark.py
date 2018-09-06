@@ -347,15 +347,27 @@ def generate_latex_table(data, algorithms, files):
 
     def tex_number(key, fmt, which):
         nonlocal data
+        nonlocal algorithms
 
         def ret(f, algorithm_name):
             nonlocal data
             nonlocal fmt
             nonlocal which
             nonlocal key
+            nonlocal algorithms
+
 
             if data[f][algorithm_name]["data"] != "exists":
                 return "{\color{darkgray}--}"
+
+            datapoints = set()
+            for ai in algorithms:
+                if not data[f][algorithm_name]["data"] != "exists":
+                    d = data[f][algorithm_name][which][key]
+                    datapoints.add((d, algorithm_name))
+
+            datapoints = list(sorted(datapoints, key = lambda t: t[0]))
+            #print(datapoints)
 
             raw = data[f][algorithm_name][which][key]
             formated = fmt(raw)
@@ -367,10 +379,7 @@ def generate_latex_table(data, algorithms, files):
     def time_fmt(d):
         d = d / 1000
         #d = d / 60
-        d = d * 10
-        d = int(d)
-        d = d / 10
-        d = str(d)
+        d = "{:0.2f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
         return d
 
