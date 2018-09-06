@@ -207,11 +207,11 @@ def handle_tablegen(args):
                     algorithm_phase_time_end = algorithm_phase["timeEnd"]
                     algorithm_phase_time_duration = algorithm_phase_time_end - algorithm_phase_time_start
 
-                    if not f in matrix:
+                    if f not in matrix:
                         matrix[f] = {}
 
                     algorithms.add(algorithm_name)
-                    if not algorithm_name in matrix[f]:
+                    if algorithm_name not in matrix[f]:
                         matrix[f][algorithm_name] = { "data" : "exists", "all" : [], "avg": {}, "med": {} }
 
                     lst = matrix[f][algorithm_name]["all"]
@@ -229,8 +229,10 @@ def handle_tablegen(args):
 
     algorithms = list(sorted(algorithms))
 
-    for f in matrix:
+    for f in files:
         for algorithm_name in algorithms:
+            if f not in matrix:
+                matrix[f] = {}
             if algorithm_name not in matrix[f]:
                 matrix[f][algorithm_name] = { "data": "missing" }
                 continue
@@ -267,9 +269,78 @@ def handle_tablegen(args):
             process(avg, statistics.mean)
             process(med, statistics.median)
 
-            #pprint.pprint([f, algorithm_name, lst])
+            #pprint.pprint([f, algorithm_name])
+
 
     pprint.pprint(matrix)
+    generate_latex_table(matrix, algorithms, files)
+
+def nice_file(f):
+    f = f.replace(".200MB", "")
+    f = f.replace("_", "\\_")
+    f = "\\texttt{{{}}}".format(f)
+    f = "\\rotatebox[origin=c]{{90}}{{{}}}".format(f)
+    return f
+
+def nice_algoname(n):
+    n = "\\text{{{}}}".format(n)
+    n = n.replace("_ref", "}_{\\text{ref}}{")
+    n = n.replace("{}", "")
+    n = "${}$".format(n)
+    return n
+
+def generate_latex_table(data, algorithms, files):
+    print("files", len(files))
+    print("algorithms", len(algorithms))
+
+    #sata[f][algorithm_name]["data"]
+
+    def if_check(key, cmp, which):
+        nonlocal data
+
+        def ret(f, algorithm_name):
+            nonlocal data
+            nonlocal cmp
+
+            if data[f][algorithm_name]["data"] != "exists":
+                return "{\color{darkgray}--}"
+
+            if data[f][algorithm_name][which][key] == cmp:
+                return "\\cmarkc"
+            else:
+                return "\\xmarkc"
+
+        return ret;
+
+    batch = [
+        #("Measured", if_check("data", "exists", "med")),
+        ("SA Check Result", if_check("check_result", "ok", "med")),
+    ]
+
+    for (title, get_data) in batch:
+        print(generate_latex_table_single(data, algorithms, files, get_data, title))
+
+def generate_latex_table_single(data, algorithms, files, get_data, title):
+    out = ""
+
+    out += "\\subsection{{{}}}\n".format(title)
+
+    out += "\\begin{tabular}{l" + "".join(["r" for e in files]) + "}\n"
+    out += "\\toprule\n"
+
+    nice_files = [nice_file(s) for s in files]
+
+    out += "     & {} \\\\\n".format(" & ".join(nice_files))
+    out += "\\midrule\n"
+
+    for algorithm_name in algorithms:
+        data = list(map(lambda f : get_data(f, algorithm_name), files))
+        out += "    {} & {} \\\\\n".format(nice_algoname(algorithm_name), " & ".join(data))
+
+    out += "\\bottomrule\n"
+    out += "\\end{tabular}\n"
+
+    return out
 
 # ------------------------------------------------------------------------------
 
