@@ -3,6 +3,8 @@
 import subprocess
 import pprint
 import os
+import argparse
+import json
 
 # options
 # - sa_bits: 32, 40, 64
@@ -27,8 +29,6 @@ files = [
     "tagme_wiki-disamb30.200MB",
     "wiki_all_vital.txt.200MB",
 ]
-
-sacabench_exec = "../build/sacabench/sacabench"
 
 def exceptions(f):
     ret = []
@@ -64,77 +64,188 @@ def exceptions(f):
 
     return ret
 
-print("Benchmarking all from:")
-pprint.pprint(files)
-print("Blacklists:")
-blacklists = []
-for f in files:
-    tmp = exceptions(f)
-    if len(tmp) != 0:
-        blacklists += [(f, exceptions(f))]
-pprint.pprint(blacklists)
+def load_json_from_file(p):
+    with open(str(p), 'r') as f:
+        json_data = json.load(f)
+    return json_data
 
-prefix_size = "10M"
-repetitions = "3"
-make_plot = False
+def save_json_to_file(d, p):
+    with open(str(p), 'w') as outfile:
+        json.dump(d, outfile, indent=4, sort_keys=True)
 
-print("Prefix size: {}".format(prefix_size))
-print("Repetitions: {}".format(repetitions))
+def handle_measure(args):
+    print("Benchmarking all from:")
+    pprint.pprint(files)
+    print("Blacklists:")
+    blacklists = []
+    for f in files:
+        tmp = exceptions(f)
+        if len(tmp) != 0:
+            blacklists += [(f, exceptions(f))]
+    pprint.pprint(blacklists)
 
-print("--------------------------------------------")
-
-for f in files:
-    measures_dir = "measures/size-{}-rep-{}".format(prefix_size, repetitions)
-    full_f = "../external/datasets/downloads/" + f
-    full_json = "{}/{}.json".format(measures_dir, f)
-    blacklist = exceptions(f)
-
-    subprocess.run(["mkdir", "-p", measures_dir], check=True)
-
-    hsh = [prefix_size, repetitions, full_f, full_json, blacklist]
-    print("Hash: {}".format(hsh))
-
-    print("Benching {}...".format(full_f))
-    print("Blacklisting the following algorithms:")
-    pprint.pprint(blacklist)
-
-    if os.path.isfile(full_json):
-        print("Already done")
-        continue
-
-    blacklist_args = []
-    for blacklist_arg in map(lambda x: ["--blacklist", x], blacklist):
-        blacklist_args += blacklist_arg
-
-    bench_cmd = [
-        sacabench_exec,
-        "batch",
-
-        "--check",
-        "--force",
-        "--prefix", prefix_size,
-        "--repetitions", repetitions,
-        "--benchmark", full_json,
-        *blacklist_args,
-
-        full_f,
-    ]
-
-    plot_cmd = [
-        sacabench_exec,
-        "plot",
-        "batch",
-        full_f,
-        full_json,
-        "--prefix", prefix_size,
-    ]
-
-    print("Run {}".format(bench_cmd))
-    subprocess.run(bench_cmd, check=False)
-
-    if make_plot:
-        print("Run {}".format(plot_cmd))
-        subprocess.run(plot_cmd, check=True)
-        subprocess.run(["mv", full_json + " .pdf", full_json + ".pdf"], check=True)
+    print("Prefix size: {}".format(prefix_size))
+    print("Repetitions: {}".format(repetitions))
 
     print("--------------------------------------------")
+
+    for f in files:
+        measures_dir = "measures/size-{}-rep-{}".format(prefix_size, repetitions)
+        full_f = "../external/datasets/downloads/" + f
+        full_json = "{}/{}.json".format(measures_dir, f)
+        blacklist = exceptions(f)
+
+        subprocess.run(["mkdir", "-p", measures_dir], check=True)
+
+        hsh = [prefix_size, repetitions, full_f, full_json, blacklist]
+        print("Hash: {}".format(hsh))
+
+        print("Benching {}...".format(full_f))
+        print("Blacklisting the following algorithms:")
+        pprint.pprint(blacklist)
+
+        if os.path.isfile(full_json):
+            print("Already done")
+            continue
+
+        blacklist_args = []
+        for blacklist_arg in map(lambda x: ["--blacklist", x], blacklist):
+            blacklist_args += blacklist_arg
+
+        bench_cmd = [
+            sacabench_exec,
+            "batch",
+
+            "--check",
+            "--force",
+            "--prefix", prefix_size,
+            "--repetitions", repetitions,
+            "--benchmark", full_json,
+            *blacklist_args,
+
+            full_f,
+        ]
+
+        print("Run {}".format(bench_cmd))
+        subprocess.run(bench_cmd, check=False)
+
+        print("--------------------------------------------")
+
+def handle_plot(args):
+    path = args.path
+    ps = args.prefix
+    for f in files:
+        measures_dir = path
+        full_f = "../external/datasets/downloads/" + f
+        full_json = "{}/{}.json".format(measures_dir, f)
+        if os.path.isfile(full_json):
+            plot_cmd = [
+                sacabench_exec,
+                "plot",
+                "batch",
+                full_f,
+                full_json,
+                "--prefix", ps,
+            ]
+            print("Run {}".format(plot_cmd))
+            subprocess.run(plot_cmd, check=True)
+            subprocess.run(["mv", full_json + " .pdf", full_json + ".pdf"], check=True)
+
+def get_stats(stats):
+    mp = {}
+    for s in stats:
+        if not s["key"] in mp:
+            mp[s["key"]] = []
+        mp[s["key"]].append(s["value"])
+    return mp
+
+def handle_tablegen(args):
+    path = args.path
+    ps = args.prefix
+
+    matrix = {}
+
+    for f in files:
+        measures_dir = path
+        full_f = "../external/datasets/downloads/" + f
+        full_json = "{}/{}.json".format(measures_dir, f)
+        if os.path.isfile(full_json):
+            js = load_json_from_file(full_json)
+            for algos in js:
+                for algo in algos:
+                    root_stats = get_stats(algo["stats"])
+                    algorithm_name = root_stats["algorithm_name"][0]
+
+                    saca_phase = algo["sub"][0]
+                    assert(saca_phase["title"] == "SACA")
+
+                    checker_phase = algo["sub"][1]
+                    assert(checker_phase["title"] == "SA Checker")
+                    check_result = get_stats(checker_phase["stats"])["check_result"][0]
+
+                    saca_phase_stats = get_stats(saca_phase["stats"])
+                    saca_phase_stats_extra_sentinels = saca_phase_stats["extra_sentinels"][0]
+
+                    algorithm_phase =  saca_phase["sub"][3]
+                    assert(algorithm_phase["title"] == "Algorithm")
+
+                    algorithm_phase_mem_final = algorithm_phase["memFinal"]
+                    algorithm_phase_mem_peak = algorithm_phase["memPeak"]
+                    algorithm_phase_mem_off = algorithm_phase["memOff"]
+
+                    algorithm_phase_time_start = algorithm_phase["timeStart"]
+                    algorithm_phase_time_end = algorithm_phase["timeEnd"]
+                    algorithm_phase_time_duration = algorithm_phase_time_end - algorithm_phase_time_start
+
+                    if not f in matrix:
+                        matrix[f] = {}
+
+                    if not algorithm_name in matrix[f]:
+                        matrix[f][algorithm_name] = { "all" : [], "avg": {}, "med": {} }
+
+                    lst = matrix[f][algorithm_name]["all"]
+
+                    lst.append({
+                        "check_result" : check_result,
+                        "extra_sentinels" : saca_phase_stats_extra_sentinels,
+                        "mem_final" : algorithm_phase_mem_final,
+                        "mem_peak" : algorithm_phase_mem_peak,
+                        "mem_off" : algorithm_phase_mem_off,
+                        "duration" : algorithm_phase_time_duration,
+                    })
+
+    for f in matrix:
+        for algorithm_name in matrix[f]:
+            data = matrix[f][algorithm_name]
+            lst = data["all"]
+            avg = data["avg"]
+            med = data["med"]
+
+            pprint.pprint([f, algorithm_name, lst])
+
+    #pprint.pprint(matrix)
+
+# ------------------------------------------------------------------------------
+
+sacabench_exec = "../build/sacabench/sacabench"
+prefix_size = "10M"
+repetitions = "3"
+
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers(help='sub-command help')
+
+parser_a = subparsers.add_parser('measure', help='measure help')
+parser_a.set_defaults(func=handle_measure)
+
+parser_b = subparsers.add_parser('plot', help='plot help')
+parser_b.add_argument('path', help='path of measure directory')
+parser_b.add_argument('prefix', help='prefix size of data')
+parser_b.set_defaults(func=handle_plot)
+
+parser_c = subparsers.add_parser('tablegen', help='tablegen help')
+parser_c.add_argument('path', help='path of measure directory')
+parser_c.add_argument('prefix', help='prefix size of data')
+parser_c.set_defaults(func=handle_tablegen)
+
+args = parser.parse_args()
+args.func(args)
