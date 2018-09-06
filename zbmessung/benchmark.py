@@ -2,6 +2,7 @@
 
 import subprocess
 import pprint
+import os
 
 # options
 # - sa_bits: 32, 40, 64
@@ -36,18 +37,22 @@ def exceptions(f):
         ret = [
             "Deep-Shallow", # took too long on 1MiB
             "mSufSort", # took too long on 1MiB
+            "nzSufSort", # took too long on 1MiB
         ]
     if f == "pcr_fib41.200MB":
         ret = [
             "Naiv", # took too long on 1MiB
+            "Deep-Shallow", # took too long on 1MiB
         ]
     if f == "pcr_rs.13.200MB":
         ret = [
             "Naiv", # took too long on 1MiB
+            "Deep-Shallow", # took too long on 1MiB
         ]
     if f == "pcr_tm29.200MB":
         ret = [
             "Naiv", # took too long on 1MiB
+            "DSS", # took too long on 1MiB
         ]
     if f == "pcr_para.200MB":
         ret = [
@@ -67,25 +72,39 @@ for f in files:
     if len(tmp) != 0:
         blacklists += [(f, exceptions(f))]
 pprint.pprint(blacklists)
+
+prefix_size = "1M"
+repetitions = "3"
+
+print("Prefix size: {}".format(prefix_size))
+print("Repetitions: {}".format(repetitions))
+
+make_plot = True
+
 print("--------------------------------------------")
 
-subprocess.run(["mkdir", "-p", "measures"], check=True)
-
 for f in files:
+    measures_dir = "measures/size-{}-rep-{}".format(prefix_size, repetitions)
     full_f = "../external/datasets/downloads/" + f
-    full_json = "measures/{}.json".format(f)
+    full_json = "{}/{}.json".format(measures_dir, f)
+    blacklist = exceptions(f)
+
+    subprocess.run(["mkdir", "-p", measures_dir], check=True)
+
+    hsh = [prefix_size, repetitions, full_f, full_json, blacklist]
+    print("Hash: {}".format(hsh))
 
     print("Benching {}...".format(full_f))
-
-    blacklist = exceptions(f)
     print("Blacklisting the following algorithms:")
     pprint.pprint(blacklist)
+
+    if os.path.isfile(full_json):
+        print("Already done")
+        continue
 
     blacklist_args = []
     for blacklist_arg in map(lambda x: ["--blacklist", x], blacklist):
         blacklist_args += blacklist_arg
-
-    prefix_size = "10M"
 
     bench_cmd = [
         sacabench_exec,
@@ -94,6 +113,7 @@ for f in files:
         "--check",
         "--force",
         "--prefix", prefix_size,
+        "--repetitions", repetitions,
         "--benchmark", full_json,
         *blacklist_args,
 
@@ -112,8 +132,9 @@ for f in files:
     print("Run {}".format(bench_cmd))
     subprocess.run(bench_cmd, check=False)
 
-    #print("Run {}".format(plot_cmd))
-    #subprocess.run(plot_cmd, check=True)
-    #subprocess.run(["mv", full_json + " .pdf", full_json + ".pdf"], check=True)
+    if make_plot:
+        print("Run {}".format(plot_cmd))
+        subprocess.run(plot_cmd, check=True)
+        subprocess.run(["mv", full_json + " .pdf", full_json + ".pdf"], check=True)
 
     print("--------------------------------------------")
