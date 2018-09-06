@@ -195,6 +195,10 @@ def handle_tablegen(args):
                     algorithm_phase =  saca_phase["sub"][3]
                     assert(algorithm_phase["title"] == "Algorithm")
 
+                    alloc_phase =  saca_phase["sub"][0]
+                    assert(alloc_phase["title"] == "Allocate SA and Text container")
+                    alloc_phase_peak = alloc_phase["memPeak"]
+
                     algorithm_phase_mem_final = algorithm_phase["memFinal"]
                     algorithm_phase_mem_peak = algorithm_phase["memPeak"]
                     algorithm_phase_mem_off = algorithm_phase["memOff"]
@@ -215,14 +219,15 @@ def handle_tablegen(args):
                     lst.append({
                         "check_result" : check_result,
                         "extra_sentinels" : saca_phase_stats_extra_sentinels,
-                        "mem_final" : algorithm_phase_mem_final,
+                        #"mem_final" : algorithm_phase_mem_final,
                         "mem_local_peak" : algorithm_phase_mem_peak,
-                        "mem_off" : algorithm_phase_mem_off,
+                        "mem_local_peak_plus_input_sa": alloc_phase_peak + algorithm_phase_mem_peak,
+                        #"mem_off" : algorithm_phase_mem_off,
                         "mem_global_peak" : algorithm_phase_mem_off + algorithm_phase_mem_peak,
                         "duration" : algorithm_phase_time_duration,
                     })
 
-    algorithms = list(algorithms)
+    algorithms = list(sorted(algorithms))
 
     for f in matrix:
         for algorithm_name in algorithms:
