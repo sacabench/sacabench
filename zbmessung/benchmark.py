@@ -85,7 +85,7 @@ for f in files:
     for blacklist_arg in map(lambda x: ["--blacklist", x], blacklist):
         blacklist_args += blacklist_arg
 
-    prefix_size = "1M"
+    prefix_size = "10M"
 
     bench_cmd = [
         sacabench_exec,
