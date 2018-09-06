@@ -20,13 +20,8 @@ namespace sacabench::util {
 template <typename element_type>
 class container;
 
-inline bool& static_hack() {
-    static bool allow_copy = false;
-    return allow_copy;
-}
-static bool& s_allow_copy = static_hack();
-
 class allow_container_copy {
+    inline static bool s_allow_copy = false;
     bool m_last_allow_copy;
 
     template <typename element_type>
@@ -63,7 +58,7 @@ private:
         IF_DEBUG({
             constexpr bool make_error = false;
 
-            if (!s_allow_copy && !other.empty()) {
+            if (!allow_container_copy::s_allow_copy && !other.empty()) {
                 std::stringstream ss;
 
                 bool possible_trigger = false;
