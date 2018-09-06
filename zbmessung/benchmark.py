@@ -139,22 +139,11 @@ def handle_measure(args):
             full_f,
         ]
 
-        last_time = datetime.datetime.now()
-
-        def try_time():
-            nonlocal last_time
-            new_time = datetime.datetime.now()
-            if (new_time - last_time) >= datetime.timedelta(seconds=1):
-                last_time = new_time
-                print("<{}>".format(last_time))
-
-        try_time()
         print("Run {}".format(bench_cmd))
 
         p = subprocess.Popen(bench_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
         for line in iter(p.stdout.readline, b''):
-            try_time()
-            sys.stdout.write(line.decode("utf-8")),
+            sys.stdout.write("{}: {}".format(datetime.datetime.now(), line.decode("utf-8"))),
         p.stdout.close()
         p.wait()
 
