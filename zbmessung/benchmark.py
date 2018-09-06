@@ -5,6 +5,7 @@ import pprint
 import os
 import argparse
 import json
+import statistics
 
 # options
 # - sa_bits: 32, 40, 64
@@ -74,6 +75,9 @@ def save_json_to_file(d, p):
         json.dump(d, outfile, indent=4, sort_keys=True)
 
 def handle_measure(args):
+    repetitions = args.repetitions
+    prefix_size = args.prefix_size
+
     print("Benchmarking all from:")
     pprint.pprint(files)
     print("Blacklists:")
@@ -209,8 +213,9 @@ def handle_tablegen(args):
                         "check_result" : check_result,
                         "extra_sentinels" : saca_phase_stats_extra_sentinels,
                         "mem_final" : algorithm_phase_mem_final,
-                        "mem_peak" : algorithm_phase_mem_peak,
+                        "mem_local_peak" : algorithm_phase_mem_peak,
                         "mem_off" : algorithm_phase_mem_off,
+                        "mem_global_peak" : algorithm_phase_mem_off + algorithm_phase_mem_peak,
                         "duration" : algorithm_phase_time_duration,
                     })
 
@@ -221,20 +226,47 @@ def handle_tablegen(args):
             avg = data["avg"]
             med = data["med"]
 
-            pprint.pprint([f, algorithm_name, lst])
+            for key in lst[0]:
+                avg[key] = []
+                med[key] = []
 
-    #pprint.pprint(matrix)
+            for e in lst:
+                for key in e:
+                    avg[key].append(e[key])
+                    med[key].append(e[key])
+
+            def process(t, f):
+                for key in t:
+                    if key == "check_result":
+                        all_ok = all(e == "ok" for e in t[key])
+                        if all_ok:
+                            t[key] = "ok"
+                        else:
+                            t[key] = "error"
+                    elif key == "extra_sentinels":
+                        assert len(set(t[key])) == 1
+
+                        t[key] = int(t[key][0])
+                    else:
+                        t[key] = f(t[key])
+
+            process(avg, statistics.mean)
+            process(med, statistics.median)
+
+            #pprint.pprint([f, algorithm_name, lst])
+
+    pprint.pprint(matrix)
 
 # ------------------------------------------------------------------------------
 
 sacabench_exec = "../build/sacabench/sacabench"
-prefix_size = "10M"
-repetitions = "3"
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='sub-command help')
 
 parser_a = subparsers.add_parser('measure', help='measure help')
+parser_a.add_argument('prefix', help='prefix size of data')
+parser_a.add_argument('repetitions', help='repetitions of measures')
 parser_a.set_defaults(func=handle_measure)
 
 parser_b = subparsers.add_parser('plot', help='plot help')
