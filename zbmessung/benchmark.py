@@ -112,9 +112,8 @@ for f in files:
     print("Run {}".format(bench_cmd))
     subprocess.run(bench_cmd, check=False)
 
-    print("Run {}".format(plot_cmd))
-    subprocess.run(plot_cmd, check=True)
-
-    subprocess.run(["mv", full_json + " .pdf", full_json + ".pdf"], check=True)
+    #print("Run {}".format(plot_cmd))
+    #subprocess.run(plot_cmd, check=True)
+    #subprocess.run(["mv", full_json + " .pdf", full_json + ".pdf"], check=True)
 
     print("--------------------------------------------")
