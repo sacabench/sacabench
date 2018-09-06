@@ -169,6 +169,8 @@ def handle_tablegen(args):
 
     matrix = {}
 
+    algorithms = set()
+
     for f in files:
         measures_dir = path
         full_f = "../external/datasets/downloads/" + f
@@ -204,8 +206,9 @@ def handle_tablegen(args):
                     if not f in matrix:
                         matrix[f] = {}
 
+                    algorithms.add(algorithm_name)
                     if not algorithm_name in matrix[f]:
-                        matrix[f][algorithm_name] = { "all" : [], "avg": {}, "med": {} }
+                        matrix[f][algorithm_name] = { "data" : "exists", "all" : [], "avg": {}, "med": {} }
 
                     lst = matrix[f][algorithm_name]["all"]
 
@@ -219,8 +222,14 @@ def handle_tablegen(args):
                         "duration" : algorithm_phase_time_duration,
                     })
 
+    algorithms = list(algorithms)
+
     for f in matrix:
-        for algorithm_name in matrix[f]:
+        for algorithm_name in algorithms:
+            if algorithm_name not in matrix[f]:
+                matrix[f][algorithm_name] = { "data": "missing" }
+                continue
+
             data = matrix[f][algorithm_name]
             lst = data["all"]
             avg = data["avg"]
