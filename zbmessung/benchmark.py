@@ -23,10 +23,10 @@ files = [
     "pc_sources.200MB",
 
     "pcr_cere.200MB",
-    "pcr_einstein.en.txt.200MB",
-    "pcr_fib41.200MB",
-    "pcr_kernel.200MB",
     "pcr_para.200MB",
+    "pcr_einstein.en.txt.200MB",
+    "pcr_kernel.200MB",
+    "pcr_fib41.200MB",
     "pcr_rs.13.200MB",
     "pcr_tm29.200MB",
 
@@ -441,7 +441,7 @@ def generate_latex_table(data, algorithms, files):
 
     def time_fmt(d, i, size):
         d = d / 1000
-        #d = d / 60
+        d = d / 60
         d = "{:0.2f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
@@ -455,8 +455,8 @@ def generate_latex_table(data, algorithms, files):
     def mem_fmt(d, i, size):
         d = d / 1024
         d = d / 1024
-        #d = d / 60
-        d = "{:0.2f}".format(d)
+        d = d / 1024
+        d = "{:0.3f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
         if i < 3:
@@ -475,11 +475,11 @@ korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\
         ("Laufzeit", tex_number("duration", time_fmt, "med"), """
 Wir betrachten nun in \\cref{%LABEL} die mediane Laufzeit, die jeder Algorithmus für die jeweiligen Testdaten erreicht hat.
 Pro Eingabe sind jeweils die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
-         """[1:-1], "messung:tab:duration", " in Sekunden"),
+         """[1:-1], "messung:tab:duration", " in Minuten"),
         ("Speicherpeak", tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"), """
 \\Cref{%LABEL} entnehmen wir den mediane Speicherverbrauch. Der Wert setzt sich zusammen aus der Allokation für den Eingabetext inklusive der vom Algorithmus benötigten extra Sentinel Bytes, die Allokation für das Ausgabe \sa und dem vom Algorithmus selbst benötigten Speichers.
 Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
-         """[1:-1], "messung:tab:mem", " in MiB"),
+         """[1:-1], "messung:tab:mem", " in GiB"),
     ]
 
     for (title, get_data, header_text, label, unit) in batch:
