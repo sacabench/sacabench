@@ -243,7 +243,7 @@ def handle_tablegen(args):
                         "duration" : algorithm_phase_time_duration,
                     })
 
-    algorithms = list(sorted(algorithms))
+    algorithms = list(sorted(algorithms, key=lambda x: fix_algo_name(x)))
 
     for f in files:
         for algorithm_name in algorithms:
@@ -291,41 +291,6 @@ def handle_tablegen(args):
     #pprint.pprint(matrix)
     generate_latex_table(matrix, algorithms, files)
 
-tmp = """
-'qsufsort_ref': {'all': [{'check_result': 'ok',
-                        'duration': 2856.753294944763,
-                        'extra_sentinels': '0',
-                        'mem_global_peak': 220200976,
-                        'mem_local_peak': 167772176,
-                        'mem_local_peak_plus_input_sa': 220200976},
-                        {'check_result': 'ok',
-                        'duration': 2842.0060551166534,
-                        'extra_sentinels': '0',
-                        'mem_global_peak': 220200976,
-                        'mem_local_peak': 167772176,
-                        'mem_local_peak_plus_input_sa': 220200976},
-                        {'check_result': 'ok',
-                        'duration': 2843.213814020157,
-                        'extra_sentinels': '0',
-                        'mem_global_peak': 220200976,
-                        'mem_local_peak': 167772176,
-                        'mem_local_peak_plus_input_sa': 220200976}],
-                'avg': {'check_result': 'ok',
-                        'duration': 2847.324388027191,
-                        'extra_sentinels': 0,
-                        'mem_global_peak': 220200976,
-                        'mem_local_peak': 167772176,
-                        'mem_local_peak_plus_input_sa': 220200976},
-                'data': 'exists',
-                'med': {'check_result': 'ok',
-                        'duration': 2843.213814020157,
-                        'extra_sentinels': 0,
-                        'mem_global_peak': 220200976,
-                        'mem_local_peak': 167772176,
-                        'mem_local_peak_plus_input_sa': 220200976}}}}
-
-"""
-
 def latex_rotate(s):
     return "\\rotatebox[origin=c]{{90}}{{{}}}".format(s)
 
@@ -342,7 +307,14 @@ def nice_file(f):
     f = latex_rotate(f)
     return f
 
+def fix_algo_name(n):
+    if n == "DSS":
+        n = "DivSufSort"
+    n = n[0].capitalize() + n[1:]
+    return n
+
 def nice_algoname(n):
+    n = fix_algo_name(n)
     n = "\\text{{{}}}".format(n)
     n = n.replace("_ref", "}_{\\text{ref}}{")
     n = n.replace("{}", "")
