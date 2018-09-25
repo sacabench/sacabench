@@ -16,6 +16,7 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/sort/ips4o.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
@@ -324,7 +325,8 @@ public:
         if (bucket.size() < INSSORT_THRESHOLD) {
             insertion_sort(bucket, util::compare_key(sort_key));
         } else {
-            ternary_quicksort(bucket, util::compare_key(sort_key));
+            // ternary_quicksort(bucket, util::compare_key(sort_key));
+            util::sort::ips4o_sort(bucket, util::compare_key(sort_key));
         }
 
         /* As a consequence of sorting, bucket pointers might have changed.
