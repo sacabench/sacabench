@@ -125,7 +125,6 @@ public:
         // catch trivial cases
         if (n < 2)
             return;
-
         // init additional arrays
         auto isa = util::make_container<sa_index>(n);
 
@@ -144,6 +143,7 @@ public:
         qss.split("Init ISA");
         // Calculate length of equal groups into out_sa
         calculate_equal_length(out_sa, isa, compare_packed);
+
         // Init ISA with first ranks after sorting
         init_isa_packed(out_sa, isa);
 
@@ -158,6 +158,7 @@ public:
             size_t counter = 0;
             // jump through array with group sizes
             while (counter < out_sa.size()) {
+
                 // Sorted Group, check if negative bit is set
                 if (bool(out_sa[counter] & NEGATIVE_MASK)) {
                     // Skip sorted group
@@ -167,7 +168,9 @@ public:
                 else {
                     // size of group changes while updating, save for jumping to
                     // right place
+
                     size_t tmp = isa[out_sa[counter]];
+                    
                     // sort and update unsorted group
                     sort_and_update_group(out_sa, isa, compare_function,
                                           sa_index(counter),
@@ -175,9 +178,12 @@ public:
                     // jump over updates group
                     counter = tmp + 1;
                 }
+                
+                
             }
             // update group sizes
             update_group_length(out_sa, isa);
+
             // prefix doubling
             h = h * 2;
             is_sorted = ((out_sa[0] & REMOVE_NEGATIVE_MASK) == n);
@@ -319,33 +325,32 @@ private:
         auto equal = util::as_equal(cmp);
         size_t counter = 1;
         sa_index start = 0;
-        for (size_t index = 1; index < n; ++index) {
+            for (size_t index = 1; index < n; ++index) {
             //if sorted increment counter
             if (!equal(out_sa[index - 1], out_sa[index])) {
                 ++counter;
             } else {
-                if (index + 1 >= n ||
-                    !equal(out_sa[index], out_sa[index + 1])) {
                     if (counter > 1) {
                         //write group number in isa,
                         //because it will be overwritten
                         isa[(out_sa[start])] = start;
                         //write length in out_sa
                         out_sa[start] = (counter - 1) | NEGATIVE_MASK;
-                        start = index + 1;
-                    }
-                    if (counter == 1) {
-                        isa[out_sa[start]] = 1 | NEGATIVE_MASK;
-                        start = index + 1;
                     }
                     counter = 0;
-                }
+                    //Skip unsorted
+                    while(index + 1 < n && equal(out_sa[index],out_sa[index + 1]))
+                    {
+                        index++;
+                    }
+                    start=index+1;
             }
         }
         if (counter != 0) {
             isa[(out_sa[start])] = start;
             out_sa[start] = (counter) | NEGATIVE_MASK;
         }
+        
     }
     static void init_isa_packed(util::span<sa_index> out_sa,
                                 util::container<sa_index>& isa) {
@@ -358,12 +363,7 @@ private:
                 //write unsorted group numbers
                 for (size_t counter = 1; counter <= length_of_unsorted_group;
                      ++counter) {
-                    if (bool(isa[out_sa[index - counter]] & NEGATIVE_MASK)) {
                         isa[out_sa[index - counter]] = sorted_group_number;
-                        sorted_group_number = index - counter - 1;
-                    } else {
-                        isa[out_sa[index - counter]] = sorted_group_number;
-                    }
                 }
                 length_of_unsorted_group = 0;
                 length_of_sorted_group = out_sa[index] & REMOVE_NEGATIVE_MASK;
@@ -375,7 +375,19 @@ private:
                 }
                 index += length_of_sorted_group - 1;
             } else {
-                length_of_unsorted_group++;
+                //When found other unsorted group
+                if(length_of_unsorted_group>0 && isa[out_sa[index-1]]!=isa[out_sa[index]]) {
+                    sorted_group_number = index - 1;
+                    for (size_t counter = 1; counter <= length_of_unsorted_group;
+                     ++counter) {
+                        isa[out_sa[index - counter]] = sorted_group_number;
+                }
+                length_of_unsorted_group = 1;
+                }
+                else
+                {
+                    length_of_unsorted_group++;
+                }
             }
         }
         if (length_of_unsorted_group > 0) {
