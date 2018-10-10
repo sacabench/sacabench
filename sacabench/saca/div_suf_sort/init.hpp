@@ -1,6 +1,8 @@
 #pragma once
 
+#include <tuple>
 #include <util/span.hpp>
+#include <util/type_extraction.hpp>
 
 namespace sacabench::div_suf_sort {
 
@@ -81,6 +83,44 @@ extract_rms_substrings(rms_suffixes<sa_index>& rms_suf) {
 // counting bucket sizes)
 template <typename sa_index>
 inline static size_t
+extract_rms_suffixes_and_count_buckets(util::string_span text,
+                     util::span<sa_index> out_sa, buckets<sa_index>& sa_buckets) {
+    // First (right) index from interval of already found rms-suffixes
+    // [rms_begin, rms_end)
+    size_t right_border = out_sa.size(), bucket_index, first_letter,
+        second_letter;
+    // Prev initialized for sentinel
+    bool prev = true, current;
+    // Insert rms-suffixes from right to left
+    for (size_t pos = text.size()-1; pos > 0; --pos) {
+        current = util::get_type_rtl_dynamic(text, pos-1, prev);
+        first_letter = text[pos-1];
+        second_letter = text[pos];
+        if (sa_types::is_rms_type(current, prev)) {
+            // Adjust border to new entry (rms-suffix)
+            DCHECK_NE(first_letter, second_letter);
+            out_sa[--right_border] = pos-1;
+            bucket_index = sa_buckets.get_rms_bucket_index(first_letter,
+                second_letter);
+            ++sa_buckets.s_buckets[bucket_index];
+        } else if(current) {
+            ++sa_buckets.l_buckets[first_letter];
+        } else {
+            bucket_index = sa_buckets.get_s_bucket_index(first_letter,
+            second_letter);
+            ++sa_buckets.s_buckets[bucket_index];
+        }
+        prev = current;
+    }
+    // Count of rms-suffixes
+    return text.size() - right_border;
+}
+
+
+// TODO: Change in optimization-phase (while computing l/s-types,
+// counting bucket sizes)
+template <typename sa_index>
+inline static size_t
 extract_rms_suffixes(util::string_span text,
                      util::container<bool>& sa_types_container,
                      util::span<sa_index> out_sa) {
@@ -131,6 +171,8 @@ inline static void get_types_tmp(util::string_span text,
  * @param s_buckets The buckets for the s- and rms-suffixes.
  * Contains a bucket for each two symbols (sentinel included for
  * completeness), i.e. s_buckets.size() = (|alphabet| + 1)²
+ *
+ * OBSOLETE
  */
 template <typename sa_index>
 inline static void compute_buckets(util::string_span input,
@@ -139,6 +181,7 @@ inline static void compute_buckets(util::string_span input,
                                    buckets<sa_index>& sa_buckets) {
     count_buckets(input, suffix_types, sa_buckets);
     prefix_sum(max_character_value, sa_buckets);
+    std::cout << "Finished" << std::endl;
 }
 
 template <typename sa_index>
@@ -169,6 +212,87 @@ inline static void count_buckets(util::string_span input,
         }
     }
 }
+
+template <typename sa_index>
+inline static void count_buckets(util::string_span input,
+                                 buckets<sa_index>& sa_buckets) {
+    size_t first_letter = input[0], second_letter;
+    // Used for accessing buckets in sa_buckets.s_buckets
+    size_t bucket_index;
+    std::tuple<bool, int> current_tuple = util::get_type_ltr_dynamic(input, 0);
+    size_t same_char_amount = std::get<1>(current_tuple);
+
+    // implicitly set to 1 in prefix_sum
+    // sa_buckets.l_buckets[0] = 1;
+
+    // Types for current (pos-1) and next (pos) element
+    bool current = std::get<0>(current_tuple), next = current, refresh_type = false;
+
+    for(size_t pos=1; pos < input.size(); ++pos) {
+        if(same_char_amount == 0 || (pos == 1 && same_char_amount == 1)) {
+            current_tuple = util::get_type_ltr_dynamic(input, pos);
+            next = std::get<0>(current_tuple);
+            same_char_amount = std::get<1>(current_tuple);
+            refresh_type = true;
+        }
+        // Decreasing here helps with readability of conditions with this variable
+        --same_char_amount;
+        if(current) {
+            ++sa_buckets.l_buckets[first_letter];
+        } else {
+            // Doesn't hold if type has been refreshed in this iteration
+            if(same_char_amount > 0 && !refresh_type) {
+                // next character is the same -> never rms-type
+                bucket_index = sa_buckets.get_s_bucket_index(first_letter, first_letter);
+            } else {
+                second_letter = input[pos];
+                    std::cout << "s-type: " << first_letter << "," << second_letter << ","
+                    << size_t(input[pos+1]) << ", " << next << std::endl;
+                bucket_index = next ? sa_buckets.get_rms_bucket_index(first_letter, second_letter) :
+                    sa_buckets.get_s_bucket_index(first_letter, second_letter);
+                ++sa_buckets.s_buckets[bucket_index];
+            }
+        }
+
+        // Correct spot to refresh. Earlier -> buckets increased incorrectly
+        if(refresh_type) {
+            refresh_type = false;
+            current = next;
+            first_letter = input[pos];
+        }
+    }
+
+    /*
+    for(size_t pos = 0; pos < input.size()-1; ++pos) {
+        if(same_char_amount == 0) {
+            std::cout << "retrieving next element" << std::endl;
+            current_tuple = util::get_type_ltr_dynamic(input, pos);
+            current = std::get<0>(current_tuple);
+            same_char_amount = std::get<1>(current_tuple);
+            first_letter = input[pos];
+            std::cout << "index " << pos << ", char " << first_letter
+            << ", l_type " << current << ", same_chars " << same_char_amount <<
+            std::endl;
+        } else {
+            // Types stay the same (prev refreshed in last iteration, where
+            // same_char_amount was set)
+            DCHECK_EQ(first_letter, input[pos]);
+        }
+        if(current) {++sa_buckets.l_buckets[first_letter];}
+        else {
+            second_letter = input[pos+1];
+                std::cout << "s-type: " << first_letter << "," << second_letter << ","
+                << size_t(input[pos+2]) << ", " << (input[pos+2] < second_letter) << std::endl;
+            bucket_index = (input[pos+2] < second_letter) ?
+                sa_buckets.get_rms_bucket_index(first_letter, second_letter) :
+                sa_buckets.get_s_bucket_index(first_letter, second_letter);
+            ++sa_buckets.s_buckets[bucket_index];
+        }
+        --same_char_amount;
+    } */
+    std::cout << "Finished" << std::endl;
+}
+
 
 template <typename sa_index>
 inline static void prefix_sum(const size_t max_character_value,

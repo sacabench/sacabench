@@ -8,6 +8,7 @@
 #include <util/sort/introsort.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
+#include <util/type_extraction.hpp>
 #include <utility>
 
 namespace sacabench::div_suf_sort {
@@ -549,28 +550,30 @@ inline static void sort_rms_suffixes(rms_suffixes<sa_index>& rms_suf) {
 template <typename sa_index>
 inline static void sort_rms_indices_to_order(rms_suffixes<sa_index>& rms_suf,
                                              size_t rms_count,
-                                             util::container<bool>& types,
                                              util::span<sa_index> out_sa) {
     auto isa = rms_suf.partial_isa;
-
+    auto text = rms_suf.text;
+    bool current, prev = true;
     // Skip last index because of sentinel
-    for (size_t pos = rms_suf.text.size() - 2; 0 < pos; --pos) {
+    for (size_t pos = text.size() - 2; 0 < pos; --pos) {
+        current = util::get_type_rtl_dynamic(text, pos, prev);
         // RMS-Suffix in text found
-        if (sa_types::is_rms_type(pos, types)) {
+        if (sa_types::is_rms_type(current, prev)) {
 
             // If predecessor of pos is l-type: negate, because not
             // considered in first induce step
-            if (sa_types::is_l_type(pos - 1, types)) {
+            if (text[pos-1] > text[pos]) {
                 out_sa[isa[--rms_count]] = pos ^ utils<sa_index>::NEGATIVE_MASK;
             } else {
                 // Current index considered in first induce step
                 out_sa[isa[--rms_count]] = pos;
             }
         }
+        prev = current;
     }
-    if (sa_types::is_rms_type(0, types)) {
+    current = util::get_type_rtl_dynamic(text, 0, prev);
+    if (sa_types::is_rms_type(current, prev)) {
         DCHECK_EQ(rms_count - 1, 0);
-
         out_sa[isa[--rms_count]] = 0;
     }
 }
