@@ -118,24 +118,6 @@ int main() {
     std::sort(correctly_sorted.begin(), correctly_sorted.end());
     DCHECK(isSorted(correctly_sorted));
 
-    util::container<uint64_t> result_non_parallel(data.size());
-    util::container<uint64_t> result_parallel(data.size());
-
-    auto non_parallel_start_timer = std::chrono::high_resolution_clock::now();
-    counting_sort(data, result_non_parallel);
-    auto non_parallel_end_timer = std::chrono::high_resolution_clock::now();
-    bool non_parellel_is_correct = (result_non_parallel == correctly_sorted);
-    std::cout << "Result is sorted after non parallel sort: " << non_parellel_is_correct << std::endl;
-
-    auto parallel_start_timer = std::chrono::high_resolution_clock::now();
-    counting_sort_parallel(data, result_parallel);
-    auto parallel_end_timer = std::chrono::high_resolution_clock::now();
-    bool parellel_is_correct = (result_non_parallel == correctly_sorted);
-    std::cout << "Result is sorted after parallel sort: " << parellel_is_correct << std::endl;
-
-    auto non_parallel_duration = non_parallel_end_timer - non_parallel_start_timer;
-    auto parallel_duration = parallel_end_timer - parallel_start_timer;
-
     auto q = [] (auto duration, auto name) {
         auto p = [&](auto count, auto unit) {
             std::cout << "Calculation with "<< name <<" took "
@@ -160,8 +142,24 @@ int main() {
         }
     };
 
-    q(non_parallel_duration, "non-parallel counting sort");
-    q(parallel_duration, "parallel counting sort");
+    auto r = [&data, &correctly_sorted, &q](auto func, auto name) {
+        util::container<uint64_t> result(data.size());
+
+        std::cout << "Running " << name << std::endl;
+
+        auto start_timer = std::chrono::high_resolution_clock::now();
+        func(data, result);
+        auto end_timer = std::chrono::high_resolution_clock::now();
+        bool is_correct = (result == correctly_sorted);
+        std::cout << "Result is sorted after " << name <<  ": " << is_correct << std::endl;
+
+        auto duration = end_timer - start_timer;
+        q(duration, name);
+        std::cout << std::endl;
+    };
+
+    r(counting_sort, "non-parallel counting sort");
+    r(counting_sort_parallel, "parallel counting sort");
 
     return 0;
 }
