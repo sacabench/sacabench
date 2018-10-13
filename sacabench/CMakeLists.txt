@@ -37,6 +37,14 @@ target_link_libraries(sacabench
   CLI11
 )
 
+# TEMPORARY
+add_executable(par_counting_sort
+  util/sort/counting_sort.cpp
+)
+target_link_libraries(par_counting_sort
+  saca_bench_lib
+)
+
 target_compile_options(sacabench PUBLIC
   ${SACA_BENCH_FLAGS}
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
