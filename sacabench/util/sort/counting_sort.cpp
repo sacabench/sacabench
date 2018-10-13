@@ -9,6 +9,8 @@
 #include <limits>
 #include <random>
 #include <cmath>
+#include <algorithm>
+#include <chrono>
 
 // Nutzung von OpenMP auf macOS:
 // 1. brew install libomp
