@@ -113,52 +113,55 @@ int main() {
 
 
     util::container<uint64_t> data = generate_data(1'000'000ull);
+
+    util::container<uint64_t> correctly_sorted = data;
+    std::sort(correctly_sorted.begin(), correctly_sorted.end());
+    DCHECK(isSorted(correctly_sorted));
+
     util::container<uint64_t> result_non_parallel(data.size());
     util::container<uint64_t> result_parallel(data.size());
 
     auto non_parallel_start_timer = std::chrono::high_resolution_clock::now();
     counting_sort(data, result_non_parallel);
     auto non_parallel_end_timer = std::chrono::high_resolution_clock::now();
-    std::cout << "Result is sorted after non parallel sort: " << isSorted(result_non_parallel) << std::endl;
+    bool non_parellel_is_correct = (result_non_parallel == correctly_sorted);
+    std::cout << "Result is sorted after non parallel sort: " << non_parellel_is_correct << std::endl;
 
     auto parallel_start_timer = std::chrono::high_resolution_clock::now();
     counting_sort_parallel(data, result_parallel);
     auto parallel_end_timer = std::chrono::high_resolution_clock::now();
-    std::cout << "Result is sorted after parallel sort: " << isSorted(result_parallel) << std::endl;
+    bool parellel_is_correct = (result_non_parallel == correctly_sorted);
+    std::cout << "Result is sorted after parallel sort: " << parellel_is_correct << std::endl;
 
     auto non_parallel_duration = non_parallel_end_timer - non_parallel_start_timer;
     auto parallel_duration = parallel_end_timer - parallel_start_timer;
 
-    auto min_time = std::min(non_parallel_duration, parallel_duration);
-
-    auto p = [&](auto count, auto p_count, auto unit) {
-        std::cout << "Calculation with non parallel counting sort took "
-                  << count
-                  << " " << unit << std::endl;
-        std::cout << "Calculation with parallel counting sort took "
-                  << p_count
-                  << " " << unit << std::endl;
+    auto q = [] (auto duration, auto name) {
+        auto p = [&](auto count, auto unit) {
+            std::cout << "Calculation with "<< name <<" took "
+                    << count
+                    << " " << unit << std::endl;
+        };
+        if (duration < std::chrono::milliseconds(1ull)) {
+            p(
+                std::chrono::duration_cast<std::chrono::microseconds>(duration).count(),
+                "microseconds"
+            );
+        } else if (duration < std::chrono::seconds(1ull)) {
+            p(
+                std::chrono::duration_cast<std::chrono::milliseconds>(duration).count(),
+                "milliseconds"
+            );
+        } else {
+            p(
+                std::chrono::duration_cast<std::chrono::seconds>(duration).count(),
+                "seconds"
+            );
+        }
     };
 
-    if (min_time < std::chrono::milliseconds(1'000ull)) {
-        p(
-            std::chrono::duration_cast<std::chrono::microseconds>(non_parallel_duration).count(),
-            std::chrono::duration_cast<std::chrono::microseconds>(parallel_duration).count(),
-            "microseconds"
-        );
-    } else if (min_time < std::chrono::milliseconds(1'000'000ull)) {
-        p(
-            std::chrono::duration_cast<std::chrono::milliseconds>(non_parallel_duration).count(),
-            std::chrono::duration_cast<std::chrono::milliseconds>(parallel_duration).count(),
-            "milliseconds"
-        );
-    } else {
-        p(
-            std::chrono::duration_cast<std::chrono::seconds>(non_parallel_duration).count(),
-            std::chrono::duration_cast<std::chrono::seconds>(parallel_duration).count(),
-            "seconds"
-        );
-    }
+    q(non_parallel_duration, "non-parallel counting sort");
+    q(parallel_duration, "parallel counting sort");
 
     return 0;
 }
