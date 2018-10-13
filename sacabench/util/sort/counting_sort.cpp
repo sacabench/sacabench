@@ -12,23 +12,28 @@
 #include <algorithm>
 #include <chrono>
 
+#include <omp.h>
+
+#include "util/container.hpp"
+
+using namespace sacabench;
+
 // Nutzung von OpenMP auf macOS:
 // 1. brew install libomp
 // 2. clang++ -Xpreprocessor -fopenmp -std=c++1z main.cpp -o main -lomp
 // 3. ./main
 
 // https://stackoverflow.com/a/32887614
-static std::vector<uint64_t> generate_data(size_t size) {
-    using value_type = uint64_t;
-    static std::uniform_int_distribution<value_type> distribution(1, 1000);
-    static std::default_random_engine generator;
+util::container<uint64_t> generate_data(size_t size) {
+    std::default_random_engine generator;
+    std::uniform_int_distribution<uint64_t> distribution(1, 1000);
 
-    std::vector<value_type> data(size);
-    std::generate(data.begin(), data.end(), []() { return distribution(generator); });
+    util::container<uint64_t> data(size);
+    std::generate(data.begin(), data.end(), [&] { return distribution(generator); });
     return data;
 }
 
-uint64_t getHighestNumber(std::vector<uint64_t>& data) {
+uint64_t getHighestNumber(util::container<uint64_t> const& data) {
     uint64_t highestNumber = 0;
     for (uint64_t element: data) {
         if (element > highestNumber) {
@@ -38,10 +43,11 @@ uint64_t getHighestNumber(std::vector<uint64_t>& data) {
     return highestNumber;
 }
 
-void counting_sort(std::vector<uint64_t>& data, std::vector<uint64_t>& result) {
-
-    uint64_t highestNumber = getHighestNumber(data);
-    std::vector<uint64_t> sortingList(highestNumber + 1);
+void counting_sort(util::container<uint64_t> const& data,
+                   util::container<uint64_t>& result) {
+    uint64_t alphabet_size = getHighestNumber(data) + 1;
+    util::container<uint64_t> sortingList(alphabet_size);
+    DCHECK_EQ(sortingList.size(), alphabet_size);
 
     // count occurence of all elements in data
     for (uint64_t element: data) {
@@ -49,7 +55,7 @@ void counting_sort(std::vector<uint64_t>& data, std::vector<uint64_t>& result) {
     }
 
     // cumulate all entries of sortingList
-    for (uint64_t index = 1; index <= sortingList.size(); index++) {
+    for (uint64_t index = 1; index < sortingList.size(); index++) {
         sortingList[index] += sortingList[index - 1];
     }
 
@@ -61,10 +67,11 @@ void counting_sort(std::vector<uint64_t>& data, std::vector<uint64_t>& result) {
     }
 }
 
-void counting_sort_parallel(std::vector<uint64_t>& data, std::vector<uint64_t>& result) {
-
-    uint64_t highestNumber = getHighestNumber(data);
-    std::vector<uint64_t> sortingList(highestNumber + 1);
+void counting_sort_parallel(util::container<uint64_t> const& data,
+                            util::container<uint64_t>& result) {
+    uint64_t alphabet_size = getHighestNumber(data) + 1;
+    util::container<uint64_t> sortingList(alphabet_size);
+    DCHECK_EQ(sortingList.size(), alphabet_size);
 
     // count occurence of all elements in data
 #pragma omp parallel for
@@ -76,7 +83,7 @@ void counting_sort_parallel(std::vector<uint64_t>& data, std::vector<uint64_t>& 
 
     // cumulate all entries of sortingList
 #pragma omp parallel for
-    for (uint64_t index = 1; index <= sortingList.size(); index++) {
+    for (uint64_t index = 1; index < sortingList.size(); index++) {
         sortingList[index] += sortingList[index - 1];
     }
 
@@ -91,28 +98,23 @@ void counting_sort_parallel(std::vector<uint64_t>& data, std::vector<uint64_t>& 
     }
 }
 
-bool isSorted(std::vector<uint64_t>& vector) {
-    for (uint64_t index = 0; index < vector.size(); index++) {
-        if (vector[index] > vector[index]) {
-            return false;
-        }
-    }
-    return true;
+bool isSorted(util::container<uint64_t> const& vector) {
+    return std::is_sorted(vector.begin(), vector.end());
 }
 
-int main(int argc, const char * argv[]) {
+int main() {
 
     std::cout << "Test auf Parallelität: " << std::endl;
 #pragma omp parallel for
-    for(uint64_t number = 0; number < 10; ++number) {
+    for(int number = 0; number < 10; ++number) {
         printf(" %d", number);
     }
     printf(".\n");
 
 
-    std::vector<uint64_t> data = generate_data(10000);
-    std::vector<uint64_t> result_non_parallel(data.size());
-    std::vector<uint64_t> result_parallel(data.size());
+    util::container<uint64_t> data = generate_data(1'000'000ull);
+    util::container<uint64_t> result_non_parallel(data.size());
+    util::container<uint64_t> result_parallel(data.size());
 
     auto non_parallel_start_timer = std::chrono::high_resolution_clock::now();
     counting_sort(data, result_non_parallel);
@@ -127,34 +129,35 @@ int main(int argc, const char * argv[]) {
     auto non_parallel_duration = non_parallel_end_timer - non_parallel_start_timer;
     auto parallel_duration = parallel_end_timer - parallel_start_timer;
 
-    if (non_parallel_duration < std::chrono::milliseconds(1000)) {
+    auto min_time = std::min(non_parallel_duration, parallel_duration);
 
+    auto p = [&](auto count, auto p_count, auto unit) {
         std::cout << "Calculation with non parallel counting sort took "
-                  << std::chrono::duration_cast<std::chrono::microseconds>(non_parallel_duration).count()
-                  << " microseconds" << std::endl;
-
+                  << count
+                  << " " << unit << std::endl;
         std::cout << "Calculation with parallel counting sort took "
-                  << std::chrono::duration_cast<std::chrono::microseconds>(parallel_duration).count()
-                  << " microseconds" << std::endl;
+                  << p_count
+                  << " " << unit << std::endl;
+    };
 
-    } else if (non_parallel_duration < std::chrono::milliseconds(1000000)) {
-
-        std::cout << "Calculation with non parallel counting sort took "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(non_parallel_duration).count()
-                  << " milliseconds" << std::endl;
-
-        std::cout << "Calculation with parallel counting sort took "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(parallel_duration).count()
-                  << " milliseconds" << std::endl;
-
+    if (min_time < std::chrono::milliseconds(1'000ull)) {
+        p(
+            std::chrono::duration_cast<std::chrono::microseconds>(non_parallel_duration).count(),
+            std::chrono::duration_cast<std::chrono::microseconds>(parallel_duration).count(),
+            "microseconds"
+        );
+    } else if (min_time < std::chrono::milliseconds(1'000'000ull)) {
+        p(
+            std::chrono::duration_cast<std::chrono::milliseconds>(non_parallel_duration).count(),
+            std::chrono::duration_cast<std::chrono::milliseconds>(parallel_duration).count(),
+            "milliseconds"
+        );
     } else {
-        std::cout << "Calculation with non parallel counting sort took "
-                  << std::chrono::duration_cast<std::chrono::seconds>(non_parallel_duration).count()
-                  << " seconds" << std::endl;
-
-        std::cout << "Calculation with parallel counting sort took "
-                  << std::chrono::duration_cast<std::chrono::seconds>(parallel_duration).count()
-                  << " seconds" << std::endl;
+        p(
+            std::chrono::duration_cast<std::chrono::seconds>(non_parallel_duration).count(),
+            std::chrono::duration_cast<std::chrono::seconds>(parallel_duration).count(),
+            "seconds"
+        );
     }
 
     return 0;
