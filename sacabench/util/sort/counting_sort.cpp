@@ -26,7 +26,7 @@ using namespace sacabench;
 // https://stackoverflow.com/a/32887614
 util::container<uint64_t> generate_data(size_t size) {
     std::default_random_engine generator;
-    std::uniform_int_distribution<uint64_t> distribution(1, 1000);
+    std::uniform_int_distribution<uint64_t> distribution(0, 9);
 
     util::container<uint64_t> data(size);
     std::generate(data.begin(), data.end(), [&] { return distribution(generator); });
@@ -106,8 +106,8 @@ void counting_sort_parallel2(util::container<uint64_t> const& data,
 
     #pragma omp parallel
     {
-        const auto omp_rank = omp_get_thread_num();
-        const auto omp_size = omp_get_num_threads();
+        //const auto omp_rank = omp_get_thread_num();
+        //const auto omp_size = omp_get_num_threads();
 
         // count occurrence of all elements in data
         #pragma omp for
@@ -130,6 +130,72 @@ void counting_sort_parallel2(util::container<uint64_t> const& data,
             auto element = data[index];
             uint64_t count = sortingList[element] - 1;
             sortingList[element] -= 1;
+            result[count] = element;
+        }
+    }
+}
+
+void counting_sort_parallel_flo(util::container<uint64_t> const& data,
+                             util::container<uint64_t>& result) {
+
+    uint64_t alphabet_size = getHighestNumber(data) + 1;
+    util::container<uint64_t> sorting_list(alphabet_size);
+    DCHECK_EQ(sorting_list.size(), alphabet_size);
+
+    const uint64_t num_threads = omp_get_max_threads();
+    omp_set_num_threads(num_threads);
+    const uint64_t items_per_thread = (data.size() / num_threads) + 1;
+
+    util::container<uint64_t> sorting_lists(num_threads * alphabet_size);
+
+#pragma omp parallel
+    // count occurrences of all elements in data
+    {
+        const uint64_t thread_id = omp_get_thread_num();
+        const uint64_t start_index = thread_id * items_per_thread;
+        uint64_t end_index = start_index + items_per_thread;
+        if (data.size() < end_index) {
+            end_index = data.size();
+        }
+
+        for (uint64_t index = start_index; index < end_index; index++) {
+            auto element = data[index];
+            sorting_lists[thread_id * alphabet_size + element] += 1;
+        }
+    }
+
+    // sum up lists
+    for (uint64_t index = 0; index < sorting_list.size(); index++) {
+        for (uint64_t thread_id = 0; thread_id < num_threads - 1; thread_id++) {
+            sorting_lists[(thread_id + 1) * alphabet_size + index] +=
+                sorting_lists[thread_id * alphabet_size + index];
+        }
+    }
+    for (uint64_t index = 1; index < sorting_list.size(); index++) {
+        sorting_list[index] = sorting_lists[(num_threads - 1) * alphabet_size + index - 1] +
+            sorting_list[index - 1];
+    }
+
+    // add offsets
+    for (uint64_t index = 1; index < sorting_list.size(); index++) {
+        for (uint64_t thread_id = 0; thread_id < num_threads; thread_id++) {
+            sorting_lists[thread_id * alphabet_size + index] += sorting_list[index];
+        }
+    }
+
+#pragma omp parallel
+    {
+        // add elements sorted into result
+        const uint64_t thread_id = omp_get_thread_num();
+        const uint64_t start_index = thread_id * items_per_thread;
+        uint64_t end_index = start_index + items_per_thread;
+        if (data.size() < end_index) {
+            end_index = data.size();
+        }
+
+        for (uint64_t index = start_index; index < end_index; index++) {
+            auto element = data[index];
+            uint64_t count = --sorting_lists[thread_id * alphabet_size + element];
             result[count] = element;
         }
     }
@@ -196,8 +262,9 @@ int main() {
     };
 
     r(counting_sort, "non-parallel counting sort");
-    r(counting_sort_parallel, "parallel counting sort");
-    r(counting_sort_parallel2, "parallel counting sort 2");
+    //r(counting_sort_parallel, "parallel counting sort");
+    //r(counting_sort_parallel2, "parallel counting sort 2");
+    r(counting_sort_parallel_flo, "parallel counting sort flo");
 
     return 0;
 }
