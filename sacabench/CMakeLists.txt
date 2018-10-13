@@ -31,10 +31,14 @@ target_link_libraries(saca_bench_lib INTERFACE
 add_executable(sacabench
   sacabench.cpp
 )
-
 target_link_libraries(sacabench
   saca_bench_lib
   CLI11
+)
+target_compile_options(sacabench PUBLIC
+  ${SACA_BENCH_FLAGS}
+  $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
+  $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
 )
 
 # TEMPORARY
@@ -43,9 +47,9 @@ add_executable(par_counting_sort
 )
 target_link_libraries(par_counting_sort
   saca_bench_lib
+  "${OpenMP_CXX_FLAGS}"
 )
-
-target_compile_options(sacabench PUBLIC
+target_compile_options(par_counting_sort PUBLIC
   ${SACA_BENCH_FLAGS}
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
   $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
