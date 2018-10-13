@@ -18,8 +18,8 @@
 // 3. ./main
 
 // https://stackoverflow.com/a/32887614
-static std::vector<int> generate_data(size_t size) {
-    using value_type = int;
+static std::vector<uint64_t> generate_data(size_t size) {
+    using value_type = uint64_t;
     static std::uniform_int_distribution<value_type> distribution(1, 1000);
     static std::default_random_engine generator;
 
@@ -28,9 +28,9 @@ static std::vector<int> generate_data(size_t size) {
     return data;
 }
 
-int getHighestNumber(std::vector<int>& data) {
-    int highestNumber = 0;
-    for (int element: data) {
+uint64_t getHighestNumber(std::vector<uint64_t>& data) {
+    uint64_t highestNumber = 0;
+    for (uint64_t element: data) {
         if (element > highestNumber) {
             highestNumber = element;
         }
@@ -38,61 +38,61 @@ int getHighestNumber(std::vector<int>& data) {
     return highestNumber;
 }
 
-void counting_sort(std::vector<int>& data, std::vector<int>& result) {
+void counting_sort(std::vector<uint64_t>& data, std::vector<uint64_t>& result) {
 
-    int highestNumber = getHighestNumber(data);
-    std::vector<int> sortingList(highestNumber + 1);
+    uint64_t highestNumber = getHighestNumber(data);
+    std::vector<uint64_t> sortingList(highestNumber + 1);
 
     // count occurence of all elements in data
-    for (int element: data) {
+    for (uint64_t element: data) {
         sortingList[element] += 1;
     }
 
     // cumulate all entries of sortingList
-    for (int index = 1; index <= sortingList.size(); index++) {
+    for (uint64_t index = 1; index <= sortingList.size(); index++) {
         sortingList[index] += sortingList[index - 1];
     }
 
     // add elements sorted into result
-    for (int element: data) {
-        int count = sortingList[element] - 1;
+    for (uint64_t element: data) {
+        uint64_t count = sortingList[element] - 1;
         sortingList[element] -= 1;
         result[count] = element;
     }
 }
 
-void counting_sort_parallel(std::vector<int>& data, std::vector<int>& result) {
+void counting_sort_parallel(std::vector<uint64_t>& data, std::vector<uint64_t>& result) {
 
-    int highestNumber = getHighestNumber(data);
-    std::vector<int> sortingList(highestNumber + 1);
+    uint64_t highestNumber = getHighestNumber(data);
+    std::vector<uint64_t> sortingList(highestNumber + 1);
 
     // count occurence of all elements in data
 #pragma omp parallel for
-    for (int index = 0; index < data.size(); index++) {
-        //for (int element: data) {
+    for (uint64_t index = 0; index < data.size(); index++) {
+        //for (uint64_t element: data) {
         auto element = data[index];
         sortingList[element] += 1;
     }
 
     // cumulate all entries of sortingList
 #pragma omp parallel for
-    for (int index = 1; index <= sortingList.size(); index++) {
+    for (uint64_t index = 1; index <= sortingList.size(); index++) {
         sortingList[index] += sortingList[index - 1];
     }
 
     // add elements sorted into result
 #pragma omp parallel for
-    for (int index = 0; index < data.size(); index++) {
-        //for (int element: data) {
+    for (uint64_t index = 0; index < data.size(); index++) {
+        //for (uint64_t element: data) {
         auto element = data[index];
-        int count = sortingList[element] - 1;
+        uint64_t count = sortingList[element] - 1;
         sortingList[element] -= 1;
         result[count] = element;
     }
 }
 
-bool isSorted(std::vector<int>& vector) {
-    for (int index = 0; index < vector.size(); index++) {
+bool isSorted(std::vector<uint64_t>& vector) {
+    for (uint64_t index = 0; index < vector.size(); index++) {
         if (vector[index] > vector[index]) {
             return false;
         }
@@ -104,15 +104,15 @@ int main(int argc, const char * argv[]) {
 
     std::cout << "Test auf Parallelität: " << std::endl;
 #pragma omp parallel for
-    for(int number = 0; number < 10; ++number) {
+    for(uint64_t number = 0; number < 10; ++number) {
         printf(" %d", number);
     }
     printf(".\n");
 
 
-    std::vector<int> data = generate_data(10000);
-    std::vector<int> result_non_parallel(data.size());
-    std::vector<int> result_parallel(data.size());
+    std::vector<uint64_t> data = generate_data(10000);
+    std::vector<uint64_t> result_non_parallel(data.size());
+    std::vector<uint64_t> result_parallel(data.size());
 
     auto non_parallel_start_timer = std::chrono::high_resolution_clock::now();
     counting_sort(data, result_non_parallel);
