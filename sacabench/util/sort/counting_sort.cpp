@@ -73,7 +73,7 @@ void counting_sort_parallel(util::container<uint64_t> const& data,
     util::container<uint64_t> sortingList(alphabet_size);
     DCHECK_EQ(sortingList.size(), alphabet_size);
 
-    // count occurence of all elements in data
+    // count occurrence of all elements in data
 #pragma omp parallel for
     for (uint64_t index = 0; index < data.size(); index++) {
         //for (uint64_t element: data) {
@@ -95,6 +95,43 @@ void counting_sort_parallel(util::container<uint64_t> const& data,
         uint64_t count = sortingList[element] - 1;
         sortingList[element] -= 1;
         result[count] = element;
+    }
+}
+
+void counting_sort_parallel2(util::container<uint64_t> const& data,
+                             util::container<uint64_t>& result) {
+    uint64_t alphabet_size = getHighestNumber(data) + 1;
+    util::container<uint64_t> sortingList(alphabet_size);
+    DCHECK_EQ(sortingList.size(), alphabet_size);
+
+    #pragma omp parallel
+    {
+        const auto omp_rank = omp_get_thread_num();
+        const auto omp_size = omp_get_num_threads();
+
+        // count occurrence of all elements in data
+        #pragma omp for
+        for (uint64_t index = 0; index < data.size(); index++) {
+            //for (uint64_t element: data) {
+            auto element = data[index];
+            sortingList[element] += 1;
+        }
+
+        // cumulate all entries of sortingList
+        #pragma omp for
+        for (uint64_t index = 1; index < sortingList.size(); index++) {
+            sortingList[index] += sortingList[index - 1];
+        }
+
+        // add elements sorted into result
+        #pragma omp for
+        for (uint64_t index = 0; index < data.size(); index++) {
+            //for (uint64_t element: data) {
+            auto element = data[index];
+            uint64_t count = sortingList[element] - 1;
+            sortingList[element] -= 1;
+            result[count] = element;
+        }
     }
 }
 
@@ -160,6 +197,7 @@ int main() {
 
     r(counting_sort, "non-parallel counting sort");
     r(counting_sort_parallel, "parallel counting sort");
+    r(counting_sort_parallel2, "parallel counting sort 2");
 
     return 0;
 }
