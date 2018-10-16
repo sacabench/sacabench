@@ -241,9 +241,11 @@ int main() {
     printf(".\n");
 
 
-    util::container<uint64_t> data = generate_data(4'000'000ull);
+    std::cout << "Generating data" << std::endl;
+    util::container<uint64_t> data = generate_data(100'000'000ull);
 
     util::container<uint64_t> correctly_sorted = data;
+    std::cout << "Running std::sort" << std::endl;
     std::sort(correctly_sorted.begin(), correctly_sorted.end());
     DCHECK(isSorted(correctly_sorted));
 
