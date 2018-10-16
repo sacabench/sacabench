@@ -193,13 +193,6 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
         global_sorting_list[index] = sorting_lists[(num_threads - 1) * alphabet_size + index] + global_sorting_list[index - 1];
     }
 
-    // add offsets
-    //for (uint64_t index = 1; index < sorting_list.size(); index++) {
-    //    for (uint64_t thread_id = 0; thread_id < num_threads; thread_id++) {
-    //        sorting_lists[thread_id * alphabet_size + index] += sorting_list[index];
-    //    }
-    //}
-
 #pragma omp parallel
     {
         // add elements sorted into result
