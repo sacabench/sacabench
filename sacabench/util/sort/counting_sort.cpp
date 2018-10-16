@@ -139,8 +139,8 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
                              util::container<uint64_t>& result) {
 
     uint64_t alphabet_size = getHighestNumber(data) + 1;
-    util::container<uint64_t> sorting_list(alphabet_size);
-    DCHECK_EQ(sorting_list.size(), alphabet_size);
+    util::container<uint64_t> global_sorting_list(alphabet_size);
+    DCHECK_EQ(global_sorting_list.size(), alphabet_size);
 
     const uint64_t num_threads = omp_get_max_threads();
     omp_set_num_threads(num_threads);
@@ -183,14 +183,14 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
 
     // sum up lists
     for (uint64_t thread_id = 0; thread_id < num_threads - 1; thread_id++) {
-        for (uint64_t index = 0; index < sorting_list.size(); index++) {
+        for (uint64_t index = 0; index < global_sorting_list.size(); index++) {
             sorting_lists[(thread_id + 1) * alphabet_size + index] +=
                 sorting_lists[thread_id * alphabet_size + index];
         }
     }
-    sorting_list[0] = sorting_lists[(num_threads - 1) * alphabet_size];
-    for (uint64_t index = 1; index < sorting_list.size(); index++) {
-        sorting_list[index] = sorting_lists[(num_threads - 1) * alphabet_size + index] + sorting_list[index - 1];
+    global_sorting_list[0] = sorting_lists[(num_threads - 1) * alphabet_size];
+    for (uint64_t index = 1; index < global_sorting_list.size(); index++) {
+        global_sorting_list[index] = sorting_lists[(num_threads - 1) * alphabet_size + index] + global_sorting_list[index - 1];
     }
 
     // add offsets
@@ -213,10 +213,10 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
         uint64_t insert_index = start_index;
 
         for (uint64_t insert_element = 0; insert_element < alphabet_size; ++insert_element) {
-            if (sorting_list[insert_element] <= start_index) {
+            if (global_sorting_list[insert_element] <= start_index) {
                 continue;
             }
-            while (insert_index < sorting_list[insert_element] && insert_index < end_index) {
+            while (insert_index < global_sorting_list[insert_element] && insert_index < end_index) {
                 result[insert_index] = insert_element;
                 ++insert_index;
             }
@@ -242,7 +242,7 @@ int main() {
 
 
     std::cout << "Generating data" << std::endl;
-    util::container<uint64_t> data = generate_data(100'000'000ull);
+    util::container<uint64_t> data = generate_data(4'000'000ull);
 
     util::container<uint64_t> correctly_sorted = data;
     std::cout << "Running std::sort" << std::endl;
