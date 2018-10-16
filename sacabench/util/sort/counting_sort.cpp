@@ -161,15 +161,13 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
     // count occurrences of all elements in data
     {
         const uint64_t thread_id = omp_get_thread_num();
-        const uint64_t start_index = thread_id * items_per_thread;
-        uint64_t end_index = start_index + items_per_thread;
-        if (data.size() < end_index) {
-            end_index = data.size();
-        }
 
-        for (uint64_t index = start_index; index < end_index; index++) {
-            auto element = data[index];
-            sorting_lists[thread_id * alphabet_size + element] += 1;
+        auto local_data = get_local_slice(num_threads, thread_id, data);
+        auto local_sorting_list = get_local_slice(num_threads, thread_id, sorting_lists);
+        DCHECK_EQ(local_sorting_list.size(), alphabet_size);
+
+        for (auto element : local_data) {
+            local_sorting_list[element]++;
         }
     }
 
