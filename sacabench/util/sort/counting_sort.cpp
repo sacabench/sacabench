@@ -165,23 +165,23 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
     }
 
     // sum up lists
-    for (uint64_t index = 0; index < sorting_list.size(); index++) {
-        for (uint64_t thread_id = 0; thread_id < num_threads - 1; thread_id++) {
+    for (uint64_t thread_id = 0; thread_id < num_threads - 1; thread_id++) {
+        for (uint64_t index = 0; index < sorting_list.size(); index++) {
             sorting_lists[(thread_id + 1) * alphabet_size + index] +=
                 sorting_lists[thread_id * alphabet_size + index];
         }
     }
+    sorting_list[0] = sorting_lists[(num_threads - 1) * alphabet_size];
     for (uint64_t index = 1; index < sorting_list.size(); index++) {
-        sorting_list[index] = sorting_lists[(num_threads - 1) * alphabet_size + index - 1] +
-            sorting_list[index - 1];
+        sorting_list[index] = sorting_lists[(num_threads - 1) * alphabet_size + index] + sorting_list[index - 1];
     }
 
     // add offsets
-    for (uint64_t index = 1; index < sorting_list.size(); index++) {
-        for (uint64_t thread_id = 0; thread_id < num_threads; thread_id++) {
-            sorting_lists[thread_id * alphabet_size + index] += sorting_list[index];
-        }
-    }
+    //for (uint64_t index = 1; index < sorting_list.size(); index++) {
+    //    for (uint64_t thread_id = 0; thread_id < num_threads; thread_id++) {
+    //        sorting_lists[thread_id * alphabet_size + index] += sorting_list[index];
+    //    }
+    //}
 
 #pragma omp parallel
     {
@@ -192,11 +192,19 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
         if (data.size() < end_index) {
             end_index = data.size();
         }
+        uint64_t insert_index = start_index;
 
-        for (uint64_t index = start_index; index < end_index; index++) {
-            auto element = data[index];
-            uint64_t count = --sorting_lists[thread_id * alphabet_size + element];
-            result[count] = element;
+        for (uint64_t insert_element = 0; insert_element < alphabet_size; ++insert_element) {
+            if (sorting_list[insert_element] <= start_index) {
+                continue;
+            }
+            while (insert_index < sorting_list[insert_element] && insert_index < end_index) {
+                result[insert_index] = insert_element;
+                ++insert_index;
+            }
+            if (insert_index >= end_index) {
+                break;
+            }
         }
     }
 }
@@ -215,7 +223,7 @@ int main() {
     printf(".\n");
 
 
-    util::container<uint64_t> data = generate_data(1'000'000ull);
+    util::container<uint64_t> data = generate_data(4'000'000ull);
 
     util::container<uint64_t> correctly_sorted = data;
     std::sort(correctly_sorted.begin(), correctly_sorted.end());
@@ -232,7 +240,7 @@ int main() {
                 std::chrono::duration_cast<std::chrono::microseconds>(duration).count(),
                 "microseconds"
             );
-        } else if (duration < std::chrono::seconds(1ull)) {
+        } else if (duration < std::chrono::seconds(10ull)) {
             p(
                 std::chrono::duration_cast<std::chrono::milliseconds>(duration).count(),
                 "milliseconds"
