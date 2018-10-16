@@ -145,6 +145,16 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
     const uint64_t num_threads = omp_get_max_threads();
     omp_set_num_threads(num_threads);
 
+    struct Range { uint64_t start; uint64_t end; };
+    auto get_local_range = [](size_t threads, size_t rank, auto& slice) {
+      const auto size = slice.size();
+      const uint64_t offset =
+          (rank * (size / threads)) + std::min<uint64_t>(rank, size % threads);
+      const uint64_t local_size =
+          (size / threads) + ((rank < size % threads) ? 1 : 0);
+
+      return Range { offset, offset + local_size };
+    };
     auto get_local_slice = [](size_t threads, size_t rank, auto& slice) {
       const auto size = slice.size();
       const uint64_t offset =
