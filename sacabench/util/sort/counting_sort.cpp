@@ -150,7 +150,6 @@ void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
     DCHECK_EQ(global_sorting_list.size(), alphabet_size);
 
     const uint64_t num_threads = omp_get_max_threads();
-    omp_set_num_threads(num_threads);
 
     struct Range { uint64_t start; uint64_t end; };
     auto get_local_range = [](size_t threads, size_t rank, auto& slice) {
@@ -272,7 +271,8 @@ void run(util::span<alphabet_size_type const> data) {
         func(data, result);
         auto end_timer = std::chrono::high_resolution_clock::now();
         bool is_correct = (result == correctly_sorted);
-        std::cout << "Result is sorted after " << name <<  ": " << is_correct << std::endl;
+        auto is_correct_s = is_correct ? "yes" : "NO";
+        std::cout << "Result is sorted after " << name <<  ": " << is_correct_s << std::endl;
 
         auto duration = end_timer - start_timer;
         q(duration, name);
@@ -300,6 +300,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         printf(" %d", number);
     }
     printf(".\n");
+
+    auto threads = omp_get_max_threads();
+    std::cout << "Number threads used by OMP: " << threads << std::endl;
 
     if (input_filename.size() > 0) {
         std::cout << "Read input file" << std::endl;
