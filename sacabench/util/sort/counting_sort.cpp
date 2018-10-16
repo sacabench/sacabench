@@ -13,6 +13,7 @@
 #include <chrono>
 
 #include <omp.h>
+#include <CLI/CLI.hpp>
 
 #include "util/container.hpp"
 #include "util/read_text.hpp"
@@ -278,7 +279,14 @@ void run(util::span<alphabet_size_type const> data) {
     r(counting_sort_parallel_flo, "parallel counting sort flo");
 }
 
-int main() {
+std::int32_t main(std::int32_t argc, char const** argv) {
+    CLI::App app{"CLI for SACABench."};
+    app.failure_message(CLI::FailureMessage::help);
+
+    std::string input_filename = "";
+    app.add_option("--input", input_filename);
+
+    CLI11_PARSE(app, argc, argv);
 
     std::cout << "Test auf Parallelität: " << std::endl;
 #pragma omp parallel for
@@ -287,11 +295,14 @@ int main() {
     }
     printf(".\n");
 
+    if (input_filename.size() > 0) {
 
-    std::cout << "Generating data" << std::endl;
-    util::container<uint64_t> data = generate_data(4'000'000ull);
+    } else {
+        std::cout << "Generating data" << std::endl;
+        util::container<uint64_t> data = generate_data(4'000'000ull);
+        run<uint64_t>(data);
+    }
 
-    run<uint64_t>(data);
 
     return 0;
 }
