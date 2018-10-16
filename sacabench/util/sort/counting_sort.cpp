@@ -35,7 +35,8 @@ util::container<uint64_t> generate_data(size_t size) {
     return data;
 }
 
-uint64_t getHighestNumber(util::container<uint64_t> const& data) {
+template<typename alphabet_size_type>
+uint64_t getHighestNumber(util::container<alphabet_size_type> const& data) {
     uint64_t highestNumber = 0;
     for (uint64_t element: data) {
         if (element > highestNumber) {
@@ -45,8 +46,9 @@ uint64_t getHighestNumber(util::container<uint64_t> const& data) {
     return highestNumber;
 }
 
-void counting_sort(util::container<uint64_t> const& data,
-                   util::container<uint64_t>& result) {
+template<typename alphabet_size_type>
+void counting_sort(util::container<alphabet_size_type> const& data,
+                   util::container<alphabet_size_type>& result) {
     uint64_t alphabet_size = getHighestNumber(data) + 1;
     util::container<uint64_t> sortingList(alphabet_size);
     DCHECK_EQ(sortingList.size(), alphabet_size);
@@ -69,8 +71,9 @@ void counting_sort(util::container<uint64_t> const& data,
     }
 }
 
-void counting_sort_parallel(util::container<uint64_t> const& data,
-                            util::container<uint64_t>& result) {
+template<typename alphabet_size_type>
+void counting_sort_parallel(util::container<alphabet_size_type> const& data,
+                            util::container<alphabet_size_type>& result) {
     uint64_t alphabet_size = getHighestNumber(data) + 1;
     util::container<uint64_t> sortingList(alphabet_size);
     DCHECK_EQ(sortingList.size(), alphabet_size);
@@ -100,8 +103,9 @@ void counting_sort_parallel(util::container<uint64_t> const& data,
     }
 }
 
-void counting_sort_parallel2(util::container<uint64_t> const& data,
-                             util::container<uint64_t>& result) {
+template<typename alphabet_size_type>
+void counting_sort_parallel2(util::container<alphabet_size_type> const& data,
+                             util::container<alphabet_size_type>& result) {
     uint64_t alphabet_size = getHighestNumber(data) + 1;
     util::container<uint64_t> sortingList(alphabet_size);
     DCHECK_EQ(sortingList.size(), alphabet_size);
@@ -137,8 +141,9 @@ void counting_sort_parallel2(util::container<uint64_t> const& data,
     }
 }
 
-void counting_sort_parallel_flo(util::container<uint64_t> const& data,
-                             util::container<uint64_t>& result) {
+template<typename alphabet_size_type>
+void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
+                             util::container<alphabet_size_type>& result) {
 
     uint64_t alphabet_size = getHighestNumber(data) + 1;
     util::container<uint64_t> global_sorting_list(alphabet_size);
@@ -222,7 +227,8 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
     }
 }
 
-bool isSorted(util::container<uint64_t> const& vector) {
+template<typename alphabet_size_type>
+bool isSorted(util::container<alphabet_size_type> const& vector) {
     return std::is_sorted(vector.begin(), vector.end());
 }
 
@@ -273,10 +279,10 @@ void run(util::span<alphabet_size_type const> data) {
         std::cout << std::endl;
     };
 
-    r(counting_sort, "non-parallel counting sort");
+    r(counting_sort<alphabet_size_type>, "non-parallel counting sort");
     //r(counting_sort_parallel, "parallel counting sort");
     //r(counting_sort_parallel2, "parallel counting sort 2");
-    r(counting_sort_parallel_flo, "parallel counting sort flo");
+    r(counting_sort_parallel_flo<alphabet_size_type>, "parallel counting sort flo");
 }
 
 std::int32_t main(std::int32_t argc, char const** argv) {
@@ -296,7 +302,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     printf(".\n");
 
     if (input_filename.size() > 0) {
-
+        std::cout << "Read input file" << std::endl;
+        auto in = util::read_text_context(input_filename);
+        util::container<uint8_t> data(in.size);
+        in.read_text(data);
+        run<uint8_t>(data);
     } else {
         std::cout << "Generating data" << std::endl;
         util::container<uint64_t> data = generate_data(4'000'000ull);
