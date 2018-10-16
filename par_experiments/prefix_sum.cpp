@@ -38,15 +38,12 @@ size_t next_power_of_two(size_t v) {
 
 // Needed for down pass
 size_t left_child(size_t parent) { return 2*parent; }
-
 size_t right_child(size_t parent) { return 2*parent+1; }
-
-// Needed for up pass
 size_t parent_of_child(size_t child) { return child/2; }
 
 // Parallel version of the prefix sum calculation.
 template<typename Content>
-void par_prefix_sum(const Content* in, const size_t len, Content* out) {
+void par_prefix_sum(const Content* __restrict__ in, const size_t len, Content* __restrict__ out) {
     // Correct length for odd lengths.
     const size_t corrected_len = (len % 2 == 1) ? len + 1 : len;
     const size_t tree_size = next_power_of_two(len);
@@ -62,56 +59,43 @@ void par_prefix_sum(const Content* in, const size_t len, Content* out) {
     // UP PASS
     // ########################################################
     
-    for(size_t offset = tree_size; offset != 1; offset /= 2) {
-    
-        #pragma omp parallel for schedule(dynamic, 128)
-        for(size_t i = 0; i < std::min(offset, corrected_len); i += 2) {
-            const size_t j = offset + i;
-            const size_t k = offset + i + 1;
-            tree[parent_of_child(j)] = tree[j] + tree[k];
+    #pragma omp parallel
+    {
+        for(size_t offset = tree_size; offset != 1; offset /= 2) {
+        
+            #pragma omp for
+            for(size_t i = 0; i < std::min(offset, corrected_len); i += 2) {
+                const size_t j = offset + i;
+                const size_t k = offset + i + 1;
+                tree[parent_of_child(j)] = tree[j] + tree[k];
+            }
         }
-    }
-    
-    std::cout << "up pass done" << std::endl;
-    
-    /*for(size_t i = 0; i < tree_size + corrected_len; ++i) {
-        std::cout << tree[i] << " ";
-    }
-    std::cout << std::endl;*/
-    
-    // ########################################################    
-    // DOWN PASS
-    // ########################################################
-    
-    tree[1] = 0;
-    
-    for(size_t offset = 1; offset != tree_size; offset *= 2) { 
-    
-        const size_t layer_size = offset == tree_size / 2 ? corrected_len / 2 : offset;
-    
-        #pragma omp parallel for schedule(dynamic, 128)
-        for(size_t i = 0; i < layer_size; i++) {
-            const size_t j = layer_size - i - 1;
-            
-            const Content& from_left = tree[offset + j];
-            const Content& left_sum = tree[left_child(offset + j)];
-            tree[right_child(offset + j)] = from_left + left_sum;
-            tree[left_child(offset + j)] = from_left;
+        
+        tree[1] = 0;
+        
+        for(size_t offset = 1; offset != tree_size; offset *= 2) { 
+        
+            const size_t layer_size = offset == tree_size / 2 ? corrected_len / 2 : offset;
+        
+            #pragma omp for
+            for(size_t i = 0; i < layer_size; i++) {
+                const size_t j = layer_size - i - 1;
+                
+                const Content& from_left = tree[offset + j];
+                const Content& left_sum = tree[left_child(offset + j)];
+                tree[right_child(offset + j)] = from_left + left_sum;
+                tree[left_child(offset + j)] = from_left;
+            }
         }
-    }
-    
-/*    for(size_t i = 0; i < tree_size + corrected_len; ++i) {
-        std::cout << tree[i] << " ";
-    }
-    std::cout << std::endl;*/
-    
-    // ########################################################    
-    // FINAL PASS
-    // ########################################################
-    
-    #pragma omp parallel for
-    for(size_t i = 0; i < len; ++i) {
-        out[i] = in[i] + tree[tree_size + i];
+        
+        // ########################################################    
+        // FINAL PASS
+        // ########################################################
+        
+        #pragma omp simd
+        for(size_t i = 0; i < len; ++i) {
+            out[i] = in[i] + tree[tree_size + i];
+        }
     }
 }
 
@@ -124,7 +108,7 @@ int main() {
   //omp_set_num_threads(n_cpus);
 
   // Calc prefixsum with threads.
-  const size_t len = 90;
+  const size_t len = 36;
   const size_t test_data_len = len*1024*1024;
   
   std::cout << "memory: " << (test_data_len * sizeof(size_t) / 1024.0 / 1024.0) << "MiB" << std::endl;
@@ -137,7 +121,6 @@ int main() {
   auto ptr2 = container2.get();
   auto ptr3 = container3.get();
   
-  #pragma omp parallel for schedule(static, 256)
   for(size_t i = 0; i < test_data_len; ++i) {
   	ptr[i] = rand();
   }
