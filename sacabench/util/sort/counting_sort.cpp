@@ -15,6 +15,7 @@
 #include <omp.h>
 
 #include "util/container.hpp"
+#include "util/read_text.hpp"
 
 using namespace sacabench;
 
@@ -224,20 +225,9 @@ bool isSorted(util::container<uint64_t> const& vector) {
     return std::is_sorted(vector.begin(), vector.end());
 }
 
-int main() {
-
-    std::cout << "Test auf Parallelität: " << std::endl;
-#pragma omp parallel for
-    for(int number = 0; number < 10; ++number) {
-        printf(" %d", number);
-    }
-    printf(".\n");
-
-
-    std::cout << "Generating data" << std::endl;
-    util::container<uint64_t> data = generate_data(4'000'000ull);
-
-    util::container<uint64_t> correctly_sorted = data;
+template<typename alphabet_size_type>
+void run(util::span<alphabet_size_type const> data) {
+    util::container<alphabet_size_type> correctly_sorted = data;
     std::cout << "Running std::sort" << std::endl;
     std::sort(correctly_sorted.begin(), correctly_sorted.end());
     DCHECK(isSorted(correctly_sorted));
@@ -267,7 +257,7 @@ int main() {
     };
 
     auto r = [&data, &correctly_sorted, &q](auto func, auto name) {
-        util::container<uint64_t> result(data.size());
+        util::container<alphabet_size_type> result(data.size());
 
         std::cout << "Running " << name << std::endl;
 
@@ -286,6 +276,22 @@ int main() {
     //r(counting_sort_parallel, "parallel counting sort");
     //r(counting_sort_parallel2, "parallel counting sort 2");
     r(counting_sort_parallel_flo, "parallel counting sort flo");
+}
+
+int main() {
+
+    std::cout << "Test auf Parallelität: " << std::endl;
+#pragma omp parallel for
+    for(int number = 0; number < 10; ++number) {
+        printf(" %d", number);
+    }
+    printf(".\n");
+
+
+    std::cout << "Generating data" << std::endl;
+    util::container<uint64_t> data = generate_data(4'000'000ull);
+
+    run<uint64_t>(data);
 
     return 0;
 }
