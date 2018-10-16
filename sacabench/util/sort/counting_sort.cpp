@@ -204,8 +204,9 @@ void counting_sort_parallel_flo(util::container<uint64_t> const& data,
     {
         // add elements sorted into result
         const uint64_t thread_id = omp_get_thread_num();
-        const uint64_t start_index = thread_id * items_per_thread;
-        uint64_t end_index = start_index + items_per_thread;
+        auto local_range = get_local_range(num_threads, thread_id, data);
+        const uint64_t start_index = local_range.start;
+        uint64_t end_index = local_range.end;
         if (data.size() < end_index) {
             end_index = data.size();
         }
