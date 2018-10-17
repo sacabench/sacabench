@@ -153,7 +153,7 @@ split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
 
 template<typename alphabet_size_type>
 void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
-                             util::container<alphabet_size_type>& result) {
+                                util::container<alphabet_size_type>& result) {
 
     uint64_t alphabet_size = getHighestNumber(data) + 1;
     util::container<uint64_t> global_sorting_list(alphabet_size);
@@ -161,11 +161,8 @@ void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
 
     const uint64_t num_threads = omp_get_max_threads();
 
-    auto get_local_range = [](size_t threads, size_t rank, size_t size) {
-        return split_size(size, rank, threads);
-    };
     auto get_local_slice = [&](size_t threads, size_t rank, auto& slice) {
-      auto range = get_local_range(threads, rank, slice.size());
+      auto range = split_size(slice.size(), rank, threads);
       return slice.slice(range.start, range.end);
     };
 
@@ -201,7 +198,7 @@ void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
     {
         // add elements sorted into result
         const uint64_t thread_id = omp_get_thread_num();
-        auto local_range = get_local_range(num_threads, thread_id, data.size());
+        auto local_range = split_size(data.size(), thread_id, num_threads);
         const uint64_t start_index = local_range.start;
         uint64_t end_index = local_range.end;
         if (data.size() < end_index) {
