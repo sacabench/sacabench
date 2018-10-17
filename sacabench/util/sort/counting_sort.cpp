@@ -152,8 +152,7 @@ void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
     const uint64_t num_threads = omp_get_max_threads();
 
     struct Range { uint64_t start; uint64_t end; };
-    auto get_local_range = [](size_t threads, size_t rank, auto& slice) {
-      const auto size = slice.size();
+    auto get_local_range = [](size_t threads, size_t rank, size_t size) {
       const uint64_t offset =
           (rank * (size / threads)) + std::min<uint64_t>(rank, size % threads);
       const uint64_t local_size =
@@ -161,14 +160,9 @@ void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
 
       return Range { offset, offset + local_size };
     };
-    auto get_local_slice = [](size_t threads, size_t rank, auto& slice) {
-      const auto size = slice.size();
-      const uint64_t offset =
-          (rank * (size / threads)) + std::min<uint64_t>(rank, size % threads);
-      const uint64_t local_size =
-          (size / threads) + ((rank < size % threads) ? 1 : 0);
-
-      return slice.slice(offset, offset + local_size);
+    auto get_local_slice = [&](size_t threads, size_t rank, auto& slice) {
+      auto range = get_local_range(threads, rank, slice.size());
+      return slice.slice(range.start, range.end);
     };
 
     util::container<uint64_t> sorting_lists(num_threads * alphabet_size);
@@ -203,7 +197,7 @@ void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
     {
         // add elements sorted into result
         const uint64_t thread_id = omp_get_thread_num();
-        auto local_range = get_local_range(num_threads, thread_id, data);
+        auto local_range = get_local_range(num_threads, thread_id, data.size());
         const uint64_t start_index = local_range.start;
         uint64_t end_index = local_range.end;
         if (data.size() < end_index) {
