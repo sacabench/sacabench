@@ -145,12 +145,13 @@ struct split_size_range {
     uint64_t end;
 };
 split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
-      const uint64_t offset =
-          (thread_rank * (size / threads)) + std::min<uint64_t>(thread_rank, size % threads);
-      const uint64_t local_size =
-          (size / threads) + ((thread_rank < size % threads) ? 1 : 0);
+    const uint64_t offset = ((size / threads) * thread_rank)
+        + std::min<uint64_t>(thread_rank, size % threads);
 
-      return split_size_range { offset, offset + local_size };
+    const uint64_t local_size = (size / threads)
+        + ((thread_rank < size % threads) ? 1 : 0);
+
+    return split_size_range { offset, offset + local_size };
 }
 
 template<typename alphabet_size_type>
