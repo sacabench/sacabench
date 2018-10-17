@@ -51,7 +51,6 @@ void counting_sort(util::container<alphabet_size_type> const& data,
                    util::container<alphabet_size_type>& result) {
     uint64_t alphabet_size = getHighestNumber(data) + 1;
     util::container<uint64_t> sortingList(alphabet_size);
-    DCHECK_EQ(sortingList.size(), alphabet_size);
 
     // count occurence of all elements in data
     for (uint64_t element: data) {
@@ -141,7 +140,10 @@ void counting_sort_parallel2(util::container<alphabet_size_type> const& data,
     }
 }
 
-struct split_size_range { uint64_t start; uint64_t end; };
+struct split_size_range {
+    uint64_t start;
+    uint64_t end;
+};
 split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
       const uint64_t offset =
           (thread_rank * (size / threads)) + std::min<uint64_t>(thread_rank, size % threads);
@@ -157,7 +159,6 @@ void counting_sort_parallel_flo(util::container<alphabet_size_type> const& data,
 
     uint64_t alphabet_size = getHighestNumber(data) + 1;
     util::container<uint64_t> global_sorting_list(alphabet_size);
-    DCHECK_EQ(global_sorting_list.size(), alphabet_size);
 
     const uint64_t num_threads = omp_get_max_threads();
 
