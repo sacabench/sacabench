@@ -20,19 +20,19 @@ namespace sacabench::util {
 /// A debug write function, that prints an integer to a ostream as
 /// a decimal number, even if it is a char.
 template<typename T>
-std::ostream& write_map_char_to_int(T const& v, std::ostream& out) {
+inline std::ostream& write_map_char_to_int(T const& v, std::ostream& out) {
     return out << v;
 }
 template<>
-std::ostream& write_map_char_to_int<unsigned char>(unsigned char const& v, std::ostream& out) {
+inline std::ostream& write_map_char_to_int<unsigned char>(unsigned char const& v, std::ostream& out) {
     return out << uint64_t(v);
 }
 template<>
-std::ostream& write_map_char_to_int<char>(char const& v, std::ostream& out) {
+inline std::ostream& write_map_char_to_int<char>(char const& v, std::ostream& out) {
     return out << int64_t(v);
 }
 template<>
-std::ostream& write_map_char_to_int<signed char>(signed char const& v, std::ostream& out) {
+inline std::ostream& write_map_char_to_int<signed char>(signed char const& v, std::ostream& out) {
     return out << int64_t(v);
 }
 
