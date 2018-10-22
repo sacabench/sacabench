@@ -102,3 +102,33 @@ TEST(Compare, greater_equal) {
     ASSERT_GE(a, b);
     ASSERT_GE(b, c);
 }
+
+TEST(DebugWrite, normal) {
+    std::vector<int> d { 1, 2, 3 };
+    std::stringstream ss;
+    span<int const> s = d;
+    ss << s;
+    ASSERT_EQ(ss.str(), "[1, 2, 3]");
+}
+TEST(DebugWrite, normal_method) {
+    std::vector<int> d { 1, 2, 3 };
+    std::stringstream ss;
+    span<int const> s = d;
+    s.debug_write(ss);
+    ASSERT_EQ(ss.str(), "[1, 2, 3]");
+}
+
+TEST(DebugWrite, string) {
+    std::vector<uint8_t> d { 97, 98, 99 };
+    std::stringstream ss;
+    span<uint8_t const> s = d;
+    ss << s;
+    ASSERT_EQ(ss.str(), "abc");
+}
+TEST(DebugWrite, string_method) {
+    std::vector<uint8_t> d { 97, 98, 99 };
+    std::stringstream ss;
+    span<uint8_t const> s = d;
+    s.debug_write(ss);
+    ASSERT_EQ(ss.str(), "[97, 98, 99]");
+}
