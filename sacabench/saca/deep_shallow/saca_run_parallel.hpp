@@ -314,10 +314,14 @@ private:
 
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
+
+        // Spawn a task pool to run the buckets in parallel
         #pragma omp parallel
         {
+            // Schedule the buckets in serial
             #pragma omp single nowait
             while (bd.are_buckets_left()) {
+
                 // Find the smallest unsorted bucket.
                 const auto unsorted_bucket = bd.get_smallest_bucket();
                 const auto alpha = unsorted_bucket.first;
@@ -328,16 +332,20 @@ private:
                     // Buckets with a size of 0 or 1 are already sorted.
                     // Do nothing.
                 } else if (size_of_bucket > 10) {
-                    // Sort buckets in parallel
+                    // Sort big buckets in parallel
                     #pragma omp task
                     {
                         sort_bucket(alpha, beta);
                     }
                 } else {
+                    // Sort small buckets in serial
                     sort_bucket(alpha, beta);
                 }
             }
         }
+
+        // At this point, all tasks are synced.
+        // We wait here until every bucket is sorted.
     }
 
 public:
