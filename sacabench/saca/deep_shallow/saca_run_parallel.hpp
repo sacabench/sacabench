@@ -316,6 +316,7 @@ private:
     inline void sort_all_buckets() {
         #pragma omp parallel
         {
+            #pragma omp single nowait
             while (bd.are_buckets_left()) {
                 // Find the smallest unsorted bucket.
                 const auto unsorted_bucket = bd.get_smallest_bucket();
@@ -326,10 +327,12 @@ private:
                 if (size_of_bucket < 2) {
                     // Buckets with a size of 0 or 1 are already sorted.
                     // Do nothing.
-                } else if (size_of_bucket > 1728471284) {
+                } else if (size_of_bucket > 10) {
                     // Sort buckets in parallel
                     #pragma omp task
-                    sort_bucket(alpha, beta);
+                    {
+                        sort_bucket(alpha, beta);
+                    }
                 } else {
                     sort_bucket(alpha, beta);
                 }

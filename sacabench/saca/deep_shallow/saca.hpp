@@ -11,8 +11,8 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-#include "saca_run.hpp"
-#include "parallel_saca_run.hpp"
+#include "saca_run_serial.hpp"
+#include "saca_run_parallel.hpp"
 
 namespace sacabench::deep_shallow {
 class serial {
