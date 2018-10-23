@@ -14,10 +14,6 @@
 
 namespace sacabench::deep_shallow {
 
-template <typename T>
-using span = util::span<T>;
-using u_char = util::character;
-
 /// \brief Data on a single bucket. Contains the starting position in the suffix
 ///        array and if it is sorted.
 template <typename sa_index_type>
@@ -25,6 +21,10 @@ struct bucket_information {
     sa_index_type starting_position;
     bool is_sorted;
 };
+
+template <typename T>
+using span = util::span<T>;
+using u_char = util::character;
 
 // Assert, that the free bits in a 64 bit type, that are not used by the
 // suffix index type (32, 40, 48 bit) are used to store the boolean `is_sorted`.
@@ -60,8 +60,8 @@ public:
           sorting_idx(0) {}
 
     inline void check_bounds(const u_char a, const u_char b) const {
-        DCHECK_LT(a, real_alphabet_size);
-        DCHECK_LT(b, real_alphabet_size);
+        DCHECK_LT(size_t(a), real_alphabet_size);
+        DCHECK_LT(size_t(b), real_alphabet_size);
 
         // "Use" `a` and `b` so that the compiler doesn't warn about them
         // being unused.

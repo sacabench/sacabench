@@ -151,8 +151,7 @@ private:
                 input_text.slice(b + common_prefix_length);
             return as < bs;
         };
-        util::sort::binary_introsort::sort(bucket,
-                                                         compare_suffix);
+        util::sort::binary_introsort::sort(bucket, compare_suffix);
         DCHECK(is_partially_suffix_sorted(bucket, input_text));
     }
 
@@ -281,6 +280,7 @@ private:
     }
 
     inline void sort_bucket(const u_char alpha, const u_char beta) {
+
         // Get bucket bounds.
         const auto bucket_start = bd.start_of_bucket(alpha, beta);
         const auto bucket_end = bd.end_of_bucket(alpha, beta);
@@ -293,6 +293,7 @@ private:
             suffix_array.slice(bucket_start, bucket_end);
 
         if (bucket.size() <= 2) {
+            // Special case: use quicksort for small buckets
             simple_sort(bucket, 2);
         } else {
             // Shallow sort it.
@@ -341,6 +342,10 @@ private:
                     // Sort small buckets in serial
                     sort_bucket(alpha, beta);
                 }
+
+                #pragma omp critical
+                // Mark this bucket as sorted.
+                bd.mark_bucket_sorted(alpha, beta);
             }
         }
 
