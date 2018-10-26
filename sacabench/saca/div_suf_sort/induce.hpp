@@ -9,9 +9,8 @@ namespace sacabench::div_suf_sort {
 
 template <typename sa_index>
 inline static void
-induce_s_suffixes(util::string_span input, util::span<bool> suffix_types,
-                  buckets<sa_index>& buckets, util::span<sa_index> sa,
-                  const size_t max_character) {
+induce_s_suffixes(util::string_span input, buckets<sa_index>& buckets,
+                  util::span<sa_index> sa, const size_t max_character) {
     // bit mask: 1000...000
     constexpr sa_index NEGATIVE_MASK = size_t(1) << (sizeof(sa_index) * 8 - 1);
 
@@ -39,8 +38,13 @@ induce_s_suffixes(util::string_span input, util::span<bool> suffix_types,
                 // associated S-bucket
                 size_t destination_bucket = buckets.get_s_bucket_index(
                     input[size_t(sa[i]) - 1], input[sa[i]]);
+                // This check for l-type is sufficient, because we know that
+                // it's successor is an s-type (i.e. different, greater symbol
+                // needed)
                 if (size_t(sa[i]) - 1 > 0 &&
-                    sa_types::is_l_type(size_t(sa[i]) - 2, suffix_types)) {
+                    input[size_t(sa[i])-2] > input[size_t(sa[i])-1]) {
+                    //sa_types::is_l_type(size_t(sa[i]) - 2, suffix_types)) {
+
                     // Check if index is used to induce in current step
                     // (induce s-suffixes)
                     // Prefix/Postfix-operators not supported for uint40

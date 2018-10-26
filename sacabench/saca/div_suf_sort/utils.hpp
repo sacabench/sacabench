@@ -27,6 +27,10 @@ struct sa_types {
         return suffix_types[suffix] == 0 && suffix_types[suffix + 1] == 0;
     }
 
+    inline static bool is_rms_type(bool current, bool next) {
+        return current == 0 && current != next;
+    }
+
     inline static bool is_rms_type(size_t suffix,
                                    util::span<bool> suffix_types) {
         // Last suffix must be l-type
