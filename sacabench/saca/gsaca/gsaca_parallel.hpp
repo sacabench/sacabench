@@ -159,6 +159,20 @@ namespace sacabench::gsaca {
             std::cout << "  group_end:      " << values.group_end << std::endl;
         }
 
+        struct split_size_range {
+            uint64_t start;
+            uint64_t end;
+        };
+        split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
+            const uint64_t offset = ((size / threads) * thread_rank)
+                + std::min<uint64_t>(thread_rank, size % threads);
+
+            const uint64_t local_size = (size / threads)
+                + ((thread_rank < size % threads) ? 1 : 0);
+
+            return split_size_range { offset, offset + local_size };
+        }
+
         /**
          * \brief This function sets up the shared values ISA, GLINK and GSIZE.
          */
@@ -217,7 +231,7 @@ namespace sacabench::gsaca {
             }
             global_sorting_list[0] = sorting_lists[(num_threads - 1) * alphabet.size_with_sentinel()];
             for (uint64_t index = 1; index < global_sorting_list.size(); index++) {
-                auto sorting_index = (num_threads - 1) * alphabet.size_with_sentinel() + index
+                auto sorting_index = (num_threads - 1) * alphabet.size_with_sentinel() + index;
                 global_sorting_list[index] = sorting_lists[sorting_index] + global_sorting_list[index - 1];
             }
 
@@ -250,7 +264,7 @@ namespace sacabench::gsaca {
                 if (chars_cumulative[index] != global_sorting_list[index]) {
                     std::cout << "Error on index " << index << std::endl;
                     std::cout << "chars_cumulative: " << chars_cumulative[index] << std::endl;
-                    sdt::cout << "global_sorting_list: " << global_sorting_list[index] << std::endl;
+                    std::cout << "global_sorting_list: " << global_sorting_list[index] << std::endl;
                 }
             }
 
