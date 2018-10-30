@@ -182,107 +182,90 @@ namespace sacabench::gsaca {
             // PARALLEL COUNTING
             // --------------------------------
 
-            const size_t num_threads = omp_get_max_threads();
-
             // Setup lists for all threads in one big array.
+            const size_t num_threads = omp_get_max_threads();
             util::container<size_t> sorting_lists(num_threads * alphabet.size_with_sentinel());
-            auto size_of_data_per_thread = text.size() / num_threads;
+            auto items_per_thread = (text.size() / num_threads) + 1;
 
             #pragma omp parallel
             {
                 const uint64_t thread_id = omp_get_thread_num();
-                
-                // count occurrences of all elements in data
-                #pragma omp for
-                for (size_t index = 0; index < alphabet.size_with_sentinel(); index++) {
+                const uint64_t start_index = thread_id * items_per_thread;
+                uint64_t end_index = start_index + items_per_thread;
+                if (text.size() < end_index) {
+                    end_index = text.size();
+                }
 
-                    auto current_index = thread_id * size_of_data_per_thread + index;
-                    size_t character = text[current_index];
-
-                    #pragma omp critical
-                    std::cout << "Found character " << character << " on thread " << thread_id << " at index " << current_index << std::endl;
-                    
-                    auto character_index = thread_id * alphabet.size_with_sentinel() + character;
-                    #pragma omp critical
-                    std::cout << "increasing character at index " << character_index << std::endl;
-                    
-                    sorting_lists[character_index] += 1;
+                for (uint64_t index = start_index; index < end_index; index++) {
+                    auto element = text[index];
+                    sorting_lists[thread_id * alphabet.size_with_sentinel() + element] += 1;
                 }
             }
-
+            
+            /*
+            // DEBUG OUTPUT
             std::cout << "Number of threads: " << num_threads << std::endl;
             std::cout << "Size of alphabet: " << alphabet.size_with_sentinel() << std::endl;
             std::cout << "Size of sorting_lists: " << sorting_lists.size() << std::endl;
-            std::cout << "Number of chars per thread: " << size_of_data_per_thread << std::endl;
+            std::cout << "Number of chars per thread: " << items_per_thread << std::endl;
+            std::cout << "sorting_lists:" << std::endl;
             for (size_t thread_index = 0; thread_index < num_threads; thread_index++) {
-                std::cout << "Sorting list of thread number " << thread_index << ": " << std::endl;
-                for (size_t char_index = 0; char_index < alphabet.size_with_sentinel(); char_index++) {
-                    auto local_index = thread_index * size_of_data_per_thread + char_index;
-                    std::cout << sorting_lists[local_index] << ", ";
+                for (size_t index = 0; index < alphabet.size_with_sentinel(); index++) {
+                    std::cout << sorting_lists[thread_index * alphabet.size_with_sentinel() + index] << ", ";
                 }
-                std::cout << std::endl;
+                std::cout << std::endl; 
             }
+            */
 
             // sum up lists
             util::container<size_t> global_counting_list(alphabet.size_with_sentinel());
 
-            for (uint64_t thread_id = 0; thread_id < num_threads - 1; thread_id++) {
-                for (uint64_t index = 0; index < global_counting_list.size(); index++) {
-                    auto current_index = (thread_id + 1) * alphabet.size_with_sentinel() + index;
-                    auto prev_index = thread_id * alphabet.size_with_sentinel() + index;
-                    sorting_lists[current_index] += sorting_lists[prev_index];
-                }
-            }
-            global_counting_list[0] = sorting_lists[(num_threads - 1) * alphabet.size_with_sentinel()];
-            for (uint64_t index = 1; index < global_counting_list.size(); index++) {
-                auto sorting_index = (num_threads - 1) * alphabet.size_with_sentinel() + index;
-                global_counting_list[index] = sorting_lists[sorting_index] + global_counting_list[index - 1];
+            for (size_t thread_index = 0; thread_index < num_threads; thread_index++) {
+                for (size_t index = 0; index < alphabet.size_with_sentinel(); index++) {
+                    auto current_index = thread_index * alphabet.size_with_sentinel() + index;
+                    auto value = sorting_lists[current_index];
+                    global_counting_list[index] += value;
+                } 
             }
 
-            // --------------------------------
-            // NORMAL COUNTING
-            // --------------------------------
-
-            // Setup helper lists to count occurring chars and to calculate the cumulative count of chars.
-            auto chars_count = sacabench::util::make_container<size_t>(alphabet.size_with_sentinel());
-            auto chars_cumulative = sacabench::util::make_container<size_t>(alphabet.size_with_sentinel());
-
-            // Count occurences of each char in word.
-            for (sacabench::util::character current_char : text) {
-                ++chars_count[current_char];
+            /*
+            // DEBUG OUTPUT
+            std::cout << "global_counting_list: " << std::endl;
+            for (size_t index = 0; index < global_counting_list.size(); index++) {
+                std::cout << global_counting_list[index] << ", ";
             }
+            std::cout << std::endl; 
+            */
 
             // Build cumulative counts of all chars and set up GSIZE.
-            size_t cumulative_count = 0;
+            util::container<size_t> global_cumulative_list(alphabet.size_with_sentinel());
+            size_t count = 0;
             for (size_t index = 0; index < alphabet.size_with_sentinel(); index++) {
-                if (chars_count[index] > 0) {
+                if (global_counting_list[index] > 0) {
                     // The char at the current index occures in the word.
-                    chars_cumulative[index] = cumulative_count;
-                    auto value = static_cast<sa_index>(chars_count[index]);
-                    values.GSIZE.set_value_at_index(cumulative_count, value);
-                    cumulative_count += chars_count[index];
+                    global_cumulative_list[index] = count;
+                    auto value = static_cast<sa_index>(global_counting_list[index]);
+                    values.GSIZE.set_value_at_index(count, value);
+                    count += global_counting_list[index];
                 }
             }
 
-
-            // --------------------------------
-            // NORMAL COUNTING
-            // --------------------------------
-            for (size_t index = 0; index < chars_cumulative.size(); index++) {
-                if (chars_cumulative[index] != global_counting_list[index]) {
-                    std::cout << "Error on index " << index << std::endl;
-                    std::cout << "chars_cumulative: " << chars_cumulative[index] << std::endl;
-                    std::cout << "global_counting_list: " << global_counting_list[index] << std::endl;
-                }
+            /*
+            // DEBUG OUTPUT
+            std::cout << "global_cumulative_list: " << std::endl;
+            for (size_t index = 0; index < global_cumulative_list.size(); index++) {
+                std::cout << global_cumulative_list[index] << ", ";
             }
+            std::cout << std::endl; 
+            */
 
             // Set up ISA and GLINK.
             for (size_t index = number_of_chars - 1; index < number_of_chars; index--) {
                 unsigned char current_char = text[index];
 
                 // Caluclate borders of group for current char.
-                size_t group_start = chars_cumulative[current_char];
-                size_t group_size = --chars_count[current_char];
+                size_t group_start = global_cumulative_list[current_char];
+                size_t group_size = --global_counting_list[current_char];
                 size_t group_end = group_start + group_size;
 
                 // Save borders of group for current char in GLINK and ISA.
