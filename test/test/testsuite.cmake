@@ -56,6 +56,7 @@ macro(generic_run_test test_target test_file
     target_link_libraries(${test_target}_testrunner
         ${driver_dep}
         ${TEST_TARGET_DEPS}
+        "${OpenMP_CXX_FLAGS}"
     )
 
     target_compile_options(${test_target}_testrunner PUBLIC

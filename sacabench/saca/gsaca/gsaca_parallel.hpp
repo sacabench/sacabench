@@ -183,26 +183,44 @@ namespace sacabench::gsaca {
             // --------------------------------
 
             const size_t num_threads = omp_get_max_threads();
-            std::cout << "Number of threads: " << num_threads << std::endl;
 
             // Setup lists for all threads in one big array.
             util::container<size_t> sorting_lists(num_threads * alphabet.size_with_sentinel());
-
             auto size_of_data_per_thread = text.size() / num_threads;
 
             #pragma omp parallel
-            // count occurrences of all elements in data
             {
                 const uint64_t thread_id = omp_get_thread_num();
                 
-                for (size_t index = 0; index < size_of_data_per_thread; index++) {
+                // count occurrences of all elements in data
+                #pragma omp for
+                for (size_t index = 0; index < alphabet.size_with_sentinel(); index++) {
 
                     auto current_index = thread_id * size_of_data_per_thread + index;
-                    auto character = text[current_index];
+                    size_t character = text[current_index];
 
-                    auto character_index = thread_id * size_of_data_per_thread + character;
+                    #pragma omp critical
+                    std::cout << "Found character " << character << " on thread " << thread_id << " at index " << current_index << std::endl;
+                    
+                    auto character_index = thread_id * alphabet.size_with_sentinel() + character;
+                    #pragma omp critical
+                    std::cout << "increasing character at index " << character_index << std::endl;
+                    
                     sorting_lists[character_index] += 1;
                 }
+            }
+
+            std::cout << "Number of threads: " << num_threads << std::endl;
+            std::cout << "Size of alphabet: " << alphabet.size_with_sentinel() << std::endl;
+            std::cout << "Size of sorting_lists: " << sorting_lists.size() << std::endl;
+            std::cout << "Number of chars per thread: " << size_of_data_per_thread << std::endl;
+            for (size_t thread_index = 0; thread_index < num_threads; thread_index++) {
+                std::cout << "Sorting list of thread number " << thread_index << ": " << std::endl;
+                for (size_t char_index = 0; char_index < alphabet.size_with_sentinel(); char_index++) {
+                    auto local_index = thread_index * size_of_data_per_thread + char_index;
+                    std::cout << sorting_lists[local_index] << ", ";
+                }
+                std::cout << std::endl;
             }
 
             // sum up lists
