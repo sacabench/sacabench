@@ -194,7 +194,7 @@ namespace sacabench::gsaca {
                     chars_cumulative[index] = cumulative_count;
                     auto value = static_cast<sa_index>(chars_count[index]);
                     values.GSIZE.set_value_at_index(cumulative_count, value);
-                    cumulative_count += chars_count[index];
+                    cumulative_count += value;
                 }
             }
 

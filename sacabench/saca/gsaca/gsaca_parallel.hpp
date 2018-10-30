@@ -159,20 +159,6 @@ namespace sacabench::gsaca {
             std::cout << "  group_end:      " << values.group_end << std::endl;
         }
 
-        struct split_size_range {
-            uint64_t start;
-            uint64_t end;
-        };
-        split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
-            const uint64_t offset = ((size / threads) * thread_rank)
-                + std::min<uint64_t>(thread_rank, size % threads);
-
-            const uint64_t local_size = (size / threads)
-                + ((thread_rank < size % threads) ? 1 : 0);
-
-            return split_size_range { offset, offset + local_size };
-        }
-
         /**
          * \brief This function sets up the shared values ISA, GLINK and GSIZE.
          */
@@ -196,43 +182,43 @@ namespace sacabench::gsaca {
             // PARALLEL COUNTING
             // --------------------------------
 
-            util::container<size_t> global_sorting_list(alphabet.size_with_sentinel());
             const size_t num_threads = omp_get_max_threads();
             std::cout << "Number of threads: " << num_threads << std::endl;
 
-            auto get_local_slice = [&](size_t threads, size_t rank, auto& slice) {
-                auto range = split_size(slice.size(), rank, threads);
-                return slice.slice(range.start, range.end);
-            };
-
+            // Setup lists for all threads in one big array.
             util::container<size_t> sorting_lists(num_threads * alphabet.size_with_sentinel());
+
+            auto size_of_data_per_thread = text.size() / num_threads;
 
             #pragma omp parallel
             // count occurrences of all elements in data
             {
                 const uint64_t thread_id = omp_get_thread_num();
+                
+                for (size_t index = 0; index < size_of_data_per_thread; index++) {
 
-                auto local_data = get_local_slice(num_threads, thread_id, text);
-                auto local_sorting_list = get_local_slice(num_threads, thread_id, sorting_lists);
-                DCHECK_EQ(local_sorting_list.size(), alphabet.size_with_sentinel());
+                    auto current_index = thread_id * size_of_data_per_thread + index;
+                    auto character = text[current_index];
 
-                for (auto element : local_data) {
-                    local_sorting_list[element]++;
+                    auto character_index = thread_id * size_of_data_per_thread + character;
+                    sorting_lists[character_index] += 1;
                 }
             }
 
             // sum up lists
+            util::container<size_t> global_counting_list(alphabet.size_with_sentinel());
+
             for (uint64_t thread_id = 0; thread_id < num_threads - 1; thread_id++) {
-                for (uint64_t index = 0; index < global_sorting_list.size(); index++) {
+                for (uint64_t index = 0; index < global_counting_list.size(); index++) {
                     auto current_index = (thread_id + 1) * alphabet.size_with_sentinel() + index;
                     auto prev_index = thread_id * alphabet.size_with_sentinel() + index;
                     sorting_lists[current_index] += sorting_lists[prev_index];
                 }
             }
-            global_sorting_list[0] = sorting_lists[(num_threads - 1) * alphabet.size_with_sentinel()];
-            for (uint64_t index = 1; index < global_sorting_list.size(); index++) {
+            global_counting_list[0] = sorting_lists[(num_threads - 1) * alphabet.size_with_sentinel()];
+            for (uint64_t index = 1; index < global_counting_list.size(); index++) {
                 auto sorting_index = (num_threads - 1) * alphabet.size_with_sentinel() + index;
-                global_sorting_list[index] = sorting_lists[sorting_index] + global_sorting_list[index - 1];
+                global_counting_list[index] = sorting_lists[sorting_index] + global_counting_list[index - 1];
             }
 
             // --------------------------------
@@ -260,11 +246,15 @@ namespace sacabench::gsaca {
                 }
             }
 
+
+            // --------------------------------
+            // NORMAL COUNTING
+            // --------------------------------
             for (size_t index = 0; index < chars_cumulative.size(); index++) {
-                if (chars_cumulative[index] != global_sorting_list[index]) {
+                if (chars_cumulative[index] != global_counting_list[index]) {
                     std::cout << "Error on index " << index << std::endl;
                     std::cout << "chars_cumulative: " << chars_cumulative[index] << std::endl;
-                    std::cout << "global_sorting_list: " << global_sorting_list[index] << std::endl;
+                    std::cout << "global_counting_list: " << global_counting_list[index] << std::endl;
                 }
             }
 
