@@ -57,6 +57,9 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_discarding_4)
 
+SACA_REGISTER("saca/prefix_doubling.hpp"
+    sacabench::prefix_doubling::prefix_discarding_4_parallel)
+
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
 
