@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <util/sort/pss.hpp>
+#include <util/sort/std_sort.hpp>
 #include <util/container.hpp>
 #include <parallel/algorithm>
 
@@ -17,9 +18,11 @@ class pss_tests : public ::testing::Test {
     protected:
         static void SetUpTestCase() {
             short_inst = {3,1,9,6,4,2,7,8,5};
-            short_control_inst = {1,2,3,4,5,6,7,8,9};
+            short_control_inst = container<int>(short_inst);
+            sort::std_sort(short_control_inst, std::less<int>());
             long_inst = {3,1,9,6,4,2,7,8,5};
-            long_control_inst = {1,2,3,4,5,6,7,8,9};
+            long_control_inst = container<int>(long_inst);
+            sort::std_sort(long_control_inst, std::less<int>());
         }
 
         void SetUp() override {
