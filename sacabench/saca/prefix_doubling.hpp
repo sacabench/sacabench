@@ -933,6 +933,13 @@ struct ips4o_sorter {
     }
 };
 
+struct ips4o_sorter_parallel {
+    template <typename T, typename Compare>
+    SB_NO_INLINE static void sort(util::span<T> data, Compare comp) {
+        util::sort::ips4o_sort_parallel(data, comp);
+    }
+};
+
 struct prefix_doubling {
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "Doubling";
@@ -976,6 +983,22 @@ struct prefix_discarding_4 {
                              util::alphabet const& /*alphabet_size*/,
                              util::span<sa_index> out_sa) {
         prefix_doubling_impl<sa_index, 4, ips4o_sorter>::doubling_discarding(
+            text, out_sa);
+    }
+};
+
+struct prefix_discarding_4_parallel {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Discarding4";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of 4-Tupling with Discarding by R. "
+        "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
+
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& /*alphabet_size*/,
+                             util::span<sa_index> out_sa) {
+        prefix_doubling_impl<sa_index, 4, ips4o_sorter_parallel>::doubling_discarding(
             text, out_sa);
     }
 };
