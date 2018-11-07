@@ -23,4 +23,7 @@ constexpr auto BLIND_SORT_RATIO = 2000;
 ///        length `SEGMENT_LENGTH`.
 constexpr auto SEGMENT_LENGTH = 550;
 static_assert(SEGMENT_LENGTH < std::numeric_limits<uint16_t>::max());
+
+/// \brief This is the minimal size
+constexpr auto BIG_BUCKETS_MIN_INDUCE_RATIO = 0.0;
 } // namespace sacabench::deep_shallow
