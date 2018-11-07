@@ -17,12 +17,16 @@ using namespace sacabench::util;
 class pss_tests : public ::testing::Test {
     protected:
         static void SetUpTestCase() {
+            long TEST_SIZE = 100'000'000l;
             short_inst = {3,1,9,6,4,2,7,8,5};
             short_control_inst = container<int>(short_inst);
-            sort::std_sort(short_control_inst, std::less<int>());
-            long_inst = {3,1,9,6,4,2,7,8,5};
+            sort::std_sort(short_control_inst, std::less<int>()); // use stable_sort instead
+            long_inst = container<int>(TEST_SIZE);
+            for (long i = 0; i < TEST_SIZE; ++i) {
+                long_inst[i] = rand();
+            }
             long_control_inst = container<int>(long_inst);
-            sort::std_sort(long_control_inst, std::less<int>());
+            sort::std_sort(long_control_inst, std::less<int>()); // use stable_sort instead
         }
 
         void SetUp() override {
