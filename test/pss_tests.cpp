@@ -15,6 +15,6 @@ using namespace sacabench::util;
 TEST(pss_tests, sort_correct) {
     container<int> test_inst = {3,1,9,6,4,2,7,8,5};
     container<int> control_inst = {1,2,3,4,5,6,7,8,9};
-    sort::pss_sort<int>(test_inst, std::less<int>());
+    sort::parallel_stable<int>(test_inst, std::less<int>());
     ASSERT_EQ(test_inst, control_inst);
 }
