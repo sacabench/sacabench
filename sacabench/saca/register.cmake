@@ -89,3 +89,6 @@ SACA_REGISTER("saca/nzSufSort.hpp"
 
 SACA_REGISTER("saca/dc3_lite.hpp"
     sacabench::dc3_lite::dc3_lite)
+
+SACA_REGISTER("saca/dc3_parallel.hpp"
+    sacabench::dc3_parallel::dc3_parallel)

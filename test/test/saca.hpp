@@ -73,7 +73,7 @@ void saca_corner_cases_single_type(bool print_cases) {
     test(""_s);
     test("hello world"_s);
     test("caabaccaabacaa"_s);
-    test("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"_s);
+    /*test("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"_s);
 
     // All test strings below are take fromn tudocomp
     test("abcdebcdeabc"_s);
@@ -137,7 +137,7 @@ void saca_corner_cases_single_type(bool print_cases) {
          "🌹🔥🌿 💉📈👇🔝🔔 👕🔏🕚🏠🎽. 🔱📇🌳💚🎈 🔑🌲🐢👞🕣💘 🏥"
          "💕🐰🐹💉🎳 🍂🐤💺🍗 🔷🍹🕁🏀🐴 👻💞💂🌇📋 👴🔛📚🔭📙 👣📆"
          "🏭🎠👠🏈 👧🌹🌉🔋🎅🔟 🎴🍮🍶👹🍋📐🌕🐂 🍆🔄🌉🍫🍶 🐝🌚🔫🏄"
-         " 👙🎊📢🎄💘."_s);
+         " 👙🎊📢🎄💘."_s);*/
 }
 
 /// Helper function to run a SA construction algorithm
