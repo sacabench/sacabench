@@ -17,6 +17,25 @@
 
 namespace sacabench::util {
 
+/// A debug write function, that prints an integer to a ostream as
+/// a decimal number, even if it is a char.
+template<typename T>
+inline std::ostream& write_map_char_to_int(T const& v, std::ostream& out) {
+    return out << v;
+}
+template<>
+inline std::ostream& write_map_char_to_int<unsigned char>(unsigned char const& v, std::ostream& out) {
+    return out << uint64_t(v);
+}
+template<>
+inline std::ostream& write_map_char_to_int<char>(char const& v, std::ostream& out) {
+    return out << int64_t(v);
+}
+template<>
+inline std::ostream& write_map_char_to_int<signed char>(signed char const& v, std::ostream& out) {
+    return out << int64_t(v);
+}
+
 // Inspired by the span type in https://github.com/Microsoft/GSL
 /// A wrapper around a (pointer, len) pair.
 ///
@@ -160,6 +179,25 @@ public:
             (*this)[i] = other[i];
         }
     }
+
+    template<typename FmtFunction>
+    inline std::ostream& debug_write(std::ostream& out, FmtFunction func) const {
+        out << "[";
+        bool first = true;
+        for (auto const& e : *this) {
+            if (first) {
+                first = false;
+            } else {
+                out << ", ";
+            }
+            func(e, out);
+        }
+        out << "]";
+        return out;
+    }
+    inline std::ostream& debug_write(std::ostream& out) const {
+        return debug_write(out, write_map_char_to_int<std::remove_cv_t<T>>);
+    }
 };
 
 template <typename T>
@@ -199,16 +237,5 @@ inline SB_FORCE_INLINE bool operator>=(span<T> const& lhs, span<T> const& rhs) {
 template <typename T>
 inline std::ostream& operator<<(std::ostream& out,
                                 sacabench::util::span<T> const& span) {
-    out << "[";
-    bool first = true;
-    for (auto const& e : span) {
-        if (first) {
-            first = false;
-        } else {
-            out << ", ";
-        }
-        out << e;
-    }
-    out << "]";
-    return out;
+    return span.debug_write(out);
 }

@@ -35,7 +35,15 @@ add_executable(sacabench
 target_link_libraries(sacabench
   saca_bench_lib
   CLI11
+  "${OpenMP_CXX_FLAGS}"
+  atomic
 )
+target_compile_options(sacabench PUBLIC
+  ${SACA_BENCH_FLAGS}
+  $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
+  $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
+)
+
 
 target_compile_options(sacabench PUBLIC
   ${SACA_BENCH_FLAGS}
