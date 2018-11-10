@@ -28,6 +28,16 @@ void ips4o_sort(span<T> data, Compare comp) {
     ips4o::sort(std::begin(data), std::end(data), comp);
 }
 
+template <typename T, typename Compare>
+void ips4o_sort_parallel(container<T>& data, Compare comp) {
+    ips4o::parallel::sort(std::begin(data), std::end(data), comp);
+}
+
+template <typename T, typename Compare>
+void ips4o_sort_parallel(span<T> data, Compare comp) {
+    ips4o::parallel::sort(std::begin(data), std::end(data), comp);
+}
+
 } // namespace sacabench::util::sort
 
 /******************************************************************************/
