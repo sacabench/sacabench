@@ -20,7 +20,7 @@
 #include <tudocomp_stat/StatPhase.hpp>
 
 //parallel
-#include <omp.h>
+//#include <omp.h>
 #include <util/sort/ips4o.hpp>
 
 
@@ -156,7 +156,7 @@ private:
     static void construct_sa_dc3(S& text, util::span<sa_index> out_sa,
                                  size_t alphabet_size) {
         (void)alphabet_size;
-        #pragma omp parallel
+        //#pragma omp parallel
 
             //-----------------------Phase 1------------------------------//
             tdc::StatPhase dc3_parallel("Phase 1");
@@ -184,7 +184,7 @@ private:
                                     alphabet_size);
 
             util::span<sa_index> sa_12 = util::span(&out_sa[0], t_12.size() - 3);
-            #pragma omp barrier
+            //#pragma omp barrier
             // run the algorithm recursivly if the names are not unique
             if (recursion) {
                 dc3_parallel.split("Rekursion");
@@ -207,11 +207,11 @@ private:
 
                 sa_index one = 1;
                 // correct the order of sa_12 with result of recursion
-                #pragma omp for
+                //#pragma omp for
                 for (size_t i = 0; i < end_of_mod_eq_1; ++i) {
                     triplets_12[span_t_12[i] - one] = 3 * i + 1;
                 }
-                #pragma omp for
+                //#pragma omp for
                 for (size_t i = end_of_mod_eq_1; i < triplets_12.size(); ++i) {
                     triplets_12[span_t_12[i] - one] = 3 * (i - end_of_mod_eq_1) + 2;
                 }
@@ -227,7 +227,7 @@ private:
 
             //-----------------------Phase 3------------------------------//
             dc3_parallel.split("Phase 3");
-#pragma omp single
+//#pragma omp single
             // merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
             if constexpr (rec) {
                 merge_sa_dc_parallel<const sa_index, sa_index>(
