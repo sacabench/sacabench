@@ -29,10 +29,9 @@ namespace sacabench::dc3_parallel {
 class dc3_parallel {
 public:
     static constexpr size_t EXTRA_SENTINELS = 3;
-    static constexpr char const* NAME = "DC3";
+    static constexpr char const* NAME = "DC3_parallel";
     static constexpr char const* DESCRIPTION =
-        "Difference Cover Modulo 3 as described by Juha Kärkkäinen and Peter "
-        "Sanders";
+        "Difference Cover Modulo 3 parallel";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -545,43 +544,25 @@ private:
             ++start_sa_12;
         }
         
-        size_t end_of_mod_eq_1 = sa_0_size + sa_12_size / 2;
+        size_t end_of_mod_eq_1 = sa_0_size - start_sa_0 + sa_12_size / 2;
+        size_t start_pos_mod_2 = isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
         
-        std::cout << "end_of_mod_eq_1: " << end_of_mod_eq_1 << std::endl;
         size_t counter_mod_eq_0 = 0;
-        size_t counter_mod_eq_1 = sa_0_size;
+        size_t counter_mod_eq_1 = sa_0_size - start_sa_0;
         size_t counter_mod_eq_2 = end_of_mod_eq_1;
         
+        sa_index zero= 0;
         sa_index one = 1;
         sa_index two = 2;
-        
-        std::cout << "sa_0: ";
-        for(size_t i = 0; i < sa_0_size; ++i){
-            std::cout << sa_0[i] << ", ";
-        }
-        counter_mod_eq_0 = 0;
-        std::cout << std::endl;
-        std::cout << "sa_12: ";
-        for(size_t i = start_sa_12; i < sa_12_size; ++i){
-            std::cout << sa_12[i] << ", ";
-        }
-        std::cout << std::endl;
-        
-        std::cout << "erster Teil: ";
+                
         for(size_t i = start_sa_0; i < sa_0_size; ++i){
             sa[counter_mod_eq_0++] = sa_0[i];
-            std::cout << sa[counter_mod_eq_0 - 1] << ", ";
         }
-        std::cout << std::endl;
-        
-        std::cout << "jetzt sa_12" << std::endl;
 
         for(size_t i = start_sa_12; i < sa_12_size; ++i){
             if((sa_12[i] % 3)  == 1){
-                std::cout << "counter_mod_eq_1: " << counter_mod_eq_1 << std::endl;
                 sa[counter_mod_eq_1++] = sa_12[i];
             }else{
-                std::cout << "counter_mod_eq_2: " << counter_mod_eq_2 << std::endl;
                 sa[counter_mod_eq_2++] = sa_12[i];
             }
         }
@@ -592,86 +573,79 @@ private:
             
             return tuple_i < tuple_j;
         };
-        
-        std::cout << "sa: ";
-        for(size_t i = 0; i < sa.size(); ++i){
-            std::cout << sa[i] << ", ";
-        }
-        std::cout << std::endl;
 
         std::sort(sa.begin(), sa.end(), comp);
         
-        std::cout << "sa: ";
-        for(size_t i = 0; i < sa.size(); ++i){
-            std::cout << sa[i] << ", ";
+        auto duplicates = util::container<sa_index>(sa.size());
+        size_t first_duplicate = 0;
+        for(size_t i = 1; i < sa.size(); ++i){            
+            auto tuple_1 = sacabench::util::span<C>(&text[sa[i]], 3);
+            auto tuple_2 = sacabench::util::span<C>(&text[sa[i-1]], 3);
+            
+            if(tuple_1 == tuple_2){
+                ++duplicates[first_duplicate];
+            }else{
+                first_duplicate = first_duplicate + duplicates[first_duplicate] + 1;
+            }
         }
-        std::cout << std::endl;
         
-        
-        for(size_t i = 0; i < sa.size(); i = i + 3){
-            auto tuple_1 = sacabench::util::span<C>(&text[i], 3);
-            auto tuple_2 = sacabench::util::span<C>(&text[i+1], 3);
-            auto tuple_3 = sacabench::util::span<C>(&text[i+2], 3);
+        auto comp_isa = [&](size_t i, size_t j) {
             
-            bool tuple_eq_12 = tuple_1 == tuple_2;
-            bool tuple_eq_23 = tuple_2 == tuple_3;
+            sa_index isa_i = 0;
+            sa_index isa_j = 0;
             
-            if(tuple_eq_12 && tuple_eq_23){
-                sa_index tmp_sa_1 = sa[i];
-                sa_index tmp_sa_2 = sa[i+1];
-                sa_index tmp_sa_3 = sa[i+2];
-                
-                
-                sa_index isa_1 = isa_12[(sa[i]+one)/3];
-                sa_index isa_2 = isa_12[(sa[i+1]+two)/3];
-                sa_index isa_3_1 = isa_12[sa[i+2]+one];
-                sa_index isa_3_2 = isa_12[sa[i+2]+two];
-                
-                bool isa_12 = isa_1 < isa_2;
-                bool isa_13 = isa_1 < isa_3_1;
-                bool isa_23 = isa_2 < isa_3_2;
-                
-                if(isa_12){
-                    if(!isa_23){
-                        sa[i+1] = tmp_sa_3;
-                        sa[i+2] = tmp_sa_2; 
-                    }
+            if(i % 3 == j % 3){ //Reihenfolge so lassen, wie sie ist
+                if(i % 3 == 0){
+                    isa_i = isa_12[(i+one)/3];
+                    isa_j = isa_12[(j+one)/3];
+                }else if(i % 3 == 1){
+                    isa_i = isa_12[i/3];
+                    isa_j = isa_12[j/3];
                 }else{
-                    if(isa_23){
-                        sa[i] = tmp_sa_2;
-                        sa[i+1] = tmp_sa_3; 
-                        sa[i+2] = tmp_sa_1; 
-                    }else{
-                        sa[i] = tmp_sa_2;
-                        sa[i+1] = tmp_sa_3; 
-                        sa[i+2] = tmp_sa_1;
-                    }
+                    isa_i = isa_12[start_pos_mod_2 + i/3];
+                    isa_j = isa_12[start_pos_mod_2 + j/3];
+                }
+            }else{
+                switch (i % 3) {
+                    case 0:
+                        if(j % 3 == 1){
+                            isa_i = isa_12[(i+one)/3];
+                            isa_j = isa_12[start_pos_mod_2 + (j+one)/3];
+                        }else{ //j % 3 == 2
+                            isa_i = isa_12[start_pos_mod_2 + (i+two)/3];
+                            isa_j = isa_12[(j+two)/3];
+                        }
+                        break;
+                    case 1:
+                        if(j % 3 == 0){
+                            isa_i = isa_12[start_pos_mod_2 + (i+one)/3];
+                            isa_j = isa_12[(j+one)/3];
+                        }else{ //j % 3 == 2
+                            isa_i = isa_12[i/3];
+                            isa_j = isa_12[start_pos_mod_2 + j/3];
+                        }
+                        break;
+                    case 2:
+                        if(j % 3 == 0){
+                            isa_i = isa_12[(i+two)/3];
+                            isa_j = isa_12[start_pos_mod_2 + (j+two)/3];
+                        }else{ //j % 3 == 1
+                            isa_i = isa_12[start_pos_mod_2 + i/3];
+                            isa_j = isa_12[j/3];
+                        }
+                        break;
                 }
             }
-            
-            
-            if(tuple_eq_12){
-                if(isa_12[(sa[i]+two)/3] > isa_12[(sa[i+1]+two)/3]){
-                    sa_index tmp_sa = sa[i];
-                    sa[i] = sa[i+1];
-                    sa[i+1] = tmp_sa;
-                }
-            }
-            if(tuple_eq_23){
-                if(isa_12[sa[i+1]+two] > isa_12[sa[i+2]+two]){
-                    sa_index tmp_sa = sa[i];
-                    sa[i] = sa[i+1];
-                    sa[i+1] = tmp_sa;
-                }
-            }
-        }
+            return isa_i < isa_j;
+        };
         
-        std::cout << "sa: ";
-        for(size_t i = 0; i < sa.size(); ++i){
-            std::cout << sa[i] << ", ";
+        size_t counter = 0;
+        while(counter < sa.size()-1){
+            if(duplicates[counter] != zero){
+                std::stable_sort(sa.begin() + counter, sa.begin() + counter + duplicates[counter] + 1, comp_isa);
+                counter += duplicates[counter] + one;
+            }else ++counter;
         }
-        std::cout << std::endl;
-
     }
 }; // class dc3
 
