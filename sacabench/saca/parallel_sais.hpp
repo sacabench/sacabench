@@ -11,15 +11,18 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
+#include<vector>
+#include<thread>
+#include<iostream>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
-namespace sacabench::sais {
+namespace sacabench::parallel_sais {
 using namespace sacabench::util;
-class sais {
+class parallel_sais {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "SAIS";
+    static constexpr char const* NAME = "PARALLEL_SAIS";
     static constexpr char const* DESCRIPTION =
         "Suffix Array Induced Sorting by Nong, Zhang and Chan";
 
@@ -31,20 +34,65 @@ public:
     }
 
     template <typename T>
+    static void classify(span<bool> t, T s, size_t offset, size_t len) {
+        for (ssize i = len; i >= 0; i--) {
+
+            if (len + 1 + offset < s.size()) {
+                if (s[len + offset] == s[len + 1 + offset] && (size_t)i == len) {
+                    int i = len;
+
+                    for (i = 1; s[len + offset] == s[i + len + offset]; i++) { }
+
+                    if (s[len + offset] > s[i + len + offset]) {
+                        t[len + offset] = L_Type;
+                        continue;
+                    }
+                    else if (s[len + offset] < s[i + len + offset]) {
+                        t[len + offset] = S_Type;
+                        continue;
+                    }
+                }
+            }
+
+            if (offset + i < s.size()) {
+                if (s[i + offset + 1] < s[i + offset]) {
+                    t[i + offset] = L_Type;
+                }
+                else if (s[i + offset + 1] > s[i + offset]) {
+                    t[i + offset] = S_Type;
+                }
+                else {
+                    t[i + offset] = t[i + offset + 1];
+                }
+            }
+        }
+    }
+
+    template <typename T>
     static void compute_types(span<bool> t, T s) {
-       t[s.size() - 1] = S_Type;
+        size_t thread_count = std::thread::hardware_concurrency();
+        thread_count = std::min(thread_count, s.size() - 1);
+        ssize part_length = s.size() / thread_count;
+        std::vector<std::thread> threads;
 
-       for (ssize i = s.size() - 2; i >= 0; i--) {
-           if (s.at(i + 1) < s.at(i)) {
-               t[i] = L_Type;
-           } else if (s.at(i + 1) > s.at(i)) {
-               t[i] = S_Type;
-           } else {
-               t[i] = t[i + 1];
-           }
-       }
-   }
+        t[s.size() - 1] = S_Type;
 
+        for (size_t i = 0; i < thread_count; i++) {
+            if (i < thread_count - 1) {
+                threads.push_back(std::thread(classify<T>, t, s, i * part_length, part_length));
+            }
+            else {
+                threads.push_back(std::thread(classify<T>, t, s, i * part_length, (s.size() - i * part_length) - 2));
+            }
+        }
+        
+        std::cout<<"waiting threads: " << threads.size() << std::endl;
+
+        for (auto& t : threads) {
+            t.join();
+        }
+    }
+    
     template <typename T, typename sa_index>
     static void generate_buckets(T s, span<sa_index> buckets, size_t K,
                                  bool end) {
@@ -218,10 +266,10 @@ public:
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
 
-        tdc::StatPhase sais("Main Phase");
+        tdc::StatPhase parallel_sais("Main Phase");
         if (text.size() > 1) {
             run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel());
         }
     }
 };
-} // namespace sacabench::sais
+} // namespace sacabench::parallel_sais

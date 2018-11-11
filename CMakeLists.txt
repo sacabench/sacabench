@@ -55,8 +55,8 @@ set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wpedantic;-Wextra;-Werror=return-type;-fd
 if (SACA_WERROR)
     set(SACA_BENCH_FLAGS "${SACA_BENCH_FLAGS};-Werror;-pedantic-errors")
 endif()
-set(SACA_BENCH_DEBUG_FLAGS "-O0;-g;-ggdb;-DDEBUG")
-set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG;-g")
+set(SACA_BENCH_DEBUG_FLAGS "-O0;-g;-ggdb;-DDEBUG;")
+set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG;-g;")
 
 ENDIF()
 
