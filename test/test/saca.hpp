@@ -69,13 +69,16 @@ void saca_corner_cases_single_type(bool print_cases) {
             ASSERT_EQ(fast_result, sa_check_result::ok);
         }
     };
-
+    
     test(""_s);
+    
     test("hello world"_s);
     test("caabaccaabacaa"_s);
+    
     test("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"_s);
 
     // All test strings below are take fromn tudocomp
+    
     test("abcdebcdeabc"_s);
     test("a"_s);
 
@@ -83,21 +86,22 @@ void saca_corner_cases_single_type(bool print_cases) {
     test("banana"_s);
     test("ananas"_s);
     test("abcdefgh#defgh_abcde"_s);
-
+    
     test("abcdebcdeabcd"_s);
     test("foobar"_s);
+    
     test("abcabcabcabc"_s);
-
+    
     test("abc abc  abc"_s);
 
     test("abaaabbababb"_s);
-
+    
     test("asdfasctjkcbweasbebvtiwetwcnbwbbqnqxernqzezwuqwezuet"
          "qcrnzxbneqebwcbqwicbqcbtnqweqxcbwuexcbzqwezcqbwecqbw"
          "dassdasdfzdfgfsdfsdgfducezctzqwebctuiqwiiqcbnzcebzqc"_s);
 
     test("ประเทศไทย中华Việt Nam"_s);
-
+ 
     test("Lorem ipsum dolor sit amet, sea ut etiam solet salut"
          "andi, sint complectitur et his, ad salutandi imperdi"
          "et gubergren per mei."_s);
@@ -117,19 +121,21 @@ void saca_corner_cases_single_type(bool print_cases) {
          " Ρεκυε ωμνιυμ μανδαμυς κυο εα. Αδμοδυμ σωνσεκυαθ υθ "
          "φιξ, εσθ ετ πρωβατυς συαφιθαθε ραθιονιβυς, ταντας αυ"
          "διαμ ινστρυσθιορ ει σεα."_s);
-
+    
     test("struct Foo { uint8_t bar }"_s);
 
     test("ABBCBCABA"_s);
-
+    
     test("abcabca"_s);
-
+    
     test("abbbbbbbbbbcbbbbbbbbbb"_s);
+    
     test("abbbcbbb"_s);
 
     test("0	100009425	0.1661:0.1661	#businessfor"_s);
-
-    // Actual Hieroglyphs!
+    
+    
+    //Actual Hieroglyphs!
     test("𓉑 𓉀𓊈𓈵𓊉𓉓𓊈𓈰𓊃𓈷𓊃𓈳𓊃𓈸𓊃𓈱𓊉"_s);
 
     // Emoji
@@ -137,7 +143,7 @@ void saca_corner_cases_single_type(bool print_cases) {
          "🌹🔥🌿 💉📈👇🔝🔔 👕🔏🕚🏠🎽. 🔱📇🌳💚🎈 🔑🌲🐢👞🕣💘 🏥"
          "💕🐰🐹💉🎳 🍂🐤💺🍗 🔷🍹🕁🏀🐴 👻💞💂🌇📋 👴🔛📚🔭📙 👣📆"
          "🏭🎠👠🏈 👧🌹🌉🔋🎅🔟 🎴🍮🍶👹🍋📐🌕🐂 🍆🔄🌉🍫🍶 🐝🌚🔫🏄"
-         " 👙🎊📢🎄💘."_s);
+         " 👙🎊📢🎄💘."_s);  
 }
 
 /// Helper function to run a SA construction algorithm
