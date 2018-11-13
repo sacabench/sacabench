@@ -38,11 +38,11 @@ public:
         size_t thread_count = std::thread::hardware_concurrency();
         thread_count = std::min(thread_count, s.size() - 1);
         ssize part_length = s.size() / thread_count;
-        ssize rest_length = (s.size() - (thread_border.size() - 1) * part_length);
+        ssize rest_length = (s.size() - (thread_count - 1) * part_length);
         std::vector<std::thread> threads;
         
         for (size_t i = 0; i < thread_border.size() - 1; i++) { thread_border[i] = part_length; }
-        thread_border[thread_border.size() - 1] = rest_length;
+        thread_border[thread_count - 1] = rest_length;
 
         t[s.size() - 1] = S_Type;
 
@@ -58,7 +58,7 @@ public:
         for (auto& t : threads) {
             t.join();
         }
-        
+
         // if many threads were not able to classify, use the last thread that has borderinfo for all the others
         for (ssize i = threads.size() - 1; i >= 0; i--) {
             if (thread_border[i] == 0) {
