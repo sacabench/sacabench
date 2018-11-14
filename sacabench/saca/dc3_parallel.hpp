@@ -20,7 +20,8 @@
 #include <tudocomp_stat/StatPhase.hpp>
 
 //parallel
-//#include <omp.h>
+#include <omp.h>
+#include <thread>
 #include <util/sort/ips4o.hpp>
 
 
@@ -83,10 +84,12 @@ private:
             }
         }
 
-        std::sort(triplets_12_to_be_sorted.begin(),
-                  triplets_12_to_be_sorted.end());
+        //std::sort(triplets_12_to_be_sorted.begin(),
+        //          triplets_12_to_be_sorted.end());
         
-        //sacabench::util::sort::ips4o_sort(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        
+        //std::sort(std::execution::par, triplets_12_to_be_sorted.begin(), triplets_12_to_be_sorted.end());  
 
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
             triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
@@ -151,15 +154,14 @@ private:
             isa_12[t_12[i]] = i + 1;
         }
     }
-
+    
     template <typename sa_index, bool rec, typename C, typename S>
     static void construct_sa_dc3(S& text, util::span<sa_index> out_sa,
                                  size_t alphabet_size) {
         (void)alphabet_size;
         //#pragma omp parallel
-
             //-----------------------Phase 1------------------------------//
-            tdc::StatPhase dc3_parallel("Phase 1");
+            //tdc::StatPhase dc3_parallel("Phase 1");
             // empty container which will contain indices of triplet
             // at positions i mod 3 != 0
             auto triplets_12 = sacabench::util::make_container<sa_index>(
@@ -187,14 +189,14 @@ private:
             //#pragma omp barrier
             // run the algorithm recursivly if the names are not unique
             if (recursion) {
-                dc3_parallel.split("Rekursion");
+                //dc3_parallel.split("Rekursion");
                 // run algorithm recursive
                 construct_sa_dc3<sa_index, true, sa_index>(t_12, sa_12,
                                                         alphabet_size);
             }
 
             //-----------------------Phase2------------------------------//
-            dc3_parallel.split("Phase 2");
+            //dc3_parallel.split("Phase 2");
 
             // if in recursion use temporary sa. Otherwise t_12
             if (recursion) {
@@ -226,9 +228,8 @@ private:
             induce_sa_dc<C, sa_index>(text, span_t_12, sa_0);
 
             //-----------------------Phase 3------------------------------//
-            dc3_parallel.split("Phase 3");
-//#pragma omp single
-            // merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
+            //dc3_parallel.split("Phase 3");
+            // parallel merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
             if constexpr (rec) {
                 merge_sa_dc_parallel<const sa_index, sa_index>(
                     sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
@@ -239,7 +240,26 @@ private:
                     sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
                     span_t_12, out_sa);
             }
-        
+            
+            //sequentiel merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
+            /*
+            if constexpr (rec) {
+
+            merge_sa_dc<const sa_index, sa_index>(
+                sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
+                span_t_12, out_sa,
+                std::less<sacabench::util::span<const sa_index>>(),
+                [](auto a, auto b, auto c) {
+                    return get_substring_recursion<sa_index>(a, b, c);
+                });
+
+            } else {
+                merge_sa_dc<const sacabench::util::character, sa_index>(
+                    sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
+                    span_t_12, out_sa, std::less<sacabench::util::string_span>(),
+                    [](auto a, auto b, auto c) { return get_substring(a, b, c); });
+            }
+            */
     }
 
     // implementation of get_substring method with type of character not in
@@ -329,9 +349,11 @@ private:
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
 
-        std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
                   
-        //sacabench::util::sort::ips4o_sort(sa_0_to_be_sorted, std::less<sacabench::util::container<std::tuple<C, sa_index, sa_index>>>());
+        util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+
+        //std::sort(std::execution::par, sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
             sa_0[i] = std::get<2>(sa_0_to_be_sorted[i]);
         }
@@ -528,8 +550,7 @@ private:
     template <typename C, typename sa_index, typename T, typename I, typename S,
               typename X>
     static void merge_sa_dc_parallel(const T& text, const S& sa_0,
-                            const S& sa_12, const I& isa_12,
-                            X& sa) {
+                            const S& sa_12, const I& isa_12, X& sa) {
         
         
         size_t sa_0_size = sa_0.size();
@@ -545,15 +566,10 @@ private:
         }
         
         size_t end_of_mod_eq_1 = sa_0_size - start_sa_0 + sa_12_size / 2;
-        size_t start_pos_mod_2 = isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
         
         size_t counter_mod_eq_0 = 0;
         size_t counter_mod_eq_1 = sa_0_size - start_sa_0;
         size_t counter_mod_eq_2 = end_of_mod_eq_1;
-        
-        sa_index zero= 0;
-        sa_index one = 1;
-        sa_index two = 2;
                 
         for(size_t i = start_sa_0; i < sa_0_size; ++i){
             sa[counter_mod_eq_0++] = sa_0[i];
@@ -567,14 +583,15 @@ private:
             }
         }
         
-        auto comp = [&](size_t i, size_t j) {
+        auto comp_tuple = [&](size_t i, size_t j) {
             auto tuple_i = sacabench::util::span<C>(&text[i], 3);
             auto tuple_j = sacabench::util::span<C>(&text[j], 3);
             
             return tuple_i < tuple_j;
         };
 
-        std::sort(sa.begin(), sa.end(), comp);
+        //std::sort(sa.begin(), sa.end(), comp_tuple);
+        util::sort::ips4o_sort_parallel(sa, comp_tuple);
         
         auto duplicates = util::container<sa_index>(sa.size());
         size_t first_duplicate = 0;
@@ -589,15 +606,58 @@ private:
             }
         }
         
+        
+        /*
+        size_t counter = 0;
+        
+        sa_index zero= 0;
+        sa_index one = 1;
+        
+        while(counter < sa.size()-1){
+            if(duplicates[counter] != zero){
+                //std::sort(sa.begin() + counter, sa.begin() + counter + duplicates[counter] + 1, comp_isa);
+                auto span_sort = util::span<sa_index>(&sa[counter], duplicates[counter] + one);
+                util::sort::ips4o_sort_parallel(span_sort, comp_isa);
+                counter += duplicates[counter] + one;
+            }else ++counter;
+        }*/
+        
+        
+        std::thread t1(merge_sa_sort<sa_index, X, I, S>, sa, isa_12, duplicates, 0, sa.size()/2);
+        std::thread t2(merge_sa_sort<sa_index, X, I, S>, sa, isa_12, duplicates, sa.size()/2,   sa.size()-1);
+        
+        t1.join();
+        t2.join();
+        
+        
+         
+        /*#pragma omp parallel
+        #pragma omp single
+        {
+            #pragma omp task shared(sa, isa_12, duplicates)
+                merge_sa_sort<sa_index>(sa, isa_12, duplicates, 0, sa.size()/2);
+            #pragma omp task shared(sa, isa_12, duplicates)
+                merge_sa_sort<sa_index>(sa, isa_12, duplicates, sa.size()/2,sa.size()-1);
+            #pragma omp taskwait
+        }*/
+    }
+       
+    template <typename sa_index, typename X, typename I, typename S>
+    static void merge_sa_sort(X sa, const I isa_12, const S& duplicates, size_t start, const size_t end) {
+        
+        sa_index zero = 0;
+        sa_index one = 1;
+        
         auto comp_isa = [&](size_t i, size_t j) {
             
             sa_index isa_i = 0;
             sa_index isa_j = 0;
+            size_t start_pos_mod_2 = isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
             
             if(i % 3 == j % 3){ //Reihenfolge so lassen, wie sie ist
                 if(i % 3 == 0){
-                    isa_i = isa_12[(i+one)/3];
-                    isa_j = isa_12[(j+one)/3];
+                    isa_i = isa_12[(i+1)/3];
+                    isa_j = isa_12[(j+1)/3];
                 }else if(i % 3 == 1){
                     isa_i = isa_12[i/3];
                     isa_j = isa_12[j/3];
@@ -609,17 +669,17 @@ private:
                 switch (i % 3) {
                     case 0:
                         if(j % 3 == 1){
-                            isa_i = isa_12[(i+one)/3];
-                            isa_j = isa_12[start_pos_mod_2 + (j+one)/3];
+                            isa_i = isa_12[(i+1)/3];
+                            isa_j = isa_12[start_pos_mod_2 + (j+1)/3];
                         }else{ //j % 3 == 2
-                            isa_i = isa_12[start_pos_mod_2 + (i+two)/3];
-                            isa_j = isa_12[(j+two)/3];
+                            isa_i = isa_12[start_pos_mod_2 + (i+2)/3];
+                            isa_j = isa_12[(j+2)/3];
                         }
                         break;
                     case 1:
                         if(j % 3 == 0){
-                            isa_i = isa_12[start_pos_mod_2 + (i+one)/3];
-                            isa_j = isa_12[(j+one)/3];
+                            isa_i = isa_12[start_pos_mod_2 + (i+1)/3];
+                            isa_j = isa_12[(j+1)/3];
                         }else{ //j % 3 == 2
                             isa_i = isa_12[i/3];
                             isa_j = isa_12[start_pos_mod_2 + j/3];
@@ -627,8 +687,8 @@ private:
                         break;
                     case 2:
                         if(j % 3 == 0){
-                            isa_i = isa_12[(i+two)/3];
-                            isa_j = isa_12[start_pos_mod_2 + (j+two)/3];
+                            isa_i = isa_12[(i+2)/3];
+                            isa_j = isa_12[start_pos_mod_2 + (j+2)/3];
                         }else{ //j % 3 == 1
                             isa_i = isa_12[start_pos_mod_2 + i/3];
                             isa_j = isa_12[j/3];
@@ -639,12 +699,13 @@ private:
             return isa_i < isa_j;
         };
         
-        size_t counter = 0;
-        while(counter < sa.size()-1){
-            if(duplicates[counter] != zero){
-                std::stable_sort(sa.begin() + counter, sa.begin() + counter + duplicates[counter] + 1, comp_isa);
-                counter += duplicates[counter] + one;
-            }else ++counter;
+        while(start < end && start < sa.size()){
+            if(duplicates[start] != zero){
+                std::sort(sa.begin() + start, sa.begin() + start + duplicates[start] + 1, comp_isa);
+                //auto span_sort = util::span<sa_index>(&sa[start], duplicates[start] + 1);
+                //util::sort::ips4o_sort_parallel(span_sort, comp_isa);
+                start += duplicates[start] + one;
+            }else ++start;
         }
     }
 }; // class dc3
