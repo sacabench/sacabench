@@ -20,13 +20,13 @@ class pss_tests : public ::testing::Test {
             long TEST_SIZE = 100'000'000l;
             short_inst = {3,1,9,6,4,2,7,8,5};
             short_control_inst = container<int>(short_inst);
-            sort::std_sort(short_control_inst, std::less<int>()); // use stable_sort instead
+            sort::std_stable_sort(short_control_inst, std::less<int>());
             long_inst = container<int>(TEST_SIZE);
             for (long i = 0; i < TEST_SIZE; ++i) {
                 long_inst[i] = rand();
             }
             long_control_inst = container<int>(long_inst);
-            sort::std_sort(long_control_inst, std::less<int>()); // use stable_sort instead
+            sort::std_stable_sort(long_control_inst, std::less<int>());
         }
 
         void SetUp() override {
@@ -47,22 +47,32 @@ container<int> pss_tests::long_inst;
 container<int> pss_tests::short_control_inst;
 container<int> pss_tests::long_control_inst;
 
+TEST_F(pss_tests, seq_sort_correct) {
+    sort::std_stable_sort<int>(short_test_inst, std::less<int>());
+    ASSERT_EQ(short_test_inst, short_control_inst);
+}
+
 TEST_F(pss_tests, intel_sort_correct) {
     sort::parallel_stable<int>(short_test_inst, std::less<int>());
     ASSERT_EQ(short_test_inst, short_control_inst);
 }
 
 TEST_F(pss_tests, std_sort_correct) {
-    __gnu_parallel::stable_sort(std::begin(short_test_inst), std::end(short_test_inst), std::less<int>());
+    sort::std_par_stable_sort<int>(short_test_inst, std::less<int>());
     ASSERT_EQ(short_test_inst, short_control_inst);
+}
+
+TEST_F(pss_tests, seq_sort_long) {
+    sort::std_stable_sort<int>(long_test_inst, std::less<int>());
+    ASSERT_EQ(long_test_inst, long_control_inst);
 }
 
 TEST_F(pss_tests, intel_sort_long) {
-    sort::parallel_stable<int>(short_test_inst, std::less<int>());
-    ASSERT_EQ(short_test_inst, short_control_inst);
+    sort::parallel_stable<int>(long_test_inst, std::less<int>());
+    ASSERT_EQ(long_test_inst, long_control_inst);
 }
 
 TEST_F(pss_tests, std_sort_long) {
-    __gnu_parallel::stable_sort(std::begin(long_test_inst), std::end(long_test_inst), std::less<int>());
+    sort::std_par_stable_sort<int>(long_test_inst, std::less<int>());
     ASSERT_EQ(long_test_inst, long_control_inst);
 }
