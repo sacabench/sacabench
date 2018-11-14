@@ -34,11 +34,7 @@ public:
     }
 
     template <typename T>
-    static void compute_types(span<bool> t, T s, span<size_t> thread_border, span<bool> thread_info) {
-        size_t thread_count = std::thread::hardware_concurrency();
-        thread_count = std::min(thread_count, s.size() - 1);
-        ssize part_length = s.size() / thread_count;
-        ssize rest_length = (s.size() - (thread_count - 1) * part_length);
+    static void compute_types(span<bool> t, T s, span<size_t> thread_border, span<bool> thread_info, ssize part_length, ssize rest_length, size_t thread_count) {
         std::vector<std::thread> threads;
         
         for (size_t i = 0; i < thread_border.size() - 1; i++) { thread_border[i] = part_length; }
@@ -174,8 +170,14 @@ public:
         container<bool> t = make_container<bool>(SA.size());
         container<size_t> thread_border = make_container<size_t>(std::thread::hardware_concurrency());
         container<bool> thread_info = make_container<bool>(std::thread::hardware_concurrency());
+        
+        // Prepare blocks for parallel computing
+        size_t thread_count = std::thread::hardware_concurrency();
+        thread_count = std::min(thread_count, s.size() - 1);
+        ssize part_length = s.size() / thread_count;
+        ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
-        compute_types(t, s, thread_border, thread_info);
+        compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
         
         generate_buckets<T, sa_index>(s, buckets, K, true);
         // Initialize each entry in SA with -1
