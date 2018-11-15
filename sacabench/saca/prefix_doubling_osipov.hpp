@@ -74,23 +74,25 @@ namespace sacabench::osipov {
 
         template <typename sa_index>
         static void mark_singletons(util::span<sa_index> sa, util::span<sa_index> isa) {
-            util::container<bool> flags = util::make_container<bool>(sa.size());
-            flags[0] = true;
-            // Set flags if predecessor has different rank.
-            for(size_t i=1; i < sa.size(); ++i) {
-                flags[i] = isa[sa[i-1]] != isa[sa[i]] ? true : false;
-            }
-            for(size_t i=0; i < sa.size()-1; ++i) {
-                // flags corresponding to predecessor having a different rank, i.e.
-                // suffix sa[i] has different rank than its predecessor and successor.
-                if(flags[i] && flags[i+1]) {
-                    isa[sa[i]] = isa[sa[i]] | utils<sa_index>::NEGATIVE_MASK;
+            if(sa.size()>0) {
+                util::container<bool> flags = util::make_container<bool>(sa.size());
+                flags[0] = true;
+                // Set flags if predecessor has different rank.
+                for(size_t i=1; i < sa.size(); ++i) {
+                    flags[i] = isa[sa[i-1]] != isa[sa[i]] ? true : false;
                 }
-            }
-            // Check for last position - is singleton, if it has a different rank
-            // than its predecessor (because of missing successor).
-            if(flags[sa.size()-1]) {
-                isa[sa[sa.size()-1]] = isa[sa[sa.size()-1]] ^ utils<sa_index>::NEGATIVE_MASK;
+                for(size_t i=0; i < sa.size()-1; ++i) {
+                    // flags corresponding to predecessor having a different rank, i.e.
+                    // suffix sa[i] has different rank than its predecessor and successor.
+                    if(flags[i] && flags[i+1]) {
+                        isa[sa[i]] = isa[sa[i]] | utils<sa_index>::NEGATIVE_MASK;
+                    }
+                }
+                // Check for last position - is singleton, if it has a different rank
+                // than its predecessor (because of missing successor).
+                if(flags[sa.size()-1]) {
+                    isa[sa[sa.size()-1]] = isa[sa[sa.size()-1]] ^ utils<sa_index>::NEGATIVE_MASK;
+                }
             }
         }
 
@@ -107,6 +109,14 @@ namespace sacabench::osipov {
                 }
             }
         }
+        
+        // Fill sa with initial indices
+        template <typename sa_index>
+        static void initialize_sa(size_t text_length, util::span<sa_index> sa) {
+            for(size_t i=0; i < text_length; ++i) {
+                sa[i] = i;
+            }
+        }
 
 
 
@@ -117,63 +127,93 @@ namespace sacabench::osipov {
             // Check if enough bits free for negation.
             DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
 
+            //std::cout << "Creating initial container." << std::endl;
             auto sa_container = util::make_container<sa_index>(out_sa.size());
             util::span<sa_index> sa = util::span<sa_index>(sa_container);
             auto isa_container = util::make_container<sa_index>(out_sa.size());
             util::span<sa_index> isa = util::span<sa_index>(isa_container);
+            initialize_sa<sa_index>(text.size(), sa);
+            
             sa_index h = 1;
             // Sort by h characters
+            //std::cout << "Initial sort by " << h << " characters." << std::endl; 
             compare_first_char cmp_init = compare_first_char(text);
             util::sort::std_sort(sa, cmp_init);
+            //std::cout << "Initial isa." << std::endl;
+            initialize_isa<sa_index, compare_first_char>(text, sa, isa, cmp_init);
+            
+            //std::cout << "marking singleton groups." << std::endl;
             mark_singletons(sa, isa);
 
-            size_t size = sa.size(), s;
+            //std::cout << "isa: " << isa << std::endl;
+            size_t size = sa.size(), s, index;
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
             compare_tuples<sa_index> cmp;
             while(size > 0) {
+                //std::cout << "Elements left: " << size << std::endl;
                 s=0;
                 auto tuple_container = util::make_container<std::tuple<sa_index, sa_index, sa_index>>(size);
                 tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(tuple_container);
+                //std::cout << "Creating tuple." << std::endl;
                 for(size_t i=0; i < size; ++i) {
-                    sa_index index = sa[i] - h;
-                    if(index >= sa_index(0) &&
-                        (isa[index] & utils<sa_index>::NEGATIVE_MASK > sa_index(0))) {
-                        tuples[s++] = std::make_tuple(index, isa[index], isa[sa[i]]);
+                    // equals sa[i] - h >= 0
+                    if(sa[i]>=h) {
+                        index = sa[i] - h;
+                        //std::cout << "sa["<<i<<"]-h=" << index << std::endl;
+                        if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
+                            //std::cout << "Adding " << index << " to tuples." << std::endl;
+                            tuples[s++] = std::make_tuple(index, isa[index], isa[sa[i]]);
+                        }
                     }
                     index = sa[i];
-                    if((isa[i] & utils<sa_index>::NEGATIVE_MASK == sa_index(0)) &&
-                        i - 2*h > 0 &&
-                        (isa[i - 2*h] & utils<sa_index>::NEGATIVE_MASK > sa_index(0))) {
+                    //std::cout << "sa["<<i<<"]:" << index << std::endl;
+                    if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
+                        index >= 2*h &&
+                        ((isa[index - 2*h] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
+                        //std::cout << "Second condition met. Adding " << index << std::endl;
                         tuples[s++] = std::make_tuple(index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
                             isa[index]);
                     }
                 }
-                tuples = tuples.slice(0, s);
-                cmp = compare_tuples(tuples);
-                util::sort::std_sort(tuples, cmp);
-                sa = sa.slice(0, s);
-                for(size_t i=0; i < s; ++i) {
-                    sa[i] = std::get<0>(tuples[i]);
-                }
-                sa_index head = 0;
-                for(size_t i=1; i < s; ++i) {
-                    if(std::get<1>(tuples[i]) > std::get<1>(tuples[head])) {head=i;}
-                    else if(std::get<2>(tuples[i])!=std::get<2>(tuples[head])) {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                        std::get<1>(tuples[head])+sa_index(i)-head, std::get<2>(tuples[i]));
-                        head=i;
-                    } else {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                        std::get<1>(tuples[head]), std::get<2>(tuples[i]));
+                //std::cout << "Next size: " << s << std::endl; 
+                // Skip all operations till size gets its new size, if this 
+                // iteration contains no tuples
+                if(s>0) {
+                    tuples = tuples.slice(0, s);
+                    //std::cout << "Sorting tuples." << std::endl;
+                    cmp = compare_tuples(tuples);
+                    util::sort::std_sort(tuples, cmp);
+                    sa = sa.slice(0, s);
+                    //std::cout << "Writing new order to sa." << std::endl;
+                    for(size_t i=0; i < s; ++i) {
+                        sa[i] = std::get<0>(tuples[i]);
                     }
+                    //std::cout << "Refreshing ranks for tuples" << std::endl;
+                    sa_index head = 0;
+                    for(size_t i=1; i < s; ++i) {
+                        if(std::get<1>(tuples[i]) > std::get<1>(tuples[head])) {head=i;}
+                        else if(std::get<2>(tuples[i])!=std::get<2>(tuples[head])) {
+                            tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
+                            std::get<1>(tuples[head])+sa_index(i)-head, std::get<2>(tuples[i]));
+                            head=i;
+                        } else {
+                            tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
+                            std::get<1>(tuples[head]), std::get<2>(tuples[i]));
+                        }
+                    }
+                    //std::cout << "Setting new ranks in isa" << std::endl;
+                    for(size_t i=0; i < s; ++i) {
+                        //std::cout << "Assigning suffix " << std::get<0>(tuples[i]) 
+                        //<< " rank " << std::get<1>(tuples[i]) << std::endl;
+                        isa[std::get<0>(tuples[i])] = std::get<1>(tuples[i]);
+                    }
+                    //std::cout << "marking singleton groups." << std::endl;
+                    mark_singletons(sa, isa);
                 }
-                for(size_t i=0; i < s; ++i) {
-                    isa[std::get<0>(tuples[i])] = std::get<1>(tuples[i]);
-                }
-                mark_singletons(sa, isa);
                 size = s;
                 h= 2*h;
             }
+            //std::cout << "Writing suffixes to out_sa. isa: " << isa << std::endl;
             for(size_t i=0; i < out_sa.size(); ++i) {
                 out_sa[isa[i] ^ utils<sa_index>::NEGATIVE_MASK] = i;
             }
