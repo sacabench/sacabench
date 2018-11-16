@@ -6,7 +6,7 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/sort/std_sort.hpp>
+#include <util/sort/stable_sort.hpp>
 #include <tuple>
 
 
@@ -123,7 +123,7 @@ namespace sacabench::osipov {
         template <typename sa_index>
         static void prefix_doubling_sequential(util::string_span text,
                                  util::span<sa_index> out_sa) {
-            std::cout << "Starting Osipov sequential." << std::endl;
+            // std::cout << "Starting Osipov sequential." << std::endl;
             // Check if enough bits free for negation.
             DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
 
@@ -138,7 +138,7 @@ namespace sacabench::osipov {
             // Sort by h characters
             //std::cout << "Initial sort by " << h << " characters." << std::endl; 
             compare_first_char cmp_init = compare_first_char(text);
-            util::sort::std_sort(sa, cmp_init);
+            util::sort::stable_sort(sa, cmp_init);
             //std::cout << "Initial isa." << std::endl;
             initialize_isa<sa_index, compare_first_char>(text, sa, isa, cmp_init);
             
@@ -182,7 +182,7 @@ namespace sacabench::osipov {
                     tuples = tuples.slice(0, s);
                     //std::cout << "Sorting tuples." << std::endl;
                     cmp = compare_tuples(tuples);
-                    util::sort::std_sort(tuples, cmp);
+                    util::sort::stable_sort(tuples, cmp);
                     sa = sa.slice(0, s);
                     //std::cout << "Writing new order to sa." << std::endl;
                     for(size_t i=0; i < s; ++i) {
