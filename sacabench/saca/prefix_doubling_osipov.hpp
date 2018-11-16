@@ -7,6 +7,7 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/sort/stable_sort.hpp>
+#include <algorithm>
 #include <tuple>
 
 
@@ -43,18 +44,47 @@ namespace sacabench::osipov {
         struct compare_first_char{
         public:
 
-            inline compare_first_char(const util::string_span text) : input(text) {}
+            inline compare_first_char(const util::string_span text) : text(text) {}
 
             // elem and compare_to need to be smaller than input.size()
             inline bool operator()(const size_t& elem, const size_t& compare_to) {
-                return input[elem] < input[compare_to];
+                return text[elem] < text[compare_to];
             }
 
         private:
-            const util::string_span input;
+            const util::string_span text;
         };
 
-    template <typename sa_index>
+        struct compare_first_four_chars{
+        public:
+            inline compare_first_four_chars(const util::string_span text)
+            : text(text) {}
+            
+            inline bool operator()(const size_t& elem, 
+                const size_t& compare_to) {
+                // max_length computation to ensure fail-safety (although should
+                // never be exceeded due to sentinel as last char)
+                size_t max_elem_length = std::min(text.size() - elem, size_t(4));
+                size_t max_compare_to_length = 
+                    std::min(text.size() - compare_to, size_t(4));
+                size_t max_length = std::min(max_elem_length, 
+                    max_compare_to_length);
+                for(size_t i=0; i<max_length; ++i) {
+                    if(text[elem+i] != text[compare_to+i]) {
+                        // Chars differ -> either elem is smaller or not
+                        return (text[elem+i] < text[compare_to+i] ? true : false);
+                    }
+                }
+                // suffixes didn't differ within their first 4 chars.
+                return false;
+            }
+        
+        private:
+            const util::string_span text;
+        };
+        
+        
+        template <typename sa_index>
         struct compare_tuples{
         public:
             inline compare_tuples(util::span<std::tuple<sa_index, sa_index,
@@ -97,8 +127,8 @@ namespace sacabench::osipov {
         }
 
         template <typename sa_index, typename compare_func>
-        static void initialize_isa(const util::string_span text,
-            util::span<sa_index> sa, util::span<sa_index> isa, compare_func cmp) {
+        static void initialize_isa(util::span<sa_index> sa, 
+            util::span<sa_index> isa, compare_func cmp) {
             // Sentinel has lowest rank
             isa[sa[0]] = 0;
             for(size_t i=1; i < sa.size(); ++i) {
@@ -134,15 +164,11 @@ namespace sacabench::osipov {
             util::span<sa_index> isa = util::span<sa_index>(isa_container);
             initialize_sa<sa_index>(text.size(), sa);
             
-            sa_index h = 1;
+            sa_index h = 4;
             // Sort by h characters
-            //std::cout << "Initial sort by " << h << " characters." << std::endl; 
-            compare_first_char cmp_init = compare_first_char(text);
+            compare_first_four_chars cmp_init = compare_first_four_chars(text);
             util::sort::stable_sort(sa, cmp_init);
-            //std::cout << "Initial isa." << std::endl;
-            initialize_isa<sa_index, compare_first_char>(text, sa, isa, cmp_init);
-            
-            //std::cout << "marking singleton groups." << std::endl;
+            initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
             mark_singletons(sa, isa);
 
             //std::cout << "isa: " << isa << std::endl;
