@@ -8,6 +8,7 @@
 
 #include "util/assertions.hpp"
 #include <math.h>
+#include <omp.h>
 
 namespace sacabench::bucket_pointer_refinement::sort {
 
@@ -172,6 +173,140 @@ get_lightweight_buckets(const string_span input,
     return buckets;
 }
 
+struct split_size_range {
+    uint64_t start;
+    uint64_t end;
+};
+
+split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
+    const uint64_t offset = ((size / threads) * thread_rank)
+        + std::min<uint64_t>(thread_rank, size % threads);
+
+    const uint64_t local_size = (size / threads)
+        + ((thread_rank < size % threads) ? 1 : 0);
+
+    return split_size_range { offset, offset + local_size };
+}
+
+/**\brief Determines positions of buckets containing suffixes
+ *  which are equal to a given offset.
+ * \param input Input text (of length n) whose suffixes are to be sorted.
+ *  The input text has to use an effective alphabet with characters
+ *  {1, ..., m}.
+ * \param max_character_code Maximum possible value of characters in input
+ *  text.
+ * \param depth The offset which is used to match suffixes into buckets.
+ *  Suffixes with equal length-depth-prefix are matched to the same bucket.
+ *
+ * \return Starting position for each bucket in the suffix array as well as
+ *  a pseudo starting position for one extra bucket at the end of the SA.
+ */
+
+template <typename sa_index>
+inline container<sa_index>
+get_lightweight_buckets_parallel(const string_span input,
+        const std::size_t max_character_code,
+        const std::size_t depth) {
+    DCHECK_GE(depth, 1);
+    DCHECK_GE(input.size(), depth);
+
+    const std::size_t alphabet_size = max_character_code + 1;
+    const std::size_t bucket_count = pow(alphabet_size, depth) + 1;
+
+    auto global_buckets = make_container<sa_index>(bucket_count);
+
+    uint64_t num_threads = omp_get_max_threads();
+    if (num_threads > input.size() / depth) {
+        num_threads = input.size() / depth;
+    }
+
+    util::container<util::character> overhang(depth);
+
+    auto get_local_slice = [&](size_t threads, size_t rank, auto& slice) {
+        if (rank < threads) {
+            auto range = split_size(slice.size(), rank, threads);
+            return slice.slice(range.start, range.end);
+        } else {
+            return overhang.slice();
+        }
+    };
+
+    util::container<uint64_t> local_buckets(num_threads * alphabet_size);
+
+#pragma omp parallel
+    // count occurrences of all elements in data
+    {
+        const uint64_t thread_id = omp_get_thread_num();
+
+        auto local_data = get_local_slice(num_threads, thread_id, input);
+        auto following_data = get_local_slice(num_threads, thread_id + 1, input);
+        auto local_bucket = get_local_slice(num_threads, thread_id, local_buckets);
+        DCHECK_EQ(local_sorting_list.size(), alphabet_size);
+
+        /*
+         * first step: count bucket sizes
+         */
+
+        // calculate code for an (imaginary) 0-th suffix
+        std::size_t initial_code = 0;
+        for (std::size_t index = 0; index < depth - 1; ++index) {
+            initial_code *= (alphabet_size);
+            initial_code += input[index];
+        }
+
+        // calculate modulo for code computation
+        const std::size_t code_modulo = pow(alphabet_size, depth - 1);
+
+        // count occurrences of each possible length-d-substring
+        std::size_t code = initial_code;
+        for (std::size_t index = 0; index < local_data.size() - depth + 1; ++index) {
+            // induce code for nth suffix from (n-1)th suffix
+            code %= code_modulo;
+            code *= alphabet_size;
+            code += local_data[index + depth - 1];
+            ++local_bucket[code];
+        }
+
+        // same as above, but for substrings crossing local borders
+        for (std::size_t index = 0; index < depth - 1; ++index) {
+            // induce code for nth suffix from (n-1)th suffix
+            code %= code_modulo;
+            code *= alphabet_size;
+            code += following_data[index];
+            ++local_buckets[code];
+        }
+    }
+
+    // sum up local buckets to global buckets
+    for (uint64_t thread_id = 0; thread_id < num_threads - 1; thread_id++) {
+        for (uint64_t index = 0; index < global_buckets.size(); index++) {
+            local_buckets[(thread_id + 1) * alphabet_size + index] +=
+                local_buckets[thread_id * alphabet_size + index];
+        }
+    }
+
+    global_buckets[0] = local_buckets[(num_threads - 1) * alphabet_size];
+    for (uint64_t index = 1; index < global_buckets.size(); index++) {
+        global_buckets[index] = local_buckets[(num_threads - 1) * alphabet_size + index] + global_buckets[index - 1];
+    }
+
+    /*
+     * second step: determine starting positions for buckets
+     */
+
+    // calculate positions for all buckets
+    size_t next_bucket_start = global_buckets[0];
+    size_t current_bucket_size = 0;
+    global_buckets[0] = 0;
+    for (size_t index = 1; index < bucket_count; ++index) {
+        current_bucket_size = global_buckets[index];
+        global_buckets[index] = next_bucket_start;
+        next_bucket_start += current_bucket_size;
+    }
+
+    return global_buckets;
+}
+
 /**\brief Divides the suffix array into buckets with each bucket containing
  *  suffixes which are equal to a given offset.
  * \param input Input text (of length n) whose suffixes are to be sorted.
@@ -276,6 +411,81 @@ bucketsort_presort_lightweight(const string_span input,
     DCHECK_LE(depth, sa.size());
 
     auto buckets = get_lightweight_buckets<sa_index>(input, max_character_code, depth);
+    auto buckets_tmp = buckets.make_copy();
+
+    const std::size_t length = input.size();
+    // the real alphabet includes $, so it has one more character
+    const std::size_t alphabet_size = max_character_code + 1;
+
+    // calculate modulo for code computation
+    const std::size_t code_modulo = pow(alphabet_size, depth - 1);
+
+    // calculate code for an (imaginary) 0-th suffix
+    std::size_t initial_code = 0;
+    for (std::size_t index = 0; index < depth - 1; ++index) {
+        initial_code *= (alphabet_size);
+        initial_code += input[index];
+    }
+
+    std::size_t code = initial_code;
+
+    // insert entries in suffix array
+    for (size_t index = 0; index < length - depth + 1; ++index) {
+        // induce code for nth suffix from (n-1)th suffix
+        code %= code_modulo;
+        code *= alphabet_size;
+        code += input[index + depth - 1];
+        --buckets_tmp[code + 1];
+        if ((index + 2 >= length) || (input[index] < input[index + 1] &&
+                                      input[index] <= input[index + 2])) {
+            sa[buckets_tmp[code + 1]] = index;
+        }
+        bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
+    }
+
+    // same as above, but for substrings containing at least one $
+    for (size_t index = length - depth + 1; index < length; ++index) {
+        // induce code for nth suffix from (n-1)th suffix
+        code %= code_modulo;
+        code *= alphabet_size;
+        sa[--buckets_tmp[code + 1]] = index;
+        bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
+    }
+
+    return buckets;
+}
+
+/**\brief Divides the suffix array into buckets with each bucket containing
+ *  suffixes which are equal to a given offset.
+ * \param input Input text (of length n) whose suffixes are to be sorted.
+ *  The input text has to use an effective alphabet with characters
+ *  {1, ..., m}.
+ * \param max_character_code Maximum possible value of characters in input
+ *  text.
+ * \param depth The offset which is used to match suffixes into buckets.
+ *  Suffixes with equal length-depth-prefix are matched to the same bucket.
+ * \param sa A container (of length n) for the suffix array.
+ * \param bptr A container (of length n) for suffix to bucket mapping
+ *
+ * Bucketsort sorts all suffixes of the input text into buckets within the
+ * suffix array. After a call of the function, the suffix array contains all
+ * buckets in sorted ascending order. The suffixes within each bucket are
+ * not necessarily sorted.
+ * Additionally fills the bptr with determined suffix positions.
+ *
+ * \return Starting position for each bucket in the suffix array and
+ *  starting position of a pseudo bucket at the end of the SA.
+ */
+template <typename sa_index>
+__attribute__((noinline)) container<sa_index>
+bucketsort_presort_lightweight_parallel(const string_span input,
+        const std::size_t max_character_code,
+        const std::size_t depth, span<sa_index> sa,
+        container<sa_index>& bptr) {
+    DCHECK_EQ(input.size(), sa.size());
+    DCHECK_LE(depth, sa.size());
+
+    auto buckets = get_lightweight_buckets_parallel<sa_index>(input, max_character_code, depth);
     auto buckets_tmp = buckets.make_copy();
 
     const std::size_t length = input.size();

@@ -42,6 +42,9 @@ SACA_REGISTER("saca/deep_shallow/saca.hpp"
 SACA_REGISTER("saca/bucket_pointer_refinement.hpp"
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement)
 
+SACA_REGISTER("saca/bucket_pointer_refinement_parallel.hpp"
+    sacabench::bucket_pointer_refinement_parallel::bucket_pointer_refinement_parallel)
+
 SACA_REGISTER("saca/external/bucket_pointer_refinement/bucket_pointer_refinement_wrapper.hpp"
     sacabench::bucket_pointer_refinement_ext::bucket_pointer_refinement_ext)
 
