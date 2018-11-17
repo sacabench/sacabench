@@ -136,6 +136,29 @@ public:
     }
 
     template <typename T, typename sa_index>
+    static void prepare(T s, ssize part_length, span<std::pair<char,sa_index>> r, span<std::pair<char,sa_index>> w, span<sa_index> SA, span<bool> t){
+        for(ssize_t i = 0;i<part_length;i++){
+            r[i].first = '\0';
+            r[i].second = static_cast<sa_index>(-1);
+
+            w[i].first = '\0';
+            w[i].second = static_cast<sa_index>(-1);
+
+        }
+        size_t j = 0, k=0;
+        sa_index pos;
+        char chr;
+        for(ssize_t i = 0;i<part_length;i++){
+            j = (k*part_length)+i;
+            if(SA[j]!= static_cast<sa_index>(-1) && (pos = SA[j]-static_cast<sa_index>(1))>=static_cast<sa_index>(0) && t[pos] == L_Type){
+                chr = s[pos];
+                r[i] = std::make_pair(chr, pos);
+            }
+        }
+
+    }
+
+    template <typename T, typename sa_index>
     static void induce_L_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
                                bool end, span<sa_index> SA) {
         generate_buckets<T, sa_index>(s, buckets, K, end);
@@ -176,6 +199,10 @@ public:
         thread_count = std::min(thread_count, s.size() - 1);
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
+
+        // Read/Write Buffer for the pipeline
+        auto r = make_container<std::pair<char,sa_index>>(s.size());
+        auto w = make_container<std::pair<char,sa_index>>(s.size());
 
         compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
         
@@ -263,6 +290,9 @@ public:
                 SA[s1[i]] = i;
             }
         }
+
+        prepare<T, sa_index>(s,part_length,r,w,SA,t);
+        std::cout<< SA<<", "<< r<<std::endl;
 
         // induce the final SA
         generate_buckets<T, sa_index>(s, buckets, K, true);
