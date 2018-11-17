@@ -222,13 +222,18 @@ get_lightweight_buckets_parallel(const string_span input,
 
     util::container<util::character> overhang(depth);
 
-    auto get_local_slice = [&](size_t threads, size_t rank, auto& slice) {
+    auto get_input_slice = [&](size_t threads, size_t rank, auto& slice) -> span<const character> {
         if (rank < threads) {
             auto range = split_size(slice.size(), rank, threads);
             return slice.slice(range.start, range.end);
         } else {
             return overhang.slice();
         }
+    };
+
+    auto get_bucket_slice = [&](size_t threads, size_t rank, auto& slice) {
+            auto range = split_size(slice.size(), rank, threads);
+            return slice.slice(range.start, range.end);
     };
 
     util::container<uint64_t> local_buckets(num_threads * alphabet_size);
@@ -238,9 +243,9 @@ get_lightweight_buckets_parallel(const string_span input,
     {
         const uint64_t thread_id = omp_get_thread_num();
 
-        auto local_data = get_local_slice(num_threads, thread_id, input);
-        auto following_data = get_local_slice(num_threads, thread_id + 1, input);
-        auto local_bucket = get_local_slice(num_threads, thread_id, local_buckets);
+        auto local_data = get_input_slice(num_threads, thread_id, input);
+        auto following_data = get_input_slice(num_threads, thread_id + 1, input);
+        auto local_bucket = get_bucket_slice(num_threads, thread_id, local_buckets);
         DCHECK_EQ(local_sorting_list.size(), alphabet_size);
 
         /*
