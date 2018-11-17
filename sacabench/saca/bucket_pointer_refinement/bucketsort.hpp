@@ -289,15 +289,16 @@ get_lightweight_buckets_parallel(const string_span input,
         }
     }
 
-    global_buckets[0] = local_buckets[(num_threads - 1) * bucket_count];
+    global_buckets[0] = 0;//local_buckets[(num_threads - 1) * bucket_count];
     for (uint64_t index = 1; index < global_buckets.size(); index++) {
-        global_buckets[index] = local_buckets[(num_threads - 1) * bucket_count + index];// + global_buckets[index - 1];
+        global_buckets[index] = local_buckets[(num_threads - 1) * bucket_count + index - 1] + global_buckets[index - 1];
     }
 
     /*
      * second step: determine starting positions for buckets
      */
 
+    /*
     // calculate positions for all buckets
     size_t next_bucket_start = global_buckets[0];
     size_t current_bucket_size = 0;
@@ -307,6 +308,7 @@ get_lightweight_buckets_parallel(const string_span input,
         global_buckets[index] = next_bucket_start;
         next_bucket_start += current_bucket_size;
     }
+    */
 
     return global_buckets;
 }
