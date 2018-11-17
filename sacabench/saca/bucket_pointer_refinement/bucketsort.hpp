@@ -219,6 +219,7 @@ get_lightweight_buckets_parallel(const string_span input,
     if (num_threads > input.size() / depth) {
         num_threads = input.size() / depth;
     }
+    omp_set_num_threads(num_threads);
 
     util::container<util::character> overhang(depth);
 
@@ -289,26 +290,14 @@ get_lightweight_buckets_parallel(const string_span input,
         }
     }
 
-    global_buckets[0] = 0;//local_buckets[(num_threads - 1) * bucket_count];
-    for (uint64_t index = 1; index < global_buckets.size(); index++) {
-        global_buckets[index] = local_buckets[(num_threads - 1) * bucket_count + index - 1] + global_buckets[index - 1];
-    }
-
     /*
      * second step: determine starting positions for buckets
      */
 
-    /*
-    // calculate positions for all buckets
-    size_t next_bucket_start = global_buckets[0];
-    size_t current_bucket_size = 0;
-    global_buckets[0] = 0;
-    for (size_t index = 1; index < bucket_count; ++index) {
-        current_bucket_size = global_buckets[index];
-        global_buckets[index] = next_bucket_start;
-        next_bucket_start += current_bucket_size;
+    global_buckets[0] = 0;//local_buckets[(num_threads - 1) * bucket_count];
+    for (uint64_t index = 1; index < global_buckets.size(); index++) {
+        global_buckets[index] = local_buckets[(num_threads - 1) * bucket_count + index - 1] + global_buckets[index - 1];
     }
-    */
 
     return global_buckets;
 }
