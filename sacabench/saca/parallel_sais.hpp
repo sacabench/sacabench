@@ -136,23 +136,44 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void prepare(T s, ssize part_length, span<std::pair<char,sa_index>> r, span<std::pair<char,sa_index>> w, span<sa_index> SA, span<bool> t){
+    static void prepare_L_Types(T s, ssize part_length, span<std::pair<char,sa_index>> r, span<sa_index> SA, span<bool> t){
         for(ssize_t i = 0;i<part_length;i++){
             r[i].first = '\0';
             r[i].second = static_cast<sa_index>(-1);
-
-            w[i].first = '\0';
-            w[i].second = static_cast<sa_index>(-1);
-
         }
         size_t j = 0, k=0;
         sa_index pos;
         char chr;
         for(ssize_t i = 0;i<part_length;i++){
             j = (k*part_length)+i;
-            if(SA[j]!= static_cast<sa_index>(-1) && (pos = SA[j]-static_cast<sa_index>(1))>=static_cast<sa_index>(0) && t[pos] == L_Type){
-                chr = s[pos];
-                r[i] = std::make_pair(chr, pos);
+            if(SA[j]!= static_cast<sa_index>(-1)){
+                pos = SA[j]-static_cast<sa_index>(1);
+                if(pos>=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && t[pos] == L_Type){
+                    chr = s[pos];
+                    r[i] = std::make_pair(chr, pos);
+                }
+            }
+        }
+
+    }
+
+    template <typename T, typename sa_index>
+    static void prepare_S_Types(T s, ssize part_length, span<std::pair<char,sa_index>> r, span<sa_index> SA, span<bool> t){
+        for(ssize_t i = 0;i<part_length;i++){
+            r[i].first = '\0';
+            r[i].second = static_cast<sa_index>(-1);
+        }
+        size_t j = 0, k=0;
+        sa_index pos;
+        char chr;
+        for(ssize_t i = 0;i<part_length;i++){
+            j = (k*part_length)+i;
+            if(SA[j]!= static_cast<sa_index>(-1)){
+                pos = SA[j]-static_cast<sa_index>(1);
+                if(pos>=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && t[pos] == S_Type){
+                    chr = s[pos];
+                    r[i] = std::make_pair(chr, pos);
+                }
             }
         }
 
@@ -291,8 +312,7 @@ public:
             }
         }
 
-        prepare<T, sa_index>(s,part_length,r,w,SA,t);
-        std::cout<< SA<<", "<< r<<std::endl;
+        prepare<T, sa_index>(s,part_length,r,SA,t);
 
         // induce the final SA
         generate_buckets<T, sa_index>(s, buckets, K, true);
