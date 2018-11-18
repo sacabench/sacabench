@@ -14,9 +14,10 @@ namespace sacabench::util::sort {
 
     void radixsort_parallel(container<int> &input, container<int> &output);
     void radixsort_parallel(container<int> &input, container<int> &output, int current_position);
+    void radixsort_parallel_verbose(container<int> &input, container<int> &output, int current_position);
 
     void radixsort_parallel(container<int> &input, container<int> &output) {
-        radixsort_parallel(input, output, 2);
+        radixsort_parallel_verbose(input, output, 2);
     }
 
     void radixsort_parallel(container<int> &input, container<int> &output, int current_position) {
@@ -25,7 +26,7 @@ namespace sacabench::util::sort {
     
         // Setup lists for all threads in one big array.
         const size_t num_threads = omp_get_max_threads();
-        util::container<size_t> sorting_lists(num_threads * 10);
+        util::container<std::vector<int>> sorting_lists(num_threads * 10);
         auto items_per_thread = (input.size() / num_threads); 
 
         #pragma omp parallel
@@ -41,19 +42,21 @@ namespace sacabench::util::sort {
             for (uint64_t index = start_index; index < end_index; index++) {
                 auto current_number = input[index];
                 int exponent = 2 - current_position;
-                int current_digit =  (current_number / static_cast<int>(pow(10, exponent))) % 10;
-                sorting_lists[thread_id * 10 + current_digit] = current_number;
+                int current_digit = (current_number / static_cast<int>(pow(10, exponent))) % 10;
+                sorting_lists[thread_id * 10 + current_digit].push_back(current_number);
             }
         }
 
         // sum up lists
         int current_insert_index = 0;
+        // for each number
         for (size_t index = 0; index < 10; index++) {
+            // in each thread
             for (size_t thread_index = 0; thread_index < num_threads; thread_index++) {
                 auto current_index = thread_index * 10 + index;
-                auto value = sorting_lists[current_index];
-                if (value != 0) {
-                    output[current_insert_index] = value;
+                std::vector bucket = sorting_lists[current_index];
+                for (int element : bucket) {
+                    output[current_insert_index] = element;
                     current_insert_index += 1;
                 }
             } 
@@ -70,7 +73,7 @@ namespace sacabench::util::sort {
     
         // Setup lists for all threads in one big array.
         const size_t num_threads = omp_get_max_threads();
-        util::container<size_t> sorting_lists(num_threads * 10);
+        util::container<std::vector<int>> sorting_lists(num_threads * 10);
         auto items_per_thread = (input.size() / num_threads); 
 
         #pragma omp parallel
@@ -92,14 +95,18 @@ namespace sacabench::util::sort {
                 #pragma omp critical
                 std::cout << "Current digit: " << current_digit << std::endl;
 
-                sorting_lists[thread_id * 10 + current_digit] = current_number;
+                sorting_lists[thread_id * 10 + current_digit].push_back(current_number);
             }
         }
 
         std::cout << "Sorting Lists: " << std::endl;
-        for (int element: sorting_lists) {
-            std::cout << element << ", ";
+
+        for (std::vector bucket: sorting_lists) {
+            for (int element: bucket) {
+                std::cout << element << ", ";
+            }
         }
+        
         std::cout << std::endl;
 
         // sum up lists
@@ -108,8 +115,10 @@ namespace sacabench::util::sort {
             for (size_t thread_index = 0; thread_index < num_threads; thread_index++) {
                 auto current_index = thread_index * 10 + index;
                 auto value = sorting_lists[current_index];
-                if (value != 0) {
-                    output[current_insert_index] = value;
+                std::vector bucket = sorting_lists[current_index];
+                for (int element : bucket) {
+                    std::cout << "Inserting element: " << element << " into position: " << current_insert_index << std::endl;
+                    output[current_insert_index] = element;
                     current_insert_index += 1;
                 }
             } 
@@ -121,7 +130,7 @@ namespace sacabench::util::sort {
         }
         std::cout << std::endl;
 
-        radixsort_parallel(output, output, current_position - 1);
+        radixsort_parallel_verbose(output, output, current_position - 1);
     }
 }
 
