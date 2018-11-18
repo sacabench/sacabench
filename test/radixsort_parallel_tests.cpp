@@ -33,3 +33,11 @@ TEST(radixsort_parallel_tests, element_number_regardless_of_thred_count) {
     sort::radixsort_parallel(test_input, test_output);
     ASSERT_EQ(test_output, test_control);
 }
+
+TEST(radixsort_parallel_tests, big_random_test) {
+    container<int> test_input = {123, 223, 912, 691, 735};
+    container<int> test_output = make_container<int>(5);
+    container<int> test_control = {123, 223, 691, 735, 912};
+    sort::radixsort_parallel(test_input, test_output);
+    ASSERT_EQ(test_output, test_control);
+}

@@ -17,7 +17,7 @@ namespace sacabench::util::sort {
     void radixsort_parallel_verbose(container<int> &input, container<int> &output, int current_position);
 
     void radixsort_parallel(container<int> &input, container<int> &output) {
-        radixsort_parallel_verbose(input, output, 2);
+        radixsort_parallel(input, output, 2);
     }
 
     void radixsort_parallel(container<int> &input, container<int> &output, int current_position) {
@@ -27,7 +27,7 @@ namespace sacabench::util::sort {
         // Setup lists for all threads in one big array.
         const size_t num_threads = omp_get_max_threads();
         util::container<std::vector<int>> sorting_lists(num_threads * 10);
-        auto items_per_thread = (input.size() / num_threads); 
+        auto items_per_thread = (input.size() / num_threads) + 1; 
 
         #pragma omp parallel
         {
@@ -74,7 +74,7 @@ namespace sacabench::util::sort {
         // Setup lists for all threads in one big array.
         const size_t num_threads = omp_get_max_threads();
         util::container<std::vector<int>> sorting_lists(num_threads * 10);
-        auto items_per_thread = (input.size() / num_threads); 
+        auto items_per_thread = (input.size() / num_threads) + 1; 
 
         #pragma omp parallel
         {
