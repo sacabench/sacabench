@@ -12,10 +12,10 @@ using namespace sacabench::util;
 
 TEST(radixsort_parallel_tests, sort_correct) {
 
-    container<int> test_input = {123, 111, 912, 691, 444};
-    container<int> test_output = make_container<int>(5);
+    container<int> test_input = {123, 111, 912, 691};
+    container<int> test_output = make_container<int>(4);
 
-    container<int> test_control = {111, 123, 444, 691, 912};
+    container<int> test_control = {111, 123, 691, 912};
 
     sort::radixsort_parallel(test_input, test_output);
 
