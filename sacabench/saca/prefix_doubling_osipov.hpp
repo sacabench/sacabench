@@ -23,7 +23,7 @@ namespace sacabench::osipov {
 
         template <typename sa_index>
         static void construct_sa(util::string_span text,
-                                 util::alphabet const& alphabet,
+                                 util::alphabet const&,
                                  util::span<sa_index> out_sa) {
             // TODO: Fill me with my algorithm
             if(text.size()>1) {
