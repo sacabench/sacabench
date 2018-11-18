@@ -286,12 +286,6 @@ bucketsort_presort_lightweight(const string_span input,
     // calculate modulo for code computation
     const std::size_t code_modulo = pow(alphabet_size, depth - 1);
 
-    //std::cout << "  INPUT: [";
-    for (auto i : input) {
-        //std::cout << (size_t) i << " ";
-    }
-    //std::cout << "\b]" << std::endl;
-
     // calculate code for an (imaginary) 0-th suffix
     std::size_t initial_code = 0;
     for (std::size_t index = 0; index < depth - 1; ++index) {
@@ -323,10 +317,6 @@ bucketsort_presort_lightweight(const string_span input,
         sa[--buckets_tmp[code + 1]] = index;
         bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
     }
-
-    //std::cout << "BUCKETS: " << buckets << std::endl;
-    //std::cout << "     SA: " << sa << std::endl;
-    //std::cout << "   BPTR: " << bptr << std::endl;
 
     return buckets;
 }
@@ -390,12 +380,6 @@ bucketsort_presort_lightweight_parallel(const string_span input,
     util::container<uint64_t> local_buckets(num_threads * bucket_count);
     util::container<util::character> overhang(depth);
 
-    //std::cout << "  INPUT: [";
-    for (auto i : input) {
-        //std::cout << (size_t) i << " ";
-    }
-    //std::cout << "\b]" << std::endl << "THREADS: " << num_threads << std::endl;
-
     // calculate modulo for code computation
     const std::size_t code_modulo = pow(alphabet_size, depth - 1);
 
@@ -412,8 +396,6 @@ bucketsort_presort_lightweight_parallel(const string_span input,
             auto range = split_size(slice.size(), rank, threads);
             return slice.slice(range.start, range.end);
     };
-
-    //std::cout << "  INPUT: " << input << std::endl;
 
 #pragma omp parallel
     // count occurrences of all elements in data
@@ -463,11 +445,6 @@ bucketsort_presort_lightweight_parallel(const string_span input,
         }
     }
 
-    //std::cout << "LOCAL 0: " << get_bucket_slice(num_threads, 0, local_buckets) << std::endl;
-    //std::cout << "LOCAL 1: " << get_bucket_slice(num_threads, 1, local_buckets) << std::endl;
-    //std::cout << "LOCAL 2: " << get_bucket_slice(num_threads, 2, local_buckets) << std::endl;
-    //std::cout << "LOCAL 3: " << get_bucket_slice(num_threads, 3, local_buckets) << std::endl;
-
     /*
      * second step: determine starting positions for buckets
      */
@@ -483,12 +460,6 @@ bucketsort_presort_lightweight_parallel(const string_span input,
             local_buckets[thread_id * bucket_count + index] += global_buckets[index];
         }
     }
-
-    //std::cout << "BUCKETS: " << global_buckets << std::endl;
-    //std::cout << "LOCAL 0: " << get_bucket_slice(num_threads, 0, local_buckets) << std::endl;
-    //std::cout << "LOCAL 1: " << get_bucket_slice(num_threads, 1, local_buckets) << std::endl;
-    //std::cout << "LOCAL 2: " << get_bucket_slice(num_threads, 2, local_buckets) << std::endl;
-    //std::cout << "LOCAL 3: " << get_bucket_slice(num_threads, 3, local_buckets) << std::endl;
 
 #pragma omp parallel
     // insert occurrences according to local bucket indexes
@@ -533,9 +504,6 @@ bucketsort_presort_lightweight_parallel(const string_span input,
             bptr[local_data.size() + index - depth + offset + 1] = global_buckets[code + 1] - static_cast<sa_index>(1);
         }
     }
-
-    //std::cout << "     SA: " << sa << std::endl;
-    //std::cout << "   BPTR: " << bptr << std::endl;
 
     return global_buckets;
 }
