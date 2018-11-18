@@ -312,7 +312,7 @@ public:
             }
         }
 
-        prepare<T, sa_index>(s,part_length,r,SA,t);
+        //prepare<T, sa_index>(s,part_length,r,SA,t);
 
         // induce the final SA
         generate_buckets<T, sa_index>(s, buckets, K, true);
