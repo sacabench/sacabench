@@ -302,10 +302,10 @@ bucketsort_presort_lightweight(const string_span input,
         code *= alphabet_size;
         code += input[index + depth - 1];
         --buckets_tmp[code + 1];
-        if ((index + 2 >= length) || (input[index] < input[index + 1] &&
-                                      input[index] <= input[index + 2])) {
+        //if ((index + 2 >= length) || (input[index] < input[index + 1] &&
+        //                              input[index] <= input[index + 2])) {
             sa[buckets_tmp[code + 1]] = index;
-        }
+        //}
         bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
     }
 
@@ -317,6 +317,10 @@ bucketsort_presort_lightweight(const string_span input,
         sa[--buckets_tmp[code + 1]] = index;
         bptr[index] = buckets[code + 1] - static_cast<sa_index>(1);
     }
+
+    std::cout << "BUCKETS: " << buckets << std::endl;
+    std::cout << "     SA: " << sa << std::endl;
+    std::cout << "   BPTR: " << bptr << std::endl;
 
     return buckets;
 }
@@ -433,7 +437,7 @@ bucketsort_presort_lightweight_parallel(const string_span input,
             code %= code_modulo;
             code *= alphabet_size;
             code += following_data[index];
-            ++local_buckets[code];
+            ++local_bucket[code];
         }
     }
 
@@ -445,54 +449,79 @@ bucketsort_presort_lightweight_parallel(const string_span input,
         }
     }
 
+    std::cout << "LOCAL 0: " << get_bucket_slice(num_threads, 0, local_buckets) << std::endl;
+    std::cout << "LOCAL 1: " << get_bucket_slice(num_threads, 1, local_buckets) << std::endl;
+    std::cout << "LOCAL 2: " << get_bucket_slice(num_threads, 2, local_buckets) << std::endl;
+    std::cout << "LOCAL 3: " << get_bucket_slice(num_threads, 3, local_buckets) << std::endl;
+
     /*
      * second step: determine starting positions for buckets
      */
 
-    global_buckets[0] = 0;//local_buckets[(num_threads - 1) * bucket_count];
+    global_buckets[0] = 0;
     for (uint64_t index = 1; index < global_buckets.size(); index++) {
         global_buckets[index] = local_buckets[(num_threads - 1) * bucket_count + index - 1] + global_buckets[index - 1];
+        // determine starting positions for local buckets
     }
 
-    auto buckets_tmp = global_buckets.make_copy();
-
-    // calculate code for an (imaginary) 0-th suffix
-    std::size_t initial_code = 0;
-    for (std::size_t index = 0; index < depth - 1; ++index) {
-        initial_code *= (alphabet_size);
-        initial_code += input[index];
-    }
-
-    std::cout << "g" << std::endl;
-
-    std::size_t code = initial_code;
-
-    // insert entries in suffix array
-    for (size_t index = 0; index < length - depth + 1; ++index) {
-        // induce code for nth suffix from (n-1)th suffix
-        code %= code_modulo;
-        code *= alphabet_size;
-        code += input[index + depth - 1];
-        --buckets_tmp[code + 1];
-        if ((index + 2 >= length) || (input[index] < input[index + 1] &&
-                                      input[index] <= input[index + 2])) {
-            sa[buckets_tmp[code + 1]] = index;
+    for (uint64_t index = 1; index < global_buckets.size(); index++) {
+        for (uint64_t thread_id = 0; thread_id < num_threads; thread_id++) {
+            local_buckets[thread_id * bucket_count + index] += global_buckets[index];
         }
-        bptr[index] = global_buckets[code + 1] - static_cast<sa_index>(1);
     }
 
-    std::cout << "h" << std::endl;
+    std::cout << "BUCKETS: " << global_buckets << std::endl;
+    std::cout << "LOCAL 0: " << get_bucket_slice(num_threads, 0, local_buckets) << std::endl;
+    std::cout << "LOCAL 1: " << get_bucket_slice(num_threads, 1, local_buckets) << std::endl;
+    std::cout << "LOCAL 2: " << get_bucket_slice(num_threads, 2, local_buckets) << std::endl;
+    std::cout << "LOCAL 3: " << get_bucket_slice(num_threads, 3, local_buckets) << std::endl;
 
-    // same as above, but for substrings containing at least one $
-    for (size_t index = length - depth + 1; index < length; ++index) {
-        // induce code for nth suffix from (n-1)th suffix
-        code %= code_modulo;
-        code *= alphabet_size;
-        sa[--buckets_tmp[code + 1]] = index;
-        bptr[index] = global_buckets[code + 1] - static_cast<sa_index>(1);
+#pragma omp parallel
+    // insert occurrences according to local bucket indexes
+    {
+        const uint64_t thread_id = omp_get_thread_num();
+
+        auto local_data = get_input_slice(num_threads, thread_id, input);
+        auto following_data = get_input_slice(num_threads, thread_id + 1, input);
+        auto local_bucket = get_bucket_slice(num_threads, thread_id, local_buckets);
+
+        auto offset = split_size(length, thread_id, num_threads).start;
+
+        /*
+         * first step: count bucket sizes
+         */
+
+        // calculate code for an (imaginary) 0-th suffix
+        std::size_t initial_code = 0;
+        for (std::size_t index = 0; index < depth - 1; ++index) {
+            initial_code *= (alphabet_size);
+            initial_code += local_data[index];
+        }
+
+        // count occurrences of each possible length-d-substring
+        std::size_t code = initial_code;
+        for (std::size_t index = 0; index < local_data.size() - depth + 1; ++index) {
+            // induce code for nth suffix from (n-1)th suffix
+            code %= code_modulo;
+            code *= alphabet_size;
+            code += local_data[index + depth - 1];
+            sa[--local_bucket[code]] = index + offset;
+            bptr[index + offset] = local_bucket[code];
+        }
+
+        // same as above, but for substrings crossing local borders
+        for (std::size_t index = 0; index < depth - 1; ++index) {
+            // induce code for nth suffix from (n-1)th suffix
+            code %= code_modulo;
+            code *= alphabet_size;
+            code += following_data[index];
+            sa[--local_bucket[code]] = local_data.size() + index - depth + offset + 1;
+            bptr[local_data.size() + index - depth + offset + 1] = local_bucket[code];
+        }
     }
 
-    std::cout << "i" << std::endl;
+    std::cout << "     SA: " << sa << std::endl;
+    std::cout << "   BPTR: " << bptr << std::endl;
 
     return global_buckets;
 }
