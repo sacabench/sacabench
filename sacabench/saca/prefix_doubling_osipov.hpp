@@ -14,7 +14,7 @@
 namespace sacabench::osipov {
     class osipov {
     public:
-        static constexpr size_t EXTRA_SENTINELS = 1;
+        static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
         static constexpr char const* NAME = "Osipov_sequential";
         static constexpr char const* DESCRIPTION =
             "Prefix Doubling approach for parallel gpu computation as sequential "
@@ -25,7 +25,11 @@ namespace sacabench::osipov {
         static void construct_sa(util::string_span text,
                                  util::alphabet const&,
                                  util::span<sa_index> out_sa) {
-            // TODO: Fill me with my algorithm
+            // Pretend we never even had the 8 extra bytes to begin with
+            DCHECK_EQ(text.size(), out_sa.size());
+            text = text.slice(0, text.size() - 8);
+            out_sa = out_sa.slice(8, out_sa.size());
+
             if(text.size()>1) {
                 prefix_doubling_sequential(text, out_sa);
             } else {
