@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <tuple>
 #include <byteswap.h>
+#include <tudocomp_stat/StatPhase.hpp>
 
 namespace sacabench::osipov {
     template<bool wordpacking_4_sort>
@@ -159,7 +160,9 @@ namespace sacabench::osipov {
 
         template <typename sa_index>
         static void prefix_doubling_sequential(util::string_span text,
-                                 util::span<sa_index> out_sa) {
+                                               util::span<sa_index> out_sa) {
+            tdc::StatPhase phase("Initialization");
+
             // std::cout << "Starting Osipov sequential." << std::endl;
             // Check if enough bits free for negation.
             DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
@@ -174,15 +177,21 @@ namespace sacabench::osipov {
             sa_index h = 4;
             // Sort by h characters
             compare_first_four_chars cmp_init = compare_first_four_chars(text);
+            phase.split("Stable 4-sort");
             util::sort::stable_sort(sa, cmp_init);
+            phase.split("Initialize ISA");
             initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
+            phase.split("Mark singletons");
             mark_singletons(sa, isa);
+            phase.split("Loop");
 
             //std::cout << "isa: " << isa << std::endl;
             size_t size = sa.size(), s, index;
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
             compare_tuples<sa_index> cmp;
             while(size > 0) {
+                phase.split("Iteration");
+
                 //std::cout << "Elements left: " << size << std::endl;
                 s=0;
                 auto tuple_container = util::make_container<std::tuple<sa_index, sa_index, sa_index>>(size);
@@ -246,6 +255,7 @@ namespace sacabench::osipov {
                 size = s;
                 h= 2*h;
             }
+            phase.split("Write out SA");
             //std::cout << "Writing suffixes to out_sa. isa: " << isa << std::endl;
             for(size_t i=0; i < out_sa.size(); ++i) {
                 out_sa[isa[i] ^ utils<sa_index>::NEGATIVE_MASK] = i;
