@@ -63,15 +63,15 @@ namespace sacabench::osipov {
         public:
             inline compare_first_four_chars(const util::string_span text)
             : text(text) {}
-            
-            inline bool operator()(const size_t& elem, 
+
+            inline bool operator()(const size_t& elem,
                 const size_t& compare_to) {
                 // max_length computation to ensure fail-safety (although should
                 // never be exceeded due to sentinel as last char)
                 size_t max_elem_length = std::min(text.size() - elem, size_t(4));
-                size_t max_compare_to_length = 
+                size_t max_compare_to_length =
                     std::min(text.size() - compare_to, size_t(4));
-                size_t max_length = std::min(max_elem_length, 
+                size_t max_length = std::min(max_elem_length,
                     max_compare_to_length);
                 for(size_t i=0; i<max_length; ++i) {
                     if(text[elem+i] != text[compare_to+i]) {
@@ -82,12 +82,12 @@ namespace sacabench::osipov {
                 // suffixes didn't differ within their first 4 chars.
                 return false;
             }
-        
+
         private:
             const util::string_span text;
         };
-        
-        
+
+
         template <typename sa_index>
         struct compare_tuples{
         public:
@@ -131,7 +131,7 @@ namespace sacabench::osipov {
         }
 
         template <typename sa_index, typename compare_func>
-        static void initialize_isa(util::span<sa_index> sa, 
+        static void initialize_isa(util::span<sa_index> sa,
             util::span<sa_index> isa, compare_func cmp) {
             // Sentinel has lowest rank
             isa[sa[0]] = 0;
@@ -143,7 +143,7 @@ namespace sacabench::osipov {
                 }
             }
         }
-        
+
         // Fill sa with initial indices
         template <typename sa_index>
         static void initialize_sa(size_t text_length, util::span<sa_index> sa) {
@@ -167,7 +167,7 @@ namespace sacabench::osipov {
             auto isa_container = util::make_container<sa_index>(out_sa.size());
             util::span<sa_index> isa = util::span<sa_index>(isa_container);
             initialize_sa<sa_index>(text.size(), sa);
-            
+
             sa_index h = 4;
             // Sort by h characters
             compare_first_four_chars cmp_init = compare_first_four_chars(text);
@@ -205,8 +205,8 @@ namespace sacabench::osipov {
                             isa[index]);
                     }
                 }
-                //std::cout << "Next size: " << s << std::endl; 
-                // Skip all operations till size gets its new size, if this 
+                //std::cout << "Next size: " << s << std::endl;
+                // Skip all operations till size gets its new size, if this
                 // iteration contains no tuples
                 if(s>0) {
                     tuples = tuples.slice(0, s);
@@ -233,7 +233,7 @@ namespace sacabench::osipov {
                     }
                     //std::cout << "Setting new ranks in isa" << std::endl;
                     for(size_t i=0; i < s; ++i) {
-                        //std::cout << "Assigning suffix " << std::get<0>(tuples[i]) 
+                        //std::cout << "Assigning suffix " << std::get<0>(tuples[i])
                         //<< " rank " << std::get<1>(tuples[i]) << std::endl;
                         isa[std::get<0>(tuples[i])] = std::get<1>(tuples[i]);
                     }
