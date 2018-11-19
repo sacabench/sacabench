@@ -11,6 +11,7 @@
 #include <tuple>
 #include <byteswap.h>
 #include <tudocomp_stat/StatPhase.hpp>
+#include <omp.h>
 
 namespace sacabench::osipov {
     template<bool wordpacking_4_sort>
@@ -134,16 +135,56 @@ namespace sacabench::osipov {
             }
         }
 
+        struct split_size_range {
+            uint64_t start;
+            uint64_t end;
+        };
+
+        static split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
+            const uint64_t offset = ((size / threads) * thread_rank)
+                + std::min<uint64_t>(thread_rank, size % threads);
+
+            const uint64_t local_size = (size / threads)
+                + ((thread_rank < size % threads) ? 1 : 0);
+
+            return split_size_range { offset, offset + local_size };
+        }
+
         template <typename sa_index, typename compare_func>
         static void initialize_isa(util::span<sa_index> sa,
             util::span<sa_index> isa, compare_func cmp) {
             // Sentinel has lowest rank
-            isa[sa[0]] = 0;
-            for(size_t i=1; i < sa.size(); ++i) {
-                if(!(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i]))) {
+            isa[sa[0]] = static_cast<sa_index>(0);
+
+            const uint64_t num_threads = omp_get_max_threads();
+
+#pragma omp parallel
+            {
+                const uint64_t thread_id = omp_get_thread_num();
+                //exclude first element (sentinel) \\v//
+                auto range = split_size(sa.size() - 1, thread_id, num_threads);
+                ++range.start;
+                ++range.end;
+
+                size_t i = range.start;
+
+                // skip until start of first bucket
+                for(; i < sa.size() && !(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i])); ++i) {
+                }
+
+                // business as usual
+                for(; i < range.end; ++i) {
+                    if(!(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i]))) {
+                        isa[sa[i]] = isa[sa[i-1]];
+                    } else {
+                        isa[sa[i]] = i;
+                    }
+                }
+
+#pragma omp barrier
+                // continue until end of last bucket
+                for(; i < sa.size() && isa[sa[i]] == static_cast<sa_index>(0); ++i) {
                     isa[sa[i]] = isa[sa[i-1]];
-                } else {
-                    isa[sa[i]] = i;
                 }
             }
         }
