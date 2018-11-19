@@ -183,10 +183,14 @@ namespace sacabench::osipov {
             initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
             phase.split("Mark singletons");
             mark_singletons(sa, isa);
-            phase.split("Loop");
+            phase.split("Loop Initialization");
 
             //std::cout << "isa: " << isa << std::endl;
-            size_t size = sa.size(), s, index;
+            size_t size = sa.size();
+            size_t s = 0;
+            size_t index = 0;
+
+            auto tuple_container = util::make_container<std::tuple<sa_index, sa_index, sa_index>>(size);
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
             compare_tuples<sa_index> cmp;
             while(size > 0) {
@@ -194,8 +198,7 @@ namespace sacabench::osipov {
 
                 //std::cout << "Elements left: " << size << std::endl;
                 s=0;
-                auto tuple_container = util::make_container<std::tuple<sa_index, sa_index, sa_index>>(size);
-                tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(tuple_container);
+                tuples = tuple_container.slice(0, size);
                 //std::cout << "Creating tuple." << std::endl;
                 for(size_t i=0; i < size; ++i) {
                     // equals sa[i] - h >= 0
