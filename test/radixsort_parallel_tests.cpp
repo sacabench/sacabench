@@ -54,7 +54,7 @@ TEST(radixsort_parallel_tests, big_random_test) {
     }
 }
 
-TEST(radixsort_parallel_tests, triple_sorting) {
+TEST(radixsort_parallel_tests, triple_sorting_integer) {
     std::tuple<int, int, int> tuple_1(1, 2, 3);
     std::tuple<int, int, int> tuple_2(2, 2, 3);
     std::tuple<int, int, int> tuple_3(9, 1, 2);
@@ -67,5 +67,25 @@ TEST(radixsort_parallel_tests, triple_sorting) {
     std::vector<std::tuple<int, int, int>> test_control = {tuple_1, tuple_2, tuple_4, tuple_5, tuple_3};
 
     sort::radixsort_parallel(test_input, test_output);
+    ASSERT_EQ(test_output, test_control);
+}
+
+TEST(radixsort_parallel_tests, triple_sorting_chars) {
+    std::tuple<char, char, char> tuple_1('a', 'b', 'c');
+    std::tuple<char, char, char> tuple_2('b', 'b', 'x');
+    std::tuple<char, char, char> tuple_3('z', 'a', 'd');
+    std::tuple<char, char, char> tuple_4('z', 'b', 'd');
+    std::tuple<char, char, char> tuple_5('b', 'b', 'c');
+    std::vector<std::tuple<char, char, char>> test_input = {tuple_1, tuple_2, tuple_3, tuple_4, tuple_5};
+
+    // construct alphabet
+    sacabench::util::string input_chars = "abcdxz"_s;
+    sacabench::util::alphabet alphabet = sacabench::util::alphabet(input_chars);
+
+    std::vector<std::tuple<char, char, char>> test_output = std::vector<std::tuple<char, char, char>>(5);
+
+    std::vector<std::tuple<char, char, char>> test_control = {tuple_1, tuple_5, tuple_2, tuple_3, tuple_4};
+
+    sort::radixsort_parallel(test_input, test_output, alphabet);
     ASSERT_EQ(test_output, test_control);
 }
