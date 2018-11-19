@@ -13,3 +13,7 @@ using namespace sacabench;
 TEST(Osipov, CornerCases) {
     test::saca_corner_cases<sacabench::osipov::osipov>();
 }
+
+TEST(OsipovWp, CornerCases) {
+    test::saca_corner_cases<sacabench::osipov::osipov_wp>();
+}

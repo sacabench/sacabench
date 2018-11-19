@@ -101,3 +101,6 @@ SACA_REGISTER("saca/dc3_lite.hpp"
 
 SACA_REGISTER("saca/prefix_doubling_osipov.hpp"
     sacabench::osipov::osipov)
+
+SACA_REGISTER("saca/prefix_doubling_osipov.hpp"
+    sacabench::osipov::osipov_wp)

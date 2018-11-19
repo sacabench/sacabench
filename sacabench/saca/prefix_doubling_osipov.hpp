@@ -264,6 +264,21 @@ namespace sacabench::osipov {
         static void construct_sa(util::string_span text,
                                  util::alphabet const&,
                                  util::span<sa_index> out_sa) {
+            osipov_impl<false>::construct_sa(text, out_sa);
+        }
+    };
+    struct osipov_wp {
+        static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
+        static constexpr char const* NAME = "Osipov_sequential_wp";
+        static constexpr char const* DESCRIPTION =
+            "Prefix Doubling approach for parallel gpu computation as sequential "
+            "approach";
+
+
+        template <typename sa_index>
+        static void construct_sa(util::string_span text,
+                                 util::alphabet const&,
+                                 util::span<sa_index> out_sa) {
             osipov_impl<true>::construct_sa(text, out_sa);
         }
     };
