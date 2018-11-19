@@ -9,21 +9,14 @@
 #include <util/sort/stable_sort.hpp>
 #include <algorithm>
 #include <tuple>
-
+#include <byteswap.h>
 
 namespace sacabench::osipov {
-    class osipov {
+    template<bool wordpacking_4_sort>
+    class osipov_impl {
     public:
-        static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
-        static constexpr char const* NAME = "Osipov_sequential";
-        static constexpr char const* DESCRIPTION =
-            "Prefix Doubling approach for parallel gpu computation as sequential "
-            "approach";
-
-
         template <typename sa_index>
         static void construct_sa(util::string_span text,
-                                 util::alphabet const&,
                                  util::span<sa_index> out_sa) {
             // Pretend we never even had the 8 extra bytes to begin with
             DCHECK_EQ(text.size(), out_sa.size());
@@ -36,7 +29,6 @@ namespace sacabench::osipov {
                 out_sa[0]=0;
             }
         }
-
     private:
 
         template <typename sa_index>
@@ -66,21 +58,32 @@ namespace sacabench::osipov {
 
             inline bool operator()(const size_t& elem,
                 const size_t& compare_to) {
-                // max_length computation to ensure fail-safety (although should
-                // never be exceeded due to sentinel as last char)
-                size_t max_elem_length = std::min(text.size() - elem, size_t(4));
-                size_t max_compare_to_length =
-                    std::min(text.size() - compare_to, size_t(4));
-                size_t max_length = std::min(max_elem_length,
-                    max_compare_to_length);
-                for(size_t i=0; i<max_length; ++i) {
-                    if(text[elem+i] != text[compare_to+i]) {
-                        // Chars differ -> either elem is smaller or not
-                        return (text[elem+i] < text[compare_to+i] ? true : false);
+
+                if constexpr (wordpacking_4_sort) {
+                    auto elem_wp = *((uint32_t const*) &text[elem]);
+                    auto compare_to_wp = *((uint32_t const*) &text[compare_to]);
+                    elem_wp = bswap_32(elem_wp);
+                    compare_to_wp = bswap_32(compare_to_wp);
+
+                    return elem_wp < compare_to_wp;
+                } else {
+                    // max_length computation to ensure fail-safety (although should
+                    // never be exceeded due to sentinel as last char)
+                    size_t max_elem_length = std::min(text.size() - elem, size_t(4));
+                    size_t max_compare_to_length =
+                        std::min(text.size() - compare_to, size_t(4));
+                    size_t max_length = std::min(max_elem_length,
+                        max_compare_to_length);
+                    for(size_t i=0; i<max_length; ++i) {
+                        if(text[elem+i] != text[compare_to+i]) {
+                            // Chars differ -> either elem is smaller or not
+                            return (text[elem+i] < text[compare_to+i] ? true : false);
+                        }
                     }
+
+                    // suffixes didn't differ within their first 4 chars.
+                    return false;
                 }
-                // suffixes didn't differ within their first 4 chars.
-                return false;
             }
 
         private:
@@ -247,6 +250,21 @@ namespace sacabench::osipov {
             for(size_t i=0; i < out_sa.size(); ++i) {
                 out_sa[isa[i] ^ utils<sa_index>::NEGATIVE_MASK] = i;
             }
+        }
+    };
+    struct osipov {
+        static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
+        static constexpr char const* NAME = "Osipov_sequential";
+        static constexpr char const* DESCRIPTION =
+            "Prefix Doubling approach for parallel gpu computation as sequential "
+            "approach";
+
+
+        template <typename sa_index>
+        static void construct_sa(util::string_span text,
+                                 util::alphabet const&,
+                                 util::span<sa_index> out_sa) {
+            osipov_impl<true>::construct_sa(text, out_sa);
         }
     };
 }
