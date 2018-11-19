@@ -209,8 +209,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                   auto& prefix) {
         if (prefix_size.size() > 0) {
             try {
-                uint32_t unit_factor;
-                size_t input_prefix;
+                uint32_t unit_factor = 0;
+                size_t input_prefix = 0;
                 if (prefix_size[prefix_size.size() - 1] == 'K') {
                     std::string number_part =
                         prefix_size.substr(0, prefix_size.size() - 1);
