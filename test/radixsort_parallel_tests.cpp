@@ -8,6 +8,7 @@
 #include <util/sort/radixsort_parallel.hpp>
 #include <util/container.hpp>
 #include <random>
+#include <tuple>
 
 using namespace sacabench::util;
 
@@ -51,4 +52,20 @@ TEST(radixsort_parallel_tests, big_random_test) {
     for (int index = 0; index < test_input.size() - 1; index++) {
         ASSERT_LE(test_output[index], test_output[index + 1]);
     }
+}
+
+TEST(radixsort_parallel_tests, triple_sorting) {
+    std::tuple<int, int, int> tuple_1(1, 2, 3);
+    std::tuple<int, int, int> tuple_2(2, 2, 3);
+    std::tuple<int, int, int> tuple_3(9, 1, 2);
+    std::tuple<int, int, int> tuple_4(6, 9, 1);
+    std::tuple<int, int, int> tuple_5(7, 3, 5);
+    std::vector<std::tuple<int, int, int>> test_input = {tuple_1, tuple_2, tuple_3, tuple_4, tuple_5};
+
+    std::vector<std::tuple<int, int, int>> test_output = std::vector<std::tuple<int, int, int>>(5);
+
+    std::vector<std::tuple<int, int, int>> test_control = {tuple_1, tuple_2, tuple_4, tuple_5, tuple_3};
+
+    sort::radixsort_parallel(test_input, test_output);
+    ASSERT_EQ(test_output, test_control);
 }
