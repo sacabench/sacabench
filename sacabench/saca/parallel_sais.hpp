@@ -208,8 +208,32 @@ public:
         }
     }
 
+    // Updating and writing into the SuffixArray, w needs to be properly connected to the rest of the code now
+    template <typename sa_index>
+    static void update_SA(ssize part_length, span<std::pair<char, sa_index>> w, span<sa_index> SA) {
+        for (ssize_t i = 0; i < part_length; i++) {
+
+            if (w[i].first != '\0' && w[i].second != static_cast<sa_index>(-1))
+            {
+                SA[w[i].second] = w[i].first;
+            }
+
+        }
+    }
+
+    // Initialization of the Write Buffer, maybe can be put together with the Preparing-Phase later
+    template <typename sa_index>
+    static void init_Write_Buffer(ssize part_length, container<std::pair<char, sa_index>> &w) {
+        
+        for (ssize_t i = 0; i < part_length; i++) {
+            w[i].first = '\0';
+            w[i].second = static_cast<sa_index>(-1);
+        }
+    }
+
     template <typename T, typename sa_index>
     static void run_saca(T s, span<sa_index> SA, size_t K) {
+
         container<sa_index> buckets = make_container<sa_index>(K);
         container<bool> t = make_container<bool>(SA.size());
         container<size_t> thread_border = make_container<size_t>(std::thread::hardware_concurrency());
@@ -223,7 +247,9 @@ public:
 
         // Read/Write Buffer for the pipeline
         auto r = make_container<std::pair<char,sa_index>>(s.size());
-        auto w = make_container<std::pair<char,sa_index>>(s.size());
+        container<std::pair<char, sa_index>> w = make_container<std::pair<char,sa_index>>(s.size());
+
+        init_Write_Buffer(part_length, w);
 
         compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
         
