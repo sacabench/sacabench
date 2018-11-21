@@ -17,6 +17,9 @@
 #pragma GCC diagnostic ignored "-Wpedantic"
 #pragma GCC diagnostic ignored "-Wall"
 #pragma GCC diagnostic ignored "-Wextra"
+#pragma GCC diagnostic ignored "-Wdangling-else"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#pragma GCC diagnostic ignored "-Wsign-compare"
 #define USE_OPENMP
 #include "../external/pss/parallel_stable_sort.h"
 #pragma GCC diagnostic pop
