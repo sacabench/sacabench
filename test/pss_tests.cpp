@@ -62,6 +62,7 @@ TEST_F(pss_tests, std_sort_correct) {
     ASSERT_EQ(short_test_inst, short_control_inst);
 }
 
+/*
 TEST_F(pss_tests, seq_sort_long) {
     sort::std_stable_sort<int>(long_test_inst, std::less<int>());
     ASSERT_EQ(long_test_inst, long_control_inst);
@@ -76,3 +77,4 @@ TEST_F(pss_tests, std_sort_long) {
     sort::std_par_stable_sort<int>(long_test_inst, std::less<int>());
     ASSERT_EQ(long_test_inst, long_control_inst);
 }
+*/
