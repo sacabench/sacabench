@@ -49,7 +49,7 @@ TEST(radixsort_parallel_tests, big_random_test) {
     
     sort::radixsort_parallel(test_input, test_output);
     
-    for (int index = 0; index < test_input.size() - 1; index++) {
+    for (size_t index = 0; index < test_input.size() - 1; index++) {
         ASSERT_LE(test_output[index], test_output[index + 1]);
     }
 }
