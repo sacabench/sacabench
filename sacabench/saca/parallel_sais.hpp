@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2018 Christopher Poeplau <christopher.poeplau@tu-dortmund.de>
+ * Copyright (C) 2018 Janina Michaelis <janina.michaelis@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -135,42 +136,42 @@ public:
         }
     }
 
+
     template <typename T, typename sa_index>
-    static void prepare_L_Types(T s, ssize part_length, span<std::pair<char,sa_index>> r, span<sa_index> SA, span<bool> t){
-        for(ssize_t i = 0;i<part_length;i++){
-            r[i].first = '\0';
-            r[i].second = static_cast<sa_index>(-1);
-        }
-        size_t j = 0, k=0;
-        sa_index pos;
-        char chr;
-        for(ssize_t i = 0;i<part_length;i++){
-            j = (k*part_length)+i;
-            if(SA[j]!= static_cast<sa_index>(-1)){
-                pos = SA[j]-static_cast<sa_index>(1);
-                if(pos>=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && t[pos] == L_Type){
-                    chr = s[pos];
-                    r[i] = std::make_pair(chr, pos);
-                }
+    static void prepare_parallel(T s, ssize part_length, span<std::pair<char,sa_index>> r,
+                                 span<sa_index> SA, span<bool> t, bool suffix_type, size_t thread_count, ssize rest_length){
+            std::vector<std::thread> threads;
+
+        for (size_t i = 0; i < thread_count; i++) {
+            if (i < thread_count - 1) {
+                threads.push_back(std::thread(prepare<T,sa_index>, s, part_length, part_length, r,SA, t, suffix_type, i));
+            }
+            else {
+                threads.push_back(std::thread(prepare<T,sa_index>, s,part_length, rest_length, r,SA, t, suffix_type, i));
             }
         }
 
-    }
+        for (auto& t : threads) {
+            t.join();
+        }
+    };
 
     template <typename T, typename sa_index>
-    static void prepare_S_Types(T s, ssize part_length, span<std::pair<char,sa_index>> r, span<sa_index> SA, span<bool> t){
-        for(ssize_t i = 0;i<part_length;i++){
+    static void prepare(T s, ssize part_length, ssize actual_part_length, span<std::pair<char,sa_index>> r, span<sa_index> SA, span<bool> t, bool suffix_type, size_t k){
+
+
+        for(ssize_t i = k*part_length;i<((k*part_length)+actual_part_length);i++){
             r[i].first = '\0';
             r[i].second = static_cast<sa_index>(-1);
         }
-        size_t j = 0, k=0;
+        size_t j = 0;
         sa_index pos;
         char chr;
-        for(ssize_t i = 0;i<part_length;i++){
+        for(ssize_t i = 0;i<actual_part_length;i++){
             j = (k*part_length)+i;
             if(SA[j]!= static_cast<sa_index>(-1)){
                 pos = SA[j]-static_cast<sa_index>(1);
-                if(pos>=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && t[pos] == S_Type){
+                if(pos>=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && t[pos] == suffix_type){
                     chr = s[pos];
                     r[i] = std::make_pair(chr, pos);
                 }
@@ -312,7 +313,7 @@ public:
             }
         }
 
-        //prepare<T, sa_index>(s,part_length,r,SA,t);
+        //prepare_parallel<T, sa_index>(s,part_length,r,SA,t, L_Type, thread_count, rest_length);
 
         // induce the final SA
         generate_buckets<T, sa_index>(s, buckets, K, true);
