@@ -15,6 +15,8 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
+#pragma GCC diagnostic ignored "-Wall"
+#pragma GCC diagnostic ignored "-Wextra"
 #define USE_OPENMP
 #include "../external/pss/parallel_stable_sort.h"
 #pragma GCC diagnostic pop
