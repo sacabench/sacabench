@@ -268,7 +268,7 @@ namespace sacabench::osipov {
                 if(s>0) {
                     tuples = tuples.slice(0, s);
                     //std::cout << "Sorting tuples." << std::endl;
-                    cmp = compare_tuples(tuples);
+                    cmp = compare_tuples<sa_index>(tuples);
                     util::sort::stable_sort(tuples, cmp);
                     sa = sa.slice(0, s);
                     //std::cout << "Writing new order to sa." << std::endl;
