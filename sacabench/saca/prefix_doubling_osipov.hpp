@@ -7,6 +7,8 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/sort/stable_sort.hpp>
+#include <util/sort/std_sort.hpp>
+#include <util/sort/ips4o.hpp>
 #include <algorithm>
 #include <tuple>
 #include <byteswap.h>
@@ -45,7 +47,7 @@ namespace sacabench::osipov {
             inline compare_first_char(const util::string_span text) : text(text) {}
 
             // elem and compare_to need to be smaller than input.size()
-            inline bool operator()(const size_t& elem, const size_t& compare_to) {
+            inline bool operator()(const size_t& elem, const size_t& compare_to) const {
                 return text[elem] < text[compare_to];
             }
 
@@ -59,7 +61,7 @@ namespace sacabench::osipov {
             : text(text) {}
 
             inline bool operator()(const size_t& elem,
-                const size_t& compare_to) {
+                const size_t& compare_to) const {
 
                 if constexpr (wordpacking_4_sort) {
                     auto elem_wp = *((uint32_t const*) &text[elem]);
@@ -103,7 +105,7 @@ namespace sacabench::osipov {
             inline compare_tuples() {}
 
             inline bool operator()(const std::tuple<sa_index, sa_index, sa_index>& elem,
-                const std::tuple<sa_index, sa_index, sa_index>& compare_to) {
+                const std::tuple<sa_index, sa_index, sa_index>& compare_to) const {
                 return std::get<1>(elem) < std::get<1>(compare_to);
             }
 
@@ -209,8 +211,7 @@ namespace sacabench::osipov {
             DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
 
             //std::cout << "Creating initial container." << std::endl;
-            auto sa_container = util::make_container<sa_index>(out_sa.size());
-            util::span<sa_index> sa = util::span<sa_index>(sa_container);
+            util::span<sa_index> sa = out_sa;
             auto isa_container = util::make_container<sa_index>(out_sa.size());
             util::span<sa_index> isa = util::span<sa_index>(isa_container);
             initialize_sa<sa_index>(text.size(), sa);
@@ -218,8 +219,8 @@ namespace sacabench::osipov {
             sa_index h = 4;
             // Sort by h characters
             compare_first_four_chars cmp_init = compare_first_four_chars(text);
-            phase.split("Stable 4-sort");
-            util::sort::stable_sort(sa, cmp_init);
+            phase.split("Initial 4-Sort");
+            util::sort::ips4o_sort(sa, cmp_init);
             phase.split("Initialize ISA");
             initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
             phase.split("Mark singletons");
