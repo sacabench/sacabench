@@ -9,6 +9,7 @@
 #include <util/sort/stable_sort.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/sort/ips4o.hpp>
+#include <util/bits.hpp>
 #include <algorithm>
 #include <tuple>
 #include <byteswap.h>
@@ -198,8 +199,7 @@ namespace sacabench::osipov {
             util::container<sa_index> aux = util::make_container<sa_index>(sa.size());
 
             // Sentinel has lowest rank
-            aux[0] = static_cast<sa_index>(0);
-            isa[sa[0]] = static_cast<sa_index>(0);
+            isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
 
 #pragma omp parallel for
             for (size_t i = 1; i < sa.size(); ++i) {
@@ -212,11 +212,7 @@ namespace sacabench::osipov {
             }
 
             for (size_t i = 1; i < sa.size(); ++i) {
-                if (aux[i] > isa[sa[i-1]]) {
-                    isa[sa[i]] = aux[i];
-                } else {
-                    isa[sa[i]] = isa[sa[i-1]];
-                }
+                isa[sa[i]] = util::max(aux[i], isa[sa[i-1]]);
             }
         }
 
