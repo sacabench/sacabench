@@ -191,6 +191,22 @@ namespace sacabench::osipov {
             }
         }
 
+        // Sequential variant of initializing the isa
+        template <typename sa_index, typename compare_func>
+        static void initialize_isa_sequential(util::span<sa_index> sa,
+            util::span<sa_index> isa, compare_func cmp) {
+            isa[sa[0]] = 0;
+            for(size_t i = 0; i < sa.size(); ++i) {
+                if(!(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i]))) {
+                    // Take rank of predecessor
+                    isa[sa[i]] = isa[sa[i-1]];
+                } else {
+                    // New rank
+                    isa[sa[i]] = i;
+                }
+            }
+        }
+
         // Fill sa with initial indices
         template <typename sa_index>
         static void initialize_sa(size_t text_length, util::span<sa_index> sa) {
@@ -222,7 +238,7 @@ namespace sacabench::osipov {
             phase.split("Initial 4-Sort");
             util::sort::ips4o_sort(sa, cmp_init);
             phase.split("Initialize ISA");
-            initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
+            initialize_isa_sequential<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
             phase.split("Mark singletons");
             mark_singletons(sa, isa);
             phase.split("Loop Initialization");
