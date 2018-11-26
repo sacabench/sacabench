@@ -119,10 +119,14 @@ namespace sacabench::osipov {
             if(sa.size()>0) {
                 util::container<bool> flags = util::make_container<bool>(sa.size());
                 flags[0] = true;
+
                 // Set flags if predecessor has different rank.
+#pragma omp parallel for
                 for(size_t i=1; i < sa.size(); ++i) {
-                    flags[i] = isa[sa[i-1]] != isa[sa[i]] ? true : false;
+                    flags[i] = (isa[sa[i-1]] != isa[sa[i]]);
                 }
+
+#pragma omp parallel for
                 for(size_t i=0; i < sa.size()-1; ++i) {
                     // flags corresponding to predecessor having a different rank, i.e.
                     // suffix sa[i] has different rank than its predecessor and successor.
@@ -133,7 +137,7 @@ namespace sacabench::osipov {
                 // Check for last position - is singleton, if it has a different rank
                 // than its predecessor (because of missing successor).
                 if(flags[sa.size()-1]) {
-                    isa[sa[sa.size()-1]] = isa[sa[sa.size()-1]] ^ utils<sa_index>::NEGATIVE_MASK;
+                    isa[sa[sa.size()-1]] = isa[sa[sa.size()-1]] | utils<sa_index>::NEGATIVE_MASK;
                 }
             }
         }
