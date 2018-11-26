@@ -191,6 +191,33 @@ namespace sacabench::osipov {
             }
         }
 
+        template <typename sa_index, typename compare_func>
+        static void initialize_isa_aux(util::span<sa_index> sa,
+            util::span<sa_index> isa, compare_func cmp) {
+
+            util::container<sa_index> aux = util::make_container<sa_index>(sa.size());
+
+            // Sentinel has lowest rank
+            aux[0] = static_cast<sa_index>(0);
+            isa[sa[0]] = static_cast<sa_index>(0);
+
+            for (size_t i = 1; i < sa.size(); ++i) {
+                if (!(cmp(sa[i-1], sa[i]) || cmp(sa[i-1], sa[i]))) {
+                    aux[i] = static_cast<sa_index>(0);
+                } else {
+                    aux[i] = static_cast<sa_index>(i);
+                }
+            }
+
+            for (size_t i = 1; i < sa.size(); ++i) {
+                if (aux[i] > isa[sa[i-1]]) {
+                    isa[sa[i]] = aux[i];
+                } else {
+                    isa[sa[i]] = isa[sa[i-1]];
+                }
+            }
+        }
+
         // Fill sa with initial indices
         template <typename sa_index>
         static void initialize_sa(size_t text_length, util::span<sa_index> sa) {
@@ -198,7 +225,6 @@ namespace sacabench::osipov {
                 sa[i] = i;
             }
         }
-
 
 
         template <typename sa_index>
