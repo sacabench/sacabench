@@ -331,9 +331,9 @@ namespace sacabench::osipov {
             }
         }
     };
-    struct osipov {
+    struct osipov_parallel {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
-        static constexpr char const* NAME = "Osipov_sequential";
+        static constexpr char const* NAME = "Osipov_parallel";
         static constexpr char const* DESCRIPTION =
             "Prefix Doubling approach for parallel gpu computation as sequential "
             "approach";
@@ -346,9 +346,9 @@ namespace sacabench::osipov {
             osipov_impl<false>::construct_sa(text, out_sa);
         }
     };
-    struct osipov_wp {
+    struct osipov_parallel_wp {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
-        static constexpr char const* NAME = "Osipov_sequential_wp";
+        static constexpr char const* NAME = "Osipov_parallel_wp";
         static constexpr char const* DESCRIPTION =
             "Prefix Doubling approach for parallel gpu computation as sequential "
             "approach";
