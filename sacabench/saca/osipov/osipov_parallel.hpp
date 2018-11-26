@@ -29,7 +29,7 @@ namespace sacabench::osipov {
             out_sa = out_sa.slice(8, out_sa.size());
 
             if(text.size()>1) {
-                prefix_doubling_sequential(text, out_sa);
+                prefix_doubling_parallel(text, out_sa);
             } else {
                 out_sa[0]=0;
             }
@@ -172,11 +172,11 @@ namespace sacabench::osipov {
 
 
         template <typename sa_index>
-        static void prefix_doubling_sequential(util::string_span text,
+        static void prefix_doubling_parallel(util::string_span text,
                                                util::span<sa_index> out_sa) {
             tdc::StatPhase phase("Initialization");
 
-            // std::cout << "Starting Osipov sequential." << std::endl;
+            // std::cout << "Starting Osipov parallel." << std::endl;
             // Check if enough bits free for negation.
             DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
 
@@ -281,7 +281,7 @@ namespace sacabench::osipov {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
         static constexpr char const* NAME = "Osipov_parallel";
         static constexpr char const* DESCRIPTION =
-            "Prefix Doubling approach for parallel gpu computation as sequential "
+            "Prefix Doubling approach for parallel gpu computation as parallel "
             "approach";
 
 
@@ -296,7 +296,7 @@ namespace sacabench::osipov {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
         static constexpr char const* NAME = "Osipov_parallel_wp";
         static constexpr char const* DESCRIPTION =
-            "Prefix Doubling approach for parallel gpu computation as sequential "
+            "Prefix Doubling approach for parallel gpu computation as parallel "
             "approach";
 
 
