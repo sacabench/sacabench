@@ -144,9 +144,7 @@ namespace sacabench::osipov {
 
         template <typename sa_index, typename compare_func>
         static void initialize_isa(util::span<sa_index> sa,
-            util::span<sa_index> isa, compare_func cmp) {
-
-            util::container<sa_index> aux = util::make_container<sa_index>(sa.size());
+            util::span<sa_index> isa, util::span<sa_index> aux, compare_func cmp) {
 
             // Sentinel has lowest rank
             isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
@@ -187,7 +185,10 @@ namespace sacabench::osipov {
             //std::cout << "Creating initial container." << std::endl;
             util::span<sa_index> sa = out_sa;
             auto isa_container = util::make_container<sa_index>(out_sa.size());
+            auto aux_container = util::make_container<sa_index>(out_sa.size());
+
             util::span<sa_index> isa = util::span<sa_index>(isa_container);
+            util::span<sa_index> aux = util::span<sa_index>(aux_container);
             initialize_sa<sa_index>(text.size(), sa);
 
             sa_index h = 4;
@@ -196,7 +197,7 @@ namespace sacabench::osipov {
             phase.split("Initial 4-Sort");
             util::sort::ips4o_sort(sa, cmp_init);
             phase.split("Initialize ISA");
-            initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
+            initialize_isa<sa_index, compare_first_four_chars>(sa, isa, aux, cmp_init);
             phase.split("Mark singletons");
             mark_singletons(sa, isa);
             phase.split("Loop Initialization");
