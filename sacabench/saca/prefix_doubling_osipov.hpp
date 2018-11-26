@@ -153,7 +153,7 @@ namespace sacabench::osipov {
         }
 
         template <typename sa_index, typename compare_func>
-        static void initialize_isa(util::span<sa_index> sa,
+        static void initialize_isa_no_aux(util::span<sa_index> sa,
             util::span<sa_index> isa, compare_func cmp) {
             // Sentinel has lowest rank
             isa[sa[0]] = static_cast<sa_index>(0);
@@ -192,7 +192,7 @@ namespace sacabench::osipov {
         }
 
         template <typename sa_index, typename compare_func>
-        static void initialize_isa_aux(util::span<sa_index> sa,
+        static void initialize_isa(util::span<sa_index> sa,
             util::span<sa_index> isa, compare_func cmp) {
 
             util::container<sa_index> aux = util::make_container<sa_index>(sa.size());
@@ -201,12 +201,14 @@ namespace sacabench::osipov {
             aux[0] = static_cast<sa_index>(0);
             isa[sa[0]] = static_cast<sa_index>(0);
 
+#pragma omp parallel for
             for (size_t i = 1; i < sa.size(); ++i) {
-                if (!(cmp(sa[i-1], sa[i]) || cmp(sa[i-1], sa[i]))) {
-                    aux[i] = static_cast<sa_index>(0);
-                } else {
-                    aux[i] = static_cast<sa_index>(i);
-                }
+                // no branching version of:
+                // if in_same_bucket(sa[i-1], sa[i])
+                //     aux[i] = 0;
+                // else
+                //     aux[i] = 1;
+                aux[i] = static_cast<sa_index>(i) * ((cmp(sa[i-1], sa[i]) | cmp(sa[i-1], sa[i])) != 0);
             }
 
             for (size_t i = 1; i < sa.size(); ++i) {
