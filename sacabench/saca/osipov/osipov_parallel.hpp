@@ -82,7 +82,7 @@ namespace sacabench::osipov {
                     for(size_t i=0; i<max_length; ++i) {
                         if(text[elem+i] != text[compare_to+i]) {
                             // Chars differ -> either elem is smaller or not
-                            return (text[elem+i] < text[compare_to+i] ? true : false);
+                            return (text[elem+i] < text[compare_to+i]);
                         }
                     }
 
