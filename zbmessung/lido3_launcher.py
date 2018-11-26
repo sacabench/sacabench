@@ -30,35 +30,33 @@ batch_template = """#!/bin/bash -l
 #SBATCH --exclusive
 #SBATCH --job-name={jobname}
 {test_only}
-
 cd {cwd}
 {cmd}
 """
 
 for x in range(0, 10):
-    cmd = "/bin/echo test output #{}".format(x)
+    cmd = "echo test output {}".format(x)
     cwd = Path(os.environ["WORK"])
 
-    output = "sacabench_batch_%j.dat"
+    output = cwd / Path("sacabench_batch_%j.dat")
     jobname = "sacabench"
 
     test_only = ""
     if args.test_only:
-        test_only = "#SBATCH --test-only"
+        test_only = "#SBATCH --test-only\n"
 
     instance = batch_template.format(
         time=args.estimated_time,
-        output=output,
         jobname=jobname,
         test_only=test_only,
         cwd=str(cwd),
+        output=str(output),
         cmd=cmd
     )
 
     if args.launch:
-        launch_cmd = "sbatch ./lido3_sbatch_run_task.sh"
         #print("Instance:\n{}".format(instance))
-        subprocess.run(launch_cmd, shell=True, input=instance, encoding="utf-8")
+        subprocess.run("sbatch", input=instance, encoding="utf-8")
 
 if args.launch:
     print("Started all jobs!")
