@@ -152,58 +152,27 @@ namespace sacabench::osipov {
             return split_size_range { offset, offset + local_size };
         }
 
+        // Sequential variant of initializing the isa
         template <typename sa_index, typename compare_func>
         static void initialize_isa(util::span<sa_index> sa,
             util::span<sa_index> isa, compare_func cmp) {
+
+            util::container<sa_index> aux = util::make_container<sa_index>(sa.size());
+
             // Sentinel has lowest rank
-            isa[sa[0]] = static_cast<sa_index>(0);
+            isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
 
-            const uint64_t num_threads = omp_get_max_threads();
-
-#pragma omp parallel
-            {
-                const uint64_t thread_id = omp_get_thread_num();
-                //exclude first element (sentinel) \\v//
-                auto range = split_size(sa.size() - 1, thread_id, num_threads);
-                ++range.start;
-                ++range.end;
-
-                size_t i = range.start;
-
-                // skip until start of first bucket
-                for(; i < sa.size() && !(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i])); ++i) {
-                }
-
-                // business as usual
-                for(; i < range.end; ++i) {
-                    if(!(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i]))) {
-                        isa[sa[i]] = isa[sa[i-1]];
-                    } else {
-                        isa[sa[i]] = i;
-                    }
-                }
-
-#pragma omp barrier
-                // continue until end of last bucket
-                for(; i < sa.size() && isa[sa[i]] == static_cast<sa_index>(0); ++i) {
-                    isa[sa[i]] = isa[sa[i-1]];
-                }
+            for (size_t i = 1; i < sa.size(); ++i) {
+                // no branching version of:
+                // if in_same_bucket(sa[i-1], sa[i])
+                //     aux[i] = 0;
+                // else
+                //     aux[i] = 1;
+                aux[i] = static_cast<sa_index>(i) * ((cmp(sa[i-1], sa[i]) | cmp(sa[i-1], sa[i])) != 0);
             }
-        }
 
-        // Sequential variant of initializing the isa
-        template <typename sa_index, typename compare_func>
-        static void initialize_isa_sequential(util::span<sa_index> sa,
-            util::span<sa_index> isa, compare_func cmp) {
-            isa[sa[0]] = 0;
-            for(size_t i = 0; i < sa.size(); ++i) {
-                if(!(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i]))) {
-                    // Take rank of predecessor
-                    isa[sa[i]] = isa[sa[i-1]];
-                } else {
-                    // New rank
-                    isa[sa[i]] = i;
-                }
+            for (size_t i = 1; i < sa.size(); ++i) {
+                isa[sa[i]] = aux[i] > isa[sa[i-1]] ? aux[i] : isa[sa[i-1]];
             }
         }
 
@@ -214,8 +183,6 @@ namespace sacabench::osipov {
                 sa[i] = i;
             }
         }
-
-
 
         template <typename sa_index>
         static void prefix_doubling_sequential(util::string_span text,
@@ -238,7 +205,7 @@ namespace sacabench::osipov {
             phase.split("Initial 4-Sort");
             util::sort::ips4o_sort(sa, cmp_init);
             phase.split("Initialize ISA");
-            initialize_isa_sequential<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
+            initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
             phase.split("Mark singletons");
             mark_singletons(sa, isa);
             phase.split("Loop Initialization");
