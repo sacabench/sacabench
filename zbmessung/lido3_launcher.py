@@ -6,18 +6,22 @@ from pathlib import Path
 import time
 import os
 
+# ---------------------
+
 usage = argparse.ArgumentParser()
 
-usage.add_argument("--launch", action="store_true", help="Wether to actually start task, or merely gather results of previos runs.")
-usage.add_argument("--test-only", action="store_true", help="Do not actually start the slurm tasks (do a dry run).")
-usage.add_argument("--print-sbatch", action="store_true", help="Print out the batch files used for each job.")
+usage.add_argument("--launch", action="store_true",
+                   help="Wether to actually start task, or merely gather results of previos runs.")
+usage.add_argument("--test-only", action="store_true",
+                   help="Do not actually start the slurm tasks (do a dry run).")
+usage.add_argument("--print-sbatch", action="store_true",
+                   help="Print out the batch files used for each job.")
+
 time_default = "02:00:00"
-usage.add_argument("--estimated-time", default=time_default, help="Time estimate for the slurm job.  Defaults to \"{}\".".format(time_default))
+usage.add_argument("--estimated-time", default=time_default,
+                   help="Time estimate for the slurm job.  Defaults to \"{}\".".format(time_default))
 
-args = usage.parse_args()
-
-if args.launch:
-    print("Starting jobs...")
+# ---------------------
 
 batch_template = """#!/bin/bash -l
 #SBATCH --time={time}
@@ -35,11 +39,9 @@ cd {cwd}
 {cmd}
 """
 
-for x in range(0, 10):
-    cmd = "echo test output {}".format(x)
-    cwd = Path(os.environ["WORK"])
+# ---------------------
 
-    output = cwd / Path("sacabench_batch_%j.dat")
+def launch_job(cwd, cmd, output):
     jobname = "sacabench"
 
     test_only = ""
@@ -60,6 +62,50 @@ for x in range(0, 10):
             print("Instance:\n---\n{}---".format(instance))
         subprocess.run("sbatch", input=instance, encoding="utf-8")
 
+#TODO: Move to external config file
+algos = [
+  "Deep-Shallow_ref",
+  "DivSufSort_ref",
+  "MSufSort_ref",
+  "SACA-K_ref",
+  "SADS_ref",
+  "SAIS_ref",
+  "SAIS-LITE_ref",
+  "GSACA_ref",
+  "qsufsort_ref",
+  "DC3_ref",
+  "Deep-Shallow",
+  "BPR",
+  "BPR_ref",
+  "mSufSort",
+  "Doubling",
+  "Discarding2",
+  "Discarding4",
+  "Discarding4Parallel",
+  "SAIS",
+  "SADS",
+  "GSACA",
+  "GSACA_Opt",
+  "GSACA_parallel",
+  "DC7",
+  "qsufsort",
+  "Naiv",
+  "SACA-K",
+  "DC3",
+  "DivSufSort",
+  "nzSufSort",
+  "DC3-Lite",
+]
+
+args = usage.parse_args()
+
+if args.launch:
+    print("Starting jobs...")
+for x in range(0, 10):
+    cwd = Path(os.environ["WORK"])
+    cmd = "echo test output {}".format(x)
+    output = cwd / Path("sacabench_batch_%j.dat")
+    launch_job(cwd, cmd, output)
 if args.launch:
     print("Started all jobs!")
 
