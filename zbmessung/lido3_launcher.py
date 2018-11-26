@@ -10,6 +10,7 @@ usage = argparse.ArgumentParser()
 
 usage.add_argument("--launch", action="store_true", help="Wether to actually start task, or merely gather results of previos runs.")
 usage.add_argument("--test-only", action="store_true", help="Do not actually start the slurm tasks (do a dry run).")
+usage.add_argument("--print-sbatch", action="store_true", help="Print out the batch files used for each job.")
 time_default = "02:00:00"
 usage.add_argument("--estimated-time", default=time_default, help="Time estimate for the slurm job.  Defaults to \"{}\".".format(time_default))
 
@@ -55,7 +56,8 @@ for x in range(0, 10):
     )
 
     if args.launch:
-        #print("Instance:\n{}".format(instance))
+        if args.print_sbatch:
+            print("Instance:\n---\n{}---".format(instance))
         subprocess.run("sbatch", input=instance, encoding="utf-8")
 
 if args.launch:
