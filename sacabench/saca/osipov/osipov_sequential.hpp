@@ -307,7 +307,7 @@ namespace sacabench::osipov {
             }
         }
     };
-    struct osipov {
+    struct osipov_sequential {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
         static constexpr char const* NAME = "Osipov_sequential";
         static constexpr char const* DESCRIPTION =
@@ -322,7 +322,7 @@ namespace sacabench::osipov {
             osipov_impl<false>::construct_sa(text, out_sa);
         }
     };
-    struct osipov_wp {
+    struct osipov_sequential_wp {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
         static constexpr char const* NAME = "Osipov_sequential_wp";
         static constexpr char const* DESCRIPTION =

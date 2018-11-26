@@ -99,8 +99,8 @@ SACA_REGISTER("saca/nzSufSort.hpp"
 SACA_REGISTER("saca/dc3_lite.hpp"
     sacabench::dc3_lite::dc3_lite)
 
-SACA_REGISTER("saca/prefix_doubling_osipov.hpp"
-    sacabench::osipov::osipov)
+SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
+    sacabench::osipov::osipov_sequential)
 
-SACA_REGISTER("saca/prefix_doubling_osipov.hpp"
-    sacabench::osipov::osipov_wp)
+SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
+    sacabench::osipov::osipov_sequential_wp)
