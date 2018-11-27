@@ -37,14 +37,22 @@ sacabench_default="$HOME/sacabench"
 usage.add_argument("--sacabench-directory", default=sacabench_default,
                    help="Location where the sacabench directory is located. Defaults to \"{}\".".format(sacabench_default))
 
+maxcores_default=20  # up to 48
+usage.add_argument("--maxcores", default=maxcores_default,
+                   type=int,
+                   help="Maximum amount of cores requested. Sensible values on lido3 are 20 and 48. Defaults to {}.".format(maxcores_default))
+
 args = usage.parse_args()
 # ---------------------
 
+# Note: --parsable means `jobid[;clustername]`
+# Also: -Q/--quiet to surpress info messages
 batch_template = """#!/bin/bash -l
+#SBATCH --parsable
 #SBATCH --time={time}
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=48
+#SBATCH --cpus-per-task={maxcores}
 #SBATCH --partition=short
 #SBATCH --constraint=cquad01
 #SBATCH --output={output}
@@ -73,7 +81,8 @@ def launch_job(cwd, cmd, output):
         test_only=test_only,
         cwd=cwd,
         output=output,
-        cmd=cmd
+        cmd=cmd,
+        maxcores=int(args.maxcores)
     )
 
     if args.launch:
