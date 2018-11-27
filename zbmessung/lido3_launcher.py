@@ -194,7 +194,7 @@ if args.combine:
         input = Path(output_file["input"])
         prefix = output_file["prefix"]
         if not stat_output.is_file():
-            print("Missing data for {}, (no file {})".format((algo, input.name, prefix), stat_output.name))
+            print("Missing data for {}, {}, {} (no file {})".format(algo, input.name, prefix, stat_output.name))
             continue
         stat = load_json(stat_output)
         if not input in file_map:
