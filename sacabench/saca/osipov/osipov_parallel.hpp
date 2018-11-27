@@ -9,6 +9,7 @@
 #include <util/sort/stable_sort.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/sort/ips4o.hpp>
+#include <util/bits.hpp>
 #include <algorithm>
 #include <tuple>
 #include <byteswap.h>
@@ -28,7 +29,7 @@ namespace sacabench::osipov {
             out_sa = out_sa.slice(8, out_sa.size());
 
             if(text.size()>1) {
-                prefix_doubling_sequential(text, out_sa);
+                prefix_doubling_parallel(text, out_sa);
             } else {
                 out_sa[0]=0;
             }
@@ -81,7 +82,7 @@ namespace sacabench::osipov {
                     for(size_t i=0; i<max_length; ++i) {
                         if(text[elem+i] != text[compare_to+i]) {
                             // Chars differ -> either elem is smaller or not
-                            return (text[elem+i] < text[compare_to+i] ? true : false);
+                            return (text[elem+i] < text[compare_to+i]);
                         }
                     }
 
@@ -118,10 +119,14 @@ namespace sacabench::osipov {
             if(sa.size()>0) {
                 util::container<bool> flags = util::make_container<bool>(sa.size());
                 flags[0] = true;
+
                 // Set flags if predecessor has different rank.
+#pragma omp parallel for
                 for(size_t i=1; i < sa.size(); ++i) {
-                    flags[i] = isa[sa[i-1]] != isa[sa[i]] ? true : false;
+                    flags[i] = (isa[sa[i-1]] != isa[sa[i]]);
                 }
+
+#pragma omp parallel for
                 for(size_t i=0; i < sa.size()-1; ++i) {
                     // flags corresponding to predecessor having a different rank, i.e.
                     // suffix sa[i] has different rank than its predecessor and successor.
@@ -132,62 +137,30 @@ namespace sacabench::osipov {
                 // Check for last position - is singleton, if it has a different rank
                 // than its predecessor (because of missing successor).
                 if(flags[sa.size()-1]) {
-                    isa[sa[sa.size()-1]] = isa[sa[sa.size()-1]] ^ utils<sa_index>::NEGATIVE_MASK;
+                    isa[sa[sa.size()-1]] = isa[sa[sa.size()-1]] | utils<sa_index>::NEGATIVE_MASK;
                 }
             }
         }
 
-        struct split_size_range {
-            uint64_t start;
-            uint64_t end;
-        };
-
-        static split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
-            const uint64_t offset = ((size / threads) * thread_rank)
-                + std::min<uint64_t>(thread_rank, size % threads);
-
-            const uint64_t local_size = (size / threads)
-                + ((thread_rank < size % threads) ? 1 : 0);
-
-            return split_size_range { offset, offset + local_size };
-        }
-
         template <typename sa_index, typename compare_func>
         static void initialize_isa(util::span<sa_index> sa,
-            util::span<sa_index> isa, compare_func cmp) {
+            util::span<sa_index> isa, util::span<sa_index> aux, compare_func cmp) {
+
             // Sentinel has lowest rank
-            isa[sa[0]] = static_cast<sa_index>(0);
+            isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
 
-            const uint64_t num_threads = omp_get_max_threads();
+#pragma omp parallel for
+            for (size_t i = 1; i < sa.size(); ++i) {
+                // no branching version of:
+                // if in_same_bucket(sa[i-1], sa[i])
+                //     aux[i] = 0;
+                // else
+                //     aux[i] = 1;
+                aux[i] = static_cast<sa_index>(i) * ((cmp(sa[i-1], sa[i]) | cmp(sa[i-1], sa[i])) != 0);
+            }
 
-#pragma omp parallel
-            {
-                const uint64_t thread_id = omp_get_thread_num();
-                //exclude first element (sentinel) \\v//
-                auto range = split_size(sa.size() - 1, thread_id, num_threads);
-                ++range.start;
-                ++range.end;
-
-                size_t i = range.start;
-
-                // skip until start of first bucket
-                for(; i < sa.size() && !(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i])); ++i) {
-                }
-
-                // business as usual
-                for(; i < range.end; ++i) {
-                    if(!(cmp(sa[i], sa[i-1]) || cmp(sa[i-1], sa[i]))) {
-                        isa[sa[i]] = isa[sa[i-1]];
-                    } else {
-                        isa[sa[i]] = i;
-                    }
-                }
-
-#pragma omp barrier
-                // continue until end of last bucket
-                for(; i < sa.size() && isa[sa[i]] == static_cast<sa_index>(0); ++i) {
-                    isa[sa[i]] = isa[sa[i-1]];
-                }
+            for (size_t i = 1; i < sa.size(); ++i) {
+                isa[sa[i]] = util::max(aux[i], isa[sa[i-1]]);
             }
         }
 
@@ -200,20 +173,22 @@ namespace sacabench::osipov {
         }
 
 
-
         template <typename sa_index>
-        static void prefix_doubling_sequential(util::string_span text,
+        static void prefix_doubling_parallel(util::string_span text,
                                                util::span<sa_index> out_sa) {
             tdc::StatPhase phase("Initialization");
 
-            // std::cout << "Starting Osipov sequential." << std::endl;
+            // std::cout << "Starting Osipov parallel." << std::endl;
             // Check if enough bits free for negation.
             DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
 
             //std::cout << "Creating initial container." << std::endl;
             util::span<sa_index> sa = out_sa;
             auto isa_container = util::make_container<sa_index>(out_sa.size());
+            auto aux_container = util::make_container<sa_index>(out_sa.size());
+
             util::span<sa_index> isa = util::span<sa_index>(isa_container);
+            util::span<sa_index> aux = util::span<sa_index>(aux_container);
             initialize_sa<sa_index>(text.size(), sa);
 
             sa_index h = 4;
@@ -222,7 +197,7 @@ namespace sacabench::osipov {
             phase.split("Initial 4-Sort");
             util::sort::ips4o_sort(sa, cmp_init);
             phase.split("Initialize ISA");
-            initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
+            initialize_isa<sa_index, compare_first_four_chars>(sa, isa, aux, cmp_init);
             phase.split("Mark singletons");
             mark_singletons(sa, isa);
             phase.split("Loop Initialization");
@@ -307,11 +282,11 @@ namespace sacabench::osipov {
             }
         }
     };
-    struct osipov {
+    struct osipov_parallel {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
-        static constexpr char const* NAME = "Osipov_sequential";
+        static constexpr char const* NAME = "Osipov_parallel";
         static constexpr char const* DESCRIPTION =
-            "Prefix Doubling approach for parallel gpu computation as sequential "
+            "Prefix Doubling approach for parallel gpu computation as parallel "
             "approach";
 
 
@@ -322,11 +297,11 @@ namespace sacabench::osipov {
             osipov_impl<false>::construct_sa(text, out_sa);
         }
     };
-    struct osipov_wp {
+    struct osipov_parallel_wp {
         static constexpr size_t EXTRA_SENTINELS = 1 + 8; // extra 8 to allow buffer overread during sorting
-        static constexpr char const* NAME = "Osipov_sequential_wp";
+        static constexpr char const* NAME = "Osipov_parallel_wp";
         static constexpr char const* DESCRIPTION =
-            "Prefix Doubling approach for parallel gpu computation as sequential "
+            "Prefix Doubling approach for parallel gpu computation as parallel "
             "approach";
 
 
