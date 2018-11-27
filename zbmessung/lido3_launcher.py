@@ -49,6 +49,7 @@ args = usage.parse_args()
 # Also: -Q/--quiet to surpress info messages
 batch_template = """#!/bin/bash -l
 #SBATCH --parsable
+#SBATCH --quiet
 #SBATCH --time={time}
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
@@ -85,10 +86,14 @@ def launch_job(cwd, cmd, output):
         maxcores=int(args.maxcores)
     )
 
-    if args.launch:
-        if args.print_sbatch:
-            print("Instance:\n---\n{}---".format(instance))
-        subprocess.run("sbatch", input=instance, encoding="utf-8")
+    if args.print_sbatch:
+        print("Instance:\n---\n{}---".format(instance))
+    jobid = subprocess.check_output("sbatch", input=instance, encoding="utf-8")
+    print("Started job with id {}".format(jobid))
+    if jobid != "":
+        return jobid
+    else:
+        return None
 
 #TODO: Move to external config file
 algos = [
@@ -170,15 +175,6 @@ if args.launch:
             output = outdir / Path("stdout-{}.txt".format(id))
             batch_output = outdir / Path("stat-{}.json".format(id))
 
-            index["output_files"].append({
-                "output" : str(output),
-                "stat_output" : str(batch_output),
-                "input": str(input_path),
-                "algo": algo,
-                "prefix": PREFIX,
-                "rep": N,
-            })
-
             cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
                 bench_out=batch_output,
                 prefix=PREFIX,
@@ -186,7 +182,18 @@ if args.launch:
                 algo=algo,
                 input_path=input_path
             )
-            launch_job(cwd, cmd, output)
+
+            jobid = launch_job(cwd, cmd, output)
+            index["output_files"].append({
+                "output" : str(output),
+                "stat_output" : str(batch_output),
+                "input": str(input_path),
+                "algo": algo,
+                "prefix": PREFIX,
+                "rep": N,
+                "jobid": jobid,
+            })
+
             counter += 1
     write_json(outdir / Path("index.json"), index)
     print("Started {} jobs!".format(counter))
