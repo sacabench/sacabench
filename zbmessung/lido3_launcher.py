@@ -6,13 +6,24 @@ from pathlib import Path
 import time
 import os
 import datetime
+import json
+
+def load_json(path):
+    with open(path, 'r') as f:
+        return json.loads(f.read())
+
+def write_json(path, data):
+    with open(path, 'w') as f:
+        f.write(json.dumps(data, sort_keys=True, indent=4))
 
 # ---------------------
 
 usage = argparse.ArgumentParser()
 
 usage.add_argument("--launch", action="store_true",
-                   help="Wether to actually start task, or merely gather results of previos runs.")
+                   help="Launch batch jobs.")
+usage.add_argument("--combine", type=Path,
+                   help="Gather results of a index.json file produced by a --launch.")
 usage.add_argument("--test-only", action="store_true",
                    help="Do not actually start the slurm tasks (do a dry run).")
 usage.add_argument("--print-sbatch", action="store_true",
@@ -54,14 +65,13 @@ def launch_job(cwd, cmd, output):
     if args.test_only:
         test_only = "#SBATCH --test-only\n"
 
-    output = os.path.expandvars(str(output))
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     instance = batch_template.format(
         time=args.estimated_time,
         jobname=jobname,
         test_only=test_only,
-        cwd=os.path.expandvars(str(cwd)),
+        cwd=cwd,
         output=output,
         cmd=cmd
     )
@@ -127,34 +137,66 @@ N=3
 PREFIX="200M"
 
 timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+WORK = Path(os.path.expandvars("$WORK"))
+HOME = Path(os.path.expandvars("$HOME"))
+sacapath = Path(os.path.expandvars(args.sacabench_directory))
 
 if args.launch:
+    counter = 0
     print("Starting jobs...")
+    index = {
+        "output_files" : [],
+    }
+    outdir = WORK / Path("batch_{}".format(timestamp))
+    for (j, dataset) in enumerate(datasets):
+        for (i, algo) in enumerate(algos):
 
-for (j, dataset) in enumerate(datasets):
-    for (i, algo) in enumerate(algos):
-        sacapath = Path(args.sacabench_directory)
+            cwd = sacapath / Path("build")
+            input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
 
-        outdir = Path("$WORK/batch_{}".format(timestamp))
-        cwd = sacapath / Path("build")
-        input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
+            id = "inp{:03}-algo{:03}".format(j, i)
 
-        id = "inp{:03}-algo{:03}".format(j, i)
+            output = outdir / Path("stdout-{}.txt".format(id))
+            batch_output = outdir / Path("stat-{}.json".format(id))
 
-        output = outdir / Path("stdout-{}.txt".format(id))
-        batch_output = outdir / Path("stat-{}.json".format(id))
+            index["output_files"].append({
+                "output" : str(output),
+                "stat_output" : str(batch_output),
+                "input": str(input_path),
+                "algo": algo,
+                "prefix": PREFIX,
+                "rep": N,
+            })
 
-        cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
-            bench_out=batch_output,
-            prefix=PREFIX,
-            rep=N,
-            algo=algo,
-            input_path=input_path
-        )
-        launch_job(cwd, cmd, output)
+            cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
+                bench_out=batch_output,
+                prefix=PREFIX,
+                rep=N,
+                algo=algo,
+                input_path=input_path
+            )
+            launch_job(cwd, cmd, output)
+            counter += 1
+    write_json(outdir / Path("index.json"), index)
+    print("Started {} jobs!".format(counter))
+    print("Current personal job queue:")
+    subprocess.run("squeue -u $USER", shell=True)
 
-if args.launch:
-    print("Started all jobs!")
-
-print("Current personal job queue:")
-subprocess.run("squeue -u $USER", shell=True)
+if args.combine:
+    dir = Path(args.combine)
+    index = load_json(dir / Path("index.json"))
+    file_map = {}
+    for output_file in index["output_files"]:
+        stat_output = Path(output_file["stat_output"])
+        algo = output_file["algo"]
+        input = Path(output_file["input"])
+        prefix = output_file["prefix"]
+        if not stat_output.is_file():
+            print("Missing data for {}, (no file {})".format((algo, input.name, prefix), stat_output.name))
+            continue
+        stat = load_json(stat_output)
+        if not input in file_map:
+            file_map[input] = []
+        file_map[input] += stat
+    for input in file_map:
+        write_json(dir / Path("results-{}.json".format(input.name)), file_map[input])
