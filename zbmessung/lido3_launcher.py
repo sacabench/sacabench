@@ -5,6 +5,7 @@ import argparse
 from pathlib import Path
 import time
 import os
+import datetime
 
 # ---------------------
 
@@ -19,8 +20,13 @@ usage.add_argument("--print-sbatch", action="store_true",
 
 time_default = "02:00:00"
 usage.add_argument("--estimated-time", default=time_default,
-                   help="Time estimate for the slurm job.  Defaults to \"{}\".".format(time_default))
+                   help="Time estimate for the slurm job. Defaults to \"{}\".".format(time_default))
 
+sacabench_default="$HOME/sacabench"
+usage.add_argument("--sacabench-directory", default=sacabench_default,
+                   help="Location where the sacabench directory is located. Defaults to \"{}\".".format(sacabench_default))
+
+args = usage.parse_args()
 # ---------------------
 
 batch_template = """#!/bin/bash -l
@@ -48,12 +54,15 @@ def launch_job(cwd, cmd, output):
     if args.test_only:
         test_only = "#SBATCH --test-only\n"
 
+    output = os.path.expandvars(str(output))
+    Path(output).parent.mkdir(parents=True, exist_ok=True)
+
     instance = batch_template.format(
         time=args.estimated_time,
         jobname=jobname,
         test_only=test_only,
-        cwd=str(cwd),
-        output=str(output),
+        cwd=os.path.expandvars(str(cwd)),
+        output=output,
         cmd=cmd
     )
 
@@ -96,16 +105,54 @@ algos = [
   "nzSufSort",
   "DC3-Lite",
 ]
+datasets=[
+    #"cc_commoncrawl.ascii.200MB",
+    #"combined.txt",
+    "pc_dblp.xml.200MB",
+    "pc_dna.200MB",
+    "pc_english.200MB",
+    "pc_proteins.200MB",
+    "pc_sources.200MB",
+    #"pcr_cere.200MB",
+    #"pcr_einstein.en.txt.200MB",
+    #"pcr_fib41.200MB",
+    #"pcr_kernel.200MB",
+    #"pcr_para.200MB",
+    #"pcr_rs.13.200MB",
+    #"pcr_tm29.200MB",
+    #"tagme_wiki-disamb30.200MB",
+    #"wiki_all_vital.txt.200MB",
+]
+N=3
+PREFIX="200M"
 
-args = usage.parse_args()
+timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
 if args.launch:
     print("Starting jobs...")
-for x in range(0, 10):
-    cwd = Path(os.environ["WORK"])
-    cmd = "echo test output {}".format(x)
-    output = cwd / Path("sacabench_batch_%j.dat")
-    launch_job(cwd, cmd, output)
+
+for (j, dataset) in enumerate(datasets):
+    for (i, algo) in enumerate(algos):
+        sacapath = Path(args.sacabench_directory)
+
+        outdir = Path("$WORK/batch_{}".format(timestamp))
+        cwd = sacapath / Path("build")
+        input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
+
+        id = "inp{:03}-algo{:03}".format(j, i)
+
+        output = outdir / Path("stdout-{}.txt".format(id))
+        batch_output = outdir / Path("stat-{}.json".format(id))
+
+        cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
+            bench_out=batch_output,
+            prefix=PREFIX,
+            rep=N,
+            algo=algo,
+            input_path=input_path
+        )
+        launch_job(cwd, cmd, output)
+
 if args.launch:
     print("Started all jobs!")
 
