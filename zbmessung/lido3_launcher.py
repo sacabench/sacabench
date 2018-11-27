@@ -114,6 +114,8 @@ algos = [
   "DivSufSort",
   "nzSufSort",
   "DC3-Lite",
+  "Osipov_parallel",
+  "Osipov_parallel_wp",
 ]
 datasets=[
     #"cc_commoncrawl.ascii.200MB",
