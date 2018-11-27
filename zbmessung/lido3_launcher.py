@@ -89,6 +89,7 @@ def launch_job(cwd, cmd, output):
     if args.print_sbatch:
         print("Instance:\n---\n{}---".format(instance))
     jobid = subprocess.check_output("sbatch", input=instance, encoding="utf-8")
+    jobid = jobid.strip()
     print("Started job with id {}".format(jobid))
     if jobid != "":
         return jobid
