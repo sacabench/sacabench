@@ -122,16 +122,16 @@ private:
                           << " elements took " << induced_time << "ns.\n";
             logger::get().time_spent_induction_testing(induced_time);
 
-            // if (blind::MIN_BLINDSORT_SIZE <= bucket.size() &&
-            //     bucket.size() < max_blind_sort_size) {
-            //     // If the bucket is small enough, we can use blind sorting.
-            //     size_t blind_time = duration(
-            //         [&]() { blind_sort(bucket, common_prefix_length); });
-            //     logger::get() << "using blind sort on " << bucket.size()
-            //                   << " elements took " << blind_time << "ns.\n";
-            //     logger::get().sorted_elements_blind(bucket.size());
-            //     logger::get().time_spent_blind(blind_time);
-            // } else {
+            if (blind::MIN_BLINDSORT_SIZE <= bucket.size() &&
+                bucket.size() < max_blind_sort_size) {
+                // If the bucket is small enough, we can use blind sorting.
+                size_t blind_time = duration(
+                    [&]() { blind_sort(bucket, common_prefix_length); });
+                logger::get() << "using blind sort on " << bucket.size()
+                              << " elements took " << blind_time << "ns.\n";
+                logger::get().sorted_elements_blind(bucket.size());
+                logger::get().time_spent_blind(blind_time);
+            } else {
                 // In this case, we use simple quicksort.
                 size_t quick_time = duration(
                     [&]() { simple_sort(bucket, common_prefix_length); });
@@ -139,7 +139,7 @@ private:
                               << " elements took " << quick_time << ".\n";
                 logger::get().sorted_elements_quick(bucket.size());
                 logger::get().time_spent_quick(quick_time);
-            // }
+            }
         } else {
             logger::get() << "induce-sorted.\n";
             logger::get().sorted_elements_induction(bucket.size());

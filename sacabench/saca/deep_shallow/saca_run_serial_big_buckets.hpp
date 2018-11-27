@@ -280,53 +280,59 @@ private:
         return false;
     }
 
-    inline void simple_induce_bucket(span<sa_index_type> big_bucket, span<sa_index_type> small_bucket) {
-        // Use suffix array with front bit as tag.
-        auto tagged_sa =
-            util::cast_to_tagged_numbers<sa_index_type, 1>(
-                big_bucket);
+    inline void copy_technique(const u_char alpha) {
+        static_assert(sizeof(u_char) == 1);
+        sa_index_type copy_start[256];
+        sa_index_type copy_end[256];
 
-        // std::cout << "big bucket: " << big_bucket << std::endl;
-        // std::cout << "small bucket: " << small_bucket << std::endl;
+        // Save initial bucket bounds for sub buckets.
+        for (size_t j = 0; j <= alphabet_size; ++j) {
+            copy_start[j] = bd.start_of_bucket(j, alpha);
+            copy_end[j] = bd.end_of_bucket(j, alpha) - sa_index_type(1);
 
-        // Walk through the bigger bucket
-        for (auto& si : tagged_sa) {
+            // std::cout << "j: " << j << " - " << copy_start[j] << ", " << copy_end[j] << std::endl;
+        }
 
-            // And search in small_bucket for the element.
-            for (auto si2 : small_bucket) {
+        // Here be magic.
+        if (alpha == 0) {
+            // std::cout << "gjwiogjweiog" << std::endl;
+            DCHECK(false);
+        }
 
-                // If the element from the small_bucket + 1 is the element from the big_bucket, tag it.
-                if (si2 + sa_index_type(1) == si) {
-                    // std::cout << "tag" << std::endl;
-                    si.template set<0>(true);
-                    break;
-                }
+        for (size_t j = bd.start_of_bucket(alpha, 0); j < copy_start[alpha]; ++j) {
+            const auto q = size_t(suffix_array[j]);
+            if (q == 0) continue;
+
+            const auto k = q - 1;
+            const auto c = input_text[k];
+            if (bd.size_of_bucket(c) > 0 && !bd.is_bucket_sorted(c)) {
+                // std::cout << "c: " << size_t(c) << ", k = " << k << ", copy_start[c] = " << copy_start[c] << std::endl;
+                suffix_array[ copy_start[c]++ ] = k;
+                logger::get().sorted_elements_simple_induction(1);
             }
         }
 
-        // Find small_bucket.size() many elements in the big_bucket, which are tagged.
-        size_t i = 0;
-        for(auto& si: tagged_sa) {
-
-            // If the current element is tagged.
-            if (si.template get<0>()) {
-
-                // The next sorted suffix in the small_bucket must be the element, but plus one.
-                small_bucket[i] = si - sa_index_type(1);
- 
-                ++i;
-                si.template set<0>(false);
-
-                if (i == small_bucket.size()) {
-                    // std::cout << "done" << std::endl;
-                    return;
-                }
+        for (size_t j = bd.end_of_bucket(alpha, alphabet_size) - sa_index_type(1); j > copy_end[alpha]; --j) {
+            const auto q = size_t(suffix_array[j]);
+            if (q == 0) continue;
+            
+            const auto k = q - 1;
+            const auto c = input_text[k];
+            if (bd.size_of_bucket(c) > 0 && !bd.is_bucket_sorted(c)) {
+                // std::cout << "c: " << size_t(c) << ", k = " << k << ", copy_end[c] = " << copy_end[c] << std::endl;
+                suffix_array[ copy_end[c]-- ] = k;
+                logger::get().sorted_elements_simple_induction(1);
             }
         }
 
-        DCHECK_EQ(i, small_bucket.size());
+        DCHECK_EQ(copy_start[alpha] - sa_index_type(1), copy_end[alpha]);
 
-        // std::cout << "done2" << std::endl;
+        for (size_t j = 0; j <= alphabet_size; ++j) {
+            bd.mark_bucket_sorted(j, alpha);
+            bd.mark_bucket_sorted(alpha, j);
+        }
+
+        // std::cout << "copy done" << std::endl;
     }
 
     inline void sort_big_bucket(const u_char alpha) {
@@ -354,33 +360,8 @@ private:
             ad.update_anchor(bucket[i], bucket_start + i);
         }
 
-        // std::cout << "big: " << std::endl;
-        // std::cout << bucket << std::endl;
-        // print_text(input_text, bucket);
-
-        // // We can now induce the sorting of every B_{x, alpha}-Bucket.
-        // // This is a simple loop, but we can force induce-sorting here.
-        // for(u_char i = 0; i <= alphabet_size; ++i) {
-        //     const auto s = bd.size_of_bucket(i, alpha);
-
-        //     if(s > 0 && !bd.is_bucket_sorted(i, alpha) && (double(s) / double(bucket.size())) >= BIG_BUCKETS_MIN_INDUCE_RATIO) {
-
-        //         const auto small_bucket_start = bd.start_of_bucket(i, alpha);
-        //         const auto small_bucket_end = bd.end_of_bucket(i, alpha);
-        //         const auto small_bucket = suffix_array.slice(small_bucket_start,small_bucket_end);
-
-        //         std::cout << "small: " << std::endl;
-        //         std::cout << small_bucket << std::endl;
-        //         print_text(input_text, small_bucket);
-
-        //         // Find suffices from [i, alpha]-bucket + 1 in this bucket.
-        //         // Since the suffix in this bucket are 1 character longer (in front),
-        //         // we need to add one to the suffixes in the sub-buckets in order to find it.
-        //         simple_induce_bucket(bucket, small_bucket);
-
-        //         bd.mark_bucket_sorted(i, alpha);
-        //     }
-        // }
+        // We can now induce the sorting of every B_{x, alpha}-Bucket.
+        copy_technique(alpha);
     }
 
     inline void sort_sub_bucket(const u_char alpha, const u_char beta) {
@@ -461,6 +442,8 @@ public:
             // Sort all buckets iteratively.
             sort_all_buckets();
         }
+
+        // std::cout << "SA: " << suffix_array << std::endl;
     }
 };
 } // namespace sacabench::deep_shallow

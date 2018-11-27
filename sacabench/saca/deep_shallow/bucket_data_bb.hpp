@@ -32,6 +32,7 @@ private:
     // It contains for every `alpha` a continous sequence of entries of bucket
     // information.
     util::kd_array<bucket_information<sa_index_type>, 2> bounds;
+
     sa_index_type end_of_last_bucket = 0;
 
     util::container<u_char> sorting_order;
