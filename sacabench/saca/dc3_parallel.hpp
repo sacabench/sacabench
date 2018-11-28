@@ -88,8 +88,6 @@ private:
         //          triplets_12_to_be_sorted.end());
         
         util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
-        
-        //std::sort(std::execution::par, triplets_12_to_be_sorted.begin(), triplets_12_to_be_sorted.end());  
 
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
             triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
@@ -149,7 +147,7 @@ private:
 
         DCHECK_MSG(isa_12.size() == t_12.size(),
                    "isa_12 must have the same length as t_12");
-
+        #pragma omp parallel for
         for (size_t i = 0; i < t_12.size(); ++i) {
             isa_12[t_12[i]] = i + 1;
         }
@@ -159,7 +157,6 @@ private:
     static void construct_sa_dc3(S& text, util::span<sa_index> out_sa,
                                  size_t alphabet_size) {
         (void)alphabet_size;
-        //#pragma omp parallel
             //-----------------------Phase 1------------------------------//
             //tdc::StatPhase dc3_parallel("Phase 1");
             // empty container which will contain indices of triplet
@@ -209,11 +206,11 @@ private:
 
                 sa_index one = 1;
                 // correct the order of sa_12 with result of recursion
-                //#pragma omp for
+                #pragma omp parallel for
                 for (size_t i = 0; i < end_of_mod_eq_1; ++i) {
                     triplets_12[span_t_12[i] - one] = 3 * i + 1;
                 }
-                //#pragma omp for
+                #pragma omp parallel for
                 for (size_t i = end_of_mod_eq_1; i < triplets_12.size(); ++i) {
                     triplets_12[span_t_12[i] - one] = 3 * (i - end_of_mod_eq_1) + 2;
                 }
@@ -228,6 +225,7 @@ private:
             induce_sa_dc<C, sa_index>(text, span_t_12, sa_0);
 
             //-----------------------Phase 3------------------------------//
+            /*
             //dc3_parallel.split("Phase 3");
             // parallel merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
             if constexpr (rec) {
@@ -239,10 +237,9 @@ private:
                 merge_sa_dc_parallel<const sacabench::util::character, sa_index>(
                     sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
                     span_t_12, out_sa);
-            }
+            }*/
             
             //sequentiel merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
-            /*
             if constexpr (rec) {
 
             merge_sa_dc<const sa_index, sa_index>(
@@ -259,7 +256,6 @@ private:
                     span_t_12, out_sa, std::less<sacabench::util::string_span>(),
                     [](auto a, auto b, auto c) { return get_substring(a, b, c); });
             }
-            */
     }
 
     // implementation of get_substring method with type of character not in
@@ -571,18 +567,23 @@ private:
         size_t counter_mod_eq_1 = sa_0_size - start_sa_0;
         size_t counter_mod_eq_2 = end_of_mod_eq_1;
                 
-        for(size_t i = start_sa_0; i < sa_0_size; ++i){
-            sa[counter_mod_eq_0++] = sa_0[i];
-        }
-
-        for(size_t i = start_sa_12; i < sa_12_size; ++i){
-            if((sa_12[i] % 3)  == 1){
-                sa[counter_mod_eq_1++] = sa_12[i];
-            }else{
-                sa[counter_mod_eq_2++] = sa_12[i];
+        #pragma omp parallel
+        #pragma omp single
+        {
+            #pragma omp task shared(sa, sa_0, sa_12)
+            for(size_t i = start_sa_0; i < sa_0_size; ++i){
+                sa[counter_mod_eq_0++] = sa_0[i];
             }
+            #pragma omp task shared(sa, sa_0, sa_12)
+            for(size_t i = start_sa_12; i < sa_12_size; ++i){
+                if((sa_12[i] % 3)  == 1){
+                    sa[counter_mod_eq_1++] = sa_12[i];
+                }else{
+                    sa[counter_mod_eq_2++] = sa_12[i];
+                }
+            }
+            #pragma omp taskwait
         }
-        
         auto comp_tuple = [&](size_t i, size_t j) {
             auto tuple_i = sacabench::util::span<C>(&text[i], 3);
             auto tuple_j = sacabench::util::span<C>(&text[j], 3);
@@ -622,28 +623,30 @@ private:
             }else ++counter;
         }*/
         
-        
+        /*
         std::thread t1(merge_sa_sort<sa_index, X, I, S>, sa, isa_12, duplicates, 0, sa.size()/2);
         std::thread t2(merge_sa_sort<sa_index, X, I, S>, sa, isa_12, duplicates, sa.size()/2,   sa.size()-1);
         
         t1.join();
         t2.join();
+        */
         
+        size_t number_of_threads = omp_get_max_threads();
+        size_t items_per_thread = sa.size()/number_of_threads;
         
-         
-        /*#pragma omp parallel
+        #pragma omp parallel
         #pragma omp single
         {
-            #pragma omp task shared(sa, isa_12, duplicates)
-                merge_sa_sort<sa_index>(sa, isa_12, duplicates, 0, sa.size()/2);
-            #pragma omp task shared(sa, isa_12, duplicates)
-                merge_sa_sort<sa_index>(sa, isa_12, duplicates, sa.size()/2,sa.size()-1);
+            for(size_t i = 0; i < number_of_threads; ++i){
+                #pragma omp task shared(sa, isa_12, duplicates)
+                merge_sa_sort<sa_index>(sa, isa_12, duplicates, i * items_per_thread, (i+1) * items_per_thread);
+            }
             #pragma omp taskwait
-        }*/
+        }
     }
        
     template <typename sa_index, typename X, typename I, typename S>
-    static void merge_sa_sort(X sa, const I isa_12, const S& duplicates, size_t start, const size_t end) {
+    static void merge_sa_sort(X& sa, const I& isa_12, const S& duplicates, size_t start, const size_t end) {
         
         sa_index zero = 0;
         sa_index one = 1;
