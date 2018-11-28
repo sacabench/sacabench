@@ -136,22 +136,7 @@ namespace sacabench::osipov {
                 }
             }
         }
-
-        struct split_size_range {
-            uint64_t start;
-            uint64_t end;
-        };
-
-        static split_size_range split_size(size_t size, size_t thread_rank, size_t threads) {
-            const uint64_t offset = ((size / threads) * thread_rank)
-                + std::min<uint64_t>(thread_rank, size % threads);
-
-            const uint64_t local_size = (size / threads)
-                + ((thread_rank < size % threads) ? 1 : 0);
-
-            return split_size_range { offset, offset + local_size };
-        }
-
+        
         // Sequential variant of initializing the isa
         template <typename sa_index, typename compare_func>
         static void initialize_isa(util::span<sa_index> sa,
