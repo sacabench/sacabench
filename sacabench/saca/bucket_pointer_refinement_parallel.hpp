@@ -15,6 +15,7 @@
 #include <util/compare.hpp>
 #include <util/container.hpp>
 #include <util/span.hpp>
+#include <omp.h>
 #include <util/string.hpp>
 #include <util/sort/ips4o.hpp>
 
@@ -105,9 +106,6 @@ public:
                             // if the bucket has at least 1 element
                             span<sa_index> sub_bucket = sa.slice(
                                 buckets[bucket_idx], buckets[bucket_idx + 1]);
-                            // sa_index offset =
-                            // find_offset<sa_index>(bucketsort_depth,
-                            // bucketsort_depth, bptr, sub_bucket);
                             sa_index offset = bucketsort_depth;
                             refine_single_bucket<sa_index>(
                                 offset, bucketsort_depth, bptr,
@@ -127,85 +125,54 @@ public:
 
         // insert positions on next left scan (inclusive index)
         // "leftmost_undetermined"
-        auto lmu = util::make_container<size_t>(alph_size);
+        auto lmu = util::make_container<size_t>(alph_size * alph_size);
         // insert positions on next right scan (exclusive index)
         // "leftmost_undetermined"
-        auto rmu = util::make_container<size_t>(alph_size);
+        auto rmu = util::make_container<size_t>(alph_size * alph_size);
 
         // 2nd level insert positions on next left scan (inclusive index)
-        auto sub_lmu = util::make_container<size_t>(alph_size * alph_size);
+        auto sub_lmu = util::make_container<size_t>(alph_size * alph_size * alph_size);
         // 2nd level insert positions on next right scan (exclusive index)
-        auto sub_rmu = util::make_container<size_t>(alph_size * alph_size);
+        auto sub_rmu = util::make_container<size_t>(alph_size * alph_size * alph_size);
 
-        size_t left_scan_idx, right_scan_idx;
-
-        sa_index suffix_idx;
-
-        size_t bucket_idx;
-
-        // predecessor and pre-predecessor characters of
-        util::character c_pre, c_pre_pre;
+        // scan indexes for all 1st level buckets
+        auto left_scan_idx = util::make_container<size_t>(alph_size);
+        auto right_scan_idx = util::make_container<size_t>(alph_size);
 
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
+
+            sa_index suffix_idx;
+
+            size_t bucket_idx;
+
+            // predecessor and pre-predecessor characters of
+            util::character c_pre, c_pre_pre;
 
             /*
              * initialize undetermined pointers
              */
 
             for (c_pre = c_cur; c_pre < alph_size; ++c_pre) {
-                lmu[c_pre] =
-                    buckets[c_pre * in_l1_bucket + c_cur * in_l2_bucket];
-                rmu[c_pre] =
-                    buckets[c_pre * in_l1_bucket + (c_cur + 1) * in_l2_bucket];
-                for (c_pre_pre = c_cur + 1; c_pre_pre < alph_size;
-                     ++c_pre_pre) {
+                lmu[c_cur * alph_size + c_pre] = buckets[c_pre * in_l1_bucket + c_cur * in_l2_bucket];
+                rmu[c_cur * alph_size + c_pre] = buckets[c_pre * in_l1_bucket + (c_cur + 1) * in_l2_bucket];
+                for (c_pre_pre = c_cur + 1; c_pre_pre < alph_size; ++c_pre_pre) {
                     bucket_idx = c_pre_pre * alph_size + c_pre;
-                    sub_lmu[bucket_idx] =
-                        buckets[c_pre_pre * in_l1_bucket +
-                                c_pre * in_l2_bucket + c_cur * in_l3_bucket];
-                    sub_rmu[bucket_idx] = buckets[c_pre_pre * in_l1_bucket +
-                                                  c_pre * in_l2_bucket +
-                                                  (c_cur + 1) * in_l3_bucket];
+                    sub_lmu[c_cur * alph_size + bucket_idx] = buckets[c_pre_pre * in_l1_bucket + c_pre * in_l2_bucket + c_cur * in_l3_bucket];
+                    sub_rmu[c_cur * alph_size + bucket_idx] = buckets[c_pre_pre * in_l1_bucket + c_pre * in_l2_bucket + (c_cur + 1) * in_l3_bucket];
                 }
-            }
-
-            /*
-             * use copy technique for left buckets
-             */
-
-            left_scan_idx = buckets[c_cur * in_l1_bucket];
-            while (left_scan_idx < lmu[c_cur]) {
-                if ((suffix_idx = sa[left_scan_idx])) {
-                    c_pre = input[--suffix_idx];
-                    if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
-                        sa[lmu[c_pre]++] = suffix_idx;
-                    }
-                    // second level copy
-                    if (suffix_idx) {
-                        c_pre_pre = input[--suffix_idx];
-                        if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
-                            // bucket of c_pre_pre is not yet sorted
-                            bucket_idx = c_pre_pre * alph_size + c_pre;
-                            if (sub_lmu[bucket_idx] < sub_rmu[bucket_idx]) {
-                                sa[sub_lmu[bucket_idx]++] = suffix_idx;
-                            }
-                        }
-                    }
-                }
-                ++left_scan_idx;
             }
 
             /*
              * use copy technique for right buckets
              */
 
-            right_scan_idx = buckets[(c_cur + 1) * in_l1_bucket];
-            while (left_scan_idx < right_scan_idx) {
-                --right_scan_idx;
-                if ((suffix_idx = sa[right_scan_idx])) {
+            right_scan_idx[c_cur] = buckets[(c_cur + 1) * in_l1_bucket];
+            while (rmu[c_cur * alph_size + c_cur] < right_scan_idx[c_cur]) {
+                --right_scan_idx[c_cur];
+                if ((suffix_idx = sa[right_scan_idx[c_cur]])) {
                     c_pre = input[--suffix_idx];
                     if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
-                        sa[--rmu[c_pre]] = suffix_idx;
+                        sa[--rmu[c_cur * alph_size + c_pre]] = suffix_idx;
                     }
                     // second level copy
                     if (suffix_idx) {
@@ -213,12 +180,50 @@ public:
                         if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
                             // bucket of c_pre_pre not yet sorted
                             bucket_idx = c_pre_pre * alph_size + c_pre;
-                            if (sub_rmu[bucket_idx] > sub_lmu[bucket_idx]) {
-                                sa[--sub_rmu[bucket_idx]] = suffix_idx;
+                            if (sub_rmu[c_cur * alph_size + bucket_idx] > sub_lmu[c_cur * alph_size + bucket_idx]) {
+                                sa[--sub_rmu[c_cur * alph_size + bucket_idx]] = suffix_idx;
                             }
                         }
                     }
                 }
+            }
+            /*
+        }
+
+        for (c_cur = 0; c_cur < alph_size; ++c_cur) {
+
+            sa_index suffix_idx;
+
+            size_t bucket_idx;
+
+            // predecessor and pre-predecessor characters of
+            util::character c_pre, c_pre_pre;
+            */
+
+            /*
+             * use copy technique for left buckets
+             */
+
+            left_scan_idx[c_cur] = buckets[c_cur * in_l1_bucket];
+            while (left_scan_idx[c_cur] < right_scan_idx[c_cur]) {
+                if ((suffix_idx = sa[left_scan_idx[c_cur]])) {
+                    c_pre = input[--suffix_idx];
+                    if (c_pre >= c_cur) { // bucket of c_pre not yet sorted
+                        sa[lmu[c_cur * alph_size + c_pre]++] = suffix_idx;
+                    }
+                    // second level copy
+                    if (suffix_idx) {
+                        c_pre_pre = input[--suffix_idx];
+                        if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
+                            // bucket of c_pre_pre is not yet sorted
+                            bucket_idx = c_pre_pre * alph_size + c_pre;
+                            if (sub_lmu[c_cur * alph_size + bucket_idx] < sub_rmu[c_cur * alph_size + bucket_idx]) {
+                                sa[sub_lmu[c_cur * alph_size + bucket_idx]++] = suffix_idx;
+                            }
+                        }
+                    }
+                }
+                ++left_scan_idx[c_cur];
             }
         }
     }
