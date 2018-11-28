@@ -37,17 +37,29 @@ sacabench_default="$HOME/sacabench"
 usage.add_argument("--sacabench-directory", default=sacabench_default,
                    help="Location where the sacabench directory is located. Defaults to \"{}\".".format(sacabench_default))
 
-maxcores_default=20  # up to 48
-usage.add_argument("--maxcores", default=maxcores_default,
-                   type=int,
-                   help="Maximum amount of cores requested. Sensible values on lido3 are 20 and 48. Defaults to {}.".format(maxcores_default))
+
+cluster_configs = {
+    "20cores": {
+        "cores": 20,
+        "mem": "60G",
+        "constraint": "xeon_e52640v4",
+    },
+    "48cores": {
+        "cores": 48,
+        "mem": "250G",
+        "constraint": "cquad01",
+    },
+}
+cluster_config_default='20cores'
+usage.add_argument("--cluster-config", default=cluster_config_default,
+                   help="Maximum amount of cores requested. Defaults to {}.".format(cluster_config_default), choices = list(iter(cluster_configs)))
 
 args = usage.parse_args()
 # ---------------------
 
 # Note: --parsable means `jobid[;clustername]`
 # Also: -Q/--quiet to surpress info messages
-batch_template = """#!/bin/bash -l
+batch_template = """#!/bin/bash
 #SBATCH --parsable
 #SBATCH --quiet
 #SBATCH --time={time}
@@ -55,11 +67,13 @@ batch_template = """#!/bin/bash -l
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task={maxcores}
 #SBATCH --partition=short
-#SBATCH --constraint=cquad01
+#SBATCH --constraint={constraint}
 #SBATCH --output={output}
-#SBATCH --mem=250000
+#SBATCH --mem={mem}
 #SBATCH --exclusive
 #SBATCH --job-name={jobname}
+#SBATCH --export=ALL
+#SBATCH --mail-type=FAIL
 {test_only}
 cd {cwd}
 {cmd}
@@ -76,6 +90,8 @@ def launch_job(cwd, cmd, output):
 
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
+    clstcfg = cluster_configs[args.cluster_config]
+
     instance = batch_template.format(
         time=args.estimated_time,
         jobname=jobname,
@@ -83,7 +99,9 @@ def launch_job(cwd, cmd, output):
         cwd=cwd,
         output=output,
         cmd=cmd,
-        maxcores=int(args.maxcores)
+        maxcores=clstcfg["cores"],
+        mem=clstcfg["mem"],
+        constraint=clstcfg["constraint"],
     )
 
     if args.print_sbatch:
