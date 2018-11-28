@@ -6,7 +6,6 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/sort/stable_sort.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/sort/ips4o.hpp>
 #include <util/bits.hpp>
@@ -244,7 +243,7 @@ namespace sacabench::osipov {
                     tuples = tuples.slice(0, s);
                     //std::cout << "Sorting tuples." << std::endl;
                     cmp = compare_tuples<sa_index>(tuples);
-                    util::sort::stable_sort(tuples, cmp);
+                    util::sort::std_par_stable_sort(tuples, cmp);
                     sa = sa.slice(0, s);
                     //std::cout << "Writing new order to sa." << std::endl;
                     for(size_t i=0; i < s; ++i) {
