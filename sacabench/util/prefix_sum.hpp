@@ -79,9 +79,9 @@ size_t next_power_of_two(size_t v) {
 }
 
 // Needed for down pass
-size_t left_child(size_t parent) { return 2*parent; }
-size_t right_child(size_t parent) { return 2*parent+1; }
-size_t parent_of_child(size_t child) { return child/2; }
+inline size_t left_child(size_t parent) { return 2*parent; }
+inline size_t right_child(size_t parent) { return 2*parent+1; }
+inline size_t parent_of_child(size_t child) { return child/2; }
 
 
 
@@ -95,15 +95,16 @@ void par_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
     //std::cout << "tree size: " << tree.size() << std::endl;
 
     // copy values of in into last level of tree
-    #pragma omp parallel for
+    //#pragma omp parallel for schedule(dynamic, 2048)
+    #pragma omp simd
     for(size_t i=0; i < in.size(); ++i) {
         tree[tree_size + i] = in[i];
     }
 
     // Up-Pass
-    for(size_t offset = tree_size; offset != 1; offset /= 2) {
 
-        #pragma omp parallel for
+    for(size_t offset = tree_size; offset != 1; offset /= 2) {
+        #pragma omp parallel for schedule(dynamic, 2048) shared(tree)
         for(size_t i = 0; i < std::min(offset, corrected_len); i += 2) {
             const size_t j = offset + i;
             const size_t k = offset + i + 1;
@@ -113,13 +114,12 @@ void par_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
 
     // First element needs to be set to identity
     tree[1] = identity;
-
     // Downpass
     for(size_t offset = 1; offset != tree_size; offset *= 2) {
 
         const size_t layer_size = offset == tree_size / 2 ? corrected_len / 2 : offset;
 
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic, 2048) shared(tree)
         for(size_t i = 0; i < layer_size; i++) {
             const size_t j = layer_size - i - 1;
 
