@@ -22,14 +22,14 @@
 #include <tudocomp_stat/StatPhase.hpp>
 
 
-namespace sacabench::dc3_lite {
+namespace sacabench::dc3_lite_par {
 
-    class dc3_lite {
+    class dc3_lite_par {
         public:    
             static constexpr size_t EXTRA_SENTINELS = 0;
-            static constexpr char const* NAME = "DC3-Lite";
+            static constexpr char const* NAME = "DC3-Lite-Parallel";
             static constexpr char const* DESCRIPTION =
-                "Lightweight variant of DC3 by G. Nong and S. Zhang";
+                "Parallelized lightweight variant of DC3 by G. Nong and S. Zhang";
 
 
             template<typename sa_index>
@@ -72,6 +72,7 @@ namespace sacabench::dc3_lite {
                 tdc::StatPhase phase("Sort triplets");
                 
                 // positions of text to be sorted
+                #pragma omp parallel for
                 for (size_t i = 0; i < text.size(); ++i) { u[i] = text.size()-i-1; }
                 
                 auto key_function = [&](size_t i, size_t p) {
@@ -105,6 +106,7 @@ namespace sacabench::dc3_lite {
                                   priority to simulate dummy tuple */
                 };
                 
+                #pragma omp parallel for
                 for (size_t i = 0; i < out_sa.size(); ++i) {
                     out_sa[i] = 0;
                 }
@@ -232,6 +234,7 @@ namespace sacabench::dc3_lite {
                     auto sa_12 = u.slice(0, text_1_size);
                     
                     // calculate sa out of isa
+                    #pragma omp parallel for
                     for (size_t i = 0; i < sa_12.size(); ++i) {
                         sa_12[t_12[i]-(sa_index)1] = i;
                     }
@@ -240,6 +243,7 @@ namespace sacabench::dc3_lite {
                 }
                 
                 //Calculate ISA_12
+                #pragma omp parallel for
                 for (size_t i = 0; i < u_1.size(); ++i) { u_1[v_1[i]] = i; }
                 
                 //Induce SA_0 with SA_12
@@ -249,11 +253,13 @@ namespace sacabench::dc3_lite {
                 util::induce_sa_dc<sa_index>(text_0, u_1, v_0);
                 
                 /* positions in sa_0 are multiplied by 3 so divide by 3 */
+                #pragma omp parallel for
                 for (size_t i = 0; i < v_0.size(); ++i) { v_0[i] = v_0[i]/3; }
                 
                 /* calculate isa_0 into u_0 */
                 phase.split("Calculate ISA_0");
                 auto u_0 = util::span<sa_index>(u).slice(0, start_pos_of_0);
+                #pragma omp parallel for
                 for (size_t i = 0; i < u_0.size(); ++i) { u_0[v_0[i]] = i; }
                 
                 /* merge sa_0 and sa_12 by calculating positions in merged sa */
@@ -303,10 +309,13 @@ namespace sacabench::dc3_lite {
                 }
                 
                 /* update isa_0 and isa_12 with positions in sa_0 and sa_12 to calculate isa_012 */
+                #pragma omp parallel for
                 for (size_t i = 0; i < u_0.size(); ++i) { u_0[i] = v_0[u_0[i]]; }
+                #pragma omp parallel for
                 for (size_t i = 0; i < u_1.size(); ++i) { u_1[i] = v_1[u_1[i]]; }
                 
                 /* compute sa_012 by traversing isa_012 */
+                #pragma omp parallel for
                 for (size_t i = 0; i < out_sa.size(); ++i) { out_sa[u[i]] = i; }
                 
                 /* compute sa by equation */
@@ -314,6 +323,7 @@ namespace sacabench::dc3_lite {
                 size_t m_0 = text_0.size();
                 size_t m_1 = text_0.size()+text_1.size()/2+(text_1.size() % 2 != 0);
                 
+                #pragma omp parallel for
                 for (size_t i = 0; i < out_sa.size(); ++i) {
                     if (0u <= out_sa[i] && out_sa[i] < m_0) { out_sa[i] = 3*out_sa[i]; }
                     else if (m_0 <= out_sa[i] && out_sa[i] < m_1) {
@@ -336,5 +346,5 @@ namespace sacabench::dc3_lite {
                     return util::span<C>(&text[pos], text.size()-pos); 
                 }
             }
-    }; // class dc3_lite
-} // namespace sacabench::dc3_lite
+    }; // class dc3_lite_par
+} // namespace sacabench::dc3_lite_par
