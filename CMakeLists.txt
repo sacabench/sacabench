@@ -42,6 +42,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
+message("Build type: ${CMAKE_BUILD_TYPE}")
+
 option(SACA_WERROR "Turn GCC warnings into errors")
 
 IF (WIN32)
