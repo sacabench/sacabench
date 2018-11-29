@@ -223,6 +223,7 @@ public:
                             }
                         }
                     }
+                    */
                 }
                 ++left_scan_idx[c_cur];
             }
