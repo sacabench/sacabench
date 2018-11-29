@@ -90,11 +90,12 @@ public:
         const size_t in_l2_bucket = in_l1_bucket / alph_size;
         const size_t in_l3_bucket = in_l2_bucket / alph_size;
 
-        util::character c_cur, c_suc, c_suc_suc;
+        std::size_t c_cur, c_suc, c_suc_suc; // characters must be size_t for parallelization
 
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
             for (c_suc = c_cur + 1; c_suc < alph_size; ++c_suc) {
-                for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) {
+                //for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) { // use this line for 2nd level inducing
+                for (c_suc_suc = 0; c_suc_suc < alph_size; ++c_suc_suc) {
                     const size_t bucket_idx_begin = c_cur * in_l1_bucket +
                                                     c_suc * in_l2_bucket +
                                                     c_suc_suc * in_l3_bucket;
@@ -139,6 +140,7 @@ public:
         auto left_scan_idx = util::make_container<size_t>(alph_size);
         auto right_scan_idx = util::make_container<size_t>(alph_size);
 
+#pragma omp parallel for
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
 
             sa_index suffix_idx;
@@ -175,6 +177,7 @@ public:
                         sa[--rmu[c_cur * alph_size + c_pre]] = suffix_idx;
                     }
                     // second level copy
+                    /*
                     if (suffix_idx) {
                         c_pre_pre = input[--suffix_idx];
                         if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
@@ -185,9 +188,9 @@ public:
                             }
                         }
                     }
+                    */
                 }
             }
-            /*
         }
 
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
@@ -198,7 +201,6 @@ public:
 
             // predecessor and pre-predecessor characters of
             util::character c_pre, c_pre_pre;
-            */
 
             /*
              * use copy technique for left buckets
@@ -212,6 +214,7 @@ public:
                         sa[lmu[c_cur * alph_size + c_pre]++] = suffix_idx;
                     }
                     // second level copy
+                    /*
                     if (suffix_idx) {
                         c_pre_pre = input[--suffix_idx];
                         if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
@@ -222,6 +225,7 @@ public:
                             }
                         }
                     }
+                    */
                 }
                 ++left_scan_idx[c_cur];
             }
