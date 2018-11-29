@@ -94,7 +94,7 @@ public:
 
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
             for (c_suc = c_cur + 1; c_suc < alph_size; ++c_suc) {
-                //for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) { // use this line for 2nd level inducing
+                // for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) { // use this line for 2nd level inducing
                 for (c_suc_suc = 0; c_suc_suc < alph_size; ++c_suc_suc) {
                     const size_t bucket_idx_begin = c_cur * in_l1_bucket +
                                                     c_suc * in_l2_bucket +
@@ -177,6 +177,7 @@ public:
                         sa[--rmu[c_cur * alph_size + c_pre]] = suffix_idx;
                     }
                     // second level copy
+                    /*
                     if (suffix_idx) {
                         c_pre_pre = input[--suffix_idx];
                         if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
@@ -187,6 +188,7 @@ public:
                             }
                         }
                     }
+                    */
                 }
             }
         }
