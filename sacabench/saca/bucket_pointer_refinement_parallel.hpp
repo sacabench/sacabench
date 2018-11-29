@@ -145,10 +145,10 @@ public:
 
             sa_index suffix_idx;
 
-            size_t bucket_idx;
+            // size_t bucket_idx;
 
             // predecessor and pre-predecessor characters of
-            util::character c_pre, c_pre_pre;
+            util::character c_pre; //, c_pre_pre;
 
             /*
              * initialize undetermined pointers
@@ -157,11 +157,13 @@ public:
             for (c_pre = c_cur; c_pre < alph_size; ++c_pre) {
                 lmu[c_cur * alph_size + c_pre] = buckets[c_pre * in_l1_bucket + c_cur * in_l2_bucket];
                 rmu[c_cur * alph_size + c_pre] = buckets[c_pre * in_l1_bucket + (c_cur + 1) * in_l2_bucket];
+                /*
                 for (c_pre_pre = c_cur + 1; c_pre_pre < alph_size; ++c_pre_pre) {
                     bucket_idx = c_pre_pre * alph_size + c_pre;
                     sub_lmu[c_cur * alph_size + bucket_idx] = buckets[c_pre_pre * in_l1_bucket + c_pre * in_l2_bucket + c_cur * in_l3_bucket];
                     sub_rmu[c_cur * alph_size + bucket_idx] = buckets[c_pre_pre * in_l1_bucket + c_pre * in_l2_bucket + (c_cur + 1) * in_l3_bucket];
                 }
+                */
             }
 
             /*
@@ -197,10 +199,10 @@ public:
 
             sa_index suffix_idx;
 
-            size_t bucket_idx;
+            //size_t bucket_idx;
 
             // predecessor and pre-predecessor characters of
-            util::character c_pre, c_pre_pre;
+            util::character c_pre; //, c_pre_pre;
 
             /*
              * use copy technique for left buckets
