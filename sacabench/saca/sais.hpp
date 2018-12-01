@@ -11,7 +11,7 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
-
+#include <vector>
 #include <tudocomp_stat/StatPhase.hpp>
 
 namespace sacabench::sais {
@@ -26,12 +26,12 @@ public:
     static const size_t L_Type = 0;
     static const size_t S_Type = 1;
 
-    static bool is_LMS(span<bool> t, ssize position) {
+    static bool is_LMS(std::vector<bool>& t, ssize position) {
         return (position > 0) && (t[position] == S_Type && t[position - 1] == L_Type);
     }
 
     template <typename T>
-    static void compute_types(span<bool> t, T s) {
+    static void compute_types(std::vector<bool>& t, T s) {
        t[s.size() - 1] = S_Type;
 
        for (ssize i = s.size() - 2; i >= 0; i--) {
@@ -67,7 +67,7 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void induce_L_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
+    static void induce_L_Types(T s, span<sa_index> buckets, std::vector<bool>& t, size_t K,
                                bool end, span<sa_index> SA) {
         generate_buckets<T, sa_index>(s, buckets, K, end);
         for (size_t i = 0; i < s.size(); i++) {
@@ -83,7 +83,7 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void induce_S_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
+    static void induce_S_Types(T s, span<sa_index> buckets, std::vector<bool>& t, size_t K,
                                bool end, span<sa_index> SA) {
         generate_buckets<T, sa_index>(s, buckets, K, end);
         for (ssize i = s.size() - 1; i >= 0; i--) {
@@ -100,10 +100,10 @@ public:
 
         container<sa_index> buckets = make_container<sa_index>(K);
         // bit vector for now and on the fly computation later
-        container<bool> t = make_container<bool>(SA.size());
+        std::vector<bool> t(s.size());
 
         compute_types(t, s);
-        
+
         generate_buckets<T, sa_index>(s, buckets, K, true);
         // Initialize each entry in SA with -1
         for (size_t i = 0; i < s.size(); i++) {
@@ -116,11 +116,11 @@ public:
                 SA[--buckets[s.at(i)]] = i;
             }
         }
-        
+
         // sort LMS substrings
         induce_L_Types<T, sa_index>(s, buckets, t, K, false, SA);
         induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
-        
+
         // because we have at most n/2 LMS, we can store the sorted indices in
         // the first half of the SA
         ssize n1 = 0;
@@ -225,3 +225,4 @@ public:
     }
 };
 } // namespace sacabench::sais
+
