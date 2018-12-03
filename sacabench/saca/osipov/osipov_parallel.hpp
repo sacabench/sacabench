@@ -202,35 +202,26 @@ private:
 
         #pragma omp parallel for 
         for (size_t index = 1; index < sorted_tuples.size(); ++index) {
-            if (std::get<1>(sorted_tuples[index - 1]) ==
-                std::get<1>(sorted_tuples[index])) {
-                aux[index] = 0;
-            } else {
-                aux[index] = index;
-            }
+            bool different = (std::get<1>(sorted_tuples[index - 1]) != std::get<1>(sorted_tuples[index]));
+            aux[index] = different * index;
         }
 
         // Maybe TODO: replace with parallel
-        prefix_sum(aux, [](sa_index a, sa_index b) { return (a < b) ? b : a; });
+        prefix_sum(aux, [](sa_index a, sa_index b) { return util::max(a,b); });
 
         aux[0] = std::get<1>(sorted_tuples[0]);
 
         #pragma omp parallel for
         for (sa_index index = 1; index < sorted_tuples.size(); ++index) {
             // New Group
-            if (std::get<1>(sorted_tuples[index - sa_index(1)]) !=
+            bool new_group = (std::get<1>(sorted_tuples[index - sa_index(1)]) !=
                     std::get<1>(sorted_tuples[index]) ||
                 std::get<2>(sorted_tuples[index - sa_index(1)]) !=
-                    std::get<2>(sorted_tuples[index])) {
-
-                aux[index] =
-                    (std::get<1>(sorted_tuples[index])) + index - aux[index];
-            } else {
-                aux[index] = 0;
-            }
+                    std::get<2>(sorted_tuples[index]));
+            aux[index] = new_group * ((std::get<1>(sorted_tuples[index])) + index - aux[index]);
         }
         // Maybe TODO: replace with parallel
-        prefix_sum(aux, [](sa_index a, sa_index b) { return (a < b) ? b : a; });
+        prefix_sum(aux, [](sa_index a, sa_index b) { return util::max(a,b); });
     }
 
     template <typename sa_index>
