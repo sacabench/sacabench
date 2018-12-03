@@ -210,6 +210,7 @@ namespace sacabench::osipov {
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
             compare_tuples<sa_index> cmp;
             while(size > 0) {
+                aux = util::span<sa_index>(aux_container).slice(0,size);
                 phase.split("Iteration");
 
                 //std::cout << "Elements left: " << size << std::endl;
