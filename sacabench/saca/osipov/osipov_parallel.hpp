@@ -311,6 +311,7 @@ private:
                 sa = sa.slice(0, s);
                 update_ranks_prefixsum(tuples, aux);
                 // std::cout << "Writing new order to sa." << std::endl;
+                #pragma omp parallel for
                 for (size_t i = 0; i < s; ++i) {
                     sa[i] = std::get<0>(tuples[i]);
                 }
@@ -334,6 +335,7 @@ private:
                     }
                 }
                 // std::cout << "Setting new ranks in isa" << std::endl;
+                #pragma omp parallel for
                 for (size_t i = 0; i < s; ++i) {
                     // std::cout << "Assigning suffix " <<
                     // std::get<0>(tuples[i])
