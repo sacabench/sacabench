@@ -295,6 +295,7 @@ namespace sacabench::osipov {
             auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(tuple_container);
             compare_tuples<sa_index> cmp;
             while(size > 0) {
+                aux = util::span<sa_index>(aux_container).slice(0,size);
                 phase.split("Iteration");
                 tuples = tuple_container.slice(0, size);
 
