@@ -209,9 +209,9 @@ namespace sacabench::osipov {
                 size_t size, sa_index h, util::span<sa_index> sa,
                 util::span<sa_index> isa, util::span<sa_index> aux) {
             size_t s = 0; size_t index;
-            #pragma omp parallel
+            #pragma omp parallel shared(aux) private(index)
             {
-                #pragma omp for shared(sa, isa, aux) private(index) reduction(+:s)
+                #pragma omp for reduction(+:s)
                 for(size_t i=0; i < size; ++i) {
                     // Reset each value in aux to 0 (if tuples created: will be
                     // increased)
@@ -232,8 +232,26 @@ namespace sacabench::osipov {
                     s += aux[i];
                 }
                 //aux has been set, compute prefix left_sum
-                #pragma omp master{
-                    //util::seq_prefix_sum();
+                #pragma omp master
+                {
+                    std::cout << "Aux without prefix sum: " << aux << std::endl;
+                    util::seq_prefix_sum<sa_index, util::sum_fct<sa_index>>(aux, aux, false, util::sum_fct<sa_index>(), 0);
+                    std::cout << "Aux with prefix sum: " << aux << std::endl;
+                }
+                #pragma omp for
+                for(size_t i=0; i < size; ++i) {
+                    if(sa[i] >= h) {
+                        index = sa[i]-h;
+                        tuples[aux[i]++] = std::make_tuple(index, isa[index], isa[sa[i]]);
+                    }
+                    index = sa[i];
+                    if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
+                        index >= 2*h &&
+                        ((isa[index - 2*h] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
+                            tuples[aux[i]] = std::make_tuple(index,
+                                isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
+                                isa[index]);
+                    }
                 }
             }
             return s;
@@ -280,7 +298,7 @@ namespace sacabench::osipov {
                 phase.split("Iteration");
                 tuples = tuple_container.slice(0, size);
 
-                s = create_tuples<sa_index>(tuples.slice(0, size), size, h, sa, isa);
+                s = create_tuples_parallel<sa_index>(tuples.slice(0, size), size, h, sa, isa, aux);
                 //std::cout << "Elements left: " << size << std::endl;
 
                 //std::cout << "Next size: " << s << std::endl;
