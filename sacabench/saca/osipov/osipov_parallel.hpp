@@ -9,6 +9,7 @@
 #include <util/sort/std_sort.hpp>
 #include <util/sort/ips4o.hpp>
 #include <util/bits.hpp>
+#include <util/prefix_sum.hpp>
 #include <algorithm>
 #include <tuple>
 #include <byteswap.h>
@@ -171,6 +172,73 @@ namespace sacabench::osipov {
             }
         }
 
+        template <typename sa_index>
+        static size_t create_tuples(
+                util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
+                size_t size, sa_index h, util::span<sa_index> sa,
+                util::span<sa_index> isa) {
+            size_t s=0;
+            size_t index;
+            //std::cout << "Creating tuple." << std::endl;
+            for(size_t i=0; i < size; ++i) {
+                // equals sa[i] - h >= 0
+                if(sa[i]>=h) {
+                    index = sa[i] - h;
+                    //std::cout << "sa["<<i<<"]-h=" << index << std::endl;
+                    if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
+                        //std::cout << "Adding " << index << " to tuples." << std::endl;
+                        tuples[s++] = std::make_tuple(index, isa[index], isa[sa[i]]);
+                    }
+                }
+                index = sa[i];
+                //std::cout << "sa["<<i<<"]:" << index << std::endl;
+                if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
+                    index >= 2*h &&
+                    ((isa[index - 2*h] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
+                    //std::cout << "Second condition met. Adding " << index << std::endl;
+                    tuples[s++] = std::make_tuple(index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
+                        isa[index]);
+                }
+            }
+            return s;
+        }
+
+        template<typename sa_index>
+        static size_t create_tuples_parallel(
+                util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
+                size_t size, sa_index h, util::span<sa_index> sa,
+                util::span<sa_index> isa, util::span<sa_index> aux) {
+            size_t s = 0; size_t index;
+            #pragma omp parallel
+            {
+                #pragma omp for shared(sa, isa, aux) private(index) reduction(+:s)
+                for(size_t i=0; i < size; ++i) {
+                    // Reset each value in aux to 0 (if tuples created: will be
+                    // increased)
+                    aux[i] = 0;
+                    if(sa[i] >= h) {
+                        index = sa[i] - h;
+                        if((isa[index] & utils<sa_index>::NEGATIVE_MASK)
+                                == sa_index(0)) {++aux[i];}
+                    }
+                    index = sa[i];
+                    if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
+                        index >= 2*h &&
+                        ((isa[index - 2*h] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
+                            // Second condition met (i.e. another tuple) ->
+                            // increase value of aux
+                            ++aux[i];
+                    }
+                    s += aux[i];
+                }
+                //aux has been set, compute prefix left_sum
+                #pragma omp master{
+                    //util::seq_prefix_sum();
+                }
+            }
+            return s;
+        }
+
 
         template <typename sa_index>
         static void prefix_doubling_parallel(util::string_span text,
@@ -204,38 +272,17 @@ namespace sacabench::osipov {
             //std::cout << "isa: " << isa << std::endl;
             size_t size = sa.size();
             size_t s = 0;
-            size_t index = 0;
 
             auto tuple_container = util::make_container<std::tuple<sa_index, sa_index, sa_index>>(size);
-            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
+            auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(tuple_container);
             compare_tuples<sa_index> cmp;
             while(size > 0) {
                 phase.split("Iteration");
-
-                //std::cout << "Elements left: " << size << std::endl;
-                s=0;
                 tuples = tuple_container.slice(0, size);
-                //std::cout << "Creating tuple." << std::endl;
-                for(size_t i=0; i < size; ++i) {
-                    // equals sa[i] - h >= 0
-                    if(sa[i]>=h) {
-                        index = sa[i] - h;
-                        //std::cout << "sa["<<i<<"]-h=" << index << std::endl;
-                        if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
-                            //std::cout << "Adding " << index << " to tuples." << std::endl;
-                            tuples[s++] = std::make_tuple(index, isa[index], isa[sa[i]]);
-                        }
-                    }
-                    index = sa[i];
-                    //std::cout << "sa["<<i<<"]:" << index << std::endl;
-                    if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
-                        index >= 2*h &&
-                        ((isa[index - 2*h] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
-                        //std::cout << "Second condition met. Adding " << index << std::endl;
-                        tuples[s++] = std::make_tuple(index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
-                            isa[index]);
-                    }
-                }
+
+                s = create_tuples<sa_index>(tuples.slice(0, size), size, h, sa, isa);
+                //std::cout << "Elements left: " << size << std::endl;
+
                 //std::cout << "Next size: " << s << std::endl;
                 // Skip all operations till size gets its new size, if this
                 // iteration contains no tuples
