@@ -188,6 +188,8 @@ namespace sacabench::osipov {
                     if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
                         //std::cout << "Adding " << index << " to tuples." << std::endl;
                         tuples[s++] = std::make_tuple(index, isa[index], isa[sa[i]]);
+                        /*std::cout << "(" << index << "|" << isa[index] << "|"
+                        << isa[sa[i]] << ")" << std::endl;*/
                     }
                 }
                 index = sa[i];
@@ -198,6 +200,9 @@ namespace sacabench::osipov {
                     //std::cout << "Second condition met. Adding " << index << std::endl;
                     tuples[s++] = std::make_tuple(index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
                         isa[index]);
+                    /*std::cout << "(" << index << "|"
+                    << (isa[index] ^ utils<sa_index>::NEGATIVE_MASK) << "|"
+                    << isa[index] << ")" << std::endl;*/
                 }
             }
             return s;
@@ -211,15 +216,25 @@ namespace sacabench::osipov {
             size_t s = 0; size_t index;
             #pragma omp parallel shared(aux) private(index)
             {
-                #pragma omp for reduction(+:s)
+                #pragma omp for
                 for(size_t i=0; i < size; ++i) {
                     // Reset each value in aux to 0 (if tuples created: will be
                     // increased)
                     aux[i] = 0;
+                    /*#pragma omp critical (aux)
+                    {
+                        std::cout << "aux[" << i << "]: " << aux[i] << std::endl;
+                    }*/
                     if(sa[i] >= h) {
                         index = sa[i] - h;
                         if((isa[index] & utils<sa_index>::NEGATIVE_MASK)
-                                == sa_index(0)) {++aux[i];}
+                                == sa_index(0)) {
+                            #pragma omp critical (aux)
+                            {
+                                ++aux[i];
+                                //std::cout << "aux[" << i << "] increased to : " << aux[i] << std::endl;
+                            }
+                        }
                     }
                     index = sa[i];
                     if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
@@ -227,22 +242,43 @@ namespace sacabench::osipov {
                         ((isa[index - 2*h] & utils<sa_index>::NEGATIVE_MASK) == sa_index(0))) {
                             // Second condition met (i.e. another tuple) ->
                             // increase value of aux
-                            ++aux[i];
+                            #pragma omp critical (aux)
+                            {
+                                ++aux[i];
+                                //std::cout << "aux[" << i << "] increased to : " << aux[i] << std::endl;
+                            }
                     }
-                    s += aux[i];
+                    /*s += aux[i];
+                    #pragma omp critical (output)
+                    {
+                        std::cout << "s increased by aux[" << i << "]=" << aux[i] << " to " << s << std::endl;
+                    }*/
                 }
                 //aux has been set, compute prefix left_sum
-                #pragma omp master
+                #pragma omp single
                 {
-                    std::cout << "Aux without prefix sum: " << aux << std::endl;
+                    // Last value gets overwritten (exclusive prefix sum) ->
+                    // save value in s.
+                    s = aux[aux.size()-1];
+
+                    //std::cout << "Aux without prefix sum: " << aux << std::endl;
                     util::seq_prefix_sum<sa_index, util::sum_fct<sa_index>>(aux, aux, false, util::sum_fct<sa_index>(), 0);
-                    std::cout << "Aux with prefix sum: " << aux << std::endl;
+                    //std::cout << "Aux with prefix sum: " << aux << std::endl;
+
+                    // Contains position for first tuple created due to index at
+                    // pos. sa[aux.size()-1]
+                    s += aux[aux.size()-1];
                 }
                 #pragma omp for
                 for(size_t i=0; i < size; ++i) {
                     if(sa[i] >= h) {
                         index = sa[i]-h;
-                        tuples[aux[i]++] = std::make_tuple(index, isa[index], isa[sa[i]]);
+                        if((isa[index] & utils<sa_index>::NEGATIVE_MASK)
+                                == sa_index(0)) {
+                            tuples[aux[i]++] = std::make_tuple(index, isa[index], isa[sa[i]]);
+                            /*std::cout << "(" << index << "|" << isa[index] << "|"
+                            << isa[sa[i]] << ")" << std::endl;*/
+                        }
                     }
                     index = sa[i];
                     if(((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
@@ -251,6 +287,9 @@ namespace sacabench::osipov {
                             tuples[aux[i]] = std::make_tuple(index,
                                 isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
                                 isa[index]);
+                            /*std::cout << "(" << index << "|"
+                            << (isa[index] ^ utils<sa_index>::NEGATIVE_MASK) << "|"
+                            << isa[index] << ")" << std::endl;*/
                     }
                 }
             }
@@ -299,6 +338,7 @@ namespace sacabench::osipov {
                 aux = util::span<sa_index>(aux_container).slice(0,size);
                 tuples = tuple_container.slice(0, size);
 
+                //s = create_tuples<sa_index>(tuples.slice(0, size), size, h, sa, isa);
                 s = create_tuples_parallel<sa_index>(tuples.slice(0, size), size, h, sa, isa, aux);
                 //std::cout << "Elements left: " << size << std::endl;
 

@@ -52,11 +52,12 @@ void seq_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
             out[i] = add(in[i], out[i - 1]);
         }
     } else {
-        Content& tmp = in[0];
+        Content tmp2, tmp = in[0];
         out[0] = identity;
         for(size_t i=1; i < in.size(); ++i) {
+            tmp2 = in[i];
             out[i] = add(tmp, out[i-1]);
-            tmp = in[i];
+            tmp = tmp2;
         }
     }
 }
