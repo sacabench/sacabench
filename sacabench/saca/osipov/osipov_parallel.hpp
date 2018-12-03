@@ -262,7 +262,7 @@ namespace sacabench::osipov {
             // Sort by h characters
             compare_first_four_chars cmp_init = compare_first_four_chars(text);
             phase.split("Initial 4-Sort");
-            util::sort::ips4o_sort_parallel(sa, cmp_init);
+            util::sort::ips4o_sort(sa, cmp_init);
             phase.split("Initialize ISA");
             initialize_isa<sa_index, compare_first_four_chars>(sa, isa, aux, cmp_init);
             phase.split("Mark singletons");
