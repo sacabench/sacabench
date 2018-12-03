@@ -200,6 +200,7 @@ private:
 
         aux[0] = 0;
 
+        #pragma omp parallel for 
         for (size_t index = 1; index < sorted_tuples.size(); ++index) {
             if (std::get<1>(sorted_tuples[index - 1]) ==
                 std::get<1>(sorted_tuples[index])) {
@@ -214,6 +215,7 @@ private:
 
         aux[0] = std::get<1>(sorted_tuples[0]);
 
+        #pragma omp parallel for
         for (sa_index index = 1; index < sorted_tuples.size(); ++index) {
             // New Group
             if (std::get<1>(sorted_tuples[index - sa_index(1)]) !=
