@@ -5,7 +5,7 @@
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
-
+#pragma once
 
 #include <iostream>
 #include <cstring>
@@ -46,7 +46,7 @@ public:
 template <typename Content, typename add_operator>
 void seq_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
         add_operator add, Content identity) {
-    ASSERT_EQ(in.size(), out.size());
+    DCHECK_EQ(in.size(), out.size());
     if(inclusive) {
         out[0] = add(identity, in[0]);
         for(size_t i = 1; i < in.size(); ++i) {
@@ -63,7 +63,7 @@ void seq_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
     }
 }
 
-size_t next_power_of_two(size_t v) {
+inline size_t next_power_of_two(size_t v) {
 	v--;
 	v |= v >> 1;
 	v |= v >> 2;
@@ -75,7 +75,7 @@ size_t next_power_of_two(size_t v) {
 
 	return v;
 }
-size_t prev_power_of_two(size_t v) {
+inline size_t prev_power_of_two(size_t v) {
     v = next_power_of_two(v);
     return v >> 1;
 }
