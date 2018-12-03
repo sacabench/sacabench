@@ -33,7 +33,7 @@ public:
         "Parallelized version of Bucket Pointer Refinement";
 
     static constexpr size_t MAX_BUCKETS = 4500000;
-    static constexpr size_t INSSORT_THRESHOLD = 200;
+    static constexpr size_t INSSORT_THRESHOLD = 100;
 
     /**\brief Performs a parallelized version of the bucket pointer refinement
      * algorithm described by Klaus-Bernd Schürmann and Jens Stoye in "An
@@ -140,7 +140,7 @@ public:
         auto left_scan_idx = util::make_container<size_t>(alph_size);
         auto right_scan_idx = util::make_container<size_t>(alph_size);
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
 
             sa_index suffix_idx;
