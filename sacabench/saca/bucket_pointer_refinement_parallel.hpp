@@ -90,32 +90,39 @@ public:
         const size_t in_l2_bucket = in_l1_bucket / alph_size;
         const size_t in_l3_bucket = in_l2_bucket / alph_size;
 
-        std::size_t c_cur, c_suc, c_suc_suc; // characters must be size_t for parallelization
+#pragma omp parallel
+        {
+            std::size_t c_cur, c_suc, c_suc_suc; // characters must be size_t for parallelization
+            util::container<sa_index> bptr_copy = bptr.make_copy();
 
-        for (c_cur = 0; c_cur < alph_size; ++c_cur) {
-            for (c_suc = c_cur + 1; c_suc < alph_size; ++c_suc) {
-                // for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) { // use this line for 2nd level inducing
-                for (c_suc_suc = 0; c_suc_suc < alph_size; ++c_suc_suc) {
-                    const size_t bucket_idx_begin = c_cur * in_l1_bucket +
-                                                    c_suc * in_l2_bucket +
-                                                    c_suc_suc * in_l3_bucket;
-                    const size_t bucket_idx_end =
-                        bucket_idx_begin + in_l3_bucket;
-                    for (size_t bucket_idx = bucket_idx_begin;
-                         bucket_idx < bucket_idx_end; ++bucket_idx) {
-                        if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
-                            // if the bucket has at least 1 element
-                            span<sa_index> sub_bucket = sa.slice(
-                                buckets[bucket_idx], buckets[bucket_idx + 1]);
-                            sa_index offset = bucketsort_depth;
-                            refine_single_bucket<sa_index>(
-                                offset, bucketsort_depth, bptr,
-                                buckets[bucket_idx], sub_bucket);
+#pragma omp for
+            for (c_cur = 0; c_cur < alph_size; ++c_cur) {
+                for (c_suc = c_cur + 1; c_suc < alph_size; ++c_suc) {
+                    // for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) { // use this line for 2nd level inducing
+                    for (c_suc_suc = 0; c_suc_suc < alph_size; ++c_suc_suc) {
+                        const size_t bucket_idx_begin = c_cur * in_l1_bucket +
+                                                        c_suc * in_l2_bucket +
+                                                        c_suc_suc * in_l3_bucket;
+                        const size_t bucket_idx_end =
+                            bucket_idx_begin + in_l3_bucket;
+                        for (size_t bucket_idx = bucket_idx_begin;
+                             bucket_idx < bucket_idx_end; ++bucket_idx) {
+                            if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
+                                // if the bucket has at least 1 element
+                                span<sa_index> sub_bucket = sa.slice(
+                                    buckets[bucket_idx], buckets[bucket_idx + 1]);
+                                sa_index offset = bucketsort_depth;
+                                refine_single_bucket<sa_index>(
+                                    offset, bucketsort_depth, bptr_copy,
+                                    buckets[bucket_idx], sub_bucket);
+                            }
                         }
                     }
                 }
             }
+            bptr_copy = make_container<sa_index>(0);
         }
+        bptr = make_container<sa_index>(0);
 
         /**
          * Phase 3
@@ -139,6 +146,8 @@ public:
         // scan indexes for all 1st level buckets
         auto left_scan_idx = util::make_container<size_t>(alph_size);
         auto right_scan_idx = util::make_container<size_t>(alph_size);
+
+        std::size_t c_cur;//, c_suc, c_suc_suc; // characters must be size_t for parallelization
 
 #pragma omp parallel for schedule(dynamic)
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
@@ -335,7 +344,7 @@ public:
             insertion_sort(bucket, util::compare_key(sort_key));
         } else {
             // ternary_quicksort(bucket, util::compare_key(sort_key));
-            util::sort::ips4o_sort_parallel(bucket, util::compare_key(sort_key));
+            util::sort::ips4o_sort(bucket, util::compare_key(sort_key));
         }
 
         /* As a consequence of sorting, bucket pointers might have changed.
