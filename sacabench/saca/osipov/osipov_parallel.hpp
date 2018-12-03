@@ -375,7 +375,7 @@ private:
         // Sort by h characters
         compare_first_four_chars cmp_init = compare_first_four_chars(text);
         phase.split("Initial 4-Sort");
-        util::sort::ips4o_sort(sa, cmp_init);
+        util::sort::ips4o_sort_parallel(sa, cmp_init);
         phase.split("Initialize ISA");
         initialize_isa<sa_index, compare_first_four_chars>(sa, isa, aux,
                                                            cmp_init);
@@ -414,6 +414,7 @@ private:
                 sa = sa.slice(0, s);
                 update_ranks_prefixsum(tuples, aux);
                 // std::cout << "Writing new order to sa." << std::endl;
+                #pragma omp parallel for if (s < 100)
                 for (size_t i = 0; i < s; ++i) {
                     sa[i] = std::get<0>(tuples[i]);
                 }
@@ -437,6 +438,7 @@ private:
                     }
                 }
                 // std::cout << "Setting new ranks in isa" << std::endl;
+                #pragma omp parallel for if (s < 100)
                 for (size_t i = 0; i < s; ++i) {
                     // std::cout << "Assigning suffix " <<
                     // std::get<0>(tuples[i])

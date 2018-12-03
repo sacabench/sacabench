@@ -25,6 +25,7 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_dc3
   reference_saca_k
   ${CMAKE_DL_LIBS}
+  atomic
 )
 
 # Create executable that runs all registered SACAs
