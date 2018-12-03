@@ -16,6 +16,7 @@
 #include <util/span.hpp>
 #include <util/container.hpp>
 #include <util/bits.hpp>
+#include <util/assertions.hpp>
 
 namespace sacabench::util {
 
