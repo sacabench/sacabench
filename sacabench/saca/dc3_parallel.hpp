@@ -16,6 +16,7 @@
 #include <util/merge_sa_dc.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <math.h>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
@@ -84,10 +85,10 @@ private:
             }
         }
 
-        //std::sort(triplets_12_to_be_sorted.begin(),
-        //          triplets_12_to_be_sorted.end());
+        std::sort(triplets_12_to_be_sorted.begin(),
+                  triplets_12_to_be_sorted.end());
         
-        util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        //util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
 
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
             triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
@@ -225,8 +226,20 @@ private:
             induce_sa_dc<C, sa_index>(text, span_t_12, sa_0);
 
             //-----------------------Phase 3------------------------------//
-            /*
+           
             //dc3_parallel.split("Phase 3");
+            if constexpr (rec) {
+                merge_sa_dc_parallel_test<const sa_index, sa_index>(
+                    sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
+                    span_t_12, out_sa);
+
+            } else {
+                merge_sa_dc_parallel_test<const sacabench::util::character, sa_index>(
+                    sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
+                    span_t_12, out_sa);
+            }
+            
+            
             // parallel merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
             if constexpr (rec) {
                 merge_sa_dc_parallel<const sa_index, sa_index>(
@@ -237,9 +250,10 @@ private:
                 merge_sa_dc_parallel<const sacabench::util::character, sa_index>(
                     sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
                     span_t_12, out_sa);
-            }*/
+            }
             
             //sequentiel merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
+            /*
             if constexpr (rec) {
 
             merge_sa_dc<const sa_index, sa_index>(
@@ -256,6 +270,156 @@ private:
                     span_t_12, out_sa, std::less<sacabench::util::string_span>(),
                     [](auto a, auto b, auto c) { return get_substring(a, b, c); });
             }
+            
+            // another method
+            
+            util::span<sa_index> sa_0_span; 
+            util::span<sa_index> sa_12_span; 
+            if (text.size() % 3 == 0) {
+                if (sa_0.size() <= 1) { //sa_0_span = util::span();
+                    }
+                else { sa_0_span = util::span(&sa_0[1], sa_0.size()-1); }
+                sa_12_span = triplets_12;
+            }
+            else {
+                sa_0_span = sa_0;
+                if (sa_12.size() <= 1) { //sa_12_span = util::span();
+                    
+                }
+                else { sa_12_span = util::span(&triplets_12[1], triplets_12.size()-1); }
+            }
+            // merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
+            if constexpr (rec) {
+                auto comp = [&](size_t a, size_t b) {
+                    size_t start_pos_mod_2 = span_t_12.size() / 2 + ((span_t_12.size() % 2) != 0);
+                    size_t position_i_isa = 0;
+                    size_t position_j_isa = 0;
+
+                    sa_index one = 1;
+                    sa_index two = 2;
+
+                    sa_index size_isa_12 = span_t_12.size();
+                    
+                    sacabench::util::span<sa_index> t_0;
+                    sacabench::util::span<sa_index> t_12;
+                    if (b % 3 == 1) {
+                        t_0 = text.slice(a, a+1);
+                        t_12 = text.slice(b, b+1);
+                    } else {
+                        t_0 = text.slice(a, a+2);
+                        t_12 = text.slice(b, b+2);
+                    }
+                    
+                    sa_index size_t_0 = t_0.size();
+                    sa_index size_t_12 = t_12.size();
+                    if (b % 3 == 1) {
+                        position_j_isa = start_pos_mod_2 + (b + one) / 3;
+                        position_i_isa = (a + one) / 3;
+
+                        if (position_i_isa >= size_isa_12 ||
+                            position_j_isa >= size_isa_12) {
+                            position_i_isa = 0;
+                            position_j_isa = 0;
+                        }
+                    } else {
+                        position_j_isa = (b + two) / 3;
+                        position_i_isa = start_pos_mod_2 + (a + two) / 3;
+                        if (position_i_isa >= size_isa_12 ||
+                            position_j_isa >= size_isa_12) {
+                            position_i_isa = 0;
+                            position_j_isa = 0;
+                        }
+                    }
+
+                    const bool less_than = t_0 < t_12;
+                    const bool eq = t_0 == t_12;
+                    // NB: This is a closure so that we can evaluate it later,
+                    // because evaluating it if `eq` is not true causes
+                    // out-of-bounds errors.
+                    auto lesser_suf = 
+                                !((2 * (b + size_t_12)) / 3 >=
+                                size_isa_12) && // if index to compare for t_12
+                                                // is out of bounds of isa then
+                                                // sa_0[i] is never
+                                                // lexicographically smaller than
+                                                // sa_12[j]
+                            ((2 * (a + size_t_0)) / 3 >=
+                                    size_isa_12 || // if index to compare for t_0
+                                                // is out of bounds of isa then
+                                                // sa_0[i] is lexicographically
+                                                // smaller
+                                span_t_12[position_i_isa] < span_t_12[position_j_isa]);
+                    
+                    return less_than || (eq && lesser_suf);
+                };
+                util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
+                //util::merge(sa_0_span, sa_12_span, out_sa, false, comp);
+
+            } else {
+                auto comp = [&](size_t a, size_t b) {
+                    size_t start_pos_mod_2 = span_t_12.size() / 2 + ((span_t_12.size() % 2) != 0);
+                    size_t position_i_isa = 0;
+                    size_t position_j_isa = 0;
+
+                    sa_index one = 1;
+                    sa_index two = 2;
+
+                    sa_index size_isa_12 = span_t_12.size();
+                    
+                    sacabench::util::string_span t_0;
+                    sacabench::util::string_span t_12;
+                    if (b % 3 == 1) {
+                        t_0 = text.slice(a, a+1);
+                        t_12 = text.slice(b, b+1);
+                    } else {
+                        t_0 = text.slice(a, a+2);
+                        t_12 = text.slice(b, b+2);
+                    }
+                    
+                    sa_index size_t_0 = t_0.size();
+                    sa_index size_t_12 = t_12.size();
+                    if (b % 3 == 1) {
+                        position_j_isa = start_pos_mod_2 + (b + one) / 3;
+                        position_i_isa = (a + one) / 3;
+
+                        if (position_i_isa >= size_isa_12 ||
+                            position_j_isa >= size_isa_12) {
+                            position_i_isa = 0;
+                            position_j_isa = 0;
+                        }
+                    } else {
+                        position_j_isa = (b + two) / 3;
+                        position_i_isa = start_pos_mod_2 + (a + two) / 3;
+                        if (position_i_isa >= size_isa_12 ||
+                            position_j_isa >= size_isa_12) {
+                            position_i_isa = 0;
+                            position_j_isa = 0;
+                        }
+                    }
+
+                    const bool less_than = t_0 < t_12;
+                    const bool eq = t_0 == t_12;
+                    // NB: This is a closure so that we can evaluate it later,
+                    // because evaluating it if `eq` is not true causes
+                    // out-of-bounds errors.
+                    auto lesser_suf = 
+                                !((2 * (b + size_t_12)) / 3 >=
+                                size_isa_12) && // if index to compare for t_12
+                                                // is out of bounds of isa then
+                                                // sa_0[i] is never
+                                                // lexicographically smaller than
+                                                // sa_12[j]
+                            ((2 * (a + size_t_0)) / 3 >=
+                                    size_isa_12 || // if index to compare for t_0
+                                                // is out of bounds of isa then
+                                                // sa_0[i] is lexicographically
+                                                // smaller
+                                span_t_12[position_i_isa] < span_t_12[position_j_isa]);
+                    
+                    return less_than || (eq && lesser_suf);
+                };
+                util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
+            }*/
     }
 
     // implementation of get_substring method with type of character not in
@@ -340,14 +504,15 @@ private:
                     (std::tuple<C, sa_index, sa_index>(text[i], isa_12[i / 3],
                                                        i));  
         }
+        #pragma omp parallel for
         for (i = 3 * start_pos_mod_2; i < text.size() - 2; i += 3) {
                 sa_0_to_be_sorted[counter++] =
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
 
-        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+        std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
                   
-        util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+        //util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
 
         //std::sort(std::execution::par, sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
@@ -591,11 +756,12 @@ private:
             return tuple_i < tuple_j;
         };
 
-        //std::sort(sa.begin(), sa.end(), comp_tuple);
-        util::sort::ips4o_sort_parallel(sa, comp_tuple);
+        std::sort(sa.begin(), sa.end(), comp_tuple);
+        //util::sort::ips4o_sort_parallel(sa, comp_tuple);
         
         auto duplicates = util::container<sa_index>(sa.size());
         size_t first_duplicate = 0;
+        //#pragma omp parallel for
         for(size_t i = 1; i < sa.size(); ++i){            
             auto tuple_1 = sacabench::util::span<C>(&text[sa[i]], 3);
             auto tuple_2 = sacabench::util::span<C>(&text[sa[i-1]], 3);
@@ -711,6 +877,230 @@ private:
             }else ++start;
         }
     }
+    
+    /**\brief Parallel merge two suffix arrays.
+     * \tparam T input string
+     * \tparam C input characters
+     * \tparam I ISA
+     * \tparam S SA
+     * \param t input text
+     * \param sa_0 calculated SA for triplets beginning in i mod 3 = 0
+     * \param sa_12 calculated SA for triplets beginning in i mod 3 != 0
+     * \param isa_12 calculated ISA for triplets beginning in i mod 3 != 0
+     * \param sa memory block for merged SA
+     *
+     * This method merges the suffix arrays s_0, which contains the
+     * lexicographical ranks of positions i mod 3 = 0, and s_12, which
+     * contains the lexicographical ranks of positions i mod 3 != 0.
+     * 
+     * Theorem II from CLYDE P. KRUSKAL
+     */
+    template <typename C, typename sa_index, typename T, typename I, typename S,
+              typename X>
+    static void merge_sa_dc_parallel_test(const T& text, S& sa_0,
+                            S& sa_12, const I& isa_12, X& sa) {
+        
+        //first step: mark every position of sa_0 with i * M^(1/k)
+        size_t M = sa_0.size();
+        size_t N = sa_12.size();
+        size_t k = 3;
+        size_t factor = ceil(pow(M, 1.0/k));
+        auto marked_sa_0 = util::make_container<size_t>(M);
+        auto segments = util::make_container<size_t>(floor(pow(M, 1.0-1.0/k)));
+        sa_index one = 1;
+        for(size_t i = factor-1; i < M; i += factor){
+            marked_sa_0[i] = one;
+        }
+        
+        std::cout << "M: " << M << std::endl;
+        std::cout << "N: " << N << std::endl;
+        std::cout << "factor: " << factor << std::endl;
+        
+        std::cout << "marked_sa_0: ";
+        for(size_t i = 0; i < marked_sa_0.size(); ++i){
+            std::cout << marked_sa_0[i] << ", ";
+        }
+        std::cout << std::endl;
+        
+        //second step: provide N^(1/k) processors for each marked element of sa_0
+        size_t processors = floor(pow(N, 1.0/k));
+        std::cout << "Prozessoren pro Element: " << processors << std::endl;
+        
+        //third step: find positions of marked elements of sa_0 in sa_12
+        auto comp = [&](sa_index a, sa_index b) {
+                    size_t start_pos_mod_2 = N/2 + ((N % 2) != 0);
+                    size_t position_i_isa = 0;
+                    size_t position_j_isa = 0;
+
+                    sa_index one = 1;
+                    sa_index two = 2;
+
+                    
+                    sacabench::util::span<C> t_0;
+                    sacabench::util::span<C> t_12;
+                    if (b % 3 == 1) {
+                        t_0 = text.slice(a, a+one);
+                        t_12 = text.slice(b, b+one);
+                    } else {
+                        t_0 = text.slice(a, a+two);
+                        t_12 = text.slice(b, b+two);
+                    }
+                    
+                    sa_index size_t_0 = t_0.size();
+                    sa_index size_t_12 = t_12.size();
+                    if (b % 3 == 1) {
+                        position_j_isa = start_pos_mod_2 + (b + one) / 3;
+                        position_i_isa = (a + one) / 3;
+
+                        if (position_i_isa >= N ||
+                            position_j_isa >= N) {
+                            position_i_isa = 0;
+                            position_j_isa = 0;
+                        }
+                    } else {
+                        position_j_isa = (b + two) / 3;
+                        position_i_isa = start_pos_mod_2 + (a + two) / 3;
+                        if (position_i_isa >= N ||
+                            position_j_isa >= N) {
+                            position_i_isa = 0;
+                            position_j_isa = 0;
+                        }
+                    }
+
+                    const bool less_than = t_0 < t_12;
+                    const bool eq = t_0 == t_12;
+                    // NB: This is a closure so that we can evaluate it later,
+                    // because evaluating it if `eq` is not true causes
+                    // out-of-bounds errors.
+                    auto lesser_suf = 
+                                !((2 * (b + size_t_12)) / 3 >=
+                                N) && // if index to compare for t_12
+                                                // is out of bounds of isa then
+                                                // sa_0[i] is never
+                                                // lexicographically smaller than
+                                                // sa_12[j]
+                            ((2 * (a + size_t_0)) / 3 >=
+                                    N || // if index to compare for t_0
+                                                // is out of bounds of isa then
+                                                // sa_0[i] is lexicographically
+                                                // smaller
+                                isa_12[position_i_isa] < isa_12[position_j_isa]);
+                    
+                    return less_than || (eq && lesser_suf);
+                };
+        
+        size_t counter = 0;
+        for(size_t i = factor-1; i < M; i += factor){
+           util::span<sa_index> span_sa_12 = sa_12;
+           size_t position = util::binarysearch_parallel(span_sa_12, 0, N, sa_0[i], false, comp);
+            //sa[position + i] = sa_0[i];
+            segments[counter++] = position;
+        }
+        
+        
+        std::cout << "sa: ";
+        for(size_t i = 0; i < sa.size(); ++i){
+            std::cout << sa[i] << ", ";
+        }
+        std::cout << std::endl;
+        
+        std::cout << "segments: ";
+        for(size_t i = 0; i < segments.size(); ++i){
+            std::cout << segments[i] << ", ";
+        }
+        std::cout << std::endl;
+        
+        //fourth step: sort the pairs (X_1, Y_1), (X_2, Y_2),... recursivly
+        
+        
+    }
+    
+    template <typename sa_index, typename Compare, typename SA>
+    size_t binarysearch(const SA array, const size_t left, 
+                const size_t right, sa_index key, const bool swapped, const Compare comp) {
+        if (left+1 > right) { return left; }
+        if (left+1 == right) {
+            bool less = false;
+            if (!swapped) { less = comp(key, array[left]); }
+            else { less = !comp(array[left], key); }
+            
+            if (less) { return left; }
+            else { return left+1; }
+        }
+        
+        int middle = (left+right)/2;
+        
+        bool less = false;
+        if (!swapped) { less = comp(key, array[middle]); }
+        else { less = !comp(array[middle], key); }
+        
+        if (less) {
+            return binarysearch<sa_index>(array, left, middle, key, swapped, comp);
+        }    
+        else {
+            return binarysearch<sa_index>(array, middle, right, key, swapped, comp);
+        }
+    }
+    
+    template <typename sa_index, typename Compare, typename SA>
+    sa_index binarysearch_parallel(const SA array, const size_t left, 
+                const size_t right, sa_index key, const bool swapped, const Compare comp) {
+        size_t n = right-left;
+        
+        if (n < 10000) {
+            return binarysearch(array, left, right, key, swapped, comp);
+        }
+        
+        if (left+1 > right) { return left; }
+        if (left+1 == right) {
+            bool less = false;
+            if (!swapped) { less = comp(key, array[left]); }
+            else { less = !comp(array[left], key); }
+            
+            if (less) { return left; }
+            else { return left+1; }
+        }
+        
+        size_t new_left = 0;
+        size_t new_right = 0;
+        size_t p = 0;
+        util::container<bool> comp_results;
+        #pragma omp parallel
+        {
+            #pragma omp single
+            {
+                p = std::min((size_t)omp_get_num_threads(),n);
+                comp_results = util::container<bool>(p);
+            }
+            
+            #pragma omp for
+            for (size_t i = 0; i < p; ++i) {
+                sa_index elem = array[left + n/(p+1)*(i+1)];
+                
+                if (!swapped) { comp_results[i] = comp(key, elem); }
+                else { comp_results[i] = !comp(elem, key); }
+            }
+            
+            #pragma omp for
+            for (size_t i = 0; i < p; ++i) {
+                if (i == 0 && comp_results[0] == true) {
+                    new_left = left;
+                    new_right = left + n/(p+1)*1;
+                }
+                else if (i == p-1 && comp_results[p-1] == false) {
+                    new_left = left + n/(p+1)*(p);
+                    new_right = right;
+                }
+                else if (comp_results[i] == false && comp_results[i+1] == true) {
+                    new_left = left + n/(p+1)*(i+1);
+                    new_right = left + n/(p+1)*(i+2);
+                }
+            }
+        }
+        
+        return binarysearch(array, new_left, new_right, key, swapped, comp);
+    }
+    
 }; // class dc3
 
 } // namespace sacabench::dc3::parallel

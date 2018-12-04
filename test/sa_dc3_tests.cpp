@@ -6,10 +6,16 @@
 
 #include <gtest/gtest.h>
 #include <saca/dc3.hpp>
+#include <saca/dc3_par.hpp>
 #include "test/saca.hpp"
 
 using namespace sacabench::dc3;
+using namespace sacabench::dc3_par;
 
-TEST(dc3, test) {
+/*TEST(dc3, test) {
     test::saca_corner_cases<dc3>();
+}*/
+
+TEST(dc3_par, test) {
+    test::saca_corner_cases<dc3_par>();
 }

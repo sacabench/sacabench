@@ -101,3 +101,6 @@ SACA_REGISTER("saca/dc3_lite.hpp"
 
 SACA_REGISTER("saca/dc3_parallel.hpp"
     sacabench::dc3_parallel::dc3_parallel)
+    
+SACA_REGISTER("saca/dc3_par.hpp"
+    sacabench::dc3_par::dc3_par)
