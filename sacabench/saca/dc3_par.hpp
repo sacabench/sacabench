@@ -233,7 +233,7 @@ private:
         }
         // merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
         if constexpr (rec) {
-            auto comp = [&](size_t a, size_t b) {
+            auto comp = [&](sa_index a, sa_index b) {
                 size_t start_pos_mod_2 = span_t_12.size() / 2 + ((span_t_12.size() % 2) != 0);
                 size_t position_i_isa = 0;
                 size_t position_j_isa = 0;
@@ -246,11 +246,11 @@ private:
                 sacabench::util::span<sa_index> t_0;
                 sacabench::util::span<sa_index> t_12;
                 if (b % 3 == 1) {
-                    t_0 = text.slice(a, a+1);
-                    t_12 = text.slice(b, b+1);
+                    t_0 = text.slice(a, a+one);
+                    t_12 = text.slice(b, b+one);
                 } else {
-                    t_0 = text.slice(a, a+2);
-                    t_12 = text.slice(b, b+2);
+                    t_0 = text.slice(a, a+two);
+                    t_12 = text.slice(b, b+two);
                 }
                 
                 sa_index size_t_0 = t_0.size();
@@ -299,7 +299,7 @@ private:
             //util::merge(sa_0_span, sa_12_span, out_sa, false, comp);
 
         } else {
-            auto comp = [&](size_t a, size_t b) {
+            auto comp = [&](sa_index a, sa_index b) {
                 size_t start_pos_mod_2 = span_t_12.size() / 2 + ((span_t_12.size() % 2) != 0);
                 size_t position_i_isa = 0;
                 size_t position_j_isa = 0;
@@ -312,11 +312,11 @@ private:
                 sacabench::util::string_span t_0;
                 sacabench::util::string_span t_12;
                 if (b % 3 == 1) {
-                    t_0 = text.slice(a, a+1);
-                    t_12 = text.slice(b, b+1);
+                    t_0 = text.slice(a, a+one);
+                    t_12 = text.slice(b, b+one);
                 } else {
-                    t_0 = text.slice(a, a+2);
-                    t_12 = text.slice(b, b+2);
+                    t_0 = text.slice(a, a+two);
+                    t_12 = text.slice(b, b+two);
                 }
                 
                 sa_index size_t_0 = t_0.size();
