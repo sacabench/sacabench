@@ -2,7 +2,7 @@
     "launch" : {
         "algo": [
             "Osipov_parallel",
-            "Osipov_parallel_wp"
+            "Osipov_parallel_wp",
             "Discarding4Parallel",
             "DivSufSort_ref",
             "BPR",
