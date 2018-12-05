@@ -8,12 +8,12 @@ set(PROJECT_CONTACT "julianlabeit@gmail.com")
 set(PROJECT_URL "https://github.com/jlabeit/parallel-range-lite")
 set(PROJECT_DESCRIPTION "Parallel-range-lite: Parallel suffix array algorithm.")
 
-option (BUILD_TESTS "Build tests as part of the project (GUNIT required)." OFF) 
+option (BUILD_TESTS "Build tests as part of the project (GUNIT required)." OFF)
 
 # Settings about parallization.
-option (CILK "Use intel implementation of cilkplus for parallization." OFF) 
-option (CILKP "Use gcc implementation of cilkplus for parallization." ON) 
-option (OPENMP "Use OpenMP for parallization for parallization." OFF) 
+option (CILK "Use intel implementation of cilkplus for parallization." OFF)
+option (CILKP "Use gcc implementation of cilkplus for parallization." OFF)
+option (OPENMP "Use OpenMP for parallization for parallization." ON)
 # Check settings.
 if ((CILKP AND OPENMP) OR (CILKP AND CILK) OR (OPENMP AND CILK))
 	message(WARNING "Multiple parallelization techniques are set. This may result in problems.")
@@ -42,7 +42,7 @@ endif()
 
 add_subdirectory (include)
 add_subdirectory (lib)
-add_subdirectory (demo)
+#add_subdirectory (demo)
 if (BUILD_TESTS)
 	add_subdirectory (tests)
 endif()

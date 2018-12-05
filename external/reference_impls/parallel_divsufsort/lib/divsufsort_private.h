@@ -36,7 +36,7 @@
 #include <strings.h>
 #include <inttypes.h>
 #include <stdint.h>
-#include "divsufsort.h"
+#include "parallel_divsufsort.h"
 
 
 /*- Constants -*/
