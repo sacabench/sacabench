@@ -34,7 +34,16 @@ SACA_REGISTER("saca/external/dc3/dc3.hpp"
 # Our implementations:
 
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
-    sacabench::deep_shallow::saca)
+    sacabench::deep_shallow::serial)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::serial_big_buckets)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::parallel)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::parallel)
 
 #SACA_REGISTER("saca/deep_shallow/blind/sort.hpp"
 #    sacabench::deep_shallow::blind::saca)

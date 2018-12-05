@@ -150,7 +150,7 @@ public:
         prefix_size(), original_text_size()); }
 
     virtual inline void initializer(span<character> s) const override {
-        DCHECK_EQ(s.size(), m_text.size());
+        //DCHECK_EQ(s.size(), m_text.size());
         for (size_t i = 0; i < s.size(); i++) {
             s[i] = m_text[i];
         }

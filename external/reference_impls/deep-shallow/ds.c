@@ -150,49 +150,53 @@ void ds_ssort(UChar *x, Int32 *p, Int32 n)
       --*/
     for (j = 0; j <= 255; j++) {
       if (j != ss) {
-	sb = (ss << 8) + j;
-	if ( ! (ftab[sb] & SETMASK) ) {
-	  Int32 lo = ftab[sb]   & CLEARMASK;
-	  Int32 hi = (ftab[sb+1] & CLEARMASK) - 1;
-	  if (hi > lo) {
-	    if (_ds_Verbose>2)
-	      fprintf(stderr,"sorting [%02x, %02x], done %d "
-			"this %d\n", ss, j, numQSorted, hi - lo + 1 );
-	    shallow_sort(Sa+lo, hi-lo+1,Shallow_limit);
-            #if 0
-	    check_ordering(lo, hi);
-            #endif
-	    numQSorted += ( hi - lo + 1 );
-	  }
-	}
-	ftab[sb] |= SETMASK;
+        sb = (ss << 8) + j;
+        if ( ! (ftab[sb] & SETMASK) ) {
+          Int32 lo = ftab[sb]   & CLEARMASK;
+          Int32 hi = (ftab[sb+1] & CLEARMASK) - 1;
+          if (hi > lo) {
+            if (_ds_Verbose>2)
+              fprintf(stderr,"sorting [%02x, %02x], done %d "
+            "this %d\n", ss, j, numQSorted, hi - lo + 1 );
+            shallow_sort(Sa+lo, hi-lo+1,Shallow_limit);
+                  #if 0
+            check_ordering(lo, hi);
+                  #endif
+            numQSorted += ( hi - lo + 1 );
+          }
+        }
+        ftab[sb] |= SETMASK;
       }
     }
     assert (!bigDone[ss]);
     // ------ now order small buckets of type [xx,ss]  --------
     {
       for (j = 0; j <= 255; j++) {
-	copyStart[j] =  ftab[(j << 8) + ss]     & CLEARMASK;
-	copyEnd  [j] = (ftab[(j << 8) + ss + 1] & CLEARMASK) - 1;
+        copyStart[j] =  ftab[(j << 8) + ss]     & CLEARMASK;
+        copyEnd  [j] = (ftab[(j << 8) + ss + 1] & CLEARMASK) - 1;
       }
       // take care of the virtual -1 char in position Text_size+1
       if(ss==0) {
-	k=Text_size-1;
-	c1 = Text[k];
-	if (!bigDone[c1])
-	  Sa[ copyStart[c1]++ ] = k;
+        k=Text_size-1;
+        c1 = Text[k];
+        if (!bigDone[c1])
+          Sa[ copyStart[c1]++ ] = k;
       }
       for (j = ftab[ss << 8] & CLEARMASK; j < copyStart[ss]; j++) {
-	k = Sa[j]-1; if (k < 0) continue;
-	c1 = Text[k];
-	if (!bigDone[c1])
-	  Sa[ copyStart[c1]++ ] = k;
+        k = Sa[j]-1;
+        if (k < 0)
+          continue;
+        c1 = Text[k];
+        if (!bigDone[c1])
+          Sa[ copyStart[c1]++ ] = k;
       }
       for (j = (ftab[(ss+1) << 8] & CLEARMASK) - 1; j > copyEnd[ss]; j--) {
-	k = Sa[j]-1; if (k < 0) continue;
-	c1 = Text[k];
-	if (!bigDone[c1])
-	  Sa[ copyEnd[c1]-- ] = k;
+        k = Sa[j]-1;
+        if (k < 0)
+          continue;
+        c1 = Text[k];
+        if (!bigDone[c1])
+          Sa[ copyEnd[c1]-- ] = k;
       }
     }
     assert (copyStart[ss] - 1 == copyEnd[ss]);

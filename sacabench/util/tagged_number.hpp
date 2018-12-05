@@ -89,7 +89,7 @@ public:
     }
 
     constexpr inline tagged_number operator-(const sa_index& rhs) {
-        DCHECK_GE(number(), rhs.number());
+        DCHECK_GE(number(), rhs);
         return tagged_number(number() - rhs);
     }
 
