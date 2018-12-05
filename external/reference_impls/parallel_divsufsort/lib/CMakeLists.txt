@@ -8,6 +8,10 @@ configure_file(
 	)
 file(GLOB libFiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 add_library(parallel_divsufsort ${libFiles})
+target_link_libraries(
+    parallel_divsufsort
+    lprange
+)
 install(TARGETS parallel_divsufsort
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
