@@ -420,6 +420,7 @@ private:
                 }
                 // std::cout << "Refreshing ranks for tuples" << std::endl;
 
+                /*
                 sa_index head = 0;
                 for (size_t i = 1; i < s; ++i) {
                     if (std::get<1>(tuples[i]) > std::get<1>(tuples[head])) {
@@ -436,7 +437,7 @@ private:
                                                     std::get<1>(tuples[head]),
                                                     std::get<2>(tuples[i]));
                     }
-                }
+                }*/
                 // std::cout << "Setting new ranks in isa" << std::endl;
                 #pragma omp parallel for if (s < 100)
                 for (size_t i = 0; i < s; ++i) {
