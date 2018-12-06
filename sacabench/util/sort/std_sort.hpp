@@ -7,6 +7,7 @@
 #pragma once
 
 #include <algorithm>
+#include <parallel/algorithm>
 
 #include "util/container.hpp"
 #include "util/span.hpp"
@@ -21,6 +22,36 @@ void std_sort(container<T>& data, Compare comp) {
 template <typename T, typename Compare>
 void std_sort(span<T> data, Compare comp) {
     std::sort(std::begin(data), std::end(data), comp);
+}
+
+template <typename T, typename Compare>
+void std_stable_sort(container<T>& data, Compare comp) {
+    std::stable_sort(std::begin(data), std::end(data), comp);
+}
+
+template <typename T, typename Compare>
+void std_stable_sort(span<T> data, Compare comp) {
+    std::stable_sort(std::begin(data), std::end(data), comp);
+}
+
+template <typename T, typename Compare>
+void std_par_sort(container<T>& data, Compare comp) {
+    __gnu_parallel::sort(std::begin(data), std::end(data), comp);
+}
+
+template <typename T, typename Compare>
+void std_par_sort(span<T> data, Compare comp) {
+    __gnu_parallel::sort(std::begin(data), std::end(data), comp);
+}
+
+template <typename T, typename Compare>
+void std_par_stable_sort(container<T>& data, Compare comp) {
+    __gnu_parallel::stable_sort(std::begin(data), std::end(data), comp);
+}
+
+template <typename T, typename Compare>
+void std_par_stable_sort(span<T> data, Compare comp) {
+    __gnu_parallel::stable_sort(std::begin(data), std::end(data), comp);
 }
 
 } // namespace sacabench::util::sort
