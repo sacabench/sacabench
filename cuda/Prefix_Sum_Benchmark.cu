@@ -161,7 +161,7 @@ void prefix_sum_cub_inclusive(int* values_in, int* values_out, int N)
         cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, values_in, values_out, N);
         // Allocate temporary storage
         cudaMalloc(&d_temp_storage, temp_storage_bytes);
-        // Run exclusive prefix sum
+        // Run inclusive prefix sum
         cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, values_in, values_out, N);
 
         cudaDeviceSynchronize();
@@ -183,7 +183,7 @@ int main()
 
 
 
-    //GPU array auf GPU allokieren
+    //Allocate Arrays in GPU Memory
     cudaMallocManaged(&gpu_array_in, n*sizeof(int));
     cudaMallocManaged(&gpu_array_out, n*sizeof(int));
     std::cout<<"Fill arrays"<<std::endl;
@@ -198,11 +198,13 @@ int main()
     }
     std::cout<<"Start calculating"<<std::endl;
 
+    //Use CUDA API for time measurement
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
 
     cudaEventRecord(start);
+    //Run CUDA Version
     prefix_sum_cub_inclusive(gpu_array_in,gpu_array_out, n);  
     cudaEventRecord(stop);
 
@@ -214,6 +216,7 @@ int main()
 
 
     cudaEventRecord(start);
+    //Run Seq CPU Version
     seq_prefix_sum<int, sum_fct<int>>(cpu_array_in, cpu_array_out, true, sum_fct<int>(), 0,n);
     cudaEventRecord(stop);
 
@@ -223,6 +226,7 @@ int main()
     std::cout<<"Elapsed Time on CPU: "<<milliseconds<<" ms"<<std::endl;
 
     cudaEventRecord(start);
+    //Run Par CPU Version
     par_prefix_sum<int, sum_fct<int>>(cpu_array_in, cpu_array_out, true, sum_fct<int>(), 0,n);
     cudaEventRecord(stop);
 
