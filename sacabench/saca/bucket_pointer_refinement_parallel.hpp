@@ -90,39 +90,31 @@ public:
         const size_t in_l2_bucket = in_l1_bucket / alph_size;
         const size_t in_l3_bucket = in_l2_bucket / alph_size;
 
-#pragma omp parallel
-        {
-            std::size_t c_cur, c_suc, c_suc_suc; // characters must be size_t for parallelization
-            util::container<sa_index> bptr_copy = bptr.make_copy();
+        util::character c_cur, c_suc, c_suc_suc;
 
-#pragma omp for
-            for (c_cur = 0; c_cur < alph_size; ++c_cur) {
-                for (c_suc = c_cur + 1; c_suc < alph_size; ++c_suc) {
-                    // for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) { // use this line for 2nd level inducing
-                    for (c_suc_suc = 0; c_suc_suc < alph_size; ++c_suc_suc) {
-                        const size_t bucket_idx_begin = c_cur * in_l1_bucket +
-                                                        c_suc * in_l2_bucket +
-                                                        c_suc_suc * in_l3_bucket;
-                        const size_t bucket_idx_end =
-                            bucket_idx_begin + in_l3_bucket;
-                        for (size_t bucket_idx = bucket_idx_begin;
-                             bucket_idx < bucket_idx_end; ++bucket_idx) {
-                            if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
-                                // if the bucket has at least 1 element
-                                span<sa_index> sub_bucket = sa.slice(
-                                    buckets[bucket_idx], buckets[bucket_idx + 1]);
-                                sa_index offset = bucketsort_depth;
-                                refine_single_bucket<sa_index>(
-                                    offset, bucketsort_depth, bptr_copy,
-                                    buckets[bucket_idx], sub_bucket);
-                            }
+        for (c_cur = 0; c_cur < alph_size; ++c_cur) {
+            for (c_suc = c_cur + 1; c_suc < alph_size; ++c_suc) {
+                for (c_suc_suc = c_cur; c_suc_suc < alph_size; ++c_suc_suc) {
+                    const size_t bucket_idx_begin = c_cur * in_l1_bucket +
+                                                    c_suc * in_l2_bucket +
+                                                    c_suc_suc * in_l3_bucket;
+                    const size_t bucket_idx_end =
+                        bucket_idx_begin + in_l3_bucket;
+                    for (size_t bucket_idx = bucket_idx_begin;
+                         bucket_idx < bucket_idx_end; ++bucket_idx) {
+                        if (buckets[bucket_idx + 1] > buckets[bucket_idx]) {
+                            // if the bucket has at least 1 element
+                            span<sa_index> sub_bucket = sa.slice(
+                                buckets[bucket_idx], buckets[bucket_idx + 1]);
+                            sa_index offset = bucketsort_depth;
+                            refine_single_bucket<sa_index>(
+                                offset, bucketsort_depth, bptr,
+                                buckets[bucket_idx], sub_bucket);
                         }
                     }
                 }
             }
-            bptr_copy = make_container<sa_index>(0);
         }
-        bptr = make_container<sa_index>(0);
 
         /**
          * Phase 3
@@ -147,9 +139,6 @@ public:
         auto left_scan_idx = util::make_container<size_t>(alph_size);
         auto right_scan_idx = util::make_container<size_t>(alph_size);
 
-        std::size_t c_cur;//, c_suc, c_suc_suc; // characters must be size_t for parallelization
-
-#pragma omp parallel for schedule(dynamic)
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
 
             sa_index suffix_idx;
@@ -186,7 +175,6 @@ public:
                         sa[--rmu[c_cur * alph_size + c_pre]] = suffix_idx;
                     }
                     // second level copy
-                    /*
                     if (suffix_idx) {
                         c_pre_pre = input[--suffix_idx];
                         if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
@@ -197,19 +185,20 @@ public:
                             }
                         }
                     }
-                    */
                 }
             }
+            /*
         }
 
         for (c_cur = 0; c_cur < alph_size; ++c_cur) {
 
             sa_index suffix_idx;
 
-            //size_t bucket_idx;
+            size_t bucket_idx;
 
             // predecessor and pre-predecessor characters of
-            util::character c_pre; //, c_pre_pre;
+            util::character c_pre, c_pre_pre;
+            */
 
             /*
              * use copy technique for left buckets
@@ -223,7 +212,6 @@ public:
                         sa[lmu[c_cur * alph_size + c_pre]++] = suffix_idx;
                     }
                     // second level copy
-                    /*
                     if (suffix_idx) {
                         c_pre_pre = input[--suffix_idx];
                         if (c_cur < c_pre_pre && c_pre_pre < c_pre) {
@@ -234,7 +222,6 @@ public:
                             }
                         }
                     }
-                    */
                 }
                 ++left_scan_idx[c_cur];
             }
