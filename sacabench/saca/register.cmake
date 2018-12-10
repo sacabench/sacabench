@@ -119,3 +119,10 @@ SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
 
 SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
     sacabench::osipov::osipov_sequential_wp)
+
+SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
+    sacabench::osipov::osipov_parallel)
+
+SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
+    sacabench::osipov::osipov_parallel_wp)
+
