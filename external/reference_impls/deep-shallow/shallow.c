@@ -521,9 +521,9 @@ static void shallow_inssort_lcp(Int32 *a, Int32 n, UChar *text_depth)
       // --- use lcp to move down as many elements of a[] as possible
       lcpi = lcp_new;
       do {
-	a[j] = a[j1];               // move down a[j-1]
+        a[j] = a[j1];               // move down a[j-1]
         lcp[j] = lcp[j1];           // move down lcp[j-1]
-	j=j1; j1--;                 // update j and j1=j-1
+        j=j1; j1--;                 // update j and j1=j-1
       } while(lcpi<lcp[j1]);        // recall that lcp[-1]=-1
 
       if(lcpi>lcp[j1]) break;       // ai will be written in position j

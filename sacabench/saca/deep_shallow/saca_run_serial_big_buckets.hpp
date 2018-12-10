@@ -19,18 +19,11 @@
 
 #include "anchor_data.hpp"
 #include "blind/sort.hpp"
-#include "bucket_data.hpp"
+#include "bucket_data_bb.hpp"
 #include "log.hpp"
 #include "parameters.hpp"
 
 namespace sacabench::deep_shallow {
-
-inline void print_text(const util::string_span text) {
-    for (const util::character& c : text) {
-        std::cout << (char)(c + 'a' - 1) << " ";
-    }
-    std::cout << std::endl;
-}
 
 template <typename T>
 using span = util::span<T>;
@@ -39,12 +32,12 @@ using u_char = util::character;
 /// \brief Represents a run on a specific input of the Deep Shallow SACA.
 ///        After construction, the suffix array construction is completed.
 template <typename sa_index_type>
-class saca_run {
+class saca_run_bb {
 private:
     util::string_span input_text;
     size_t alphabet_size;
     span<sa_index_type> suffix_array;
-    bucket_data_container<sa_index_type> bd;
+    bucket_data_container_bb<sa_index_type> bd;
     anchor_data<sa_index_type> ad;
 
     size_t max_blind_sort_size;
@@ -53,7 +46,7 @@ private:
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
         // Create bucket_data_container object with the right size.
-        bd = bucket_data_container<sa_index_type>(alphabet_size);
+        bd = bucket_data_container_bb<sa_index_type>(alphabet_size);
 
         // Use bucket sort to sort the suffix array by the first two characters.
         const auto bucket_bounds = util::sort::bucketsort_presort(
@@ -287,54 +280,147 @@ private:
         return false;
     }
 
+    inline void copy_technique(const u_char alpha) {
+        static_assert(sizeof(u_char) == 1);
+        sa_index_type copy_start[256];
+        sa_index_type copy_end[256];
+
+        // Save initial bucket bounds for sub buckets.
+        for (size_t j = 0; j <= alphabet_size; ++j) {
+            copy_start[j] = bd.start_of_bucket(j, alpha);
+            copy_end[j] = bd.end_of_bucket(j, alpha) - sa_index_type(1);
+
+            // std::cout << "j: " << j << " - " << copy_start[j] << ", " << copy_end[j] << std::endl;
+        }
+
+        // Here be magic.
+        if (alpha == 0) {
+            // std::cout << "gjwiogjweiog" << std::endl;
+            DCHECK(false);
+        }
+
+        for (size_t j = bd.start_of_bucket(alpha, 0); j < copy_start[alpha]; ++j) {
+            const auto q = size_t(suffix_array[j]);
+            if (q == 0) continue;
+
+            const auto k = q - 1;
+            const auto c = input_text[k];
+            if (bd.size_of_bucket(c) > 0 && !bd.is_bucket_sorted(c)) {
+                // std::cout << "c: " << size_t(c) << ", k = " << k << ", copy_start[c] = " << copy_start[c] << std::endl;
+                suffix_array[ copy_start[c]++ ] = k;
+                logger::get().sorted_elements_simple_induction(1);
+            }
+        }
+
+        for (size_t j = bd.end_of_bucket(alpha, alphabet_size) - sa_index_type(1); j > copy_end[alpha]; --j) {
+            const auto q = size_t(suffix_array[j]);
+            if (q == 0) continue;
+            
+            const auto k = q - 1;
+            const auto c = input_text[k];
+            if (bd.size_of_bucket(c) > 0 && !bd.is_bucket_sorted(c)) {
+                // std::cout << "c: " << size_t(c) << ", k = " << k << ", copy_end[c] = " << copy_end[c] << std::endl;
+                suffix_array[ copy_end[c]-- ] = k;
+                logger::get().sorted_elements_simple_induction(1);
+            }
+        }
+
+        DCHECK_EQ(copy_start[alpha] - sa_index_type(1), copy_end[alpha]);
+
+        for (size_t j = 0; j <= alphabet_size; ++j) {
+            bd.mark_bucket_sorted(j, alpha);
+            bd.mark_bucket_sorted(alpha, j);
+        }
+
+        // std::cout << "copy done" << std::endl;
+    }
+
+    inline void sort_big_bucket(const u_char alpha) {
+        // Get bucket bounds.
+        const auto bucket_start = bd.start_of_bucket(alpha, 0);
+        const auto bucket_end = bd.end_of_bucket(alpha, alphabet_size);
+
+        DCHECK_LT(bucket_start, bucket_end);
+
+        // Get slice of suffix array, which contains the elements of the
+        // bucket.
+        const span<sa_index_type> bucket =
+            suffix_array.slice(bucket_start, bucket_end);
+      
+        for(u_char i = 0; i <= alphabet_size; ++i) {
+            if(!bd.is_bucket_sorted(alpha,i) && bd.size_of_bucket(alpha, i) > 1) {
+                sort_sub_bucket(alpha, i);
+            }
+        }
+
+        // Debug check: the bucket is correctly suffix sorted.
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
+
+        for (sa_index_type i = 0; i < bucket.size(); ++i) {
+            ad.update_anchor(bucket[i], bucket_start + i);
+        }
+
+        // We can now induce the sorting of every B_{x, alpha}-Bucket.
+        copy_technique(alpha);
+    }
+
+    inline void sort_sub_bucket(const u_char alpha, const u_char beta) {
+        // Get bucket bounds.
+        const auto bucket_start = bd.start_of_bucket(alpha, beta);
+        const auto bucket_end = bd.end_of_bucket(alpha, beta);
+
+        DCHECK_LT(bucket_start, bucket_end);
+
+        // Get slice of suffix array, which contains the elements of the
+        // bucket.
+        const span<sa_index_type> bucket =
+            suffix_array.slice(bucket_start, bucket_end);
+
+        if (bucket.size() <= 2) {
+            // Special case: use quicksort for small buckets
+            simple_sort(bucket, 2);
+        } else {
+            // Shallow sort it.
+            shallow_sort(bucket);
+        }
+
+        // Debug check: the bucket is correctly suffix sorted.
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
+
+        for (sa_index_type i = 0; i < bucket.size(); ++i) {
+            ad.update_anchor(bucket[i], bucket_start + i);
+        }
+
+        // Mark this bucket as sorted.
+        bd.mark_bucket_sorted(alpha, beta);
+    }
+
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
         while (bd.are_buckets_left()) {
             // Find the smallest unsorted bucket.
             const auto unsorted_bucket = bd.get_smallest_bucket();
-            const auto alpha = unsorted_bucket.first;
-            const auto beta = unsorted_bucket.second;
 
-            if (bd.size_of_bucket(alpha, beta) < 2) {
+            if(bd.is_bucket_sorted(unsorted_bucket)) {
+                continue;
+            }
+
+            if (bd.size_of_bucket(unsorted_bucket) < 2) {
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {
                 // Get bucket bounds.
-                const auto bucket_start = bd.start_of_bucket(alpha, beta);
-                const auto bucket_end = bd.end_of_bucket(alpha, beta);
-
-                DCHECK_LT(bucket_start, bucket_end);
-
-                // Get slice of suffix array, which contains the elements of the
-                // bucket.
-                const span<sa_index_type> bucket =
-                    suffix_array.slice(bucket_start, bucket_end);
-
-                if (bucket.size() <= 2) {
-                    simple_sort(bucket, 2);
-                } else {
-                    // Shallow sort it.
-                    shallow_sort(bucket);
-                }
-
-                // Debug check: the bucket is correctly suffix sorted.
-                // FIXME: get rid of the obnoxious debug warning.
-                // DCHECK(is_partially_suffix_sorted(bucket, input_text));
-
-                for (sa_index_type i = 0; i < bucket.size(); ++i) {
-                    ad.update_anchor(bucket[i], bucket_start + i);
-                }
-
-                DCHECK(is_partially_suffix_sorted(bucket, input_text));
+                //sort_sub_bucket(alpha, beta);
+                sort_big_bucket(unsorted_bucket);
             }
 
             // Mark this bucket as sorted.
-            bd.mark_bucket_sorted(alpha, beta);
+            bd.mark_bucket_sorted(unsorted_bucket);
         }
     }
 
 public:
-    inline saca_run(util::string_span text, size_t _alphabet_size,
+    inline saca_run_bb(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
           bd(), ad(text.size()),
@@ -356,6 +442,8 @@ public:
             // Sort all buckets iteratively.
             sort_all_buckets();
         }
+
+        // std::cout << "SA: " << suffix_array << std::endl;
     }
 };
 } // namespace sacabench::deep_shallow

@@ -96,9 +96,9 @@ private:
 
             ++depth;
 
-            if(left.size() < data.size() / 8 || right.size() < data.size() / 8) {
-                // TODO: Use idea from pdqsort and swap 4 elements.
-            }
+            // if(left.size() < data.size() / 8 || right.size() < data.size() / 8) {
+            //     // TODO: Use idea from pdqsort and swap 4 elements.
+            // }
 
             // Sort smaller partition first
             if (left.size() > right.size()) {
