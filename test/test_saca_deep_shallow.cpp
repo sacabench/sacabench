@@ -18,7 +18,7 @@
 
 using namespace sacabench;
 using u_char = sacabench::util::character;
-using ds = sacabench::deep_shallow::saca;
+using ds = sacabench::deep_shallow::serial;
 
 TEST(blind_trie, traverse) {
     using blind_trie = sacabench::deep_shallow::blind::trie<size_t>;

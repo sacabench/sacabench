@@ -37,17 +37,31 @@ sacabench_default="$HOME/sacabench"
 usage.add_argument("--sacabench-directory", default=sacabench_default,
                    help="Location where the sacabench directory is located. Defaults to \"{}\".".format(sacabench_default))
 
-maxcores_default=20  # up to 48
-usage.add_argument("--maxcores", default=maxcores_default,
-                   type=int,
-                   help="Maximum amount of cores requested. Sensible values on lido3 are 20 and 48. Defaults to {}.".format(maxcores_default))
+usage.add_argument("--launch-config", type=Path,
+                   help="Config file used by launch.")
+
+cluster_configs = {
+    "20cores": {
+        "cores": 20,
+        "mem": "60G",
+        "constraint": "xeon_e52640v4",
+    },
+    "48cores": {
+        "cores": 48,
+        "mem": "250G",
+        "constraint": "cquad01",
+    },
+}
+cluster_config_default='20cores'
+usage.add_argument("--cluster-config", default=cluster_config_default,
+                   help="Maximum amount of cores requested. Defaults to {}.".format(cluster_config_default), choices = list(iter(cluster_configs)))
 
 args = usage.parse_args()
 # ---------------------
 
 # Note: --parsable means `jobid[;clustername]`
 # Also: -Q/--quiet to surpress info messages
-batch_template = """#!/bin/bash -l
+batch_template = """#!/bin/bash
 #SBATCH --parsable
 #SBATCH --quiet
 #SBATCH --time={time}
@@ -55,11 +69,13 @@ batch_template = """#!/bin/bash -l
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task={maxcores}
 #SBATCH --partition=short
-#SBATCH --constraint=cquad01
+#SBATCH --constraint={constraint}
 #SBATCH --output={output}
-#SBATCH --mem=250000
+#SBATCH --mem={mem}
 #SBATCH --exclusive
 #SBATCH --job-name={jobname}
+#SBATCH --export=ALL
+#SBATCH --mail-type=FAIL
 {test_only}
 cd {cwd}
 {cmd}
@@ -76,6 +92,8 @@ def launch_job(cwd, cmd, output):
 
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
+    clstcfg = cluster_configs[args.cluster_config]
+
     instance = batch_template.format(
         time=args.estimated_time,
         jobname=jobname,
@@ -83,7 +101,9 @@ def launch_job(cwd, cmd, output):
         cwd=cwd,
         output=output,
         cmd=cmd,
-        maxcores=int(args.maxcores)
+        maxcores=clstcfg["cores"],
+        mem=clstcfg["mem"],
+        constraint=clstcfg["constraint"],
     )
 
     if args.print_sbatch:
@@ -96,62 +116,6 @@ def launch_job(cwd, cmd, output):
     else:
         return None
 
-#TODO: Move to external config file
-algos = [
-  "Deep-Shallow_ref",
-  "DivSufSort_ref",
-  "MSufSort_ref",
-  "SACA-K_ref",
-  "SADS_ref",
-  "SAIS_ref",
-  "SAIS-LITE_ref",
-  "GSACA_ref",
-  "qsufsort_ref",
-  "DC3_ref",
-  "Deep-Shallow",
-  "BPR",
-  "BPR_ref",
-  "mSufSort",
-  "Doubling",
-  "Discarding2",
-  "Discarding4",
-  "Discarding4Parallel",
-  "SAIS",
-  "SADS",
-  "GSACA",
-  "GSACA_Opt",
-  "GSACA_parallel",
-  "DC7",
-  "qsufsort",
-  "Naiv",
-  "SACA-K",
-  "DC3",
-  "DivSufSort",
-  "nzSufSort",
-  "DC3-Lite",
-  "Osipov_parallel",
-  "Osipov_parallel_wp",
-]
-datasets=[
-    #"cc_commoncrawl.ascii.200MB",
-    #"combined.txt",
-    "pc_dblp.xml.200MB",
-    "pc_dna.200MB",
-    "pc_english.200MB",
-    "pc_proteins.200MB",
-    "pc_sources.200MB",
-    #"pcr_cere.200MB",
-    #"pcr_einstein.en.txt.200MB",
-    #"pcr_fib41.200MB",
-    #"pcr_kernel.200MB",
-    #"pcr_para.200MB",
-    #"pcr_rs.13.200MB",
-    #"pcr_tm29.200MB",
-    #"tagme_wiki-disamb30.200MB",
-    #"wiki_all_vital.txt.200MB",
-]
-N=3
-PREFIX="200M"
 
 timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 WORK = Path(os.path.expandvars("$WORK"))
@@ -159,14 +123,26 @@ HOME = Path(os.path.expandvars("$HOME"))
 sacapath = Path(os.path.expandvars(args.sacabench_directory))
 
 if args.launch:
+    #TODO: Move to external config file
+    ALGOS = []
+    DATASETS=[]
+    N=1
+    PREFIX="10M"
+    if args.launch_config:
+        j = load_json(args.launch_config)
+        ALGOS = j["launch"]["algo"]
+        DATASETS = j["launch"]["input"]
+        N = j["launch"]["rep"]
+        PREFIX = j["launch"]["prefix"]
+
     counter = 0
     print("Starting jobs...")
     index = {
         "output_files" : [],
     }
     outdir = WORK / Path("batch_{}".format(timestamp))
-    for (j, dataset) in enumerate(datasets):
-        for (i, algo) in enumerate(algos):
+    for (j, dataset) in enumerate(DATASETS):
+        for (i, algo) in enumerate(ALGOS):
 
             cwd = sacapath / Path("build")
             input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)

@@ -11,6 +11,12 @@
 #include <util/bits.hpp>
 #include <util/span.hpp>
 
+#ifndef DEBUG
+#define DEBUG_NO_CONSTEXPR constexpr
+#else
+#define DEBUG_NO_CONSTEXPR
+#endif
+
 namespace sacabench::util {
 
 using uchar = unsigned char;
@@ -30,11 +36,11 @@ private:
                                         << (bits_of<sa_index> - 1 - i);
 
 public:
-    constexpr inline tagged_number() : memory(0) {
+    DEBUG_NO_CONSTEXPR inline tagged_number() : memory(0) {
         DCHECK_LE(extra_bits, bits_of<sa_index>());
     }
 
-    constexpr inline tagged_number(const sa_index m) : memory(m) {
+    DEBUG_NO_CONSTEXPR inline tagged_number(const sa_index m) : memory(m) {
         DCHECK_LE(extra_bits, bits_of<sa_index>);
     }
 
@@ -43,7 +49,7 @@ public:
     constexpr inline operator sa_index() const { return number(); }
 
     template <uchar i>
-    constexpr inline bool get() const {
+    DEBUG_NO_CONSTEXPR inline bool get() const {
         DCHECK_LT(i, extra_bits);
         return memory & BITMASK<i>;
     }
@@ -74,12 +80,12 @@ public:
         return number() > rhs;
     }
 
-    constexpr inline void operator++() {
+    DEBUG_NO_CONSTEXPR inline void operator++() {
         DCHECK_LT(memory, MAX);
         ++memory;
     }
 
-    constexpr inline void operator--() {
+    DEBUG_NO_CONSTEXPR inline void operator--() {
         DCHECK_GT(memory, 0);
         --memory;
     }
@@ -88,8 +94,8 @@ public:
         return tagged_number(number() + rhs);
     }
 
-    constexpr inline tagged_number operator-(const sa_index& rhs) {
-        DCHECK_GE(number(), rhs.number());
+    DEBUG_NO_CONSTEXPR inline tagged_number operator-(const sa_index& rhs) {
+        DCHECK_GE(number(), rhs);
         return tagged_number(number() - rhs);
     }
 
