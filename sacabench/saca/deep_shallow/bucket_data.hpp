@@ -50,8 +50,6 @@ private:
     size_t sorting_idx;
 
 public:
-    inline bucket_data_container() : bucket_data_container(0) {}
-
     inline bucket_data_container(const size_t alphabet_size)
         : real_alphabet_size(alphabet_size + 1),
           bounds({real_alphabet_size, real_alphabet_size}),
