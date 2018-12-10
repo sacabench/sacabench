@@ -11,7 +11,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 endif()
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
-project(sacabench)
+project(sacabench LANGUAGES C CXX CUDA)
 
 # Compile all code with ccache, if it exists in the system
 find_program(CCACHE_FOUND ccache)
@@ -83,5 +83,7 @@ add_subdirectory(sacabench)
 add_subdirectory(test)
 add_subdirectory(bigtest)
 add_subdirectory(external/ips4o)
+
+add_subdirectory(cuda)
 
 ################################################################################
