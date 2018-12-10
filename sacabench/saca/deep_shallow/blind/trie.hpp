@@ -272,7 +272,7 @@ public:
 
         bool child_found = true;
 
-        while(child_found) {
+        while (child_found) {
             // Scan the children to find the right edge.
             // TODO: Replace by binary search since the children are sorted by
             // their edge labels.

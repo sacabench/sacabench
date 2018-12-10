@@ -10,6 +10,7 @@
 #include <util/alphabet.hpp>
 #include <util/bits.hpp>
 #include <saca/osipov/osipov_parallel.hpp>
+#include <saca/osipov/osipov_sequential.hpp>
 #include "test/saca.hpp"
 
 using namespace sacabench::osipov;
@@ -59,3 +60,11 @@ TEST(OsipovWp, SpecialInput) {
              ASSERT_EQ(fast_result, sa_check_result::ok);
          }
 }*/
+
+TEST(Osipov, CornerCases) {
+    test::saca_corner_cases<sacabench::osipov::osipov_sequential>();
+}
+
+TEST(OsipovWp, CornerCases) {
+    test::saca_corner_cases<sacabench::osipov::osipov_sequential_wp>();
+}
