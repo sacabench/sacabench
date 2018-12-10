@@ -16,7 +16,7 @@
 
 namespace sacabench::osipov {
     template<bool wordpacking_4_sort>
-    class osipov_impl {
+    class osipov_impl_seq {
     public:
         template <typename sa_index>
         static void construct_sa(util::string_span text,
@@ -286,7 +286,7 @@ namespace sacabench::osipov {
         static void construct_sa(util::string_span text,
                                  util::alphabet const&,
                                  util::span<sa_index> out_sa) {
-            osipov_impl<false>::construct_sa(text, out_sa);
+            osipov_impl_seq<false>::construct_sa(text, out_sa);
         }
     };
     struct osipov_sequential_wp {
@@ -301,7 +301,7 @@ namespace sacabench::osipov {
         static void construct_sa(util::string_span text,
                                  util::alphabet const&,
                                  util::span<sa_index> out_sa) {
-            osipov_impl<true>::construct_sa(text, out_sa);
+            osipov_impl_seq<true>::construct_sa(text, out_sa);
         }
     };
 }

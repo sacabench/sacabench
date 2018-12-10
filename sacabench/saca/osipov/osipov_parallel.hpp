@@ -18,7 +18,7 @@
 
 namespace sacabench::osipov {
 template <bool wordpacking_4_sort>
-class osipov_impl {
+class osipov_impl_par {
 public:
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -471,7 +471,7 @@ struct osipov_parallel {
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl<false>::construct_sa(text, out_sa);
+        osipov_impl_par<false>::construct_sa(text, out_sa);
     }
 };
 struct osipov_parallel_wp {
@@ -485,7 +485,7 @@ struct osipov_parallel_wp {
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl<true>::construct_sa(text, out_sa);
+        osipov_impl_par<true>::construct_sa(text, out_sa);
     }
 };
 } // namespace sacabench::osipov

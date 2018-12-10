@@ -17,11 +17,11 @@ using namespace sacabench::osipov;
 using namespace sacabench;
 using namespace sacabench::util;
 
-TEST(Osipov, CornerCases) {
+TEST(OsipovPar, CornerCases) {
     test::saca_corner_cases<sacabench::osipov::osipov_parallel>();
 }
 
-TEST(OsipovWp, CornerCases) {
+TEST(OsipovParWp, CornerCases) {
     test::saca_corner_cases<sacabench::osipov::osipov_parallel_wp>();
 }
 /*
@@ -61,10 +61,10 @@ TEST(OsipovWp, SpecialInput) {
          }
 }*/
 
-TEST(Osipov, CornerCases) {
+TEST(OsipovSeq, CornerCases) {
     test::saca_corner_cases<sacabench::osipov::osipov_sequential>();
 }
 
-TEST(OsipovWp, CornerCases) {
+TEST(OsipovSeqWp, CornerCases) {
     test::saca_corner_cases<sacabench::osipov::osipov_sequential_wp>();
 }
