@@ -86,9 +86,9 @@ ifeq (210, $(findstring 210, $(SM_ARCH)))
     TEST_ARCH 	= 210
 endif
 ifeq (200, $(findstring 200, $(SM_ARCH)))
-    SM_TARGETS 	+= -gencode=arch=compute_20,code=\"sm_20,compute_20\"
-    SM_DEF 		+= -DSM200
-    TEST_ARCH 	= 200
+#    SM_TARGETS 	+= -gencode=arch=compute_20,code=\"sm_20,compute_20\"
+#    SM_DEF 		+= -DSM200
+#    TEST_ARCH 	= 200
 endif
 ifeq (130, $(findstring 130, $(SM_ARCH)))
     SM_TARGETS 	+= -gencode=arch=compute_13,code=\"sm_13,compute_13\" 
