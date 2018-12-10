@@ -13,7 +13,6 @@
 #include <tuple>
 #include <byteswap.h>
 #include <tudocomp_stat/StatPhase.hpp>
-#include <omp.h>
 
 namespace sacabench::osipov {
     template<bool wordpacking_4_sort>
@@ -136,7 +135,7 @@ namespace sacabench::osipov {
                 }
             }
         }
-        
+
         // Sequential variant of initializing the isa
         template <typename sa_index, typename compare_func>
         static void initialize_isa(util::span<sa_index> sa,
