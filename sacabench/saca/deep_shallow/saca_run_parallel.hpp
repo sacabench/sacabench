@@ -317,10 +317,10 @@ private:
     inline void sort_all_buckets() {
 
         // Spawn a task pool to run the buckets in parallel
-        #pragma omp parallel
+        //#pragma omp parallel
         {
             // Schedule the buckets in serial
-            #pragma omp single nowait
+            //#pragma omp single
             while (bd.are_buckets_left()) {
 
                 // Find the smallest unsorted bucket.
@@ -357,7 +357,7 @@ public:
     inline parallel_saca_run(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
-          bd(), ad(text.size()),
+          bd(_alphabet_size), ad(text.size()),
           max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
 
         // Fill sa with unsorted suffix array.

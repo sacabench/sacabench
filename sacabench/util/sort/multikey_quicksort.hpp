@@ -147,7 +147,6 @@ inline void multikey_quicksort(span<index_type> array,
 // comparing current index) in order to work properly.
 template <typename index_type, typename Compare>
 inline void multikey_quicksort(span<index_type> array,
-                               const string_span input_text,
                                Compare& key_func) {
     multikey_quicksort_internal<0, index_type, Compare>(array, key_func);
 }
@@ -158,7 +157,7 @@ inline void multikey_quicksort(span<index_type> array,
 template <size_t abort_at_depth, typename index_type, typename Fn,
           typename Compare>
 inline void multikey_quicksort(span<index_type> array,
-                               const string_span input_text, Fn fn,
+                               Fn fn,
                                Compare& key_func) {
     // Call internal function.
     multikey_quicksort_internal<abort_at_depth>(array, key_func, fn);
