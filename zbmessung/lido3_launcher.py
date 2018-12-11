@@ -262,7 +262,7 @@ def to_sqlplot(output_file, stats):
 
         s = "RESULT"
         for k in sorted(o):
-            s += " {}={}".format(k, o[k])
+            s += "\t{}={}".format(k, o[k])
         out += (s + "\n")
     return out
 
