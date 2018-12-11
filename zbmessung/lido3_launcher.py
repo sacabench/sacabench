@@ -221,8 +221,8 @@ def load_data():
             print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
             continue
 
-        stat = load_json(stat_output)
-        yield (output_file, stat)
+        stats = load_json(stat_output)
+        yield (output_file, stats)
 
 def stat_nav_sub(stat, title):
     phase = stat["sub"]
@@ -243,6 +243,7 @@ def get_algo_stat(stat):
     }
 
 def to_sqlplot(output_file, stats):
+    pprint(stats)
     out = ""
     for (stati, stat) in enumerate(stats):
         o = {
@@ -263,10 +264,10 @@ def to_sqlplot(output_file, stats):
 
 if args.combine:
     file_map = {}
-    for (output_file, stat) in load_data():
+    for (output_file, stats) in load_data():
         threads = output_file["threads"]
         input = output_file["input"]
-        print(to_sqlplot(output_file, stat))
+        print(to_sqlplot(output_file, stats))
 
         key = (input, str(threads))
         if not key in file_map:
