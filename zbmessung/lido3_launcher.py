@@ -102,6 +102,10 @@ def launch_job(cwd, cmd, output, omp_threads):
 
     clstcfg = cluster_configs[args.cluster_config]
 
+    cores = clstcfg["cores"]
+    if omp_threads:
+        cores = omp_threads
+
     instance = batch_template.format(
         time=args.estimated_time,
         jobname=jobname,
@@ -109,7 +113,7 @@ def launch_job(cwd, cmd, output, omp_threads):
         cwd=cwd,
         output=output,
         cmd=cmd,
-        maxcores=clstcfg["cores"],
+        maxcores=cores,
         mem=clstcfg["mem"],
         constraint=clstcfg["constraint"],
         omp_threads=omp_threads_str,
