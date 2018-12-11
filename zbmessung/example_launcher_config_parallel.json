@@ -22,8 +22,8 @@
             "pc_proteins.200MB",
             "pc_sources.200MB"
         ],
-        "rep": 1,
-        "prefix": "10M",
+        "rep": 3,
+        "prefix": "200M",
         "threads": [
             1, 2, 4, 8, 16
         ]
