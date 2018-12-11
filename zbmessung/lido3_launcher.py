@@ -223,11 +223,48 @@ def load_data():
         stat = load_json(stat_output)
         yield (output_file, stat)
 
+def stat_nav_sub(stat, title):
+    phase = stat["sub"]
+    for e in phase:
+        if e["title"] == title:
+            return e
+    return None
+
+def get_algo_stat(stat):
+    stat = stat_nav_sub(stat, "SACA")
+    stat = stat_nav_sub(stat, "Algorithm")
+    return {
+        "time": stat["timeEnd"] - stat["timeStart"],
+        "memPeak": stat["memPeak"],
+        "memOff": stat["memOff"],
+        "memFinal": stat["memFinal"],
+    }
+
+def to_sqlplot(output_file, stat):
+    out = ""
+    for (stati, stat) in enumerate(stat):
+        o = {
+            "algo": output_file["algo"],
+            "input": output_file["input"],
+            "prefix": output_file["prefix"],
+            "threads": output_file["threads"],
+            "rep": output_file["rep"],
+            "rep_i": = stati,
+            **get_algo_stat(stat),
+        }
+
+        s = "RESULT"
+        for k in sorted(o):
+            s += " {}={}".format(k, o[k])
+        out += (s + "\n")
+    return out
+
 if args.combine:
     file_map = {}
     for (output_file, stat) in load_data():
         threads = output_file["threads"]
         input = output_file["input"]
+        print(to_sqlplot(output_file, stat))
 
         key = (input, str(threads))
         if not key in file_map:
