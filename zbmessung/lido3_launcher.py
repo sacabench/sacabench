@@ -199,24 +199,37 @@ if args.launch:
     print("Current personal job queue:")
     subprocess.run("squeue -u $USER", shell=True)
 
-if args.combine:
+def load_data():
     dir = Path(args.combine)
     index = load_json(dir / Path("index.json"))
-    file_map = {}
     for output_file in index["output_files"]:
-        stat_output = Path(output_file["stat_output"])
-        algo = output_file["algo"]
-        input = Path(output_file["input"])
-        prefix = output_file["prefix"]
-        threads = None
-        if "threads" in output_file:
-            threads = output_file["threads"]
-        if not stat_output.is_file():
-            print("Missing data for {}, {}, {} (no file {})".format(algo, input.name, prefix, stat_output.name))
-            continue
-        stat = load_json(stat_output)
-        key = (input, str(threads))
+        # Normalize input
+        output_file["stat_output"] = Path(output_file["stat_output"])
+        output_file["input"] = Path(output_file["input"])
+        if "threads" not in output_file["threads"]:
+            output_file["threads"] = None
 
+        # Get relevant data
+        stat_output = output_file["stat_output"]
+        algo = output_file["algo"]
+        input = output_file["input"]
+        prefix = output_file["prefix"]
+        threads = output_file["threads"]
+
+        if not stat_output.is_file():
+            print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
+            continue
+
+        stat = load_json(stat_output)
+        yield (output_file, stat)
+
+if args.combine:
+    file_map = {}
+    for (output_file, stat) in load_data():
+        threads = output_file["threads"]
+        input = output_file["input"]
+
+        key = (input, str(threads))
         if not key in file_map:
             file_map[key] = []
         file_map[key] += stat
