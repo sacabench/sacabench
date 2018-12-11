@@ -252,7 +252,7 @@ def to_sqlplot(output_file, stats):
     for (stati, stat) in enumerate(stats):
         o = {
             "algo": output_file["algo"],
-            "input": output_file["input"],
+            "input": output_file["input"].name,
             "prefix": output_file["prefix"],
             "threads": output_file["threads"],
             "rep": output_file["rep"],
