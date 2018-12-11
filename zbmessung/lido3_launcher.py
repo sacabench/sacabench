@@ -208,7 +208,9 @@ if args.combine:
         algo = output_file["algo"]
         input = Path(output_file["input"])
         prefix = output_file["prefix"]
-        threads = output_file["threads"]
+        threads = None
+        if "threads" in output_file:
+            threads = output_file["threads"]
         if not stat_output.is_file():
             print("Missing data for {}, {}, {} (no file {})".format(algo, input.name, prefix, stat_output.name))
             continue
