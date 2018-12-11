@@ -281,6 +281,9 @@ if args.combine:
         file_map[key].append(stats)
     for key in file_map:
         (input, threads) = key
-        write_json(dir / Path("results-{}-{}.json".format(input.name, threads)), file_map[key])
-    write_str(dir / Path("sqlplot.txt"), sqlplot_out)
-    print(sqlplot_out)
+        op = dir / Path("results-{}-{}.json".format(input.name, threads))
+        print("Write data to {}...".format(op))
+        write_json(op, file_map[key])
+    op = dir / Path("sqlplot.txt")
+    print("Write data to {}...".format(op))
+    write_str(op, sqlplot_out)
