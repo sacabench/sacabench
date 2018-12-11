@@ -222,7 +222,8 @@ def load_data():
             continue
 
         stats = load_json(stat_output)
-        yield (output_file, stats)
+        assert len(stats) == 1
+        yield (output_file, stats[0])
 
 def stat_nav_sub(stat, title):
     phase = stat["sub"]
@@ -232,7 +233,7 @@ def stat_nav_sub(stat, title):
     return None
 
 def get_algo_stat(stat):
-    pprint(stat)
+    #pprint(stat)
     stat = stat_nav_sub(stat, "SACA")
     stat = stat_nav_sub(stat, "Algorithm")
     return {
@@ -243,7 +244,7 @@ def get_algo_stat(stat):
     }
 
 def to_sqlplot(output_file, stats):
-    pprint(stats)
+    #pprint(stats)
     out = ""
     for (stati, stat) in enumerate(stats):
         o = {
