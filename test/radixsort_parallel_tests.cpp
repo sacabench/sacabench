@@ -12,6 +12,46 @@
 
 using namespace sacabench::util;
 
+TEST(radixsort_parallel_tests, string_sorting_without_start_index) {
+    string string_1 = make_string("abcy"_s);
+    string string_2 = make_string("bbyx"_s);
+    string string_3 = make_string("zyad"_s);
+    string string_4 = make_string("zybd"_s);
+    string string_5 = make_string("bbyc"_s);
+
+    container<string> test_input = {string_1, string_2, string_3, string_4, string_5};
+
+    // construct alphabet
+    sacabench::util::string input_chars = "abcdxyz"_s;
+    sacabench::util::alphabet alphabet = sacabench::util::alphabet(input_chars);
+
+    container<string> test_output = make_container<string>(5);
+    container<string> test_control = {string_1, string_5, string_2, string_3, string_4};
+
+    sort::radixsort_parallel(test_input, test_output, alphabet);
+    ASSERT_EQ(test_output, test_control);
+}
+
+TEST(radixsort_parallel_tests, string_sorting_with_start_index) {
+    string string_1 = make_string("abc"_s);
+    string string_2 = make_string("bbx"_s);
+    string string_3 = make_string("zad"_s);
+    string string_4 = make_string("zbd"_s);
+    string string_5 = make_string("bbc"_s);
+
+    container<string> test_input = {string_1, string_2, string_3, string_4, string_5};
+
+    // construct alphabet
+    sacabench::util::string input_chars = "abcdxz"_s;
+    sacabench::util::alphabet alphabet = sacabench::util::alphabet(input_chars);
+
+    container<string> test_output = make_container<string>(5);
+    container<string> test_control = {string_1, string_5, string_2, string_3, string_4};
+
+    sort::radixsort_parallel(test_input, test_output, alphabet, 2);
+    ASSERT_EQ(test_output, test_control);
+}
+
 TEST(radixsort_parallel_tests, no_conflicting_positions) {
     container<int> test_input = {456, 123, 912, 691};
     container<int> test_output = make_container<int>(4);
