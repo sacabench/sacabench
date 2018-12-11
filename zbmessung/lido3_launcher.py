@@ -7,6 +7,7 @@ import time
 import os
 import datetime
 import json
+from pprint import pprint
 
 def load_json(path):
     with open(path, 'r') as f:
@@ -231,6 +232,7 @@ def stat_nav_sub(stat, title):
     return None
 
 def get_algo_stat(stat):
+    pprint(stat)
     stat = stat_nav_sub(stat, "SACA")
     stat = stat_nav_sub(stat, "Algorithm")
     return {
@@ -240,9 +242,9 @@ def get_algo_stat(stat):
         "memFinal": stat["memFinal"],
     }
 
-def to_sqlplot(output_file, stat):
+def to_sqlplot(output_file, stats):
     out = ""
-    for (stati, stat) in enumerate(stat):
+    for (stati, stat) in enumerate(stats):
         o = {
             "algo": output_file["algo"],
             "input": output_file["input"],
