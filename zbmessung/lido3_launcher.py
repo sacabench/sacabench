@@ -40,6 +40,9 @@ usage.add_argument("--sacabench-directory", default=sacabench_default,
 usage.add_argument("--launch-config", type=Path,
                    help="Config file used by launch.")
 
+usage.add_argument("--omp-threads", type=int,
+                   help="Amount of threads OMP may use.")
+
 cluster_configs = {
     "20cores": {
         "cores": 20,
@@ -77,18 +80,23 @@ batch_template = """#!/bin/bash
 #SBATCH --export=ALL
 #SBATCH --mail-type=FAIL
 {test_only}
+{omp_threads}
 cd {cwd}
 {cmd}
 """
 
 # ---------------------
 
-def launch_job(cwd, cmd, output):
+def launch_job(cwd, cmd, output, omp_threads):
     jobname = "sacabench"
 
     test_only = ""
     if args.test_only:
         test_only = "#SBATCH --test-only\n"
+
+    omp_threads_str = ""
+    if omp_threads:
+        omp_threads_str = "export OMP_NUM_THREADS={}\n".format(omp_threads)
 
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
@@ -104,6 +112,7 @@ def launch_job(cwd, cmd, output):
         maxcores=clstcfg["cores"],
         mem=clstcfg["mem"],
         constraint=clstcfg["constraint"],
+        omp_threads=omp_threads,
     )
 
     if args.print_sbatch:
@@ -128,12 +137,15 @@ if args.launch:
     DATASETS=[]
     N=1
     PREFIX="10M"
+    THREADS=[None]
     if args.launch_config:
         j = load_json(args.launch_config)
         ALGOS = j["launch"]["algo"]
         DATASETS = j["launch"]["input"]
         N = j["launch"]["rep"]
         PREFIX = j["launch"]["prefix"]
+        if "threads" in j["launch"]:
+            THREADS=j["launch"]["threads"]
 
     counter = 0
     print("Starting jobs...")
@@ -143,33 +155,39 @@ if args.launch:
     outdir = WORK / Path("batch_{}".format(timestamp))
     for (j, dataset) in enumerate(DATASETS):
         for (i, algo) in enumerate(ALGOS):
+            for omp_threads in THREADS:
+                cwd = sacapath / Path("build")
+                input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
 
-            cwd = sacapath / Path("build")
-            input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
+                if omp_threads:
+                    threads_str = "threads{:03}".format(omp_threads)
+                else:
+                    threads_str = "threadsMAX"
 
-            id = "inp{:03}-algo{:03}".format(j, i)
+                id = "inp{:03}-algo{:03}-{}".format(j, i, threads_str)
 
-            output = outdir / Path("stdout-{}.txt".format(id))
-            batch_output = outdir / Path("stat-{}.json".format(id))
+                output = outdir / Path("stdout-{}.txt".format(id))
+                batch_output = outdir / Path("stat-{}.json".format(id))
 
-            cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
-                bench_out=batch_output,
-                prefix=PREFIX,
-                rep=N,
-                algo=algo,
-                input_path=input_path
-            )
+                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
+                    bench_out=batch_output,
+                    prefix=PREFIX,
+                    rep=N,
+                    algo=algo,
+                    input_path=input_path
+                )
 
-            jobid = launch_job(cwd, cmd, output)
-            index["output_files"].append({
-                "output" : str(output),
-                "stat_output" : str(batch_output),
-                "input": str(input_path),
-                "algo": algo,
-                "prefix": PREFIX,
-                "rep": N,
-                "jobid": jobid,
-            })
+                jobid = launch_job(cwd, cmd, output, omp_threads)
+                index["output_files"].append({
+                    "output" : str(output),
+                    "stat_output" : str(batch_output),
+                    "input": str(input_path),
+                    "algo": algo,
+                    "prefix": PREFIX,
+                    "rep": N,
+                    "jobid": jobid,
+                    "threads": omp_threads,
+                })
 
             counter += 1
     write_json(outdir / Path("index.json"), index)
@@ -186,12 +204,16 @@ if args.combine:
         algo = output_file["algo"]
         input = Path(output_file["input"])
         prefix = output_file["prefix"]
+        threads = output_file["threads"]
         if not stat_output.is_file():
             print("Missing data for {}, {}, {} (no file {})".format(algo, input.name, prefix, stat_output.name))
             continue
         stat = load_json(stat_output)
-        if not input in file_map:
-            file_map[input] = []
-        file_map[input] += stat
-    for input in file_map:
-        write_json(dir / Path("results-{}.json".format(input.name)), file_map[input])
+        key = (input, str(threads))
+
+        if not key in file_map:
+            file_map[key] = []
+        file_map[key] += stat
+    for key in file_map:
+        (input, threads) = key
+        write_json(dir / Path("results-{}-{}.json".format(input.name, threads)), file_map[key])
