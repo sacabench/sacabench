@@ -249,7 +249,7 @@ def to_sqlplot(output_file, stat):
             "prefix": output_file["prefix"],
             "threads": output_file["threads"],
             "rep": output_file["rep"],
-            "rep_i": = stati,
+            "rep_i": stati,
             **get_algo_stat(stat),
         }
 
