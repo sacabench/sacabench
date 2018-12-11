@@ -17,6 +17,10 @@ def write_json(path, data):
     with open(path, 'w') as f:
         f.write(json.dumps(data, sort_keys=True, indent=4))
 
+def write_str(path, data):
+    with open(path, 'w') as f:
+        f.write(str(data))
+
 # ---------------------
 
 usage = argparse.ArgumentParser()
@@ -264,11 +268,12 @@ def to_sqlplot(output_file, stats):
     return out
 
 if args.combine:
+    sqlplot_out = ""
     file_map = {}
     for (output_file, stats) in load_data():
         threads = output_file["threads"]
         input = output_file["input"]
-        print(to_sqlplot(output_file, stats))
+        sqlplot_out += to_sqlplot(output_file, stats)
 
         key = (input, str(threads))
         if not key in file_map:
@@ -277,3 +282,5 @@ if args.combine:
     for key in file_map:
         (input, threads) = key
         write_json(dir / Path("results-{}-{}.json".format(input.name, threads)), file_map[key])
+    write_str(dir / Path("sqlplot.txt"), sqlplot_out)
+    print(sqlplot_out)
