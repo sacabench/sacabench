@@ -206,7 +206,7 @@ def load_data():
         # Normalize input
         output_file["stat_output"] = Path(output_file["stat_output"])
         output_file["input"] = Path(output_file["input"])
-        if "threads" not in output_file["threads"]:
+        if "threads" not in output_file:
             output_file["threads"] = None
 
         # Get relevant data
