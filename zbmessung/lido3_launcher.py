@@ -273,7 +273,7 @@ if args.combine:
         key = (input, str(threads))
         if not key in file_map:
             file_map[key] = []
-        file_map[key] += stat
+        file_map[key].append(stats)
     for key in file_map:
         (input, threads) = key
         write_json(dir / Path("results-{}-{}.json".format(input.name, threads)), file_map[key])
