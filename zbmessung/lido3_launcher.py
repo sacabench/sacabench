@@ -112,7 +112,7 @@ def launch_job(cwd, cmd, output, omp_threads):
         maxcores=clstcfg["cores"],
         mem=clstcfg["mem"],
         constraint=clstcfg["constraint"],
-        omp_threads=omp_threads,
+        omp_threads=omp_threads_str,
     )
 
     if args.print_sbatch:
