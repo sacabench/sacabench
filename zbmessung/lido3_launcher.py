@@ -204,8 +204,7 @@ if args.launch:
     print("Current personal job queue:")
     subprocess.run("squeue -u $USER", shell=True)
 
-def load_data():
-    dir = Path(args.combine)
+def load_data(dir):
     index = load_json(dir / Path("index.json"))
     for output_file in index["output_files"]:
         # Normalize input
@@ -268,9 +267,10 @@ def to_sqlplot(output_file, stats):
     return out
 
 if args.combine:
+    dir = Path(args.combine)
     sqlplot_out = ""
     file_map = {}
-    for (output_file, stats) in load_data():
+    for (output_file, stats) in load_data(dir):
         threads = output_file["threads"]
         input = output_file["input"]
         sqlplot_out += to_sqlplot(output_file, stats)
