@@ -97,12 +97,43 @@ namespace sacabench::util {
         }
     }
     
+    /**\brief Standard algorithm for merging two arrays.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param a_1 First array which will be merged
+     * \param a_2 Second array which will be merged
+     * \param b Output array
+     * \param swapped true, if compare function is dependent of the order of a_1 
+              and a_2 and a_1 and a_2 are swapped, false otherwise
+     * \param comp function which compares two elements a and b and returns true
+              if a < b
+     *
+     * This method is the implementation of the standard merging algorithm. The
+     * elements of a_1 and a_2 are merged by Compare function comp and the output
+     * is written to b.
+     */
     template <typename sa_index, typename Compare>
     void merge(util::span<sa_index> a_1, util::span<sa_index> a_2,
                      util::span<sa_index> b, bool swapped, const Compare comp) {
         merge_from_left(a_1, a_2, b, swapped, comp, b.size());
     }
 
+    /**\brief Merge two suffix array with the difference cover idea by using the
+     *        parallel merge in CLRS.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param sa_0 calculated SA for triplets beginning in i mod 3 = 0
+     * \param sa_12 calculated SA for triplets beginning in i mod 3 != 0
+     * \param sa memory block for merged SA
+     * \param comp function which compares for positions a and b if the suffix beginning at 
+     *         a is lexicographically smaller than that beginning at b
+     *
+     * This method merges the suffix arrays s_0, which contains the
+     * lexicographical ranks of positions i mod 3 = 0, and s_12, which
+     * contains the lexicographical ranks of positions i mod 3 != 0.
+     * This method works correct because of the difference cover idea.
+     * This method uses the parallel merge in CLRS.
+     */
     template <typename sa_index, typename Compare>
     void merge_sa_dc_parallel(const util::span<sa_index> sa_0, const util::span<sa_index> sa_12,
                      util::span<sa_index> sa, const Compare comp) {
@@ -115,6 +146,22 @@ namespace sacabench::util {
         //std::cout << "sa: " << sa << std::endl;
     }
     
+    /**\brief Merge two suffix array with the difference cover idea by using the
+     *        parallel merge by Kruskal.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param sa_0 calculated SA for triplets beginning in i mod 3 = 0
+     * \param sa_12 calculated SA for triplets beginning in i mod 3 != 0
+     * \param sa memory block for merged SA
+     * \param comp function which compares for positions a and b if the suffix beginning at 
+     *         a is lexicographically smaller than that beginning at b
+     *
+     * This method merges the suffix arrays s_0, which contains the
+     * lexicographical ranks of positions i mod 3 = 0, and s_12, which
+     * contains the lexicographical ranks of positions i mod 3 != 0.
+     * This method works correct because of the difference cover idea.
+     * This method uses the parallel merge by Kruskal.
+     */
     template <typename sa_index, typename Compare>
     void merge_sa_dc_parallel_opt(const util::span<sa_index> sa_0, const util::span<sa_index> sa_12,
                      util::span<sa_index> sa, const Compare comp) {
@@ -128,6 +175,25 @@ namespace sacabench::util {
         //std::cout << "sa: " << sa << std::endl;
     }
 
+    /**\brief Parallel algorithm for merging two arrays by CLRS.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param a_1 First array which will be merged
+     * \param a_2 Second array which will be merged
+     * \param b Output array
+     * \param swapped true, if compare function is dependent of the order of a_1 
+              and a_2 and a_1 and a_2 are swapped, false otherwise
+     * \param comp function which compares two elements a and b and returns true
+              if a < b
+     * \param num_threads indicates how many threads are spawned at current recursion
+              level
+     *
+     * This method is the implementation of the parallel merging algorithm in CLRS. The
+     * elements of a_1 and a_2 are merged by Compare function comp and the output
+     * is written to b. This algorithm recurses until the maximum number of threads are
+     * created and for each divided problem then merges with the sequential merging 
+     * algorithm. This algorithm has a span of O(log(n)^2) and total work of O(n).
+     */
     template <typename sa_index, typename Compare>
     void merge_parallel(util::span<sa_index> a_1, util::span<sa_index> a_2, util::span<sa_index> b, 
                 bool swapped, const Compare comp, size_t num_threads) {                 
@@ -173,7 +239,22 @@ namespace sacabench::util {
         }
     }
     
-    //TODO: Anzahl Prozessoren als Eingabe
+    /**\brief Parallel algorithm for merging two arrays by Valiant and Kruskal with
+              optimal span and work.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param a_1 First array which will be merged
+     * \param a_2 Second array which will be merged
+     * \param b Output array
+     * \param swapped true, if compare function is dependent of the order of a_1 
+              and a_2 and a_1 and a_2 are swapped, false otherwise
+     * \param comp function which compares two elements a and b and returns true
+              if a < b
+     *
+     * This method is the implementation of the parallel merging algorithm by Valiant and Kruskal. 
+     * The elements of a_1 and a_2 are merged by Compare function comp and the output
+     * is written to b. This algorithm has an optimal span of O(loglog(n)) and total work of O(n). 
+     */
     template <typename sa_index, typename Compare>
     void merge_parallel_opt(util::span<sa_index> a_1, util::span<sa_index> a_2,
                      util::span<sa_index> b, bool swapped, const Compare comp) {
@@ -206,11 +287,11 @@ namespace sacabench::util {
                         util::container<marked_element>(marked_elements_out_size);
             }
             
+            // write the positions of the marked elements in a new container
             #pragma omp for
             for (size_t i = 1; i <= marked_elements_1.size(); ++i) {
                 marked_elements_1[i-1] = marked_element(i*stepsize-1, 0, i-1);
             }
-        
             #pragma omp for
             for (size_t i = 1; i <= marked_elements_2.size(); ++i) {
                 marked_elements_2[i-1] = marked_element(i*stepsize-1, 1, i-1);
@@ -233,6 +314,7 @@ namespace sacabench::util {
         }
         std::cout << std::endl;*/
         
+        // merge the marked elements
         auto comp_marked_elements = [&](marked_element a, 
                 marked_element b) {
             return comp(a_1[std::get<0>(a)], a_2[std::get<0>(b)]);
@@ -251,7 +333,8 @@ namespace sacabench::util {
             std::cout << "<" << elem_1 << ", " << elem_2 << ">";
         }
         std::cout << std::endl;*/
-                
+            
+        // determine the segment of each marked element in the other array
         util::container<std::tuple<size_t, size_t>> segments = 
                 util::container<std::tuple<size_t, size_t>>(marked_elements_out.size());       
         util::span<std::tuple<size_t, size_t>> segments_span = segments;
@@ -270,7 +353,7 @@ namespace sacabench::util {
         auto pos_2 = util::make_container<std::tuple<size_t, bool>>(marked_elements_1.size());
                 
         /* Binary Search of marked elements in segments and write them to correct 
-           positions in b */
+           positions in b. Write the positions in a new container. */
         #pragma omp parallel for
         for (size_t i = 0; i < marked_elements_out.size(); ++i) {
             size_t pos = std::get<0>(marked_elements_out[i]); 
@@ -413,6 +496,23 @@ namespace sacabench::util {
         }
     }
     
+    /**\brief Variant of the standard merging algorithm which executes a predetermined
+              number of steps.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param a_1 First array which will be merged
+     * \param a_2 Second array which will be merged
+     * \param b Output array
+     * \param swapped true, if compare function is dependent of the order of a_1 
+              and a_2 and a_1 and a_2 are swapped, false otherwise
+     * \param comp function which compares two elements a and b and returns true
+              if a < b
+     * \param steps indicates how many steps are to be executed
+     *
+     * This method is a variant of the standard merging algorithm in which only a predetermined
+     * number of steps are executed. The elements of a_1 and a_2 are merged by Compare function 
+     * comp and the output is written to b.
+     */
     template <typename sa_index, typename Compare>
     void merge_from_left(util::span<sa_index> a_1, util::span<sa_index> a_2,
                      util::span<sa_index> b, bool swapped, const Compare comp, size_t steps) { 
@@ -447,6 +547,23 @@ namespace sacabench::util {
         }
     }
     
+    /**\brief Variant of the standard merging algorithm which executes a predetermined
+              number of steps from the right side.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param a_1 First array which will be merged
+     * \param a_2 Second array which will be merged
+     * \param b Output array
+     * \param swapped true, if compare function is dependent of the order of a_1 
+              and a_2 and a_1 and a_2 are swapped, false otherwise
+     * \param comp function which compares two elements a and b and returns true
+              if a < b
+     * \param steps indicates how many steps are to be executed
+     *
+     * This method is a variant of the standard merging algorithm in which only a predetermined
+     * number of steps from the right side are executed. The elements of a_1 and a_2 are merged 
+     * by Compare function comp and the output is written to b.
+     */
     template <typename sa_index, typename Compare>
     void merge_from_right(util::span<sa_index> a_1, util::span<sa_index> a_2,
                     util::span<sa_index> b, bool swapped, const Compare comp, size_t steps) { 
@@ -482,7 +599,123 @@ namespace sacabench::util {
             }
         }           
     }
+
+    /**\brief Implementation of the standard binary search
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param array Array in which we are searching
+     * \param left Left border included
+     * \param right Right border excluded
+     * \param key The key for which we are searching
+     * \param swapped true, if compare function is dependent of the order of a_1 
+              and a_2 and a_1 and a_2 are swapped, false otherwise
+     * \param comp function which compares two elements a and b and returns true
+              if a < b
+     *
+     * This method implements the standard binary search. We are searching for key
+     * in the interval [left, right) of array. For the comparisons we take the comp
+     * function. 
+     */
+    template <typename sa_index, typename Compare>
+    size_t binarysearch(const util::span<sa_index> array, const size_t left, 
+                const size_t right, sa_index key, const bool swapped, const Compare comp) {
+        if (left+1 > right) { return left; }
+        if (left+1 == right) {
+            bool less = false;
+            if (!swapped) { less = comp(key, array[left]); }
+            else { less = !comp(array[left], key); }
+            
+            if (less) { return left; }
+            else { return left+1; }
+        }
+        
+        int middle = (left+right)/2;
+        
+        bool less = false;
+        if (!swapped) { less = comp(key, array[middle]); }
+        else { less = !comp(array[middle], key); }
+        
+        if (less) {
+            return binarysearch(array, left, middle, key, swapped, comp);
+        }    
+        else {
+            return binarysearch(array, middle, right, key, swapped, comp);
+        }
+    }
     
+    /**\brief Implementation of the parallel search by Kruskal.
+     * \tparam sa_index Index type for Suffixarrays
+     * \tparam Compare Compare function
+     * \param array Array in which we are searching
+     * \param left Left border included
+     * \param right Right border excluded
+     * \param key The key for which we are searching
+     * \param swapped true, if compare function is dependent of the order of a_1 
+              and a_2 and a_1 and a_2 are swapped, false otherwise
+     * \param comp function which compares two elements a and b and returns true
+              if a < b
+     * \param p number of threads which should be used for the search
+     *
+     * This method implements the parallel search by Kruskal. We are searching for key
+     * in the interval [left, right) of array. For the comparisons we take the comp
+     * function. This algorithm needs O(log(n)/log(p)) comparisons.
+     */
+    template <typename sa_index, typename Compare>
+    size_t binarysearch_parallel(const util::span<sa_index> array, const size_t left, 
+                const size_t right, sa_index key, const bool swapped, const Compare comp, size_t p) {
+        size_t n = right-left;
+        
+        if (n < 10000) {
+            return binarysearch(array, left, right, key, swapped, comp);
+        }
+        
+        if (left+1 > right) { return left; }
+        if (left+1 == right) {
+            bool less = false;
+            if (!swapped) { less = comp(key, array[left]); }
+            else { less = !comp(array[left], key); }
+            
+            if (less) { return left; }
+            else { return left+1; }
+        }
+        
+        size_t new_left = 0;
+        size_t new_right = 0;
+        util::container<bool> comp_results = util::container<bool>(p);
+        #pragma omp parallel
+        {
+            #pragma omp for
+            for (size_t i = 0; i < p; ++i) {
+                sa_index elem = array[left + n/(p+1)*(i+1)];
+                
+                if (!swapped) { comp_results[i] = comp(key, elem); }
+                else { comp_results[i] = !comp(elem, key); }
+            }
+            
+            #pragma omp for
+            for (size_t i = 0; i < p; ++i) {
+                if (i == 0 && comp_results[0] == true) {
+                    new_left = left;
+                    new_right = left + n/(p+1)*1;
+                }
+                else if (i == p-1 && comp_results[p-1] == false) {
+                    new_left = left + n/(p+1)*(p);
+                    new_right = right;
+                }
+                else if (comp_results[i] == false && comp_results[i+1] == true) {
+                    new_left = left + n/(p+1)*(i+1);
+                    new_right = left + n/(p+1)*(i+2);
+                }
+            }
+        }
+        
+        return binarysearch_parallel(array, new_left, new_right, key, swapped, comp, p);
+    }
+
+    /**
+     * This method determines the segments of the marked_elements of a_1 in a_2 which
+     * they belong, when they are written to a_2, and vice versa.
+     */
     template <typename sa_index>
     void determine_segments(util::span<sa_index> a_1, util::span<sa_index> a_2,
             util::span<std::tuple<size_t, bool, size_t>> marked_elements,
@@ -511,7 +744,11 @@ namespace sacabench::util {
                 std::cout << "pos_2: " << pos_2 << std::endl;
             }*/
             
-            //Determine segments of marked elements of a_2 in a_1
+            /*Determine segments of marked elements of a_2 in a_1.
+              Because two adjacent positions p and p' in pos_1 possibly contain
+              several marked_elements of a_2, the segments of the marked_elements
+              are determined by [p+1,p'). We also have to take care of some special
+              cases. */
             #pragma omp for
             for (size_t i = 0; i <= pos_1.size(); ++i) {
                 size_t l = 0;
@@ -549,7 +786,11 @@ namespace sacabench::util {
                 }
             }
             
-            //Determine segments of marked elements of a_1 in a_2
+            /*Determine segments of marked elements of a_1 in a_2.
+              Because two adjacent positions p and p' in pos_2 possibly contain
+              several marked_elements of a_1, the segments of the marked_elements
+              are determined by [p+1,p'). We also have to take care of some special
+              cases. */
             #pragma omp for
             for (size_t i = 0; i <= pos_2.size(); ++i) {
                 size_t l = 0;
@@ -589,14 +830,24 @@ namespace sacabench::util {
         }
     }
     
+    /**
+     * Given the positions of the marked elements in a_1 and a_2 and the positions
+     * pos_1 and pos_2 in the other array, we can determine the subsegments of a_1
+     * and a_2 by merging.
+    */
     template <typename sa_index>
     void determine_subsegments(util::span<sa_index> a_1, util::span<sa_index> a_2,
             util::span<std::tuple<size_t, bool>> pos_1, util::span<std::tuple<size_t, bool>> pos_2, 
             size_t stepsize, util::span<std::tuple<size_t, size_t>>& subsegments_1, 
             util::span<std::tuple<size_t, size_t>>& subsegments_2) {
+        /* Positions of the marked elements in a_1 and a_2. We store these
+           as (pos, is_marked) where pos is the position in a_1 or a_2 and is_marked 
+           is a flag which indicates, that the positions are marked elements
+        */
         auto pos_marked_elements_1 = util::make_container<std::tuple<size_t, bool>>(a_1.size()/stepsize);
         auto pos_marked_elements_2 = util::make_container<std::tuple<size_t, bool>>(a_2.size()/stepsize);
 
+        // Fill pos_marked_elements_1 and pos_marked_elements_2
         #pragma omp parallel for
         for (size_t i = 0; i < pos_marked_elements_1.size()+pos_marked_elements_2.size(); ++i) {
             if (i < pos_marked_elements_1.size()) {
@@ -632,13 +883,16 @@ namespace sacabench::util {
         }
         std::cout << std::endl; */
         
+        // Arrays which contain the borders of the subsegments
         auto borders_1 = util::make_container<std::tuple<size_t, bool>>(pos_1.size()+pos_marked_elements_1.size());
         auto borders_2 = util::make_container<std::tuple<size_t, bool>>(pos_2.size()+pos_marked_elements_2.size());
+        
         util::span<std::tuple<size_t, bool>> pos_marked_elements_1_span = pos_marked_elements_1;
         util::span<std::tuple<size_t, bool>> pos_marked_elements_2_span = pos_marked_elements_2;
         util::span<std::tuple<size_t, bool>> borders_1_span = borders_1;
         util::span<std::tuple<size_t, bool>> borders_2_span = borders_2;
         
+        // Merge the marked elements and pos arrays to get the borders
         auto comp = [&](std::tuple<size_t, bool> a, std::tuple<size_t, bool> b) {
             return std::get<0>(a) < std::get<0>(b);
         };
@@ -661,6 +915,9 @@ namespace sacabench::util {
         }
         std::cout << std::endl; */
         
+        /*
+         Create the subsegments out of the border arrays
+        */
         #pragma omp parallel for
         for (size_t i = 0; i <= borders_1_span.size(); ++i) {
             if (borders_1_span.size() == 0) {
@@ -765,108 +1022,5 @@ namespace sacabench::util {
         }
         
         //TODO: Subsegmente in richtigen Speicherbereich kopieren*/
-    }
-    
-    /*template <typename sa_index>
-    void determine_subsegments(util::span<sa_index> a_1, util::span<sa_index> a_2,
-            util::span<std::tuple<size_t, bool>> pos_1, util::span<std::tuple<size_t, bool>> pos_2, 
-            size_t stepsize, util::span<std::tuple<size_t, size_t>>& subsegments_1, 
-            util::span<std::tuple<size_t, size_t>>& subsegments_2) {
-        auto elem_1 = std::tuple<size_t, size_t>(0,1);
-        auto elem_2 = std::tuple<size_t, size_t>(1,1);
-        auto elem_3 = std::tuple<size_t, size_t>(1,3);
-        auto elem_4 = std::tuple<size_t, size_t>(4,5);
-        subsegments_1[0] = elem_1;
-        subsegments_1[1] = elem_2;
-        subsegments_1[2] = elem_3;
-        subsegments_1[3] = elem_4;
-        
-        auto elem_5 = std::tuple<size_t, size_t>(0,3);
-        auto elem_6 = std::tuple<size_t, size_t>(4,7);
-        auto elem_7 = std::tuple<size_t, size_t>(8,9);
-        auto elem_8 = std::tuple<size_t, size_t>(9,10);
-        subsegments_2[0] = elem_5;
-        subsegments_2[1] = elem_6;
-        subsegments_2[2] = elem_7;
-        subsegments_2[3] = elem_8;
-    }*/
-
-    template <typename sa_index, typename C, typename Compare>
-    size_t binarysearch(const C array, const size_t left, 
-                const size_t right, sa_index key, const bool swapped, const Compare comp) {
-        if (left+1 > right) { return left; }
-        if (left+1 == right) {
-            bool less = false;
-            if (!swapped) { less = comp(key, array[left]); }
-            else { less = !comp(array[left], key); }
-            
-            if (less) { return left; }
-            else { return left+1; }
-        }
-        
-        int middle = (left+right)/2;
-        
-        bool less = false;
-        if (!swapped) { less = comp(key, array[middle]); }
-        else { less = !comp(array[middle], key); }
-        
-        if (less) {
-            return binarysearch(array, left, middle, key, swapped, comp);
-        }    
-        else {
-            return binarysearch(array, middle, right, key, swapped, comp);
-        }
-    }
-    
-    template <typename sa_index, typename Compare>
-    size_t binarysearch_parallel(const util::span<sa_index> array, const size_t left, 
-                const size_t right, sa_index key, const bool swapped, const Compare comp, size_t p) {
-        size_t n = right-left;
-        
-        if (n < 10000) {
-            return binarysearch(array, left, right, key, swapped, comp);
-        }
-        
-        if (left+1 > right) { return left; }
-        if (left+1 == right) {
-            bool less = false;
-            if (!swapped) { less = comp(key, array[left]); }
-            else { less = !comp(array[left], key); }
-            
-            if (less) { return left; }
-            else { return left+1; }
-        }
-        
-        size_t new_left = 0;
-        size_t new_right = 0;
-        util::container<bool> comp_results = util::container<bool>(p);
-        #pragma omp parallel
-        {
-            #pragma omp for
-            for (size_t i = 0; i < p; ++i) {
-                sa_index elem = array[left + n/(p+1)*(i+1)];
-                
-                if (!swapped) { comp_results[i] = comp(key, elem); }
-                else { comp_results[i] = !comp(elem, key); }
-            }
-            
-            #pragma omp for
-            for (size_t i = 0; i < p; ++i) {
-                if (i == 0 && comp_results[0] == true) {
-                    new_left = left;
-                    new_right = left + n/(p+1)*1;
-                }
-                else if (i == p-1 && comp_results[p-1] == false) {
-                    new_left = left + n/(p+1)*(p);
-                    new_right = right;
-                }
-                else if (comp_results[i] == false && comp_results[i+1] == true) {
-                    new_left = left + n/(p+1)*(i+1);
-                    new_right = left + n/(p+1)*(i+2);
-                }
-            }
-        }
-        
-        return binarysearch_parallel(array, new_left, new_right, key, swapped, comp, p);
     }
 } // namespace sacabench::util
