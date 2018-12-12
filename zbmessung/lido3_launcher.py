@@ -57,7 +57,7 @@ cluster_configs = {
     "48cores": {
         "cores": 48,
         "mem": "250G",
-        "constraint": "cquad01",
+        "constraint": "xeon_e54640v4",
     },
 }
 cluster_config_default='20cores'
