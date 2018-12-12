@@ -256,8 +256,8 @@ private:
                 size_t size_t_0 = t_0.size();
                 size_t size_t_12 = t_12.size();
                 if (b % 3 == 1) {
-                    position_j_isa = start_pos_mod_2 + (b + one) / 3;
-                    position_i_isa = (a + one) / 3;
+                    position_j_isa = start_pos_mod_2 + static_cast<size_t>(b + one) / 3;
+                    position_i_isa = static_cast<size_t>(a + one) / 3;
 
                     if (position_i_isa >= size_isa_12 ||
                         position_j_isa >= size_isa_12) {
@@ -265,8 +265,8 @@ private:
                         position_j_isa = 0;
                     }
                 } else {
-                    position_j_isa = (b + two) / 3;
-                    position_i_isa = start_pos_mod_2 + (a + two) / 3;
+                    position_j_isa = static_cast<size_t>(b + two) / 3;
+                    position_i_isa = start_pos_mod_2 + static_cast<size_t>(a + two) / 3;
                     if (position_i_isa >= size_isa_12 ||
                         position_j_isa >= size_isa_12) {
                         position_i_isa = 0;
@@ -280,13 +280,13 @@ private:
                 // because evaluating it if `eq` is not true causes
                 // out-of-bounds errors.
                 auto lesser_suf = 
-                            !((2 * (b + size_t_12)) / 3 >=
+                            !((2 * (static_cast<size_t>(b) + size_t_12)) / 3 >=
                              size_isa_12) && // if index to compare for t_12
                                              // is out of bounds of isa then
                                              // sa_0[i] is never
                                              // lexicographically smaller than 
                                              // sa_12[j]
-                           ((2 * (a + size_t_0)) / 3 >=
+                           ((2 * (static_cast<size_t>(a) + size_t_0)) / 3 >=
                                 size_isa_12 || // if index to compare for t_0
                                                // is out of bounds of isa then
                                                // sa_0[i] is lexicographically
@@ -323,8 +323,8 @@ private:
                 size_t size_t_0 = t_0.size();
                 size_t size_t_12 = t_12.size();
                 if (b % 3 == 1) {
-                    position_j_isa = start_pos_mod_2 + (b + one) / 3;
-                    position_i_isa = (a + one) / 3;
+                    position_j_isa = start_pos_mod_2 + static_cast<size_t>(b + one) / 3;
+                    position_i_isa = static_cast<size_t>(a + one) / 3;
 
                     if (position_i_isa >= size_isa_12 ||
                         position_j_isa >= size_isa_12) {
@@ -332,8 +332,8 @@ private:
                         position_j_isa = 0;
                     }
                 } else {
-                    position_j_isa = (b + two) / 3;
-                    position_i_isa = start_pos_mod_2 + (a + two) / 3;
+                    position_j_isa = static_cast<size_t>(b + two) / 3;
+                    position_i_isa = start_pos_mod_2 + static_cast<size_t>(a + two) / 3;
                     if (position_i_isa >= size_isa_12 ||
                         position_j_isa >= size_isa_12) {
                         position_i_isa = 0;
@@ -347,13 +347,13 @@ private:
                 // because evaluating it if `eq` is not true causes
                 // out-of-bounds errors.
                 auto lesser_suf = 
-                            !((2 * (b + size_t_12)) / 3 >=
+                            !((2 * (static_cast<size_t>(b) + size_t_12)) / 3 >=
                              size_isa_12) && // if index to compare for t_12
                                              // is out of bounds of isa then
                                              // sa_0[i] is never
                                              // lexicographically smaller than
                                              // sa_12[j]
-                           ((2 * (a + size_t_0)) / 3 >=
+                           ((2 * (static_cast<size_t>(a) + size_t_0)) / 3 >=
                                 size_isa_12 || // if index to compare for t_0
                                                // is out of bounds of isa then
                                                // sa_0[i] is lexicographically
