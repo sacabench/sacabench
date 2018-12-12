@@ -237,14 +237,25 @@ def stat_nav_sub(stat, title):
 
 def get_algo_stat(stat):
     #pprint(stat)
+    top_stats = extract_stat_logs(stat)
     stat = stat_nav_sub(stat, "SACA")
+    saca_stats = extract_stat_logs(stat)
     stat = stat_nav_sub(stat, "Algorithm")
     return {
         "time": stat["timeEnd"] - stat["timeStart"],
         "memPeak": stat["memPeak"],
         "memOff": stat["memOff"],
         "memFinal": stat["memFinal"],
+        **top_stats,
+        **saca_stats,
     }
+
+def extract_stat_logs(stat):
+    l = stat["stats"]
+    r = {}
+    for e in l:
+        r[e["key"]] = e["value"]
+    return r
 
 def to_sqlplot(output_file, stats):
     #pprint(stats)
