@@ -241,7 +241,7 @@ private:
                 sa_index one = 1;
                 sa_index two = 2;
 
-                sa_index size_isa_12 = span_t_12.size();
+                size_t size_isa_12 = span_t_12.size();
                 
                 sacabench::util::span<sa_index> t_0;
                 sacabench::util::span<sa_index> t_12;
@@ -253,8 +253,8 @@ private:
                     t_12 = text.slice(b, b+2);
                 }
                 
-                sa_index size_t_0 = t_0.size();
-                sa_index size_t_12 = t_12.size();
+                size_t size_t_0 = t_0.size();
+                size_t size_t_12 = t_12.size();
                 if (b % 3 == 1) {
                     position_j_isa = start_pos_mod_2 + (b + one) / 3;
                     position_i_isa = (a + one) / 3;
@@ -284,7 +284,7 @@ private:
                              size_isa_12) && // if index to compare for t_12
                                              // is out of bounds of isa then
                                              // sa_0[i] is never
-                                             // lexicographically smaller than
+                                             // lexicographically smaller than 
                                              // sa_12[j]
                            ((2 * (a + size_t_0)) / 3 >=
                                 size_isa_12 || // if index to compare for t_0
@@ -295,7 +295,8 @@ private:
                 
                 return less_than || (eq && lesser_suf);
             };
-            util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
+            util::merge_sa_dc_parallel_opt(sa_0_span, sa_12_span, out_sa, comp);
+            //util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
             //util::merge(sa_0_span, sa_12_span, out_sa, false, comp);
 
         } else {
@@ -307,7 +308,7 @@ private:
                 sa_index one = 1;
                 sa_index two = 2;
 
-                sa_index size_isa_12 = span_t_12.size();
+                size_t size_isa_12 = span_t_12.size();
                 
                 sacabench::util::string_span t_0;
                 sacabench::util::string_span t_12;
@@ -319,8 +320,8 @@ private:
                     t_12 = text.slice(b, b+2);
                 }
                 
-                sa_index size_t_0 = t_0.size();
-                sa_index size_t_12 = t_12.size();
+                size_t size_t_0 = t_0.size();
+                size_t size_t_12 = t_12.size();
                 if (b % 3 == 1) {
                     position_j_isa = start_pos_mod_2 + (b + one) / 3;
                     position_i_isa = (a + one) / 3;
@@ -361,7 +362,8 @@ private:
                 
                 return less_than || (eq && lesser_suf);
             };
-            util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
+            util::merge_sa_dc_parallel_opt(sa_0_span, sa_12_span, out_sa, comp);
+            //util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
             //util::merge(sa_0_span, sa_12_span, out_sa, false, comp);
         }
     }

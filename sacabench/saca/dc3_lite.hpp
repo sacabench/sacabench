@@ -194,9 +194,6 @@ namespace sacabench::dc3_lite {
                     }
                 }
                 
-                std::cout << "t_1: " << t_1 << std::endl;
-                std::cout << "t_2: " << t_2 << std::endl;
-                
                 auto u_1 = u.slice(start_pos_of_0, u.size());
                 auto v_1 = out_sa.slice(start_pos_of_0, out_sa.size());
                 auto text_1 = new_text.slice(start_pos_of_0,new_text.size());
