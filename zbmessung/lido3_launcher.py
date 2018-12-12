@@ -7,6 +7,7 @@ import time
 import os
 import datetime
 import json
+from pprint import pprint
 
 def load_json(path):
     with open(path, 'r') as f:
@@ -15,6 +16,10 @@ def load_json(path):
 def write_json(path, data):
     with open(path, 'w') as f:
         f.write(json.dumps(data, sort_keys=True, indent=4))
+
+def write_str(path, data):
+    with open(path, 'w') as f:
+        f.write(str(data))
 
 # ---------------------
 
@@ -39,6 +44,9 @@ usage.add_argument("--sacabench-directory", default=sacabench_default,
 
 usage.add_argument("--launch-config", type=Path,
                    help="Config file used by launch.")
+
+usage.add_argument("--omp-threads", type=int,
+                   help="Amount of threads OMP may use.")
 
 cluster_configs = {
     "20cores": {
@@ -77,22 +85,31 @@ batch_template = """#!/bin/bash
 #SBATCH --export=ALL
 #SBATCH --mail-type=FAIL
 {test_only}
+{omp_threads}
 cd {cwd}
 {cmd}
 """
 
 # ---------------------
 
-def launch_job(cwd, cmd, output):
+def launch_job(cwd, cmd, output, omp_threads):
     jobname = "sacabench"
 
     test_only = ""
     if args.test_only:
         test_only = "#SBATCH --test-only\n"
 
+    omp_threads_str = ""
+    if omp_threads:
+        omp_threads_str = "export OMP_NUM_THREADS={}\n".format(omp_threads)
+
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     clstcfg = cluster_configs[args.cluster_config]
+
+    cores = clstcfg["cores"]
+    if omp_threads:
+        cores = omp_threads
 
     instance = batch_template.format(
         time=args.estimated_time,
@@ -101,9 +118,10 @@ def launch_job(cwd, cmd, output):
         cwd=cwd,
         output=output,
         cmd=cmd,
-        maxcores=clstcfg["cores"],
+        maxcores=cores,
         mem=clstcfg["mem"],
         constraint=clstcfg["constraint"],
+        omp_threads=omp_threads_str,
     )
 
     if args.print_sbatch:
@@ -128,12 +146,15 @@ if args.launch:
     DATASETS=[]
     N=1
     PREFIX="10M"
+    THREADS=[None]
     if args.launch_config:
         j = load_json(args.launch_config)
         ALGOS = j["launch"]["algo"]
         DATASETS = j["launch"]["input"]
         N = j["launch"]["rep"]
         PREFIX = j["launch"]["prefix"]
+        if "threads" in j["launch"]:
+            THREADS=j["launch"]["threads"]
 
     counter = 0
     print("Starting jobs...")
@@ -143,33 +164,39 @@ if args.launch:
     outdir = WORK / Path("batch_{}".format(timestamp))
     for (j, dataset) in enumerate(DATASETS):
         for (i, algo) in enumerate(ALGOS):
+            for omp_threads in THREADS:
+                cwd = sacapath / Path("build")
+                input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
 
-            cwd = sacapath / Path("build")
-            input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
+                if omp_threads:
+                    threads_str = "threads{:03}".format(omp_threads)
+                else:
+                    threads_str = "threadsMAX"
 
-            id = "inp{:03}-algo{:03}".format(j, i)
+                id = "inp{:03}-algo{:03}-{}".format(j, i, threads_str)
 
-            output = outdir / Path("stdout-{}.txt".format(id))
-            batch_output = outdir / Path("stat-{}.json".format(id))
+                output = outdir / Path("stdout-{}.txt".format(id))
+                batch_output = outdir / Path("stat-{}.json".format(id))
 
-            cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
-                bench_out=batch_output,
-                prefix=PREFIX,
-                rep=N,
-                algo=algo,
-                input_path=input_path
-            )
+                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
+                    bench_out=batch_output,
+                    prefix=PREFIX,
+                    rep=N,
+                    algo=algo,
+                    input_path=input_path
+                )
 
-            jobid = launch_job(cwd, cmd, output)
-            index["output_files"].append({
-                "output" : str(output),
-                "stat_output" : str(batch_output),
-                "input": str(input_path),
-                "algo": algo,
-                "prefix": PREFIX,
-                "rep": N,
-                "jobid": jobid,
-            })
+                jobid = launch_job(cwd, cmd, output, omp_threads)
+                index["output_files"].append({
+                    "output" : str(output),
+                    "stat_output" : str(batch_output),
+                    "input": str(input_path),
+                    "algo": algo,
+                    "prefix": PREFIX,
+                    "rep": N,
+                    "jobid": jobid,
+                    "threads": omp_threads,
+                })
 
             counter += 1
     write_json(outdir / Path("index.json"), index)
@@ -177,21 +204,97 @@ if args.launch:
     print("Current personal job queue:")
     subprocess.run("squeue -u $USER", shell=True)
 
+def load_data(dir):
+    index = load_json(dir / Path("index.json"))
+    for output_file in index["output_files"]:
+        # Normalize input
+        output_file["stat_output"] = Path(output_file["stat_output"])
+        output_file["input"] = Path(output_file["input"])
+        if "threads" not in output_file:
+            output_file["threads"] = None
+
+        # Get relevant data
+        stat_output = output_file["stat_output"]
+        algo = output_file["algo"]
+        input = output_file["input"]
+        prefix = output_file["prefix"]
+        threads = output_file["threads"]
+
+        if not stat_output.is_file():
+            print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
+            continue
+
+        stats = load_json(stat_output)
+        assert len(stats) == 1
+        yield (output_file, stats[0])
+
+def stat_nav_sub(stat, title):
+    phase = stat["sub"]
+    for e in phase:
+        if e["title"] == title:
+            return e
+    return None
+
+def get_algo_stat(stat):
+    #pprint(stat)
+    top_stats = extract_stat_logs(stat)
+    stat = stat_nav_sub(stat, "SACA")
+    saca_stats = extract_stat_logs(stat)
+    stat = stat_nav_sub(stat, "Algorithm")
+    return {
+        "time": stat["timeEnd"] - stat["timeStart"],
+        "memPeak": stat["memPeak"],
+        "memOff": stat["memOff"],
+        "memFinal": stat["memFinal"],
+        **top_stats,
+        **saca_stats,
+    }
+
+def extract_stat_logs(stat):
+    l = stat["stats"]
+    r = {}
+    for e in l:
+        r[e["key"]] = e["value"]
+    return r
+
+def to_sqlplot(output_file, stats):
+    #pprint(stats)
+    out = ""
+    for (stati, stat) in enumerate(stats):
+        o = {
+            "algo": output_file["algo"],
+            "input": output_file["input"].name,
+            "prefix": output_file["prefix"],
+            "threads": output_file["threads"],
+            "rep": output_file["rep"],
+            "rep_i": stati,
+            **get_algo_stat(stat),
+        }
+
+        s = "RESULT"
+        for k in sorted(o):
+            s += "\t{}={}".format(k, o[k])
+        out += (s + "\n")
+    return out
+
 if args.combine:
     dir = Path(args.combine)
-    index = load_json(dir / Path("index.json"))
+    sqlplot_out = ""
     file_map = {}
-    for output_file in index["output_files"]:
-        stat_output = Path(output_file["stat_output"])
-        algo = output_file["algo"]
-        input = Path(output_file["input"])
-        prefix = output_file["prefix"]
-        if not stat_output.is_file():
-            print("Missing data for {}, {}, {} (no file {})".format(algo, input.name, prefix, stat_output.name))
-            continue
-        stat = load_json(stat_output)
-        if not input in file_map:
-            file_map[input] = []
-        file_map[input] += stat
-    for input in file_map:
-        write_json(dir / Path("results-{}.json".format(input.name)), file_map[input])
+    for (output_file, stats) in load_data(dir):
+        threads = output_file["threads"]
+        input = output_file["input"]
+        sqlplot_out += to_sqlplot(output_file, stats)
+
+        key = (input, str(threads))
+        if not key in file_map:
+            file_map[key] = []
+        file_map[key].append(stats)
+    for key in file_map:
+        (input, threads) = key
+        op = dir / Path("results-{}-{}.json".format(input.name, threads))
+        print("Writing data to {}".format(op))
+        write_json(op, file_map[key])
+    op = dir / Path("sqlplot.txt")
+    print("Writing data to {}".format(op))
+    write_str(op, sqlplot_out)
