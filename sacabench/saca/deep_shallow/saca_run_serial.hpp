@@ -11,6 +11,7 @@
 #include <util/is_sorted.hpp>
 #include <util/sort/bucketsort.hpp>
 #include <util/sort/introsort.hpp>
+#include <util/sort/ips4o.hpp>
 #include <util/sort/multikey_quicksort.hpp>
 #include <util/sort/ternary_quicksort.hpp>
 #include <util/span.hpp>
@@ -27,7 +28,15 @@ namespace sacabench::deep_shallow {
 
 inline void print_text(const util::string_span text) {
     for (const util::character& c : text) {
-        std::cout << (char)(c + 'a' - 1) << " ";
+        std::cout << (char)(c + 'a' - 1);
+    }
+    std::cout << std::endl;
+}
+
+template<typename sa_index>
+inline void print_text(const util::string_span text, const span<sa_index> sa) {
+    for (const auto i : sa) {
+        print_text(text.slice(i));
     }
     std::cout << std::endl;
 }
@@ -158,8 +167,9 @@ private:
                 input_text.slice(b + common_prefix_length);
             return as < bs;
         };
-        util::sort::binary_introsort::sort(bucket,
-                                                         compare_suffix);
+        // util::sort::binary_introsort::sort(bucket,
+        //                                                  compare_suffix);
+        util::sort::ips4o_sort_parallel(bucket, compare_suffix);
         DCHECK(is_partially_suffix_sorted(bucket, input_text));
     }
 
@@ -337,7 +347,7 @@ public:
     inline saca_run(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
-          bd(), ad(text.size()),
+          bd(_alphabet_size), ad(text.size()),
           max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
 
         // Fill sa with unsorted suffix array.

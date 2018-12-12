@@ -13,7 +13,7 @@
 namespace sacabench::util::sort {
 
 template <typename T, typename F = std::less<T>>
-void insertion_sort(span<T> A, F compare_fun = F()) {
+void insertion_sort(span<T> A, F compare_fun = F()) SB_NOEXCEPT {
     // Adapter for "a > b"
     auto greater = as_greater(compare_fun);
     for (size_t i = 1; i < A.size(); i++) {

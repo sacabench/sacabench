@@ -34,7 +34,16 @@ SACA_REGISTER("saca/external/dc3/dc3.hpp"
 # Our implementations:
 
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
-    sacabench::deep_shallow::saca)
+    sacabench::deep_shallow::serial)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::serial_big_buckets)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::parallel)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::parallel)
 
 #SACA_REGISTER("saca/deep_shallow/blind/sort.hpp"
 #    sacabench::deep_shallow::blind::saca)
@@ -84,6 +93,12 @@ SACA_REGISTER("saca/qsufsort.hpp"
 SACA_REGISTER("saca/naive.hpp"
     sacabench::naive::naive)
 
+SACA_REGISTER("saca/naive.hpp"
+    sacabench::naive::naive_ips4o)
+
+SACA_REGISTER("saca/naive.hpp"
+    sacabench::naive::naive_ips4o_parallel)
+
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
 
@@ -99,8 +114,15 @@ SACA_REGISTER("saca/nzSufSort.hpp"
 SACA_REGISTER("saca/dc3_lite.hpp"
     sacabench::dc3_lite::dc3_lite)
 
+SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
+    sacabench::osipov::osipov_sequential)
+
+SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
+    sacabench::osipov::osipov_sequential_wp)
+
 SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
     sacabench::osipov::osipov_parallel)
 
 SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
     sacabench::osipov::osipov_parallel_wp)
+

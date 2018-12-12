@@ -11,7 +11,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 endif()
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
-project(sacabench)
+project(sacabench LANGUAGES C CXX CUDA)
 
 # Compile all code with ccache, if it exists in the system
 find_program(CCACHE_FOUND ccache)
@@ -62,6 +62,14 @@ set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG;-g")
 
 ENDIF()
 
+# Enable OpenMP
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+
 # Add custom cmake extensions
 include(cmakemodules/git_submodule_subdirectories.cmake)
 
@@ -83,5 +91,7 @@ add_subdirectory(sacabench)
 add_subdirectory(test)
 add_subdirectory(bigtest)
 add_subdirectory(external/ips4o)
+
+add_subdirectory(cuda)
 
 ################################################################################
