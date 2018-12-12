@@ -123,7 +123,7 @@ namespace sacabench::util {
             sa.size() == (sa_0.size() + sa_12.size()),
             "the length of sa must be the sum of the length of sa_0 and sa_12");
 
-        omp_set_num_threads(1);
+        //omp_set_num_threads(1);
         merge_parallel_opt(sa_0, sa_12, sa, false, comp);
         //std::cout << "sa: " << sa << std::endl;
     }
