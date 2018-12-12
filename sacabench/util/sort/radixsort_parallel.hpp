@@ -18,8 +18,11 @@ namespace sacabench::util::sort {
     // Declaration of radix sort functions for sorting strings.
     // ----------------------------------------------------------------------------------------------------
 
-    void radixsort_parallel(container<string> &input, container<string> &output, alphabet alphabet);
-    void radixsort_parallel(container<string> &input, container<string> &output, alphabet alphabet, int current_position);
+    template <typename type>
+    void radixsort_parallel(container<type> &input, container<type> &output, alphabet alphabet);
+
+    template <typename type>
+    void radixsort_parallel(container<type> &input, container<type> &output, alphabet alphabet, int current_position);
 
     // ----------------------------------------------------------------------------------------------------
     // Declaration of radix sort functions for sorting three digit integers (values between 100 and 999).
@@ -54,15 +57,29 @@ namespace sacabench::util::sort {
                             int current_position);
 
     // ----------------------------------------------------------------------------------------------------
+    // Declaration of (hopefully final) radix sort functions which sort triple
+    // ----------------------------------------------------------------------------------------------------
+
+    void radixsort_parallel(util::container<std::tuple<char, int, int>> &input, 
+                            util::container<std::tuple<char, int, int>> &output,
+                            alphabet &alphabet);
+    
+    void radixsort_parallel(util::container<std::tuple<char, int, int>> &input, 
+                            util::container<std::tuple<char, int, int>> &output,
+                            alphabet &alphabet,
+                            int current_position);
+
+    // ----------------------------------------------------------------------------------------------------
     // Implementation of radix sort functions for sorting strings.
     // ----------------------------------------------------------------------------------------------------
 
-
-    void radixsort_parallel(container<string> &input, container<string> &output, alphabet alphabet) {
+    template <typename type>
+    void radixsort_parallel(container<type> &input, container<type> &output, alphabet alphabet) {
         radixsort_parallel(input, output, alphabet, input[0].size() - 1);
     }
 
-    void radixsort_parallel(container<string> &input, container<string> &output, alphabet alphabet, int current_position) {
+    template <typename type>
+    void radixsort_parallel(container<type> &input, container<type> &output, alphabet alphabet, int current_position) {
 
         // Check that all strings have the same size.
         for (size_t index = 0; index < input.size() - 1; index++) {
@@ -414,5 +431,136 @@ namespace sacabench::util::sort {
         }
 
         radixsort_parallel(output, output, alphabet, current_position - 1);
+    }
+
+    // ----------------------------------------------------------------------------------------------------
+    // Implementation of (hopefully final) radix sort functions which sort triple
+    // ----------------------------------------------------------------------------------------------------
+
+    void radixsort_parallel(util::container<std::tuple<char, int, int>> &input, 
+                            util::container<std::tuple<char, int, int>> &output,
+                            alphabet &alphabet) {
+        // first sort position 0 (char) and than position 1 (isa)
+        radixsort_parallel(input, output, alphabet, 0);
+    }
+
+    void radixsort_parallel(util::container<std::tuple<char, int, int>> &input, 
+                            util::container<std::tuple<char, int, int>> &output,
+                            alphabet &alphabet,
+                            int current_position) {
+
+        if (current_position > 1) { return; }
+        std::cout << "Current Position: " << current_position << std::endl;
+
+        //std::cout << "Setting number of threads to 1" << std:: endl;
+        //omp_set_num_threads(1);
+    
+        // Setup lists for all threads in one big array.
+        const size_t num_threads = omp_get_max_threads();
+
+        size_t current_alphabet_size;
+        if (current_position == 0) {
+            current_alphabet_size = alphabet.size_with_sentinel();
+        } else {
+            current_alphabet_size = 10;
+        }
+
+        // Tuple --> Elements to be sorted.
+        // inner Container --> Buckets for Elements with same value at current position.
+        // outer Container --> List of Buckets.
+        std::vector<std::vector<std::tuple<char, int, int>>> sorting_lists(num_threads * current_alphabet_size);
+
+        auto items_per_thread = (input.size() / num_threads) + 1; 
+
+        std::cout << "Finished single threaded setup." << std::endl;
+        std::cout << "Number of threads: " << num_threads << std::endl;
+        std::cout << "Size of input: " << input.size() << std::endl;
+        std::cout << "Size of alphabet: " << current_alphabet_size << std::endl;
+        std::cout << "Size of sorting lists: " << sorting_lists.size() << std::endl;
+        std::cout << "Items per thread: " << items_per_thread << std::endl;
+
+        #pragma omp parallel
+        {
+            const uint64_t thread_id = omp_get_thread_num();
+            const uint64_t start_index = thread_id * items_per_thread;
+            uint64_t end_index = start_index + items_per_thread;
+
+            if (input.size() < end_index) {
+                end_index = input.size();
+            }
+
+            for (uint64_t index = start_index; index < end_index; index++) {
+                std::tuple<char, int, int> current_triple = input[index];
+
+                if (current_position == 0) {
+                    char current_value = std::get<0>(current_triple);
+
+                    #pragma omp critical
+                    std::cout << "Current value: " << current_value << std::endl;
+
+                    int insert_position = thread_id * alphabet.size_with_sentinel() + alphabet.effective_value(current_value);
+                    
+                    #pragma omp critical
+                    std::cout << "Current insert_position: " << insert_position << std::endl;
+
+                    sorting_lists[insert_position].push_back(current_triple);
+
+                    #pragma omp critical
+                    std::cout << "Finished inserting" << std::endl;
+
+                } else {
+                    int current_value = std::get<1>(current_triple);
+
+                    #pragma omp critical
+                    std::cout << "Current value: " << current_value << std::endl;
+
+                    int insert_position = thread_id * 10 + current_value;
+
+                    #pragma omp critical
+                    std::cout << "Current insert_position: " << insert_position << std::endl;
+
+                    sorting_lists[insert_position].push_back(current_triple);
+
+                    #pragma omp critical
+                    std::cout << "Finished inserting" << std::endl;
+                }
+            }
+        }
+
+        std::cout << "Sorting Lists: " << std::endl;
+
+        for (auto bucket: sorting_lists) {
+            for (auto element: bucket) {
+                std::cout << "< " << std::get<0>(element) << ", " << std::get<1>(element) << ", " << std::get<2>(element) << " >" << std::endl;
+            }
+        }
+        
+        std::cout << std::endl;
+
+        // sum up lists
+        int current_insert_index = 0;
+        // for each possible value
+        for (size_t index = 0; index < current_alphabet_size; index++) {
+            // in each thread
+            for (size_t thread_index = 0; thread_index < num_threads; thread_index++) {
+                auto current_index = thread_index * current_alphabet_size + index;
+                std::vector bucket = sorting_lists[current_index];
+                for (std::tuple<char, int, int> element : bucket) {
+                    std::cout << "Inserting element: ";
+                    std::cout << "< " << std::get<0>(element) << ", " << std::get<1>(element) << ", " << std::get<2>(element) << " >";
+                    std::cout << " into position: " << current_insert_index << std::endl;
+                    output[current_insert_index] = element;
+                    current_insert_index += 1;
+                }
+            } 
+        }
+
+        std::cout << "Single Lists: " << std::endl;
+        for (auto element: output) {
+            std::cout << "< " << std::get<0>(element) << ", " << std::get<1>(element) << ", " << std::get<2>(element) << " >," << std::endl;;
+        }
+        std::cout << std::endl;
+
+        radixsort_parallel(output, output, alphabet, current_position + 1);
     }
 }

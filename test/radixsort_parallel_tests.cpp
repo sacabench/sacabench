@@ -7,11 +7,11 @@
 #include <gtest/gtest.h>
 #include <util/sort/radixsort_parallel.hpp>
 #include <util/container.hpp>
-#include <random>
+//#include <random>
 #include <tuple>
 
 using namespace sacabench::util;
-
+/*
 TEST(radixsort_parallel_tests, string_sorting_without_start_index) {
     string string_1 = make_string("abcy"_s);
     string string_2 = make_string("bbyx"_s);
@@ -28,7 +28,7 @@ TEST(radixsort_parallel_tests, string_sorting_without_start_index) {
     container<string> test_output = make_container<string>(5);
     container<string> test_control = {string_1, string_5, string_2, string_3, string_4};
 
-    sort::radixsort_parallel(test_input, test_output, alphabet);
+    sort::radixsort_parallel<string>(test_input, test_output, alphabet);
     ASSERT_EQ(test_output, test_control);
 }
 
@@ -48,7 +48,7 @@ TEST(radixsort_parallel_tests, string_sorting_with_start_index) {
     container<string> test_output = make_container<string>(5);
     container<string> test_control = {string_1, string_5, string_2, string_3, string_4};
 
-    sort::radixsort_parallel(test_input, test_output, alphabet, 2);
+    sort::radixsort_parallel<string>(test_input, test_output, alphabet, 2);
     ASSERT_EQ(test_output, test_control);
 }
 
@@ -128,4 +128,41 @@ TEST(radixsort_parallel_tests, triple_sorting_chars) {
 
     sort::radixsort_parallel(test_input, test_output, alphabet);
     ASSERT_EQ(test_output, test_control);
+}*/
+
+TEST(radixsort_parallel_tests, hopefully_final_triple_sorting) {
+
+    std::tuple<char, int, int> tuple_0('a', 1, 1);
+    std::tuple<char, int, int> tuple_1('a', 0, 1);
+    std::tuple<char, int, int> tuple_2('b', 3, 1);
+    std::tuple<char, int, int> tuple_3('b', 2, 1);
+    std::tuple<char, int, int> tuple_4('b', 4, 1);
+
+    auto test_input = make_container<std::tuple<char, int, int>>(5);
+    test_input[0] = tuple_0;
+    test_input[1] = tuple_1;
+    test_input[2] = tuple_2;
+    test_input[3] = tuple_3;
+    test_input[4] = tuple_4;
+
+    // construct alphabet
+    sacabench::util::string input_chars = "ab"_s;
+    sacabench::util::alphabet alphabet = sacabench::util::alphabet(input_chars);
+
+    auto test_output = make_container<std::tuple<char, int, int>>(5);
+
+    auto test_control = make_container<std::tuple<char, int, int>>(5);
+    test_control[0] = tuple_1;
+    test_control[1] = tuple_0;
+    test_control[2] = tuple_3;
+    test_control[3] = tuple_2;
+    test_control[4] = tuple_4;
+
+    sort::radixsort_parallel(test_input, test_output, alphabet);
+
+    ASSERT_EQ(test_output[0], test_control[0]);
+    ASSERT_EQ(test_output[1], test_control[1]);
+    ASSERT_EQ(test_output[2], test_control[2]);
+    ASSERT_EQ(test_output[3], test_control[3]);
+    ASSERT_EQ(test_output[4], test_control[4]);
 }
