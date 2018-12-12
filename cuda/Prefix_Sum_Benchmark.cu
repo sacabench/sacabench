@@ -13,7 +13,7 @@
 #include <chrono>
 #include <memory>
 #include <ctime>
-
+#include <cstdint>
 
 
 
@@ -42,7 +42,7 @@ public:
 // Sequential version of the prefix sum calculation.
 template <typename Content, typename add_operator>
 void seq_prefix_sum(int* in, int* out, bool inclusive,
-        add_operator add, Content identity, int N) {
+        add_operator add, Content identity, uint64_t N) {
     if(inclusive) {
         out[0] = add(identity, in[0]);
         for(size_t i = 1; i < N; ++i) {
@@ -86,7 +86,7 @@ inline size_t parent_of_child(size_t child) { return child/2; }
 
 template <typename Content, typename add_operator>
 void par_prefix_sum(int* in, int* out, bool inclusive,
-        add_operator add, Content identity, int N) {
+        add_operator add, Content identity, uint64_t N) {
     const size_t corrected_len = (N % 2 == 1) ? N + 1 : N;
     const size_t tree_size = next_power_of_two(N);
     int* tree = new int[corrected_len + tree_size];
@@ -150,7 +150,7 @@ void par_prefix_sum(int* in, int* out, bool inclusive,
 
 
 
-void prefix_sum_cub_inclusive(int* values_in, int* values_out, int N)
+void prefix_sum_cub_inclusive(int* values_in, int* values_out, uint64_t N)
 {
     
     
@@ -171,10 +171,13 @@ void prefix_sum_cub_inclusive(int* values_in, int* values_out, int N)
     }
 
 
-int main()
+int my_main(uint64_t n)
 {
     std::cout<<"Start initialization"<<std::endl;
-    int n = 100000000;
+//    int n = 1000*1000;
+    
+    std::cout << "size: " << n << std::endl;
+    
     //Init arrays
     int* cpu_array_in = new int[n];
     int* cpu_array_out = new int[n];
@@ -190,7 +193,7 @@ int main()
     srand(time(NULL));
     int random;
     //befülle arrays mit zufallszahlen
-    for(int index = 0; index < n;++index)
+    for(uint64_t index = 0; index < n;++index)
     {
         random = rand() % 1000000;
         cpu_array_in[index]= random;
@@ -240,4 +243,13 @@ int main()
     cudaFree(gpu_array_out);
     return 0;
 
+}
+
+int main() {
+  uint64_t v = 1000ull;
+  for (int i = 0; i < 4; i++) {
+    my_main(v);
+    v *= 1000ull;
+    std::cout << std::endl;
+  }
 }
