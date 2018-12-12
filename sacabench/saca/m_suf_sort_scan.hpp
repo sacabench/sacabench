@@ -14,7 +14,6 @@
 #include <util/kd_array.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/sort/introsort.hpp>
-#include <util/sort/stable_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
@@ -26,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-namespace sacabench::m_suf_sort {
+namespace sacabench::m_suf_sort_scan {
 
 template <typename sa_index>
 constexpr sa_index END = ((sa_index)(-1)) >> 1;
@@ -219,11 +218,11 @@ struct m_suf_sort_attr {
         : isa(isa_to_be), m_list(alphabet_size), text(input_text) {}
 };
 
-struct m_suf_sort2 {
+struct m_suf_sort_scan2 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "mSufSort";
-    static constexpr char const* DESCRIPTION = "mSufSort (v2) as described by MICHAEL A. MANISCALCO and SIMON J. PUGLISI";
+    static constexpr char const* NAME = "mSufSort_scan";
+    static constexpr char const* DESCRIPTION = "mSufSort variant with new bucket approach";
 
     template <typename sa_index>
     static inline void construct_sa(util::string_span text,
@@ -291,18 +290,17 @@ public:
         }
 
         // initialize last chain character value
-        // TODO: optimization: only rank necessary type l lists, not all
-        // util::character last_char = 0;
+        util::character last_char = 0;
 
         // vectors for suffixes to be refined and
         // for suffixes to be sorted by induction
-        std::vector<sa_index> to_be_refined_;
+        // std::vector<sa_index> to_be_refined_;
         std::vector<pair_si<sa_index>> sorting_induced_;
 
         // begin main loop:
         while (attr.chain_stack.size() > 0) {
             // clear vectors (possibly filled from previous iteration)
-            to_be_refined_.clear();
+            // to_be_refined_.clear();
             sorting_induced_.clear();
 
             // top & pop = get first element of stack and remove it from stack
@@ -318,7 +316,7 @@ public:
 
             // before anything happens with type s u-Chain elements, rank type l
             // suffixes for same character (or smaller)
-            for (size_t i = 0; i <= current_char; i++) {
+            for (size_t i = last_char; i <= current_char; i++) {
                 for (size_t j = 0; j <= i; j++) {
                     while (attr.m_list.exists(i, j)) {
                         rank_type_l_list(i, j, attr);
@@ -332,6 +330,12 @@ public:
                 continue;
             }
 
+            // re-fill scan memory for this new chain iteration
+            for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
+                init_uchain_links_[i] = END<sa_index>;
+                head_uchains_[i] = END<sa_index>;
+            }
+
             // follow the chain
             while (true) {
 
@@ -339,7 +343,22 @@ public:
                 // refine u-Chain with this element
 
                 if (!attr.isa.is_rank(chain_index + length)) {
-                    to_be_refined_.push_back(chain_index);
+                    //to_be_refined_.push_back(chain_index);
+
+                    // pointer to head and init memory
+                    auto head_pointer = &head_uchains_[attr.text[chain_index + length]];
+                    auto init_pointer = &init_uchain_links_[attr.text[chain_index + length]];
+                    // get last linked element of corresponding chain:
+                    const auto last_linked = *init_pointer;
+                    // if this is first occurence, put it into head array
+                    if(last_linked == END<sa_index>) {
+                        *head_pointer = chain_index;
+                    } else {
+                        // link this element to last element
+                        attr.isa.set_link(*init_pointer, chain_index);
+                    }
+                    // update init uchain links
+                    *init_pointer = chain_index;
                 } else {
                     // make new pair from chain_index and sort key, rank of
                     // chain_index + length to be sorted by easy induced sort
@@ -348,6 +367,12 @@ public:
                     sorting_induced_.push_back(new_sort_pair);
                 }
                 if (attr.isa.is_END(chain_index)) {
+                    // set all (existing) new chain ends to end:
+                    for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
+                        if(init_uchain_links_[i] != END<sa_index>) {
+                            attr.isa.set_END(init_uchain_links_[i]);
+                        }
+                    }
                     break;
                 }
                 // update chain index by following the chain links
@@ -356,18 +381,22 @@ public:
 
             util::span<pair_si<sa_index>> sorting_induced =
                 util::span<pair_si<sa_index>>(sorting_induced_);
-            util::span<sa_index> to_be_refined =
-                util::span<sa_index>(to_be_refined_);
 
             easy_induced_sort(attr, sorting_induced);
-            // only refine uChain if elements are left!
-            if (to_be_refined.size() > 0) {
-                refine_uChain(attr, to_be_refined, length);
+
+            // fill stack with refined u-chains by simply iterating over head array
+            // begin with greatest (last) element
+            for(util::ssize i = alphabet.size_with_sentinel()-1; i>=0; i--) {
+                sa_index current_head = head_uchains_[i];
+                if(current_head == END<sa_index>) {
+                    continue;
+                }
+                std::pair<sa_index, sa_index> new_chain(head_uchains_[i], length+sa_index(1));
+                attr.chain_stack.push(new_chain);
             }
 
             // set last character to current
-            // TODO: see other todo...
-            // last_char = current_char;
+            last_char = current_char;
         }
 
         // After chain_stack is empty, rank all remaining type-l-lists:
@@ -456,37 +485,6 @@ inline void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr
     }
 }
 
-// compare function for introsort that sorts first after text symbols at given
-// indices and if both text symbols are the same compares (unique) indices.
-template <typename sa_index>
-struct compare_uChain_elements_unstable {
-public:
-    // Function for comparisons within introsort
-    compare_uChain_elements_unstable(sa_index l, const util::string_span text)
-        : length(l), input_text(text) {}
-
-    const sa_index length;
-
-    bool operator()(const sa_index& a, const sa_index& b) const {
-        DCHECK_LT(length + a, input_text.size());
-        DCHECK_LT(length + b, input_text.size());
-
-        const util::character at_a = this->input_text[a + length];
-        const util::character at_b = this->input_text[b + length];
-        // Sort different characters descending
-        // (to push "larger" chains first on stack)
-        bool is_a_smaller = at_a > at_b;
-        // in case of equality of the characters compare indices and sort
-        // ascending (to pass chains from left to right and re-link)
-        // if (at_a == at_b) {
-        //     is_a_smaller = a < b;
-        // }
-        return is_a_smaller;
-    }
-
-private:
-    const util::string_span input_text;
-};
 
 // compare function for introsort that sorts a pair of sa_index types after
 // second argument used for easy_induced_sort
@@ -509,53 +507,6 @@ private:
     const util::string_span input_text;
 };
 
-// function that sorts new_chain_IDs and then re-links new uChains in isa and
-// pushes new uChain tuples on stack
-template <typename sa_index>
-inline void refine_uChain(m_suf_sort_attr<sa_index>& attr,
-                   util::span<sa_index> new_chain_IDs, sa_index length) {
-
-    compare_uChain_elements_unstable comparator(length, attr.text);
-    util::sort::stable_sort(new_chain_IDs, comparator);
-
-    // last index that is to be linked
-    sa_index last_ID = END<sa_index>;
-
-    // declare next and current elements that are to be compared for linking
-    util::character next_element;
-    util::character current_element = attr.text[new_chain_IDs[0] + length];
-
-    for (sa_index i = 1; i < new_chain_IDs.size(); ++i) {
-        const sa_index current_ID = new_chain_IDs[static_cast<size_t>(i) - 1];
-        next_element = attr.text[new_chain_IDs[i] + length];
-
-        // no matter what, we first link the last element:
-        attr.isa.set_link(current_ID, last_ID);
-
-        // does this chain continue?
-        if (current_element != next_element) {
-
-            // this element marks the end of a chain, push the new chain on
-            // stack
-            std::pair<sa_index, sa_index> new_chain(current_ID, static_cast<size_t>(length) + 1);
-            attr.chain_stack.push(new_chain);
-
-            // next link should be set to END to mark the beginning of a new
-            // chain
-            last_ID = END<sa_index>;
-        } else {
-            last_ID = current_ID;
-        }
-        // set "current" to "next" element for next iteration
-        current_element = next_element;
-    }
-    // last element is automatically beginning of the (lexikographically)
-    // smallest chain
-    attr.isa.set_link(new_chain_IDs[new_chain_IDs.size() - 1], last_ID);
-    std::pair<sa_index, sa_index> new_chain(
-        new_chain_IDs[new_chain_IDs.size() - 1], static_cast<size_t>(length) + 1);
-    attr.chain_stack.push(new_chain);
-}
 
 // function to sort a set of suffix indices
 template <typename sa_index>

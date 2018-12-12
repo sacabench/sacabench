@@ -13,8 +13,9 @@
 #include <util/container.hpp>
 #include <util/kd_array.hpp>
 #include <util/signed_size_type.hpp>
-#include <util/sort/introsort.hpp>
-#include <util/sort/stable_sort.hpp>
+#include <util/sort/ips4o.hpp>
+#include <util/sort/binary_introsort.hpp>
+#include <util/sort/pss.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
@@ -125,6 +126,14 @@ public:
     // return copy of global_rank if needed
     sa_index get_global_rank() { return global_rank; }
 
+    bool has_repetition(sa_index index, sa_index length) {
+        // if element either is ranked or is the last element of a chain, no.
+        if(!is_link(index) || is_END(index)) return false;
+        // else, check for direct repetition as it is possible:
+        if(isa[index] == index-length) return true;
+        else return false;
+    }
+
     inline void print() const {
         for (const sa_index i : isa) {
             if (i == END<sa_index>) {
@@ -219,11 +228,11 @@ struct m_suf_sort_attr {
         : isa(isa_to_be), m_list(alphabet_size), text(input_text) {}
 };
 
-struct m_suf_sort2 {
+struct m_suf_sort_v2_par {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "mSufSort";
-    static constexpr char const* DESCRIPTION = "mSufSort (v2) as described by MICHAEL A. MANISCALCO and SIMON J. PUGLISI";
+    static constexpr char const* NAME = "mSufSortV2_par";
+    static constexpr char const* DESCRIPTION = "mSufSort (v2) as described by MICHAEL A. MANISCALCO and SIMON J. PUGLISI + parallel sort";
 
     template <typename sa_index>
     static inline void construct_sa(util::string_span text,
@@ -292,18 +301,21 @@ public:
 
         // initialize last chain character value
         // TODO: optimization: only rank necessary type l lists, not all
-        // util::character last_char = 0;
+        util::character last_char = 0;
 
         // vectors for suffixes to be refined and
         // for suffixes to be sorted by induction
+        // and for repetition chain heads
         std::vector<sa_index> to_be_refined_;
         std::vector<pair_si<sa_index>> sorting_induced_;
-
-        // begin main loop:
+        std::vector<pair_si<sa_index>> repetition_heads_;
+        //______________________________________________________________
+        // begin MAIN LOOP:
         while (attr.chain_stack.size() > 0) {
             // clear vectors (possibly filled from previous iteration)
             to_be_refined_.clear();
             sorting_induced_.clear();
+            repetition_heads_.clear();
 
             // top & pop = get first element of stack and remove it from stack
             std::pair<sa_index, sa_index> current_chain =
@@ -313,12 +325,13 @@ public:
             sa_index chain_index = current_chain.first;
             // length is the length of the u-Chain (common prefix)
             sa_index length = current_chain.second;
+
             // get current character (u-Chain beginning)
             util::character current_char = text[chain_index];
 
             // before anything happens with type s u-Chain elements, rank type l
             // suffixes for same character (or smaller)
-            for (size_t i = 0; i <= current_char; i++) {
+            for (size_t i = last_char; i <= current_char; i++) {
                 for (size_t j = 0; j <= i; j++) {
                     while (attr.m_list.exists(i, j)) {
                         rank_type_l_list(i, j, attr);
@@ -334,6 +347,10 @@ public:
 
             // follow the chain
             while (true) {
+                // first element of chain cannot BE a repetition
+                bool is_repetition = false;
+                // initialize repetition head for temporary saving rs heads:
+                sa_index current_rep_head = END<sa_index>;
 
                 // if is not sortable by simple induction
                 // refine u-Chain with this element
@@ -346,6 +363,25 @@ public:
                     pair_si<sa_index> new_sort_pair = std::make_pair(
                         chain_index, attr.isa.get_rank(chain_index + length));
                     sorting_induced_.push_back(new_sort_pair);
+                    // repetition handling for induced rep seq:
+                    bool ind_has_rep = attr.isa.has_repetition(chain_index, length);
+                    if(!is_repetition && ind_has_rep) {
+                        // next element is then repetition
+                        is_repetition = true;
+                        // and this is a repetition head
+                        current_rep_head = chain_index;
+                        // follow the whole repetition sequence to skip it
+                        while(ind_has_rep) {
+                            chain_index = chain_index - length;
+                            // alternative: attr.isa.get(chain_index)
+                            ind_has_rep = attr.isa.has_repetition(chain_index, length);
+                        }
+                        // the last element after while loop is end of the rs
+                        // so save pair from head and tail
+                        pair_si<sa_index> new_rep_seq = std::make_pair(
+                            current_rep_head, chain_index);
+                        repetition_heads_.push_back(new_rep_seq);
+                    }
                 }
                 if (attr.isa.is_END(chain_index)) {
                     break;
@@ -358,8 +394,14 @@ public:
                 util::span<pair_si<sa_index>>(sorting_induced_);
             util::span<sa_index> to_be_refined =
                 util::span<sa_index>(to_be_refined_);
+            util::span<pair_si<sa_index>> repetition_heads =
+                util::span<pair_si<sa_index>>(repetition_heads_);
 
-            easy_induced_sort(attr, sorting_induced);
+            if(sorting_induced.size() > 0)
+                easy_induced_sort(attr, sorting_induced);
+
+            //now that all rs heads have been ranked, rank rs elements:
+            rank_repetition_sequences_induced(attr, repetition_heads, length);
             // only refine uChain if elements are left!
             if (to_be_refined.size() > 0) {
                 refine_uChain(attr, to_be_refined, length);
@@ -367,7 +409,7 @@ public:
 
             // set last character to current
             // TODO: see other todo...
-            // last_char = current_char;
+            last_char = current_char;
         }
 
         // After chain_stack is empty, rank all remaining type-l-lists:
@@ -425,6 +467,66 @@ inline void assign_rank(size_t index, bool type_l, m_suf_sort_attr<sa_index>& at
     }
 }
 
+// compare function for terminating positions in repetition sequences
+template <typename sa_index>
+struct compare_repetition_sequences {
+public:
+    // Function for comparisons within introsort
+    compare_repetition_sequences(m_suf_sort_attr<sa_index>& attr) : attribute(attr) {}
+
+    bool operator()(const pair_si<sa_index> pair_a,
+                    const pair_si<sa_index> pair_b) const {
+
+        const sa_index rank_a = attribute.isa.get_rank(pair_a.first);
+        const sa_index rank_b = attribute.isa.get_rank(pair_b.first);
+
+        return rank_a < rank_b;
+    }
+
+private:
+    m_suf_sort_attr<sa_index>& attribute;
+};
+
+template <typename sa_index>
+inline void rank_repetition_sequences_induced(m_suf_sort_attr<sa_index>& attr,
+                       util::span<pair_si<sa_index>> repetition_sequences, sa_index length){
+    // count all rs; this will be used to count all not fully ranked rs later
+    size_t num_rs = repetition_sequences.size();
+    // if no rep sequences exist, just return immediately
+    if(num_rs == 0) return;
+    // else, sort all rs by their terminating position's ranks
+    compare_repetition_sequences<sa_index> comparator(attr);
+    util::sort::ips4o_sort_parallel(repetition_sequences, comparator);
+    for(size_t i = 0; i < repetition_sequences.size(); i++) {
+        repetition_sequences[i].first = repetition_sequences[i].first - length;
+    }
+    //begin interleaving
+    while(num_rs > 0) {
+        // rank and move along the repetition sequences
+        for(size_t i = 0; i < repetition_sequences.size(); i++) {
+            // get current index
+            sa_index current_index = repetition_sequences[i].first;
+            // if this entry is set to END (already done ranking), skip it
+            if(current_index == END<sa_index>) continue;
+            // if this is the last entry of a chain
+            if(current_index == repetition_sequences[i].second) {
+                // rank it
+                assign_rank(current_index, false, attr);
+                // decrease num_rs (this rs is fully ranked)
+                num_rs--;
+                // set head of this rs to END to mark it as fully ranked
+                repetition_sequences[i].first = END<sa_index>;
+                // continue with next rs
+                continue;
+            }
+            // assign a rank to it
+            assign_rank(current_index, false, attr);
+            // update head to next element
+            repetition_sequences[i].first = current_index - length;
+        }
+    }
+}
+
 template <typename sa_index>
 inline void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr) {
     // check if list is empty
@@ -446,9 +548,6 @@ inline void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr
             // follow the chain
             current_idx = next_idx;
         }
-        // check if no new tail has been attached (if so, do not delete!)
-        // if ((current_idx == last_idx) &&
-        //     (last_idx == attr.m_list.get_tail(i, j))) {
         if(attr.m_list.get_head(i,j) == END<sa_index>) {
             // delete list after all elements of it have been ranked
             attr.m_list.set_empty(i, j);
@@ -458,6 +557,38 @@ inline void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr
 
 // compare function for introsort that sorts first after text symbols at given
 // indices and if both text symbols are the same compares (unique) indices.
+template <typename sa_index>
+struct compare_uChain_elements {
+public:
+    // Function for comparisons within introsort
+    compare_uChain_elements(sa_index l, const util::string_span text)
+        : length(l), input_text(text) {}
+
+    const sa_index length;
+
+    bool operator()(const sa_index& a, const sa_index& b) const {
+        DCHECK_LT(length + a, input_text.size());
+        DCHECK_LT(length + b, input_text.size());
+
+        const util::character at_a = this->input_text[a + length];
+        const util::character at_b = this->input_text[b + length];
+        // Sort different characters descending
+        // (to push "larger" chains first on stack)
+        bool is_a_smaller = at_a > at_b;
+        // in case of equality of the characters compare indices and sort
+        // ascending (to pass chains from left to right and re-link)
+        if (at_a == at_b) {
+            is_a_smaller = a < b;
+        }
+        return is_a_smaller;
+    }
+
+private:
+    const util::string_span input_text;
+};
+
+// compare function for stable sort that sorts first after text symbols at given
+// indices. DO NOT USE WITH UNSTABLE SORT!!
 template <typename sa_index>
 struct compare_uChain_elements_unstable {
 public:
@@ -476,11 +607,6 @@ public:
         // Sort different characters descending
         // (to push "larger" chains first on stack)
         bool is_a_smaller = at_a > at_b;
-        // in case of equality of the characters compare indices and sort
-        // ascending (to pass chains from left to right and re-link)
-        // if (at_a == at_b) {
-        //     is_a_smaller = a < b;
-        // }
         return is_a_smaller;
     }
 
@@ -494,7 +620,7 @@ template <typename sa_index>
 struct compare_sortkey {
 public:
     // Function for comparisons within introsort
-    compare_sortkey(const util::string_span text) : input_text(text) {}
+    compare_sortkey() {}
 
     bool operator()(const pair_si<sa_index> pair_a,
                     const pair_si<sa_index> pair_b) const {
@@ -504,9 +630,6 @@ public:
 
         return sortkey_a < sortkey_b;
     }
-
-private:
-    const util::string_span input_text;
 };
 
 // function that sorts new_chain_IDs and then re-links new uChains in isa and
@@ -515,8 +638,13 @@ template <typename sa_index>
 inline void refine_uChain(m_suf_sort_attr<sa_index>& attr,
                    util::span<sa_index> new_chain_IDs, sa_index length) {
 
+    // version with introsort (unstable sorting)
+    //compare_uChain_elements comparator(length, attr.text);
+    //util::sort::introsort(new_chain_IDs, comparator);
+
+    // version with stable sort
     compare_uChain_elements_unstable comparator(length, attr.text);
-    util::sort::stable_sort(new_chain_IDs, comparator);
+    util::sort::parallel_stable(new_chain_IDs, comparator);
 
     // last index that is to be linked
     sa_index last_ID = END<sa_index>;
@@ -562,8 +690,10 @@ template <typename sa_index>
 inline void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
                        util::span<pair_si<sa_index>> to_be_ranked) {
     // sort elements after their sortkey:
-    compare_sortkey<sa_index> comparator(attr.text);
-    util::sort::introsort(to_be_ranked, comparator);
+    compare_sortkey<sa_index> comparator{};
+
+    util::sort::ips4o_sort_parallel(to_be_ranked, comparator);
+
 
     // rank all elements in sorted order:
     for (const auto current_index : to_be_ranked) {

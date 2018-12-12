@@ -57,6 +57,21 @@ SACA_REGISTER("saca/external/bucket_pointer_refinement/bucket_pointer_refinement
 SACA_REGISTER("saca/m_suf_sort.hpp"
     sacabench::m_suf_sort::m_suf_sort2)
 
+SACA_REGISTER("saca/m_suf_sort_scan.hpp"
+    sacabench::m_suf_sort_scan::m_suf_sort_scan2)
+
+SACA_REGISTER("saca/m_suf_sort_v2.hpp"
+    sacabench::m_suf_sort::m_suf_sort3)
+
+SACA_REGISTER("saca/m_suf_sort_par.hpp"
+    sacabench::m_suf_sort::m_suf_sort_par)
+
+SACA_REGISTER("saca/m_suf_sort_scan_par.hpp"
+    sacabench::m_suf_sort_scan::m_suf_sort_scan_par)
+
+SACA_REGISTER("saca/m_suf_sort_v2_par.hpp"
+    sacabench::m_suf_sort::m_suf_sort_v2_par)
+
 SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_doubling)
 
@@ -125,4 +140,3 @@ SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
 
 SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
     sacabench::osipov::osipov_parallel_wp)
-

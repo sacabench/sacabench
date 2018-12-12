@@ -14,7 +14,9 @@
 #include <util/kd_array.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/sort/introsort.hpp>
+#include <util/sort/ips4o.hpp>
 #include <util/sort/stable_sort.hpp>
+#include <util/sort/pss.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
@@ -219,11 +221,11 @@ struct m_suf_sort_attr {
         : isa(isa_to_be), m_list(alphabet_size), text(input_text) {}
 };
 
-struct m_suf_sort2 {
+struct m_suf_sort_par {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "mSufSort";
-    static constexpr char const* DESCRIPTION = "mSufSort (v2) as described by MICHAEL A. MANISCALCO and SIMON J. PUGLISI";
+    static constexpr char const* NAME = "mSufSort_par";
+    static constexpr char const* DESCRIPTION = "mSufSort (v2) as described by MICHAEL A. MANISCALCO and SIMON J. PUGLISI + parallel sort";
 
     template <typename sa_index>
     static inline void construct_sa(util::string_span text,
@@ -516,7 +518,7 @@ inline void refine_uChain(m_suf_sort_attr<sa_index>& attr,
                    util::span<sa_index> new_chain_IDs, sa_index length) {
 
     compare_uChain_elements_unstable comparator(length, attr.text);
-    util::sort::stable_sort(new_chain_IDs, comparator);
+    util::sort::parallel_stable(new_chain_IDs, comparator);
 
     // last index that is to be linked
     sa_index last_ID = END<sa_index>;
@@ -563,7 +565,7 @@ inline void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
                        util::span<pair_si<sa_index>> to_be_ranked) {
     // sort elements after their sortkey:
     compare_sortkey<sa_index> comparator(attr.text);
-    util::sort::introsort(to_be_ranked, comparator);
+    util::sort::ips4o_sort_parallel(to_be_ranked, comparator);
 
     // rank all elements in sorted order:
     for (const auto current_index : to_be_ranked) {

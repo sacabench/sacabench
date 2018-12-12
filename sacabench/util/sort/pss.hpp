@@ -33,7 +33,7 @@ void parallel_stable(container<T>& data, Compare comp) {
 
 template <typename T, typename Compare>
 void parallel_stable(span<T> data, Compare comp) {
-    pss:parallel_stable_sort(std::begin(data), std::end(data), comp);
+    pss::parallel_stable_sort(std::begin(data), std::end(data), comp);
 }
 
 } // namespace sacabench::util::sort
