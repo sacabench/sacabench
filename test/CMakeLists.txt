@@ -66,3 +66,6 @@ run_test(binary_introsort DEPS saca_bench_lib)
 run_test(test_saca_deep_shallow_bigbuckets DEPS saca_bench_lib)
 run_test(pss_tests DEPS saca_bench_lib)
 run_test(naive_tests DEPS saca_bench_lib)
+run_test(osipov_tests DEPS saca_bench_lib)
+run_test(prefix_sum_tests DEPS saca_bench_lib)
+
