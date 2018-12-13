@@ -15,110 +15,61 @@
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <saca/osipov/osipov.hpp>
 
 namespace sacabench::osipov {
-template <bool wordpacking_4_sort>
-class osipov_impl_par {
-public:
-    template <typename sa_index>
-    static void construct_sa(util::string_span text,
-                             util::span<sa_index> out_sa) {
-        // Pretend we never even had the 8 extra bytes to begin with
-        DCHECK_EQ(text.size(), out_sa.size());
-        text = text.slice(0, text.size() - 8);
-        out_sa = out_sa.slice(8, out_sa.size());
 
-        if (text.size() > 1) {
-            prefix_doubling_parallel(text, out_sa);
-        } else {
-            out_sa[0] = 0;
+template <typename sa_index>
+class osipov_par {
+private:
+    osipov_spans<sa_index> spans;
+    util::span<sa_index> aux;
+
+public:
+    inline osipov_par(util::span<sa_index> out_sa) : spans(osipov_spans<sa_index>(out_sa)){
+        // spans = osipov_spans(out_sa);
+        auto aux_container = util::make_container<sa_index>(out_sa.size());
+        aux = util::span<sa_index>(aux_container);
+    }
+    size_t get_size() {return spans.sa.size();}
+
+    util::span<std::tuple<sa_index, sa_index, sa_index>> get_tuples() {
+        return spans.tuples;
+    }
+
+    void slice_container(size_t end) {
+        spans.slice_tuples(end);
+        aux.slice(end);
+    }
+
+    void update_container(size_t s) {
+        // Update SA
+        #pragma omp parallel for if (s < 100)
+        for (size_t i = 0; i < s; ++i) {
+            spans.sa[i] = std::get<0>(spans.tuples[i]);
+        }
+
+        // Update ISA
+        #pragma omp parallel for if (s < 100)
+        for (size_t i = 0; i < s; ++i) {
+            // std::cout << "Assigning suffix " <<
+            // std::get<0>(tuples[i])
+            //<< " rank " << std::get<1>(tuples[i]) << std::endl;
+            spans.isa[std::get<0>(spans.tuples[i])] =
+                aux[i]; // std::get<1>(tuples[i]);
         }
     }
 
-private:
-    template <typename sa_index>
-    struct utils {
-        static constexpr sa_index NEGATIVE_MASK = size_t(1)
-                                                  << (sizeof(sa_index) * 8 - 1);
-    };
+    void slice_sa(size_t end) {spans.sa.slice(0, end);}
 
-    struct compare_first_char {
-    public:
-        inline compare_first_char(const util::string_span text) : text(text) {}
-
-        // elem and compare_to need to be smaller than input.size()
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
-            return text[elem] < text[compare_to];
-        }
-
-    private:
-        const util::string_span text;
-    };
-
-    struct compare_first_four_chars {
-    public:
-        inline compare_first_four_chars(const util::string_span text)
-            : text(text) {}
-
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
-
-            if constexpr (wordpacking_4_sort) {
-                auto elem_wp = *((uint32_t const*)&text[elem]);
-                auto compare_to_wp = *((uint32_t const*)&text[compare_to]);
-                elem_wp = bswap_32(elem_wp);
-                compare_to_wp = bswap_32(compare_to_wp);
-
-                return elem_wp < compare_to_wp;
-            } else {
-                // max_length computation to ensure fail-safety (although should
-                // never be exceeded due to sentinel as last char)
-                size_t max_elem_length =
-                    std::min(text.size() - elem, size_t(4));
-                size_t max_compare_to_length =
-                    std::min(text.size() - compare_to, size_t(4));
-                size_t max_length =
-                    std::min(max_elem_length, max_compare_to_length);
-                for (size_t i = 0; i < max_length; ++i) {
-                    if (text[elem + i] != text[compare_to + i]) {
-                        // Chars differ -> either elem is smaller or not
-                        return (text[elem + i] < text[compare_to + i]);
-                    }
-                }
-
-                // suffixes didn't differ within their first 4 chars.
-                return false;
-            }
-        }
-
-    private:
-        const util::string_span text;
-    };
-
-    template <typename sa_index>
-    struct compare_tuples {
-    public:
-        inline compare_tuples(
-            util::span<std::tuple<sa_index, sa_index, sa_index>>& tuples)
-            : tuples(tuples) {}
-
-        // Empty constructor used for temporary creation of compare function
-        inline compare_tuples() {}
-
-        inline bool operator()(
-            const std::tuple<sa_index, sa_index, sa_index>& elem,
-            const std::tuple<sa_index, sa_index, sa_index>& compare_to) const {
-            return std::get<1>(elem) < std::get<1>(compare_to);
-        }
-
-    private:
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-    };
-
-    template <typename sa_index>
-    static void mark_singletons(util::span<sa_index> sa,
-                                util::span<sa_index> isa) {
+    void finalize(util::span<sa_index> out_sa) {spans.finalize(out_sa);}
+    /*
+      Parallel version using aux for flags to reduce memory usage
+    */
+    // template <typename sa_index>
+    void mark_singletons() {
+        auto sa = spans.sa;
+        auto isa = spans.isa;
         if (sa.size() > 0) {
             util::container<bool> flags = util::make_container<bool>(sa.size());
             flags[0] = true;
@@ -148,11 +99,11 @@ private:
         }
     }
 
-    template <typename sa_index, typename compare_func>
-    static void initialize_isa(util::span<sa_index> sa,
-                               util::span<sa_index> isa,
-                               util::span<sa_index> aux, compare_func cmp) {
-
+    //template <typename sa_index, typename compare_func>
+    template <typename compare_func>
+    void initialize_isa(compare_func cmp) {
+        auto sa = spans.sa;
+        auto isa = spans.isa;
         // Sentinel has lowest rank
         isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
 
@@ -173,14 +124,15 @@ private:
     }
 
     // Fill sa with initial indices
-    template <typename sa_index>
-    static void initialize_sa(size_t text_length, util::span<sa_index> sa) {
+    // template <typename sa_index>
+    void initialize_sa(size_t text_length) {
         for (size_t i = 0; i < text_length; ++i) {
-            sa[i] = i;
+            spans.sa[i] = i;
         }
     }
-    template <typename sa_index, typename Op>
-    static void prefix_sum(util::span<sa_index> array, Op op) {
+    // template <typename sa_index, typename Op>
+    template <typename Op>
+    void prefix_sum(util::span<sa_index> array, Op op) {
         // TODO replace with parallel
         for (size_t index = 1; index < array.size(); ++index) {
             array[index] = op(array[index], array[index - 1]);
@@ -195,53 +147,18 @@ private:
         */
     }
 
-    template <typename sa_index>
-    static size_t
-    create_tuples(util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
-                  size_t size, sa_index h, util::span<sa_index> sa,
-                  util::span<sa_index> isa) {
-        size_t s = 0;
-        size_t index;
-        // std::cout << "Creating tuple." << std::endl;
-        for (size_t i = 0; i < size; ++i) {
-            // equals sa[i] - h >= 0
-            if (sa[i] >= h) {
-                index = sa[i] - h;
-                // std::cout << "sa["<<i<<"]-h=" << index << std::endl;
-                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
-                     sa_index(0))) {
-                    // std::cout << "Adding " << index << " to tuples." <<
-                    // std::endl;
-                    tuples[s++] =
-                        std::make_tuple(index, isa[index], isa[sa[i]]);
-                    /*std::cout << "(" << index << "|" << isa[index] << "|"
-                    << isa[sa[i]] << ")" << std::endl;*/
-                }
-            }
-            index = sa[i];
-            // std::cout << "sa["<<i<<"]:" << index << std::endl;
-            if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
-                index >= 2 * h &&
-                ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
-                 sa_index(0))) {
-                // std::cout << "Second condition met. Adding " << index <<
-                // std::endl;
-                tuples[s++] = std::make_tuple(
-                    index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
-                    isa[index]);
-                /*std::cout << "(" << index << "|"
-                << (isa[index] ^ utils<sa_index>::NEGATIVE_MASK) << "|"
-                << isa[index] << ")" << std::endl;*/
-            }
-        }
-        return s;
+    template <typename compare_func>
+    void initial_sort(compare_func cmp_init) {
+        util::sort::ips4o_sort_parallel(spans.sa, cmp_init);
     }
 
-    template <typename sa_index>
-    static size_t create_tuples_parallel(
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
-        size_t size, sa_index h, util::span<sa_index> sa,
-        util::span<sa_index> isa, util::span<sa_index> aux) {
+    template <typename compare_func>
+    void stable_sort(compare_func cmp) {
+        util::sort::std_par_stable_sort(spans.tuples, cmp);
+    }
+
+    // template <typename sa_index>
+    size_t create_tuples(size_t size, sa_index h) {
         size_t s = 0;
         size_t index;
 
@@ -257,9 +174,9 @@ private:
                 {
                     std::cout << "aux[" << i << "]: " << aux[i] << std::endl;
                 }*/
-                if (sa[i] >= h) {
-                    index = sa[i] - h;
-                    if ((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
+                if (spans.sa[i] >= h) {
+                    index = spans.sa[i] - h;
+                    if ((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                         sa_index(0)) {
                         // Critical environment because indexing doesn't
                         // work correctly otherwise (producing strange
@@ -273,11 +190,11 @@ private:
                         }
                     }
                 }
-                index = sa[i];
-                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) >
+                index = spans.sa[i];
+                if (((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) >
                      sa_index(0)) &&
                     index >= 2 * h &&
-                    ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
+                    ((spans.isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
                      sa_index(0))) {
                     // Second condition met (i.e. another tuple) ->
                     // increase value of aux
@@ -317,25 +234,25 @@ private:
 
             #pragma omp for
             for (size_t i = 0; i < size; ++i) {
-                if (sa[i] >= h) {
-                    index = sa[i] - h;
-                    if ((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
+                if (spans.sa[i] >= h) {
+                    index = spans.sa[i] - h;
+                    if ((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                         sa_index(0)) {
-                        tuples[aux[i]++] =
-                            std::make_tuple(index, isa[index], isa[sa[i]]);
+                        spans.tuples[aux[i]++] =
+                            std::make_tuple(index, spans.isa[index], spans.isa[spans.sa[i]]);
                         /*std::cout << "(" << index << "|" << isa[index] << "|"
                         << isa[sa[i]] << ")" << std::endl;*/
                     }
                 }
-                index = sa[i];
-                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) >
+                index = spans.sa[i];
+                if (((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) >
                      sa_index(0)) &&
                     index >= 2 * h &&
-                    ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
+                    ((spans.isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
                      sa_index(0))) {
-                    tuples[aux[i]] = std::make_tuple(
-                        index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
-                        isa[index]);
+                    spans.tuples[aux[i]] = std::make_tuple(
+                        index, spans.isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
+                        spans.isa[index]);
                     /*std::cout << "(" << index << "|"
                     << (isa[index] ^ utils<sa_index>::NEGATIVE_MASK) << "|"
                     << isa[index] << ")" << std::endl;*/
@@ -345,11 +262,9 @@ private:
         return s;
     }
 
-    template <typename sa_index>
-    static void update_ranks_prefixsum(
-        util::span<std::tuple<sa_index, sa_index, sa_index>> sorted_tuples,
-        util::span<sa_index> aux) {
-
+    // template <typename sa_index>
+    void update_ranks() {
+        auto sorted_tuples = spans.tuples;
         aux[0] = 0;
 
         #pragma omp parallel for
@@ -378,116 +293,28 @@ private:
         prefix_sum(aux, [](sa_index a, sa_index b) { return util::max(a, b); });
     }
 
-    template <typename sa_index>
-    static void prefix_doubling_parallel(util::string_span text,
-                                         util::span<sa_index> out_sa) {
-        tdc::StatPhase phase("Initialization");
+};
+template <bool wordpacking_4_sort, typename sa_index>
+class osipov_impl_par {
+public:
+    // template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::span<sa_index> out_sa) {
+        // Pretend we never even had the 8 extra bytes to begin with
+        DCHECK_EQ(text.size(), out_sa.size());
+        text = text.slice(0, text.size() - 8);
+        out_sa = out_sa.slice(8, out_sa.size());
 
-        // std::cout << "Starting Osipov parallel." << std::endl;
-        // Check if enough bits free for negation.
-        DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
-
-        // std::cout << "Creating initial container." << std::endl;
-        util::span<sa_index> sa = out_sa;
-        auto isa_container = util::make_container<sa_index>(out_sa.size());
-        auto aux_container = util::make_container<sa_index>(out_sa.size());
-
-        util::span<sa_index> isa = util::span<sa_index>(isa_container);
-        util::span<sa_index> aux = util::span<sa_index>(aux_container);
-        initialize_sa<sa_index>(text.size(), sa);
-
-        sa_index h = 4;
-        // Sort by h characters
-        compare_first_four_chars cmp_init = compare_first_four_chars(text);
-        phase.split("Initial 4-Sort");
-        util::sort::ips4o_sort_parallel(sa, cmp_init);
-        phase.split("Initialize ISA");
-        initialize_isa<sa_index, compare_first_four_chars>(sa, isa, aux,
-                                                           cmp_init);
-        phase.split("Mark singletons");
-        mark_singletons(sa, isa);
-        phase.split("Loop Initialization");
-
-        // std::cout << "isa: " << isa << std::endl;
-        size_t size = sa.size();
-        size_t s = 0;
-
-        auto tuple_container =
-            util::make_container<std::tuple<sa_index, sa_index, sa_index>>(
-                size);
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-        compare_tuples<sa_index> cmp;
-        while (size > 0) {
-            phase.split("Iteration");
-            aux = util::span<sa_index>(aux_container).slice(0, size);
-            tuples = tuple_container.slice(0, size);
-
-            // s = create_tuples<sa_index>(tuples.slice(0, size), size, h, sa,
-            // isa);
-            s = create_tuples_parallel<sa_index>(tuples.slice(0, size), size, h,
-                                                 sa, isa, aux);
-            // std::cout << "Elements left: " << size << std::endl;
-
-            // std::cout << "Next size: " << s << std::endl;
-            // Skip all operations till size gets its new size, if this
-            // iteration contains no tuples
-            if (s > 0) {
-                tuples = tuples.slice(0, s);
-                aux = util::span<sa_index>(aux).slice(0, s);
-                // std::cout << "Sorting tuples." << std::endl;
-                cmp = compare_tuples<sa_index>(tuples);
-                util::sort::std_par_stable_sort(tuples, cmp);
-                sa = sa.slice(0, s);
-                update_ranks_prefixsum(tuples, aux);
-                // std::cout << "Writing new order to sa." << std::endl;
-
-                #pragma omp parallel for if (s < 100)
-                for (size_t i = 0; i < s; ++i) {
-                    sa[i] = std::get<0>(tuples[i]);
-                }
-                // std::cout << "Refreshing ranks for tuples" << std::endl;
-
-                /*
-                sa_index head = 0;
-                for (size_t i = 1; i < s; ++i) {
-                    if (std::get<1>(tuples[i]) > std::get<1>(tuples[head])) {
-                        head = i;
-                    } else if (std::get<2>(tuples[i]) !=
-                            std::get<2>(tuples[head])) {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                                                    std::get<1>(tuples[head]) +
-                                                        sa_index(i) - head,
-                                                    std::get<2>(tuples[i]));
-                        head = i;
-                    } else {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                                                    std::get<1>(tuples[head]),
-                                                    std::get<2>(tuples[i]));
-                    }
-                }*/
-                // std::cout << "Setting new ranks in isa" << std::endl;
-
-                #pragma omp parallel for if (s < 100)
-                for (size_t i = 0; i < s; ++i) {
-                    // std::cout << "Assigning suffix " <<
-                    // std::get<0>(tuples[i])
-                    //<< " rank " << std::get<1>(tuples[i]) << std::endl;
-                    isa[std::get<0>(tuples[i])] =
-                        aux[i]; // std::get<1>(tuples[i]);
-                }
-                // std::cout << "marking singleton groups." << std::endl;
-                mark_singletons(sa, isa);
-            }
-            size = s;
-            h = 2 * h;
-        }
-        phase.split("Write out SA");
-        // std::cout << "Writing suffixes to out_sa. isa: " << isa << std::endl;
-        for (size_t i = 0; i < out_sa.size(); ++i) {
-            out_sa[isa[i] ^ utils<sa_index>::NEGATIVE_MASK] = i;
+        if (text.size() > 1) {
+            auto impl = osipov_par<sa_index>(out_sa);
+            osipov<wordpacking_4_sort,sa_index>::prefix_doubling(text, out_sa,
+                impl);
+        } else {
+            out_sa[0] = 0;
         }
     }
 };
+
 struct osipov_parallel {
     static constexpr size_t EXTRA_SENTINELS =
         1 + 8; // extra 8 to allow buffer overread during sorting
@@ -499,7 +326,7 @@ struct osipov_parallel {
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl_par<false>::construct_sa(text, out_sa);
+        osipov_impl_par<false, sa_index>::construct_sa(text, out_sa);
     }
 };
 struct osipov_parallel_wp {
@@ -513,7 +340,7 @@ struct osipov_parallel_wp {
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl_par<true>::construct_sa(text, out_sa);
+        osipov_impl_par<true, sa_index>::construct_sa(text, out_sa);
     }
 };
 } // namespace sacabench::osipov
