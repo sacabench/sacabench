@@ -39,16 +39,18 @@ public:
 
     void slice_container(size_t end) {
         spans.slice_tuples(end);
-        aux.slice(end);
+        aux = aux.slice(0, end);
     }
 
-    void update_container(size_t s) {
+    void update_sa(size_t s) {
         // Update SA
         #pragma omp parallel for if (s < 100)
         for (size_t i = 0; i < s; ++i) {
             spans.sa[i] = std::get<0>(spans.tuples[i]);
         }
+    }
 
+    void update_isa(size_t s) {
         // Update ISA
         #pragma omp parallel for if (s < 100)
         for (size_t i = 0; i < s; ++i) {
@@ -60,7 +62,11 @@ public:
         }
     }
 
-    void slice_sa(size_t end) {spans.sa.slice(0, end);}
+    /*
+    void update_container(size_t s) {
+    }*/
+
+    void slice_sa(size_t end) {spans.sa = spans.sa.slice(0, end);}
 
     void finalize(util::span<sa_index> out_sa) {spans.finalize(out_sa);}
     /*
@@ -161,22 +167,21 @@ public:
     size_t create_tuples(size_t size, sa_index h) {
         size_t s = 0;
         size_t index;
-        std::cout << "size " << size << ", h " << h << std::endl;
         #pragma omp parallel shared(aux) private(index)
         {
 
             #pragma omp for reduction(+ : s)
             for (size_t i = 0; i < size; ++i) {
+                #pragma omp critical (aux)
+                {
+                    // std::cout <<"i " << i << ", aux[" << i << "]: " << aux[i] << std::endl;
+                }
                 // Reset each value in aux to 0 (if tuples created: will be
                 // increased)
                 aux[i] = 0;
-                /*#pragma omp critical (aux)
-                {
-                    std::cout << "aux[" << i << "]: " << aux[i] << std::endl;
-                }*/
                 if (spans.sa[i] >= h) {
                     index = spans.sa[i] - h;
-                    std::cout << "index " << index << std::endl;
+                    // std::cout << "index " << index << std::endl;
                     if ((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                         sa_index(0)) {
                         // Critical environment because indexing doesn't

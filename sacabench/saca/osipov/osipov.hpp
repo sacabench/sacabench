@@ -26,10 +26,20 @@ struct osipov_spans {
     inline osipov_spans(util::span<sa_index> out_sa, util::span<sa_index> isa,
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples) :
             sa(out_sa), isa(isa), tuples(tuples){
+        initialize_sa(out_sa.size());
     }
 
+    void initialize_sa(size_t text_length) {
+        for (size_t i = 0; i < text_length; ++i) {
+            sa[i] = i;
+        }
+    }
+
+
     // slicing tuples-span from 0 (begin) to end
-    inline void slice_tuples(size_t end) {tuples.slice(0, end);}
+    inline void slice_tuples(size_t end) {
+        tuples = tuples.slice(0, end);
+    }
 
     inline void finalize(util::span<sa_index> out_sa) {
         for (size_t i = 0; i < out_sa.size(); ++i) {
@@ -153,17 +163,13 @@ public:
         sa_index h = 4;
         // Sort by h characters
         // TODO: Check if feasible for gpu-version
-        std::cout << "Creating cmp_init" << std::endl;
         auto cmp_init = compare_first_four_chars(text);
         phase.split("Initial 4-Sort");
-        std::cout << "initial sort" << std::endl;
         osipov.initial_sort(cmp_init);
         // util::sort::ips4o_sort_parallel(sa, cmp_init);
         phase.split("Initialize ISA");
-        std::cout << "initialize isa" << std::endl;
         osipov.initialize_isa(cmp_init);
         phase.split("Mark singletons");
-        std::cout << "mark singletons" << std::endl;
         osipov.mark_singletons();
         phase.split("Loop Initialization");
 
@@ -185,12 +191,10 @@ public:
             /*aux = util::span<sa_index>(aux_container).slice(0, size);
             tuples = tuple_container.slice(0, size);
             */
-            std::cout << "slice container" << std::endl;
             osipov.slice_container(size);
 
             // s = create_tuples<sa_index>(tuples.slice(0, size), size, h, sa,
             // isa);
-            std::cout << "Create tuples" << std::endl;
             s = osipov.create_tuples(size, h);
             // std::cout << "Elements left: " << size << std::endl;
 
@@ -198,13 +202,11 @@ public:
             // Skip all operations till size gets its new size, if this
             // iteration contains no tuples
             if (s > 0) {
-                std::cout << "slice container" << std::endl;
                 // Wrapper for slicing tuple/aux
-                osipov.slice_container(size);
+                osipov.slice_container(s);
                 /*
                 tuples = tuples.slice(0, s);
                 aux = util::span<sa_index>(aux).slice(0, s); */
-                std::cout << "Sorting tuples." << std::endl;
                 auto tuples = osipov.get_tuples();
                 cmp = compare_tuples(tuples);
                 osipov.stable_sort(cmp);
@@ -212,14 +214,14 @@ public:
 
                 // osipov.sa = osipov.sa.slice(0, s);
                 osipov.slice_sa(s);
-                std::cout << "Updating ranks" << std::endl;
                 osipov.update_ranks();
                 // std::cout << "Writing new order to sa." << std::endl;
 
                 // Update values in sa and isa after correct rank computation
                 // in 'update_ranks' (maybe include it there?)
-                std::cout << "Update container" << std::endl;
-                osipov.update_container(s);
+                //osipov.update_container(s);
+                osipov.update_sa(s);
+                osipov.update_isa(s);
                 /*
                 #pragma omp parallel for if (s < 100)
                 for (size_t i = 0; i < s; ++i) {
@@ -255,9 +257,9 @@ public:
                     isa[std::get<0>(tuples[i])] =
                         aux[i]; // std::get<1>(tuples[i]);
                 }*/
-                std::cout << "marking singleton groups." << std::endl;
                 osipov.mark_singletons();
             }
+
             size = s;
             h = 2 * h;
         }
