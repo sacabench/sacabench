@@ -27,9 +27,7 @@ private:
 public:
     inline osipov_seq(util::span<sa_index> out_sa, util::span<sa_index> isa,
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples) :
-            spans(osipov_spans<sa_index>(out_sa, isa, tuples)) {
-        //spans = osipov_spans<sa_index>(out_sa);
-    }
+            spans(osipov_spans<sa_index>(out_sa, isa, tuples)) {}
 
     size_t get_size(){return spans.sa.size();}
 
@@ -41,35 +39,23 @@ public:
         spans.slice_tuples(end);
     }
 
-    void update_sa(size_t s) {
+    void update_container(size_t s) {
+        // Update SA
         for (size_t i = 0; i < s; ++i) {
             spans.sa[i] = std::get<0>(spans.tuples[i]);
         }
-    }
-
-    void update_isa(size_t s) {
         // Update ISA
         for (size_t i = 0; i < s; ++i) {
-            // std::cout << "Assigning suffix " <<
-            // std::get<0>(tuples[i])
-            //<< " rank " << std::get<1>(tuples[i]) << std::endl;
             spans.isa[std::get<0>(spans.tuples[i])] = std::get<1>(
                 spans.tuples[i]);
         }
+
     }
-/*
-    void update_container(size_t s) {
-        // Update SA
-
-
-
-    }*/
 
     void slice_sa(size_t end) {spans.sa = spans.sa.slice(0, end);}
 
     void finalize(util::span<sa_index> out_sa) {spans.finalize(out_sa);}
 
-    // template <typename sa_index>
     void mark_singletons() {
         auto sa = spans.sa;
         auto isa = spans.isa;
@@ -127,7 +113,6 @@ public:
     }
 
     // Fill sa with initial indices
-    // template <typename sa_index>
     void initialize_sa(size_t text_length) {
         for (size_t i = 0; i < text_length; ++i) {
             spans.sa[i] = i;
@@ -145,44 +130,29 @@ public:
     }
 
 
-    // template <typename sa_index>
     size_t create_tuples(size_t size, sa_index h) {
         auto sa = spans.sa;
         auto isa = spans.isa;
         auto tuples = spans.tuples;
         size_t s = 0;
         size_t index;
-        // std::cout << "Creating tuple." << std::endl;
         for (size_t i = 0; i < size; ++i) {
-            //std::cout << "i " << i << ", sa[i] " << sa[i] << std::endl;
-            // equals sa[i] - h >= 0
             if (sa[i] >= h) {
                 index = sa[i] - h;
-                // std::cout << "sa["<<i<<"]-h=" << index << std::endl;
                 if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                      sa_index(0))) {
-                    /*std::cout << "Adding " << index << " to tuples." <<
-                    std::endl;*/
                     tuples[s++] =
                         std::make_tuple(index, isa[index], isa[sa[i]]);
-                    /*std::cout << "(" << index << "|" << isa[index] << "|"
-                    << isa[sa[i]] << ")" << std::endl;*/
                 }
             }
             index = sa[i];
-            // std::cout << "sa["<<i<<"]:" << index << std::endl;
             if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
                 index >= 2 * h &&
                 ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
                  sa_index(0))) {
-                /*std::cout << "Second condition met. Adding " << index <<
-                std::endl;*/
                 tuples[s++] = std::make_tuple(
                     index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
                     isa[index]);
-                /*std::cout << "(" << index << "|"
-                << (isa[index] ^ utils<sa_index>::NEGATIVE_MASK) << "|"
-                << isa[index] << ")" << std::endl;*/
             }
         }
         return s;
@@ -196,19 +166,12 @@ public:
                 head = i;
             } else if (std::get<2>(tuples[i]) !=
                        std::get<2>(tuples[head])) {
-                /*std::cout << "new tuple at " << i << ": ("
-                << std::get<0>(tuples[i]) << "|"
-                << (std::get<1>(tuples[head]) + sa_index(i) - head) << "|"
-                << std::get<2>(tuples[i]) << ")" << std::endl;*/
                 tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
                                             std::get<1>(tuples[head]) +
                                                 sa_index(i) - head,
                                             std::get<2>(tuples[i]));
                 head = i;
             } else {
-                 /*std::cout << "new tuple at " << i << ": ("
-                 << std::get<0>(tuples[i]) << "|" << std::get<1>(tuples[head])
-                 << "|" << std::get<2>(tuples[i]) << ")" << std::endl;*/
                  tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
                                             std::get<1>(tuples[head]),
                                             std::get<2>(tuples[i]));
@@ -220,7 +183,6 @@ public:
 template <bool wordpacking_4_sort, typename sa_index>
 class osipov_impl_seq {
 public:
-    // template <typename sa_index>
     static void construct_sa(util::string_span text,
                              util::span<sa_index> out_sa) {
         // Pretend we never even had the 8 extra bytes to begin with
