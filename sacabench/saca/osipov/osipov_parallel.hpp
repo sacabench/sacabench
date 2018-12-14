@@ -26,11 +26,11 @@ private:
     util::span<sa_index> aux;
 
 public:
-    inline osipov_par(util::span<sa_index> out_sa) : spans(osipov_spans<sa_index>(out_sa)){
-        // spans = osipov_spans(out_sa);
-        auto aux_container = util::make_container<sa_index>(out_sa.size());
-        aux = util::span<sa_index>(aux_container);
-    }
+    inline osipov_par(util::span<sa_index> out_sa, util::span<sa_index> isa,
+            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
+            util::span<sa_index> aux) :
+            spans(osipov_spans<sa_index>(out_sa, isa, tuples)), aux(aux){}
+
     size_t get_size() {return spans.sa.size();}
 
     util::span<std::tuple<sa_index, sa_index, sa_index>> get_tuples() {
@@ -161,7 +161,7 @@ public:
     size_t create_tuples(size_t size, sa_index h) {
         size_t s = 0;
         size_t index;
-
+        std::cout << "size " << size << ", h " << h << std::endl;
         #pragma omp parallel shared(aux) private(index)
         {
 
@@ -176,6 +176,7 @@ public:
                 }*/
                 if (spans.sa[i] >= h) {
                     index = spans.sa[i] - h;
+                    std::cout << "index " << index << std::endl;
                     if ((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                         sa_index(0)) {
                         // Critical environment because indexing doesn't
@@ -306,7 +307,16 @@ public:
         out_sa = out_sa.slice(8, out_sa.size());
 
         if (text.size() > 1) {
-            auto impl = osipov_par<sa_index>(out_sa);
+            // Create spans needed for computation
+            auto isa_container = util::make_container<sa_index>(out_sa.size());
+            auto tuple_container = util::make_container<std::tuple<sa_index,
+                    sa_index, sa_index>>(out_sa.size());
+            auto aux_container = util::make_container<sa_index>(out_sa.size());
+            auto isa = util::span<sa_index>(isa_container);
+            auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(
+                    tuple_container);
+            auto aux = util::span<sa_index>(aux_container);
+            auto impl = osipov_par<sa_index>(out_sa, isa, tuples, aux);
             osipov<wordpacking_4_sort,sa_index>::prefix_doubling(text, out_sa,
                 impl);
         } else {

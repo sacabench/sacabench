@@ -25,7 +25,9 @@ private:
 
 
 public:
-    inline osipov_seq(util::span<sa_index> out_sa) : spans(osipov_spans<sa_index>(out_sa)) {
+    inline osipov_seq(util::span<sa_index> out_sa, util::span<sa_index> isa,
+            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples) :
+            spans(osipov_spans<sa_index>(out_sa, isa, tuples)) {
         //spans = osipov_spans<sa_index>(out_sa);
     }
 
@@ -334,7 +336,13 @@ public:
         out_sa = out_sa.slice(8, out_sa.size());
 
         if (text.size() > 1) {
-            auto impl = osipov_seq<sa_index>(out_sa);
+            auto isa_container = util::make_container<sa_index>(out_sa.size());
+            auto tuple_container = util::make_container<std::tuple<sa_index,
+                    sa_index, sa_index>>(out_sa.size());
+            auto isa = util::span<sa_index>(isa_container);
+            auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(
+                    tuple_container);
+            auto impl = osipov_seq<sa_index>(out_sa, isa, tuples);
             osipov<wordpacking_4_sort, sa_index>::prefix_doubling(text, out_sa,
                 impl);
         } else {
