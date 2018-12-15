@@ -132,11 +132,11 @@ TEST(radixsort_parallel_tests, triple_sorting_chars) {
 
 TEST(radixsort_parallel_tests, hopefully_final_triple_sorting) {
 
-    std::tuple<char, int, int> tuple_0('a', 1, 1);
-    std::tuple<char, int, int> tuple_1('a', 0, 1);
+    std::tuple<char, int, int> tuple_0('a', 1, 7);
+    std::tuple<char, int, int> tuple_1('a', 0, 2);
     std::tuple<char, int, int> tuple_2('b', 3, 1);
-    std::tuple<char, int, int> tuple_3('b', 2, 1);
-    std::tuple<char, int, int> tuple_4('b', 4, 1);
+    std::tuple<char, int, int> tuple_3('b', 2, 0);
+    std::tuple<char, int, int> tuple_4('b', 4, 9);
 
     auto test_input = make_container<std::tuple<char, int, int>>(5);
     test_input[0] = tuple_0;
@@ -160,9 +160,10 @@ TEST(radixsort_parallel_tests, hopefully_final_triple_sorting) {
 
     sort::radixsort_parallel(test_input, test_output, alphabet);
 
-    ASSERT_EQ(test_output[0], test_control[0]);
-    ASSERT_EQ(test_output[1], test_control[1]);
-    ASSERT_EQ(test_output[2], test_control[2]);
-    ASSERT_EQ(test_output[3], test_control[3]);
-    ASSERT_EQ(test_output[4], test_control[4]);
+    // Check position in third item of tripple
+    ASSERT_EQ(std::get<2>(test_output[0]), 0);
+    ASSERT_EQ(std::get<2>(test_output[1]), 1);
+    ASSERT_EQ(std::get<2>(test_output[2]), 2);
+    ASSERT_EQ(std::get<2>(test_output[3]), 3);
+    ASSERT_EQ(std::get<2>(test_output[4]), 4);
 }

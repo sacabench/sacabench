@@ -546,10 +546,17 @@ namespace sacabench::util::sort {
                 auto current_index = thread_index * current_alphabet_size + index;
                 std::vector bucket = sorting_lists[current_index];
                 for (std::tuple<char, int, int> element : bucket) {
+
+                    std::cout << "Updating position flag in triple from " << std::get<2>(element) << " to " << current_insert_index << std::endl; 
+                    // Update last value of tripel and save its position.
+                    std::get<2>(element) = current_insert_index;
+                    std::cout << "Position flag in triple is now " << std::get<2>(element) << std::endl; 
+                    
                     std::cout << "Inserting element: ";
                     std::cout << "< " << std::get<0>(element) << ", " << std::get<1>(element) << ", " << std::get<2>(element) << " >";
                     std::cout << " into position: " << current_insert_index << std::endl;
                     output[current_insert_index] = element;
+
                     current_insert_index += 1;
                 }
             } 
@@ -560,7 +567,7 @@ namespace sacabench::util::sort {
             std::cout << "< " << std::get<0>(element) << ", " << std::get<1>(element) << ", " << std::get<2>(element) << " >," << std::endl;;
         }
         std::cout << std::endl;
-
+        // TODO: Save position in last element of triple
         radixsort_parallel(output, output, alphabet, current_position + 1);
     }
 }
