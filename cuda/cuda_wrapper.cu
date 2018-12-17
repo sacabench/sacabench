@@ -61,3 +61,15 @@ void inclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
         cuda_check(cub::DeviceScan::InclusiveSum(params...), "InclusiveSum");
     });
 }
+
+void exclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+    prefix_sum(d_in, d_out, num_items, [](auto... params) {
+        cuda_check(cub::DeviceScan::ExclusiveSum(params...), "ExclusiveSum");
+    });
+}
+
+void inclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+    prefix_sum(d_in, d_out, num_items, [](auto... params) {
+        cuda_check(cub::DeviceScan::InclusiveSum(params...), "InclusiveSum");
+    });
+}
