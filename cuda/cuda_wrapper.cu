@@ -20,6 +20,12 @@ void* allocate_cuda_buffer(size_t size) {
     return ret;
 }
 
+void* allocate_managed_cuda_buffer(size_t size) {
+    void* ret = nullptr;
+    cuda_check(cudaMallocManaged(&ret, size));
+    return ret;
+}
+
 void free_cuda_buffer(void* ptr) {
     cuda_check(cudaFree(ptr));
 }
