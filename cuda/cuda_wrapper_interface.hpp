@@ -10,3 +10,7 @@ void free_cuda_buffer(void* ptr);
 void exclusive_sum_64(uint64_t* d_in,
                       uint64_t* d_out,
                       size_t num_items);
+
+void inclusive_sum_64(uint64_t* d_in,
+                      uint64_t* d_out,
+                      size_t num_items);
