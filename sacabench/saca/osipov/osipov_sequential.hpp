@@ -13,112 +13,82 @@
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <saca/osipov/osipov.hpp>
 
 namespace sacabench::osipov {
-template <bool wordpacking_4_sort>
-class osipov_impl_seq {
-public:
-    template <typename sa_index>
-    static void construct_sa(util::string_span text,
-                             util::span<sa_index> out_sa) {
-        // Pretend we never even had the 8 extra bytes to begin with
-        DCHECK_EQ(text.size(), out_sa.size());
-        text = text.slice(0, text.size() - 8);
-        out_sa = out_sa.slice(8, out_sa.size());
 
-        if (text.size() > 1) {
-            prefix_doubling_sequential(text, out_sa);
-        } else {
-            out_sa[0] = 0;
-        }
+/*
+    \brief Sequential implementation of the osipov algorithm used in class
+    osipov (see osipov.hpp).
+*/
+template <typename sa_index>
+class osipov_seq{
+private:
+        osipov_spans<sa_index> spans;
+
+
+public:
+    /*
+        Constructor for class osipov_seq. Directly creates a osipov_spans
+        instance within instantiation list (otherwise default constructor for
+        osipov_spans is needed).
+        
+        @param out_sa Span for the final sa.
+        @param isa Span for the isa.
+        @param tuples Span for the tuples.
+    */
+    inline osipov_seq(util::span<sa_index> out_sa, util::span<sa_index> isa,
+            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples) :
+            spans(osipov_spans<sa_index>(out_sa, isa, tuples)) {}
+
+    // Returns the tuple span (needed for tuple comparison function)
+    util::span<std::tuple<sa_index, sa_index, sa_index>> get_tuples() {
+        return spans.tuples;
     }
 
-private:
-    template <typename sa_index>
-    struct utils {
-        static constexpr sa_index NEGATIVE_MASK = size_t(1)
-                                                  << (sizeof(sa_index) * 8 - 1);
-    };
+    // Slices the tuples span to length end
+    void slice_container(size_t end) {
+        spans.slice_tuples(end);
+    }
 
-    struct compare_first_char {
-    public:
-        inline compare_first_char(const util::string_span text) : text(text) {}
+    /*
+        \brief Updates the values for sa and isa given the values in tuples
+        (called at end of iteration).
 
-        // elem and compare_to need to be smaller than input.size()
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
-            return text[elem] < text[compare_to];
+        @param s The new size for the next iteration
+    */
+    void update_container(size_t s) {
+        // Update SA
+        for (size_t i = 0; i < s; ++i) {
+            spans.sa[i] = std::get<0>(spans.tuples[i]);
+        }
+        // Update ISA
+        for (size_t i = 0; i < s; ++i) {
+            spans.isa[std::get<0>(spans.tuples[i])] = std::get<1>(
+                spans.tuples[i]);
         }
 
-    private:
-        const util::string_span text;
-    };
+    }
 
-    struct compare_first_four_chars {
-    public:
-        inline compare_first_four_chars(const util::string_span text)
-            : text(text) {}
+    /*
+        \brief Slices sa from 0 to end.
+    */
+    void slice_sa(size_t end) {spans.sa = spans.sa.slice(0, end);}
 
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
+    /*
+        \brief Writes final suffix array into out_sa.
+    */
+    void finalize(util::span<sa_index> out_sa) {spans.finalize(out_sa);}
 
-            if constexpr (wordpacking_4_sort) {
-                auto elem_wp = *((uint32_t const*)&text[elem]);
-                auto compare_to_wp = *((uint32_t const*)&text[compare_to]);
-                elem_wp = bswap_32(elem_wp);
-                compare_to_wp = bswap_32(compare_to_wp);
-
-                return elem_wp < compare_to_wp;
-            } else {
-                // max_length computation to ensure fail-safety (although should
-                // never be exceeded due to sentinel as last char)
-                size_t max_elem_length =
-                    std::min(text.size() - elem, size_t(4));
-                size_t max_compare_to_length =
-                    std::min(text.size() - compare_to, size_t(4));
-                size_t max_length =
-                    std::min(max_elem_length, max_compare_to_length);
-                for (size_t i = 0; i < max_length; ++i) {
-                    if (text[elem + i] != text[compare_to + i]) {
-                        // Chars differ -> either elem is smaller or not
-                        return (text[elem + i] < text[compare_to + i] ? true
-                                                                      : false);
-                    }
-                }
-
-                // suffixes didn't differ within their first 4 chars.
-                return false;
-            }
-        }
-
-    private:
-        const util::string_span text;
-    };
-
-    template <typename sa_index>
-    struct compare_tuples {
-    public:
-        inline compare_tuples(
-            util::span<std::tuple<sa_index, sa_index, sa_index>>& tuples)
-            : tuples(tuples) {}
-
-        // Empty constructor used for temporary creation of compare function
-        inline compare_tuples() {}
-
-        inline bool operator()(
-            const std::tuple<sa_index, sa_index, sa_index>& elem,
-            const std::tuple<sa_index, sa_index, sa_index>& compare_to) const {
-            return std::get<1>(elem) < std::get<1>(compare_to);
-        }
-
-    private:
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-    };
-
-    template <typename sa_index>
-    static void mark_singletons(util::span<sa_index> sa,
-                                util::span<sa_index> isa) {
+    /*
+        \brief Marks, i.e. inverts singleton h-groups in isa.
+    */
+    void mark_singletons() {
+        auto sa = spans.sa;
+        auto isa = spans.isa;
+        // Only possible if there are still values in sa.
         if (sa.size() > 0) {
+            // Creating container for flags
             util::container<bool> flags = util::make_container<bool>(sa.size());
             flags[0] = true;
             // Set flags if predecessor has different rank.
@@ -142,13 +112,21 @@ private:
         }
     }
 
-    // Sequential variant of initializing the isa
-    template <typename sa_index, typename compare_func>
-    static void initialize_isa(util::span<sa_index> sa,
-                               util::span<sa_index> isa, compare_func cmp) {
+    /*
+        \brief Sequentially initializes the isa.
 
+        @param cmp The initial compare function (most probably
+        compare_first_four_chars)
+    */
+    template <typename compare_func>
+    void initialize_isa(compare_func cmp) {
+        auto sa = spans.sa;
+        auto isa = spans.isa;
+
+        // Auxiliary array for marking new groups.
         util::container<sa_index> aux =
             util::make_container<sa_index>(sa.size());
+
 
         // Sentinel has lowest rank
         isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
@@ -168,135 +146,157 @@ private:
         }
     }
 
-    // Fill sa with initial indices
-    template <typename sa_index>
-    static void initialize_sa(size_t text_length, util::span<sa_index> sa) {
-        for (size_t i = 0; i < text_length; ++i) {
-            sa[i] = i;
-        }
+    /*
+        \brief Uses ips4o as initial sorting function.
+
+        @param cmp_init The compare function to sort by (most probably
+        compare_first_four_chars)
+    */
+    template <typename compare_func>
+    void initial_sort(compare_func cmp_init) {
+        util::sort::ips4o_sort(spans.sa, cmp_init);
     }
 
-    template <typename sa_index>
-    static void prefix_doubling_sequential(util::string_span text,
-                                           util::span<sa_index> out_sa) {
-        tdc::StatPhase phase("Initialization");
+    /*
+        \brief Uses std::stable_sort as stable sorting method of tuples span in
+        each iteration.
 
-        // std::cout << "Starting Osipov sequential." << std::endl;
-        // Check if enough bits free for negation.
-        DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
+        @param cmp The compare function to sort the tuples.
+    */
+    template <typename compare_func>
+    void stable_sort(compare_func cmp) {
+        util::sort::stable_sort(spans.tuples, cmp);
+    }
 
-        // std::cout << "Creating initial container." << std::endl;
-        util::span<sa_index> sa = out_sa;
-        auto isa_container = util::make_container<sa_index>(out_sa.size());
-        util::span<sa_index> isa = util::span<sa_index>(isa_container);
-        initialize_sa<sa_index>(text.size(), sa);
+    /*
+        \brief Generates tuples which are needed for current iteration.
 
-        sa_index h = 4;
-        // Sort by h characters
-        compare_first_four_chars cmp_init = compare_first_four_chars(text);
-        phase.split("Initial 4-Sort");
-        util::sort::ips4o_sort(sa, cmp_init);
-        phase.split("Initialize ISA");
-        initialize_isa<sa_index, compare_first_four_chars>(sa, isa, cmp_init);
-        phase.split("Mark singletons");
-        mark_singletons(sa, isa);
-        phase.split("Loop Initialization");
+        Generates tuples for suffixes still considered in this iteration as
+        (suffix-index|h-rank|2h-rank) for suffixes which still need to be
+        induced and as (suffix-index|h-rank|-h-rank) for suffixes which are
+        already correctly sorted but are needed to induce other suffixes
+        (because prefix of length h has already been considered for sorting).
 
-        // std::cout << "isa: " << isa << std::endl;
-        size_t size = sa.size();
+        @param size The currently computed max size.
+        @param h The depth of this iteration.
+    */
+    size_t create_tuples(size_t size, sa_index h) {
+        auto sa = spans.sa;
+        auto isa = spans.isa;
+        auto tuples = spans.tuples;
+        // s contains the amount of created tuples (initially 0)
         size_t s = 0;
-        size_t index = 0;
-
-        auto tuple_container =
-            util::make_container<std::tuple<sa_index, sa_index, sa_index>>(
-                size);
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-        compare_tuples<sa_index> cmp;
-        while (size > 0) {
-            phase.split("Iteration");
-
-            // std::cout << "Elements left: " << size << std::endl;
-            s = 0;
-            tuples = tuple_container.slice(0, size);
-            // std::cout << "Creating tuple." << std::endl;
-            for (size_t i = 0; i < size; ++i) {
-                // equals sa[i] - h >= 0
-                if (sa[i] >= h) {
-                    index = sa[i] - h;
-                    // std::cout << "sa["<<i<<"]-h=" << index << std::endl;
-                    if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
-                         sa_index(0))) {
-                        // std::cout << "Adding " << index << " to tuples." <<
-                        // std::endl;
-                        tuples[s++] =
-                            std::make_tuple(index, isa[index], isa[sa[i]]);
-                    }
-                }
-                index = sa[i];
-                // std::cout << "sa["<<i<<"]:" << index << std::endl;
-                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) >
-                     sa_index(0)) &&
-                    index >= 2 * h &&
-                    ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
+        // Temporary index
+        size_t index;
+        for (size_t i = 0; i < size; ++i) {
+            // Inducing suffix is still valid (i.e. suffix-index -
+            // prefix-length >= 0)
+            if (sa[i] >= h) {
+                // Get index of considered suffix (getting induced by sa[i])
+                index = sa[i] - h;
+                // Considered suffix is not in singleton h-group -> create tuple
+                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                      sa_index(0))) {
-                    // std::cout << "Second condition met. Adding " << index <<
-                    // std::endl;
-                    tuples[s++] = std::make_tuple(
-                        index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
-                        isa[index]);
+                    tuples[s++] =
+                        std::make_tuple(index, isa[index], isa[sa[i]]);
                 }
             }
-            // std::cout << "Next size: " << s << std::endl;
-            // Skip all operations till size gets its new size, if this
-            // iteration contains no tuples
-            if (s > 0) {
-                tuples = tuples.slice(0, s);
-                // std::cout << "Sorting tuples." << std::endl;
-                cmp = compare_tuples<sa_index>(tuples);
-                util::sort::stable_sort(tuples, cmp);
-                sa = sa.slice(0, s);
-                // std::cout << "Writing new order to sa." << std::endl;
-                for (size_t i = 0; i < s; ++i) {
-                    sa[i] = std::get<0>(tuples[i]);
-                }
-                // std::cout << "Refreshing ranks for tuples" << std::endl;
-                sa_index head = 0;
-                for (size_t i = 1; i < s; ++i) {
-                    if (std::get<1>(tuples[i]) > std::get<1>(tuples[head])) {
-                        head = i;
-                    } else if (std::get<2>(tuples[i]) !=
-                               std::get<2>(tuples[head])) {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                                                    std::get<1>(tuples[head]) +
-                                                        sa_index(i) - head,
-                                                    std::get<2>(tuples[i]));
-                        head = i;
-                    } else {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                                                    std::get<1>(tuples[head]),
-                                                    std::get<2>(tuples[i]));
-                    }
-                }
-                // std::cout << "Setting new ranks in isa" << std::endl;
-                for (size_t i = 0; i < s; ++i) {
-                    // std::cout << "Assigning suffix " <<
-                    // std::get<0>(tuples[i])
-                    //<< " rank " << std::get<1>(tuples[i]) << std::endl;
-                    isa[std::get<0>(tuples[i])] = std::get<1>(tuples[i]);
-                }
-                // std::cout << "marking singleton groups." << std::endl;
-                mark_singletons(sa, isa);
+            // Consider suffix sa[i] (may be needed in following iteration for
+            // inducing)
+            index = sa[i];
+            /*
+            sa[i] has singleton h-group AND induces valid index in next
+            iteration AND this index has no singleton h-group (before this
+            iteration) -> consider sa[i] in next iteration (as it will be able
+            to induce another index).
+            */
+            if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
+                index >= 2 * h &&
+                ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
+                 sa_index(0))) {
+                tuples[s++] = std::make_tuple(
+                    index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
+                    isa[index]);
             }
-            size = s;
-            h = 2 * h;
         }
-        phase.split("Write out SA");
-        // std::cout << "Writing suffixes to out_sa. isa: " << isa << std::endl;
-        for (size_t i = 0; i < out_sa.size(); ++i) {
-            out_sa[isa[i] ^ utils<sa_index>::NEGATIVE_MASK] = i;
+        // Return number of counted tuples.
+        return s;
+    }
+
+    /*
+        \brief Update rank of each tuple after tuples have been sorted.
+    */
+    void update_ranks() {
+        auto tuples = spans.tuples;
+        // Index for each reference point while updating index.
+        sa_index head = 0;
+        for (size_t i = 1; i < tuples.size(); ++i) {
+            // Suffixes differ in h-rank -> different group, set new head.
+            if (std::get<1>(tuples[i]) > std::get<1>(tuples[head])) {
+                head = i;
+            }
+            // Same h-group, but differ in 2h-rank -> new h-rank for tuple i
+            else if (std::get<2>(tuples[i]) !=
+                       std::get<2>(tuples[head])) {
+                tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
+                                            std::get<1>(tuples[head]) +
+                                                sa_index(i) - head,
+                                            std::get<2>(tuples[i]));
+                head = i;
+            }
+            // Still same h-group -> copy h-rank of head in case of new rank for
+            // head
+            else {
+                 tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
+                                            std::get<1>(tuples[head]),
+                                            std::get<2>(tuples[i]));
+            }
         }
     }
 };
+
+/*
+    \brief Wrapper for calling sequential version of osipov.
+
+    Wrapper class for calling the sequential version of the osipov algorithm
+    which creates a valid osipov_seq instance and then calls the main osipov
+    method. Template parameter wordpacking_4_sort specifies wether wordpacking
+    is used while sa_index specifies the used type for suffix indices.
+*/
+template <bool wordpacking_4_sort, typename sa_index>
+class osipov_impl_seq {
+public:
+    static void construct_sa(util::string_span text,
+                             util::span<sa_index> out_sa) {
+        // Pretend we never even had the 8 extra bytes to begin with
+        DCHECK_EQ(text.size(), out_sa.size());
+        text = text.slice(0, text.size() - 8);
+        out_sa = out_sa.slice(8, out_sa.size());
+
+        if (text.size() > 1) {
+            // Create container for isa and tuples such that they remain valid
+            // within whole computation of algorithm.
+            auto isa_container = util::make_container<sa_index>(out_sa.size());
+            auto tuple_container = util::make_container<std::tuple<sa_index,
+                    sa_index, sa_index>>(out_sa.size());
+            auto isa = util::span<sa_index>(isa_container);
+            auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(
+                    tuple_container);
+            // create instance of sequential osipov implementation.
+            auto impl = osipov_seq<sa_index>(out_sa, isa, tuples);
+            // Call main osipov function.
+            osipov<wordpacking_4_sort, sa_index>::prefix_doubling(text, out_sa,
+                impl);
+        } else {
+            out_sa[0] = 0;
+        }
+    }
+};
+
+/*
+    \brief Wrapper for calling sequential version of osipov (cpu) without
+    wordpacking within framework.
+*/
 struct osipov_sequential {
     static constexpr size_t EXTRA_SENTINELS =
         1 + 8; // extra 8 to allow buffer overread during sorting
@@ -308,9 +308,14 @@ struct osipov_sequential {
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl_seq<false>::construct_sa(text, out_sa);
+        osipov_impl_seq<false, sa_index>::construct_sa(text, out_sa);
     }
 };
+
+/*
+    \brief Wrapper for calling sequential version of osipov (cpu) with
+    wordpacking within framework.
+*/
 struct osipov_sequential_wp {
     static constexpr size_t EXTRA_SENTINELS =
         1 + 8; // extra 8 to allow buffer overread during sorting
@@ -322,7 +327,7 @@ struct osipov_sequential_wp {
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl_seq<true>::construct_sa(text, out_sa);
+        osipov_impl_seq<true, sa_index>::construct_sa(text, out_sa);
     }
 };
 } // namespace sacabench::osipov
