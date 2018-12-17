@@ -20,6 +20,10 @@ void* allocate_cuda_buffer(size_t size) {
     return ret;
 }
 
+void free_cuda_buffer(void* ptr) {
+    cuda_check(cudaFree(ptr));
+}
+
 void exclusive_sum_64(void* d_temp_storage,
                       size_t& temp_storage_bytes,
                       uint64_t* d_in,
