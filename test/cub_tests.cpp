@@ -15,5 +15,5 @@ TEST(Cub, prefix_sum) {
     uint64_t d_out[] = {0, 0, 0, 0, 0, 0, 0};
 
     // Run exclusive prefix sum
-    exclusive_sum_64(d_in, d_out, num_items);
+    exclusive_sum(d_in, d_out, num_items);
 }

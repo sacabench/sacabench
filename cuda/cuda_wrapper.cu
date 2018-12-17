@@ -50,25 +50,25 @@ void free_cuda_buffer(void* ptr) {
     cuda_check(cudaFree(ptr), "cudaFree");
 }
 
-void exclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::ExclusiveSum(params...), "ExclusiveSum");
     });
 }
 
-void inclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+void inclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::InclusiveSum(params...), "InclusiveSum");
     });
 }
 
-void exclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+void exclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::ExclusiveSum(params...), "ExclusiveSum");
     });
 }
 
-void inclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+void inclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::InclusiveSum(params...), "InclusiveSum");
     });
