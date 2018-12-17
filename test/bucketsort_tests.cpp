@@ -30,7 +30,7 @@ TEST(Bucketsort, function_call) {
 
 TEST(Bucketsort, function_call_lightweight) {
     sacabench::util::string input =
-        sacabench::util::make_string("caabaccaabacaa");
+        sacabench::util::make_string("caabaccaa");
     sacabench::util::alphabet a = sacabench::util::alphabet(input);
     sacabench::util::apply_effective_alphabet(input, a);
 
@@ -38,7 +38,25 @@ TEST(Bucketsort, function_call_lightweight) {
     auto bptr = sacabench::util::make_container<uint8_t>(input.size());
     sacabench::util::span<uint8_t> sa_span = sa;
     sacabench::bucket_pointer_refinement::sort::bucketsort_presort_lightweight(input,
-            a.size_without_sentinel(), 2, sa_span, bptr);
+            a.size_without_sentinel(), 3, sa_span, bptr);
+
+    std::cout << "Suffix Array: ";
+    for (auto const& c : sa)
+        std::cout << (uint32_t) c << ' ';
+    std::cout << std::endl;
+}
+
+TEST(Bucketsort, function_call_parallel) {
+    sacabench::util::string input =
+        sacabench::util::make_string("caabaccaa");
+    sacabench::util::alphabet a = sacabench::util::alphabet(input);
+    sacabench::util::apply_effective_alphabet(input, a);
+
+    auto sa = sacabench::util::make_container<uint8_t>(input.size());
+    auto bptr = sacabench::util::make_container<uint8_t>(input.size());
+    sacabench::util::span<uint8_t> sa_span = sa;
+    sacabench::bucket_pointer_refinement::sort::bucketsort_presort_lightweight_parallel(input,
+            a.size_without_sentinel(), 3, sa_span, bptr);
 
     std::cout << "Suffix Array: ";
     for (auto const& c : sa)
