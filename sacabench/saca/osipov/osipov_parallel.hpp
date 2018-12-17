@@ -19,6 +19,10 @@
 
 namespace sacabench::osipov {
 
+/*
+    \brief Parallel implementation of the osipov algorithm used in class
+    osipov (see osipov.hpp).
+*/
 template <typename sa_index>
 class osipov_par {
 private:
@@ -26,26 +30,38 @@ private:
     util::span<sa_index> aux;
 
 public:
-    // Constructor for osipov_par creating a osipov_spans instance and an
-    // aux-container
+    /*
+        Constructor for class osipov_par. Directly creates a osipov_spans
+        instance within instantiation list (otherwise default constructor for
+        osipov_spans is needed) and initializes aux.
+
+        @param out_sa Span for the final sa.
+        @param isa Span for the isa.
+        @param tuples Span for the tuples.
+        @param aux Span for auxiliary array.
+    */
     inline osipov_par(util::span<sa_index> out_sa, util::span<sa_index> isa,
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
             util::span<sa_index> aux) :
             spans(osipov_spans<sa_index>(out_sa, isa, tuples)), aux(aux){}
 
-
-
-    size_t get_size() {return spans.sa.size();}
-
+    // Returns the tuple span (needed for tuple comparison function)
     util::span<std::tuple<sa_index, sa_index, sa_index>> get_tuples() {
         return spans.tuples;
     }
 
+    // Slices the tuples and aux span to length end
     void slice_container(size_t end) {
         spans.slice_tuples(end);
         aux = aux.slice(0, end);
     }
 
+    /*
+        \brief Updates the values for sa and isa given the values in tuples
+        (called at end of iteration) in parallel.
+
+        @param s The new size for the next iteration
+    */
     void update_container(size_t s) {
         // Update SA
         #pragma omp parallel for if (s < 100)
@@ -61,12 +77,19 @@ public:
         }
     }
 
+    /*
+        \brief Slices sa from 0 to end.
+    */
     void slice_sa(size_t end) {spans.sa = spans.sa.slice(0, end);}
 
+    /*
+        \brief Writes final suffix array into out_sa.
+    */
     void finalize(util::span<sa_index> out_sa) {spans.finalize(out_sa);}
 
     /*
-      Parallel version using aux for flags to reduce memory usage
+        \brief Parallel version for marking singleton h-groups, i.e. inverting
+        their ranks using aux for flags to reduce memory usage.
     */
     void mark_singletons() {
         auto sa = spans.sa;
@@ -100,6 +123,12 @@ public:
         }
     }
 
+    /*
+        \brief Parallely initializes the isa.
+
+        @param cmp The initial compare function (most probably
+        compare_first_four_chars)
+    */
     template <typename compare_func>
     void initialize_isa(compare_func cmp) {
         auto sa = spans.sa;
@@ -123,13 +152,6 @@ public:
         }
     }
 
-    // Fill sa with initial indices
-    void initialize_sa(size_t text_length) {
-        for (size_t i = 0; i < text_length; ++i) {
-            spans.sa[i] = i;
-        }
-    }
-
     template <typename Op>
     void prefix_sum(util::span<sa_index> array, Op op) {
         // TODO replace with parallel
@@ -146,22 +168,52 @@ public:
         */
     }
 
+    /*
+        \brief Uses parallel ips4o as initial sorting function.
+
+        @param cmp_init The compare function to sort by (most probably
+        compare_first_four_chars)
+    */
     template <typename compare_func>
     void initial_sort(compare_func cmp_init) {
         util::sort::ips4o_sort_parallel(spans.sa, cmp_init);
     }
 
+    /*
+        \brief Uses std::par_stable_sort as stable sorting method of tuples span
+        in each iteration.
+
+        @param cmp The compare function to sort the tuples.
+    */
     template <typename compare_func>
     void stable_sort(compare_func cmp) {
         util::sort::std_par_stable_sort(spans.tuples, cmp);
     }
 
+    /*
+        \brief Generates tuples which are needed for current iteration.
+
+        Generates tuples for suffixes still considered in this iteration as
+        (suffix-index|h-rank|2h-rank) for suffixes which still need to be
+        induced and as (suffix-index|h-rank|-h-rank) for suffixes which are
+        already correctly sorted but are needed to induce other suffixes
+        (because prefix of length h has already been considered for sorting).
+
+        The parallel version first computes the positions parallely by setting
+        values for the amount of created tuples (either 0, 1 or 2) in an
+        auxiliary array aux and then computing the exclusive prefix sum over
+        aux. After that the tuples can be created in parallel by using the
+        computed values in aux (containing the position in the tuples array).
+
+        @param size The currently computed max size.
+        @param h The depth of this iteration.
+    */
     size_t create_tuples(size_t size, sa_index h) {
         size_t s = 0;
         size_t index;
         #pragma omp parallel shared(aux) private(index)
         {
-
+            // First pass: Set values in aux.
             #pragma omp for reduction(+ : s)
             for (size_t i = 0; i < size; ++i) {
                 // Reset each value in aux to 0 (if tuples created: will be
@@ -198,19 +250,17 @@ public:
                 }
                 s += aux[i];
             }
-            // aux has been set, compute prefix left_sum
 
+            // aux has been set, compute prefix sum
             #pragma omp single
             {
-                // Last value gets overwritten (exclusive prefix sum) ->
-                // save value in s.
-
                 util::seq_prefix_sum<sa_index, util::sum_fct<sa_index>>(
                     aux, aux, false, util::sum_fct<sa_index>(), 0);
                 // Contains position for first tuple created due to index at
                 // position sa[aux.size()-1]
             }
 
+            // Create tuples in parallel using positions computed in aux.
             #pragma omp for
             for (size_t i = 0; i < size; ++i) {
                 // Create tuple using first condition and value in aux (increase
@@ -239,6 +289,11 @@ public:
         return s;
     }
 
+    /*
+        \brief Update rank of each tuple after tuples have been sorted.
+
+        Parallel version of updating each rank using prefix sums.
+    */
     void update_ranks() {
         auto sorted_tuples = spans.tuples;
         aux[0] = 0;
@@ -270,6 +325,16 @@ public:
     }
 
 };
+
+/*
+    \brief Wrapper for calling parallel version of osipov (cpu).
+
+    Wrapper class for calling the parallel version of the osipov algorithm on
+    the cpu which creates a valid osipov_par instance and then calls the main
+    osipov method. Template parameter wordpacking_4_sort specifies wether
+    wordpacking is used while sa_index specifies the used type for suffix
+    indices.
+*/
 template <bool wordpacking_4_sort, typename sa_index>
 class osipov_impl_par {
 public:
@@ -281,7 +346,7 @@ public:
         out_sa = out_sa.slice(8, out_sa.size());
 
         if (text.size() > 1) {
-            // Create spans needed for computation
+            // Create spans needed for computation (i.e. isa, tuples, aux).
             auto isa_container = util::make_container<sa_index>(out_sa.size());
             auto tuple_container = util::make_container<std::tuple<sa_index,
                     sa_index, sa_index>>(out_sa.size());
@@ -290,7 +355,9 @@ public:
             auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(
                     tuple_container);
             auto aux = util::span<sa_index>(aux_container);
+            // Create instance of parallel osipov implementation.
             auto impl = osipov_par<sa_index>(out_sa, isa, tuples, aux);
+            // Call main osipov function.
             osipov<wordpacking_4_sort,sa_index>::prefix_doubling(text, out_sa,
                 impl);
         } else {
@@ -299,6 +366,10 @@ public:
     }
 };
 
+/*
+    \brief Wrapper for calling parallel version of osipov (cpu) without
+    wordpacking within framework.
+*/
 struct osipov_parallel {
     static constexpr size_t EXTRA_SENTINELS =
         1 + 8; // extra 8 to allow buffer overread during sorting
@@ -313,6 +384,11 @@ struct osipov_parallel {
         osipov_impl_par<false, sa_index>::construct_sa(text, out_sa);
     }
 };
+
+/*
+    \brief Wrapper for calling parallel version of osipov (cpu) with
+    wordpacking within framework.
+*/
 struct osipov_parallel_wp {
     static constexpr size_t EXTRA_SENTINELS =
         1 + 8; // extra 8 to allow buffer overread during sorting
