@@ -26,6 +26,7 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_saca_k
   ${CMAKE_DL_LIBS}
   atomic
+  cuda_wrapper
 )
 
 # Create executable that runs all registered SACAs
@@ -39,13 +40,6 @@ target_link_libraries(sacabench
   "${OpenMP_CXX_FLAGS}"
   atomic
 )
-target_compile_options(sacabench PUBLIC
-  ${SACA_BENCH_FLAGS}
-  $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
-  $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
-)
-
-
 target_compile_options(sacabench PUBLIC
   ${SACA_BENCH_FLAGS}
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>

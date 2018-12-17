@@ -6,20 +6,20 @@
 
 #include <gtest/gtest.h>
 #include <util/alphabet.hpp>
-#include <../external/cub/cub/cub.cuh>
+#include <cuda_wrapper_interface.hpp>
 
 TEST(Cub, prefix_sum) {
-        // Declare, allocate, and initialize device-accessible pointers for input and output
-    int  num_items = 7;
-    int  *d_in = [8, 6, 7, 5, 3, 0, 9];
-    int  *d_out = [0, 0, 0, 0, 0, 0, 0];
-    ...
+    // Declare, allocate, and initialize device-accessible pointers for input and output
+    size_t   num_items = 7;
+    uint64_t d_in[] = {8, 6, 7, 5, 3, 0, 9};
+    uint64_t d_out[] = {0, 0, 0, 0, 0, 0, 0};
+
     // Determine temporary device storage requirements
-    void     *d_temp_storage = NULL;
     size_t   temp_storage_bytes = 0;
-    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+
     // Allocate temporary storage
-    cudaMalloc(&d_temp_storage, temp_storage_bytes);
+    void     *d_temp_storage = allocate_cuda_buffer(temp_storage_bytes);
+
     // Run exclusive prefix sum
-    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    exclusive_sum_64(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
 }
