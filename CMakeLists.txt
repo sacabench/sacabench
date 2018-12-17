@@ -80,6 +80,8 @@ git_submodule_subdirectory(external/tudostats)
 git_submodule_subdirectory(external/CLI11)
 set(DATASET_ARGS "--delete_original;--min_prefix_size=200;--max_prefix_size=200" CACHE STRING "" FORCE)
 git_submodule_subdirectory(external/datasets)
+git_submodule(external/cub)
+
 add_subdirectory(external/reference_impls/gsaca)
 add_subdirectory(external/reference_impls/deep-shallow)
 add_subdirectory(external/reference_impls/divsufsort)
