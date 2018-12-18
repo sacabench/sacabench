@@ -164,7 +164,7 @@ if args.launch:
     index = {
         "output_files" : [],
     }
-    outdir = WORK / Path("batch_{}".format(timestamp))
+    outdir = WORK / Path("measure/{}".format(timestamp))
     for (j, dataset_path) in enumerate(DATASETS):
         dataset_path = os.path.expandvars(dataset_path)
         dataset_path = Path(dataset_path)
