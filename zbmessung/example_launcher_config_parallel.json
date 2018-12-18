@@ -6,13 +6,11 @@
             "Osipov_parallel",
             "Osipov_parallel_wp",
             "Discarding4Parallel",
-            "NaivIps4oParallel",
             "DivSufSort_ref",
             "BPR",
             "BPR_ref",
             "GSACA_parallel",
             "GSACA",
-            "NaivIps4o",
             "Deep-Shallow_par"
         ],
         "input": [

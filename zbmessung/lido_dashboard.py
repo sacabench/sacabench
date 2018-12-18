@@ -86,9 +86,13 @@ import re
 t_re = re.compile("(([0-9]+)-)?(([0-9]+):)?([0-9]+):([0-9]+)")
 
 import subprocess
+#import os
+#USER = os.path.expandvars("$USER")
+import sys
+extra_args = sys.argv[1:]
 
-stdout = subprocess.run(["squeue", "--format", "%i;%u;%T;%M;%R"])
-stdout = stdout.decode("utf-8")
+stdout = subprocess.run(["squeue", "--format", "%i;%u;%T;%M;%R"] + extra_args, stdout=subprocess.PIPE, encoding="utf-8").stdout
+data = parse(stdout)
 
 def parse_time(s):
     r = t_re.match(s)
@@ -123,3 +127,5 @@ for e in data:
     y += 1
     #print(r)
 draw(dpic, crop_height=y)
+print("{} jobs drawn".format(y-1))
+
