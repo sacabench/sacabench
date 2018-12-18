@@ -187,6 +187,7 @@ if args.launch:
                 )
 
                 jobid = launch_job(cwd, cmd, output, omp_threads)
+                counter += 1
                 index["output_files"].append({
                     "output" : str(output),
                     "stat_output" : str(batch_output),
@@ -197,8 +198,6 @@ if args.launch:
                     "jobid": jobid,
                     "threads": omp_threads,
                 })
-
-            counter += 1
     write_json(outdir / Path("index.json"), index)
     print("Started {} jobs!".format(counter))
     print("Current personal job queue:")
