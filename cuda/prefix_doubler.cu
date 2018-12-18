@@ -9,14 +9,17 @@
 
         int index = blockIdx.x * blockDim.x + threadIdx.x;
         int stride = blockDim.x * gridDim.x;
-        
         for (int i = index; i < n; i+=stride) {
             sa[i] = i;
         }
-            
+
     }
 
+
     static void inital_sorting(const char* text, int* sa, int n) {
+
+
+    char *testText;
      //Tatsächliche Werte
     char  *keys_out;     // e.g., [        ...        ]
     //Indizes
@@ -25,25 +28,35 @@
 
 
     // Allocate Unified Memory – accessible from CPU or GPU
+    cudaMallocManaged(&testText, n*sizeof(char));
     cudaMallocManaged(&keys_out, n*sizeof(char));
     cudaMallocManaged(&values_out, n*sizeof(int));
 
+    //TODO: Outside!
+    memset(testText, 0, n*sizeof(char));
+    cudaMemcpy(testText, text, n*sizeof(char), cudaMemcpyHostToDevice);
 
     // Determine temporary device storage requirements
     void     *d_temp_storage = NULL;
     size_t   temp_storage_bytes = 0;
 
     cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
-        text, keys_out, sa, values_out, n);
+        testText, keys_out, sa, values_out, n);
     // Allocate temporary storage
     cudaMalloc(&d_temp_storage, temp_storage_bytes);
 
 
     // Run sorting operation
     cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
-        text, keys_out, sa, values_out, n);
+        testText, keys_out, sa, values_out, n);
 
 
+    cudaDeviceSynchronize();
+
+    
+    for(int i = 0 ; i< n ; ++i) {
+        sa[i]=values_out[i];
+    }
 
     }
 
@@ -58,13 +71,22 @@
         cudaMallocManaged(&isa_container, n*sizeof(int));
         cudaMallocManaged(&aux_container, n*sizeof(int));
 
+        cudaDeviceSynchronize();
+
         initialize_sa_gpu<<<2,4>>>(n, sa);
 
+
         cudaDeviceSynchronize();
+
 
         inital_sorting(text, sa, n);
 
         cudaDeviceSynchronize();
+        std::cout<<std::endl;
+        for(int i = 0 ; i< n ; ++i) {
+            std::cout<<sa[i]<<", "<<std::endl;
+        }
+
 
 
         /*
@@ -146,7 +168,7 @@ int main()
 {
     std::string text_str = "caabaccaabacaa";
     const char* text = text_str.c_str();
-    int n = text_str.size();
+    int n = text_str.size()+1;
     std::cout<<"n: "<<n<<std::endl;
 
     int* out_sa;
