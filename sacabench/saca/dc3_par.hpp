@@ -87,10 +87,10 @@ private:
             }
         }
 
-        //std::sort(triplets_12_to_be_sorted.begin(),
-        //          triplets_12_to_be_sorted.end());
+        std::sort(triplets_12_to_be_sorted.begin(),
+                  triplets_12_to_be_sorted.end());
         
-        util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        //util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
 
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
             triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
@@ -678,9 +678,9 @@ private:
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
 
-        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+        std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
                   
-        util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+        //util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
 
         //std::sort(std::execution::par, sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
