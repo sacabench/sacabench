@@ -147,8 +147,7 @@ public:
             //     aux[i] = 0;
             // else
             //     aux[i] = 1;
-            aux[i] = static_cast<sa_index>(i) *
-                     ((cmp(sa[i - 1], sa[i]) | cmp(sa[i - 1], sa[i])) != 0);
+            aux[i] = static_cast<sa_index>(i) * (cmp(sa[i - 1], sa[i]) != 0);
         }
 
         for (size_t i = 1; i < sa.size(); ++i) {
