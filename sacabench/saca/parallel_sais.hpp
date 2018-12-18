@@ -11,40 +11,109 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
-#include <vector>
+#include<vector>
+#include<thread>
+#include<iostream>
+
 #include <tudocomp_stat/StatPhase.hpp>
 
-namespace sacabench::sais {
+namespace sacabench::parallel_sais {
 using namespace sacabench::util;
-class sais {
+class parallel_sais {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "SAIS";
+    static constexpr char const* NAME = "PARALLEL_SAIS";
     static constexpr char const* DESCRIPTION =
-        "Suffix Array Induced Sorting by Nong, Zhang and Chan";
+        "Suffix Array Induced Sorting by Nong, Zhang and Chan";    
+    
+    static const bool L_Type = 0;
+    static const bool S_Type = 1;
 
-    static const size_t L_Type = 0;
-    static const size_t S_Type = 1;
-
-    static bool is_LMS(std::vector<bool>& t, ssize position) {
+    static bool is_LMS(span<bool> t, ssize position) {
         return (position > 0) && (t[position] == S_Type && t[position - 1] == L_Type);
     }
 
     template <typename T>
-    static void compute_types(std::vector<bool>& t, T s) {
-       t[s.size() - 1] = S_Type;
+    static void compute_types(span<bool> t, T s, span<size_t> thread_border, span<bool> thread_info, ssize part_length, ssize rest_length, size_t thread_count) {
+        std::vector<std::thread> threads;
+        
+        for (size_t i = 0; i < thread_border.size() - 1; i++) { thread_border[i] = part_length; }
+        thread_border[thread_count - 1] = rest_length;
 
-       for (ssize i = s.size() - 2; i >= 0; i--) {
-           if (s.at(i + 1) < s.at(i)) {
-               t[i] = L_Type;
-           } else if (s.at(i + 1) > s.at(i)) {
-               t[i] = S_Type;
-           } else {
-               t[i] = t[i + 1];
-           }
-       }
-   }
+        t[s.size() - 1] = S_Type;
 
+        for (size_t i = 0; i < thread_count; i++) {
+            if (i < thread_count - 1) {
+                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, part_length, i, thread_border, thread_info));
+            }
+            else {
+                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, rest_length, i, thread_border, thread_info));
+            }
+        }
+       
+        for (auto& t : threads) {
+            t.join();
+        }
+
+        // if many threads were not able to classify, use the last thread that has borderinfo for all the others
+        for (ssize i = threads.size() - 1; i >= 0; i--) {
+            if (thread_border[i] == 0) {
+                thread_info[i] = thread_info[i + 1];
+            }
+        }
+
+        threads.clear();
+
+        for (size_t i = 0; i < thread_count; i++) {
+            if (i < thread_count - 1) {
+                threads.push_back(std::thread(compute_types_second_pass<T>, t, i * part_length, part_length, i, thread_border, thread_info));
+            }
+            else {
+                threads.push_back(std::thread(compute_types_second_pass<T>, t, i * part_length, rest_length, i, thread_border, thread_info));
+            }
+        }
+
+        for (auto& t : threads) {
+            t.join();
+        }
+    }
+    
+    template <typename T>
+    static void compute_types_first_pass(span<bool> t, T s, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+        // first pass - classify all elements that are possible to be classified within the thread
+        for (ssize i = len - 1; i >= 0; i--) {           
+            if ((size_t)i + offset + 1 < s.size()) {
+                if (s[i + offset + 1] < s[i + offset]) {
+                    t[i + offset] = L_Type;
+                }
+                else if (s[i + offset + 1] > s[i + offset]) {
+                    t[i + offset] = S_Type;
+                }
+                else {
+                // do not use types from another thread as we do not know if they are already calculated
+                    if (((size_t)i + 1 < len && thread_border[thread_id] != (size_t)i + 1) || (thread_id == thread_border.size() - 1)) {
+                        t[i + offset] = t[i + offset + 1];
+                    }
+                    else {
+                        thread_border[thread_id] = i;
+                    }
+                }
+            }
+        }
+
+        if (thread_border[thread_id] != 0) {
+            thread_info[thread_id] = t[offset];
+        }
+    }
+
+    template <typename T>
+    static void compute_types_second_pass(span<bool> t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+        // second pass - use info of threads what the type of their border character was
+        for (size_t i = thread_border[thread_id]; i < len; i++) {
+            t[i + offset] = thread_info[thread_id + 1];
+        }
+    }    
+    
     template <typename T, typename sa_index>
     static void generate_buckets(T s, span<sa_index> buckets, size_t K,
                                  bool end) {
@@ -67,7 +136,7 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void induce_L_Types(T s, span<sa_index> buckets, std::vector<bool>& t, size_t K,
+    static void induce_L_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
                                bool end, span<sa_index> SA) {
         generate_buckets<T, sa_index>(s, buckets, K, end);
         for (size_t i = 0; i < s.size(); i++) {
@@ -83,7 +152,7 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void induce_S_Types(T s, span<sa_index> buckets, std::vector<bool>& t, size_t K,
+    static void induce_S_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
                                bool end, span<sa_index> SA) {
         generate_buckets<T, sa_index>(s, buckets, K, end);
         for (ssize i = s.size() - 1; i >= 0; i--) {
@@ -97,13 +166,19 @@ public:
 
     template <typename T, typename sa_index>
     static void run_saca(T s, span<sa_index> SA, size_t K) {
-
         container<sa_index> buckets = make_container<sa_index>(K);
-        // bit vector for now and on the fly computation later
-        std::vector<bool> t(s.size());
+        container<bool> t = make_container<bool>(SA.size());
+        container<size_t> thread_border = make_container<size_t>(std::thread::hardware_concurrency());
+        container<bool> thread_info = make_container<bool>(std::thread::hardware_concurrency());
+        
+        // Prepare blocks for parallel computing
+        size_t thread_count = std::thread::hardware_concurrency();
+        thread_count = std::min(thread_count, s.size() - 1);
+        ssize part_length = s.size() / thread_count;
+        ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
-        compute_types(t, s);
-
+        compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
+        
         generate_buckets<T, sa_index>(s, buckets, K, true);
         // Initialize each entry in SA with -1
         for (size_t i = 0; i < s.size(); i++) {
@@ -116,11 +191,11 @@ public:
                 SA[--buckets[s.at(i)]] = i;
             }
         }
-
+        
         // sort LMS substrings
         induce_L_Types<T, sa_index>(s, buckets, t, K, false, SA);
         induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
-
+        
         // because we have at most n/2 LMS, we can store the sorted indices in
         // the first half of the SA
         ssize n1 = 0;
@@ -218,11 +293,10 @@ public:
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
 
-        tdc::StatPhase sais("Main Phase");
+        tdc::StatPhase parallel_sais("Main Phase");
         if (text.size() > 1) {
             run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel());
         }
     }
 };
-} // namespace sacabench::sais
-
+} // namespace sacabench::parallel_sais
