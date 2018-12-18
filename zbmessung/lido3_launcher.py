@@ -21,6 +21,10 @@ def write_str(path, data):
     with open(path, 'w') as f:
         f.write(str(data))
 
+def load_str(path):
+    with open(path, 'r') as f:
+        return f.read()
+
 # ---------------------
 
 usage = argparse.ArgumentParser()
@@ -224,12 +228,14 @@ def load_data(dir):
     for output_file in index["output_files"]:
         # Normalize input
         output_file["stat_output"] = Path(output_file["stat_output"])
+        output_file["output"] = Path(output_file["output"])
         output_file["input"] = Path(output_file["input"])
         if "threads" not in output_file:
             output_file["threads"] = None
 
         # Get relevant data
         stat_output = output_file["stat_output"]
+        output = output_file["output"]
         algo = output_file["algo"]
         input = output_file["input"]
         prefix = output_file["prefix"]
@@ -237,6 +243,10 @@ def load_data(dir):
 
         if not stat_output.is_file():
             print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
+            if output.is_file():
+                print("-output----------")
+                print(load_str(output))
+                print("-----------------")
             continue
 
         stats = load_json(stat_output)
