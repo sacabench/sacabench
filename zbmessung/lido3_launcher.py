@@ -145,7 +145,7 @@ if args.launch:
     ALGOS = []
     DATASETS=[]
     N=1
-    PREFIX="10M"
+    PREFIX=10
     THREADS=[None]
     WEAK_SCALE = False
     if args.launch_config:
@@ -184,6 +184,7 @@ if args.launch:
                 local_prefix = PREFIX
                 if WEAK_SCALE:
                     local_prefix *= omp_threads
+                local_prefix = "{}M".format(local_prefix)
 
                 cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
                     bench_out=batch_output,
@@ -200,7 +201,8 @@ if args.launch:
                     "stat_output" : str(batch_output),
                     "input": str(input_path),
                     "algo": algo,
-                    "prefix": PREFIX,
+                    "prefix": "{}M".format(PREFIX),
+                    "actual_prefix": local_prefix,
                     "rep": N,
                     "jobid": jobid,
                     "threads": omp_threads,
