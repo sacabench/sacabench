@@ -103,7 +103,8 @@ def launch_job(cwd, cmd, output, omp_threads):
     if omp_threads:
         omp_threads_str = "export OMP_NUM_THREADS={}\n".format(omp_threads)
 
-    Path(output).parent.mkdir(parents=True, exist_ok=True)
+    if not args.test_only:
+        Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     clstcfg = cluster_configs[args.cluster_config]
 
@@ -212,10 +213,11 @@ if args.launch:
                     "jobid": jobid,
                     "threads": omp_threads,
                 })
-    write_json(outdir / Path("index.json"), index)
-    print("Started {} jobs!".format(counter))
-    print("Current personal job queue:")
-    subprocess.run("squeue -u $USER", shell=True)
+    if not args.test_only:
+        write_json(outdir / Path("index.json"), index)
+        print("Started {} jobs!".format(counter))
+        print("Current personal job queue:")
+        subprocess.run("squeue -u $USER", shell=True)
 
 def load_data(dir):
     index = load_json(dir / Path("index.json"))
