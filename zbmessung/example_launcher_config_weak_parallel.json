@@ -1,0 +1,28 @@
+{
+    "launch" : {
+        "algo": [
+            "Osipov_parallel",
+            "Osipov_parallel_wp",
+            "Discarding4Parallel",
+            "DivSufSort_ref",
+            "BPR",
+            "BPR_ref",
+            "GSACA_parallel",
+            "GSACA",
+            "Deep-Shallow_par"
+        ],
+        "input": [
+            "pc_dblp.xml.200MB",
+            "pc_dna.200MB",
+            "pc_english.200MB",
+            "pc_proteins.200MB",
+            "pc_sources.200MB"
+        ],
+        "rep": 3,
+        "prefix": "200M",
+        "threads": [
+            1, 2, 4, 8, 16
+        ],
+        "weak": true
+    }
+}

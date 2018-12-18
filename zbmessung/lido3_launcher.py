@@ -147,6 +147,7 @@ if args.launch:
     N=1
     PREFIX="10M"
     THREADS=[None]
+    WEAK_SCALE = False
     if args.launch_config:
         j = load_json(args.launch_config)
         ALGOS = j["launch"]["algo"]
@@ -155,6 +156,8 @@ if args.launch:
         PREFIX = j["launch"]["prefix"]
         if "threads" in j["launch"]:
             THREADS=j["launch"]["threads"]
+        if "weak_scale" in j["launch"]:
+            WEAK_SCALE = j["launch"]["weak_scale"]
 
     counter = 0
     print("Starting jobs...")
@@ -178,9 +181,13 @@ if args.launch:
                 output = outdir / Path("stdout-{}.txt".format(id))
                 batch_output = outdir / Path("stat-{}.json".format(id))
 
+                local_prefix = PREFIX
+                if WEAK_SCALE:
+                    local_prefix *= omp_threads
+
                 cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
                     bench_out=batch_output,
-                    prefix=PREFIX,
+                    prefix=local_prefix,
                     rep=N,
                     algo=algo,
                     input_path=input_path
