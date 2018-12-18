@@ -19,14 +19,27 @@ struct Max_without_branching
 struct Compare_first_char
 {
 public:  
-    Compare_first_char(const char* _text) : text(_text) {};
-    const char* text;
+    Compare_first_char(int* _text) : text(_text) {};
+    int* text;
     template <typename index>
     CUB_RUNTIME_FUNCTION __forceinline__ __device__
     bool operator()(const index &x, const index &y) const {
         return text[x]<text[y];
     }
 };
+
+//Quick and dirty version, which packs four chars in one int
+void word_packing(const char* chars, int* result, int n) {
+
+    typedef unsigned char u8; 
+    for(int i = 0; i<n-3 ;++i) {
+        result[i] = ((u8)chars[i] << 24) | ((u8)chars[i+1] << 16) | ((u8)chars[i+2] << 8) | (u8)chars[i+3];
+    }
+    result[n-3] = ((u8)chars[n-3] << 24) | ((u8)chars[n-2] << 16) | ((u8)chars[n-1] << 8);
+    result[n-2] = ((u8)chars[n-2] << 24) | ((u8)chars[n-1] << 16);
+    result[n-1] = ((u8)chars[n-1] << 24);
+
+}
 
     __global__
     static void initialize_sa_gpu(int n, int*  sa) {
@@ -51,15 +64,15 @@ public:
     }
 
 
-    static void inital_sorting(char* text, int* sa, int* aux, int n) {
+    static void inital_sorting(int* text, int* sa, int* aux, int n) {
 
 
      //Actual values
-    char  *keys_out;     // e.g., [        ...        ]
+    int  *keys_out;     // e.g., [        ...        ]
 
 
     // Allocate Unified Memory – accessible from CPU or GPU
-    cudaMallocManaged(&keys_out, n*sizeof(char));
+    cudaMallocManaged(&keys_out, n*sizeof(int));
 
 
     // Determine temporary device storage requirements
@@ -156,7 +169,7 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
     }
 
 
-    static void prefix_doubling_gpu(char* gpu_text, int* out_sa, int n) {
+    static void prefix_doubling_gpu(int* gpu_text, int* out_sa, int n) {
         
         int* sa;
         //Wofür??
@@ -176,6 +189,12 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
         inital_sorting(gpu_text, sa, aux_container, n);
         cudaDeviceSynchronize();
 
+        std::cout<<"SA: ";
+        for(int i = 0; i<n; ++i) {
+            std::cout<<sa[i]<<", ";
+        }
+        std::cout<<std::endl;
+
         Compare_first_char comp(gpu_text);
         initialize_isa(out_sa, sa, aux_container, n, comp);
         cudaDeviceSynchronize();
@@ -187,26 +206,9 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
         }
         std::cout<<std::endl;
 
-        /*
-        std::cout<<"Hallo"<<std::endl;
-        for(int index = 0; index < n; ++index) {
-            std::cout<<sa[index]<<", ";
-        }
-        std::cout<<std::endl;
-        */
+        int h = 4;
 
-        //int h = 4;
-        // Sort by h characters
-        //compare_first_four_chars cmp_init = compare_first_four_chars(text);
-
-        
-        //Initiale Sortierung
-        //Möglichkeit 1: mit Thrust sortieren > direkt mit Key Funktion nutzbar aber langsamer als CUB -> Thrust Vectoren benötigt, meh
-        //Möglichkeit 2: CUB nach nur einem Buchstaben -> Meh
-        //Möglichkeit 3: CUB, aber vorher den Text mittels wordpacking transformieren
-        //util::sort::ips4o_sort_parallel(sa, cmp_init);
-/*      initialize_isa<sa_index, compare_first_four_chars>(sa, isa, aux,
-                                                           cmp_init);
+/*
         phase.split("Mark singletons");
         mark_singletons(sa, isa);
         phase.split("Loop Initialization");
@@ -269,14 +271,21 @@ int main()
     int n = text_str.size()+1;
     std::cout<<"n: "<<n<<std::endl;
 
-    char* gpu_text;
+
+    int* packed_text;
+    packed_text = (int *) malloc(n*sizeof(int));
+    word_packing(text, packed_text, n);
+
+    int* gpu_text;
     int* out_sa;
-    cudaMallocManaged(&gpu_text, n*sizeof(char));
+    cudaMallocManaged(&gpu_text, n*sizeof(int));
     //Copy text to GPU
-    memset(gpu_text, 0, n*sizeof(char));
-    cudaMemcpy(gpu_text, text, n*sizeof(char), cudaMemcpyHostToDevice);
-    
+    memset(gpu_text, 0, n*sizeof(int));
+    cudaMemcpy(gpu_text, packed_text, n*sizeof(int), cudaMemcpyHostToDevice);  
     cudaMallocManaged(&out_sa, n*sizeof(int));
+
+    cudaDeviceSynchronize();
+
 
     prefix_doubling_gpu(gpu_text, out_sa, n);
     return 0;
