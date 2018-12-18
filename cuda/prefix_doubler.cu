@@ -1,19 +1,25 @@
 #include <string>
 #include <iostream>
 #include "cub-1.8.0/cub/cub.cuh"
+#include <cuda_wrapper.cu>
 
 
+    template <typename sa_index>
+    struct utils {
+        static constexpr sa_index NEGATIVE_MASK = size_t(1)
+                                                  << (sizeof(sa_index) * 8 - 1);
+    };
 
     __global__
     static void initialize_sa_gpu(int n, int*  sa) {
 
         int index = blockIdx.x * blockDim.x + threadIdx.x;
         int stride = blockDim.x * gridDim.x;
-        
+
         for (int i = index; i < n; i+=stride) {
             sa[i] = i;
         }
-            
+
     }
 
     static void inital_sorting(const char* text, int* sa, int n) {
@@ -22,7 +28,93 @@
     //Indizes
     int  *values_out;   // e.g., [        ...        ]
 
+    template <typename sa_index>
+    static size_t create_tuples(size_t size, size_t h, sa_index* sa,
+            sa_index* isa, sa_index* aux, sa_index* tuple_index,
+            sa_index* h_rank, bool* additional_flags) {
+        size_t s=0;
+        //TODO: Set block_amount and block_size accordingly
+        int block_amount = 1;
+        int block_size = 16;
+        set_tuple<<<block_amount, block_size>>>(size, h, sa, isa, aux);
+        // Save amount of tuples for last index (gets overwritten by prefix sum)
+        s = aux[size-1];
+        // Prefix sum
+        exclusive_sum(aux, aux, size);
+        // Adjust s
+        s += aux[size-1];
+        new_tuple<<<block_amount, block_size>>>(size, h, sa, isa, aux,
+                tuple_index, rank);
 
+        return s;
+    }
+
+/*
+    \brief Sets values in aux array if tuples for suffix indices should be
+    created.
+*/
+    template <typename sa_index>
+    __global__ void set_tuple(size_t size, size_t h, sa_index* sa,
+            sa_index* isa, sa_index* aux) {
+        int t_index = blockIdx.x*blockDim.x + threadIdx.x;
+        int stride = blockDim.x*gridDim.x;
+        // Using sa_val and aux in shared mem to reduce global mem access
+        __shared__ sa_index index, sa_val, aux=0;
+        for(size_t i=t_index; i < size; i+=stride) {
+            //TODO: Save in shared memory
+            sa_val = sa[i];
+            if(sa_val >= h) {
+                index = sa_val-h;
+                if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
+                        sa_index(0)) {
+                    ++aux;
+                }
+                // Second condition cannot be true if sa[i] < h
+                index = sa_val;
+                if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
+                        && index >= 2*h && (isa[index-2*h] &
+                        utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
+                    ++aux;
+                }
+            }
+            aux[i] = aux;
+            aux = 0;
+        }
+    }
+
+    template <typename sa_index>
+    __global__ void new_tuple(size_t size, size_t h, sa_index* sa,
+            sa_index* isa, sa_index* aux, sa_index* tuple_index,
+            sa_index* h-rank) {
+        int t_index = blockIdx.x*blockDim.x + threadIdx.x;
+        int stride = blockDim.x*gridDim.x;
+        // Using aux, sa_val and isa_val to reduce access to global memory
+        __shared__ sa_index index, aux, sa_val, isa_val;
+        for(size_t i=t_index; i < size; i+=stride) {
+            aux = aux[i];
+            sa_val = sa[i];
+            if(sa_val >= h) {
+                index = sa_val-h;
+                isa_val = isa[index];
+                if((isa_val & utils<sa_index>::NEGATIVE_MASK) ==
+                        sa_index(0)) {
+                    tuple_index[aux] = index;
+                    // Increment aux[i] incase inducing suffix is also added
+                    h-rank[aux++] = isa_val;
+                }
+                // Check if inducing suffix is also added.
+                index = sa_val;
+                isa_val = isa[sa_val];
+                if((isa_val & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
+                        && index >= 2*h && (isa[index-2*h] &
+                        utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
+                    tuple_index[aux] = index;
+                    h-rank[aux] = isa_val ^
+                        utils<sa_index>::NEGATIVE_MASK;
+                }
+            }
+        }
+    }
 
     // Allocate Unified Memory – accessible from CPU or GPU
     cudaMallocManaged(&keys_out, n*sizeof(char));
@@ -49,7 +141,7 @@
 
 
     static void prefix_doubling_gpu(const char* text, int* out_sa, int n) {
-        
+
         int* sa;
         //Wofür??
         int* isa_container;
@@ -79,7 +171,7 @@
         // Sort by h characters
         //compare_first_four_chars cmp_init = compare_first_four_chars(text);
 
-        
+
         //Initiale Sortierung
         //Möglichkeit 1: mit Thrust sortieren > direkt mit Key Funktion nutzbar aber langsamer als CUB -> Thrust Vectoren benötigt, meh
         //Möglichkeit 2: CUB nach nur einem Buchstaben -> Meh
