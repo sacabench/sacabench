@@ -94,6 +94,7 @@ public:
     /*
         \brief Parallel version for marking singleton h-groups, i.e. inverting
         their ranks using aux for flags to reduce memory usage.
+        Parallelized via https://nvlabs.github.io/cub/classcub_1_1_block_discontinuity.html
     */
     void mark_singletons() {
         auto sa = spans.sa;
