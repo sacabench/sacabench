@@ -6,6 +6,9 @@ SACA_REGISTER("saca/external/deep_shallow.hpp"
 
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
+    
+SACA_REGISTER("saca/external/parallel_divsufsort/parallel_divsufsort.hpp"
+    sacabench::reference_sacas::parallel_div_suf_sort)
 
 SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
     sacabench::reference_sacas::msufsort)
@@ -34,13 +37,25 @@ SACA_REGISTER("saca/external/dc3/dc3.hpp"
 # Our implementations:
 
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
-    sacabench::deep_shallow::saca)
+    sacabench::deep_shallow::serial)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::serial_big_buckets)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::parallel)
+
+SACA_REGISTER("saca/deep_shallow/saca.hpp"
+    sacabench::deep_shallow::parallel)
 
 #SACA_REGISTER("saca/deep_shallow/blind/sort.hpp"
 #    sacabench::deep_shallow::blind::saca)
 
 SACA_REGISTER("saca/bucket_pointer_refinement.hpp"
     sacabench::bucket_pointer_refinement::bucket_pointer_refinement)
+
+SACA_REGISTER("saca/bucket_pointer_refinement_parallel.hpp"
+    sacabench::bucket_pointer_refinement_parallel::bucket_pointer_refinement_parallel)
 
 SACA_REGISTER("saca/external/bucket_pointer_refinement/bucket_pointer_refinement_wrapper.hpp"
     sacabench::bucket_pointer_refinement_ext::bucket_pointer_refinement_ext)
@@ -62,7 +77,10 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
-
+    
+SACA_REGISTER("saca/parallel_sais.hpp"
+    sacabench::parallel_sais::parallel_sais)
+    
 SACA_REGISTER("saca/sads.hpp"
     sacabench::sads::sads)
 
@@ -84,6 +102,12 @@ SACA_REGISTER("saca/qsufsort.hpp"
 SACA_REGISTER("saca/naive.hpp"
     sacabench::naive::naive)
 
+SACA_REGISTER("saca/naive.hpp"
+    sacabench::naive::naive_ips4o)
+
+SACA_REGISTER("saca/naive.hpp"
+    sacabench::naive::naive_ips4o_parallel)
+
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
 
@@ -104,3 +128,16 @@ SACA_REGISTER("saca/dc3_par.hpp"
     
 SACA_REGISTER("saca/dc3_par2.hpp"
     sacabench::dc3_par2::dc3_par2)
+
+SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
+    sacabench::osipov::osipov_sequential)
+
+SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
+    sacabench::osipov::osipov_sequential_wp)
+
+SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
+    sacabench::osipov::osipov_parallel)
+
+SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
+    sacabench::osipov::osipov_parallel_wp)
+

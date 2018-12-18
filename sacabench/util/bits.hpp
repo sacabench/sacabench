@@ -66,4 +66,17 @@ inline uint64_t next_pow2(uint64_t x) {
         return 1;
     return 1ull << (64 - __builtin_clzll(x - 1));
 }
+
+// https://www.geeksforgeeks.org/compute-the-minimum-or-maximum-max-of-two-integers-without-branching/
+template <typename sa_index>
+inline sa_index min(sa_index x, sa_index y) {
+    return y ^ ((x ^ y) & -(x < y));
+}
+
+// https://www.geeksforgeeks.org/compute-the-minimum-or-maximum-max-of-two-integers-without-branching/
+template <typename sa_index>
+inline sa_index max(sa_index x, sa_index y) {
+    return x ^ ((x ^ y) & -(x < y));
+}
+
 } // namespace sacabench::util

@@ -989,9 +989,9 @@ struct prefix_discarding_4 {
 
 struct prefix_discarding_4_parallel {
     static constexpr size_t EXTRA_SENTINELS = 0;
-    static constexpr char const* NAME = "Discarding4";
+    static constexpr char const* NAME = "Discarding4Parallel";
     static constexpr char const* DESCRIPTION =
-        "In-Memory variant of 4-Tupling with Discarding by R. "
+        "In-Memory variant of 4-Tupling with Discarding and parallel sorter by R. "
         "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
 
     template <typename sa_index>

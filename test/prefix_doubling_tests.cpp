@@ -35,3 +35,7 @@ struct prefix_doubling_4 {
 };
 
 TEST(prefix_doubling, naive4) { test::saca_corner_cases<prefix_doubling_4>(); }
+
+TEST(prefix_doubling, discarding_4_parallel) {
+    test::saca_corner_cases<prefix_discarding_4_parallel>();
+}
