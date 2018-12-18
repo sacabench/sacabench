@@ -165,11 +165,16 @@ if args.launch:
         "output_files" : [],
     }
     outdir = WORK / Path("batch_{}".format(timestamp))
-    for (j, dataset) in enumerate(DATASETS):
+    for (j, dataset_path) in enumerate(DATASETS):
+        dataset_path = os.path.expandvars(dataset_path)
+        dataset_path = Path(dataset_path)
+        dataset = dataset_path.name
+
         for (i, algo) in enumerate(ALGOS):
             for omp_threads in THREADS:
                 cwd = sacapath / Path("build")
-                input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
+                input_path = sacapath / Path("external/datasets/downloads") / dataset_path
+                input_path = input_path.resolve()
 
                 if omp_threads:
                     threads_str = "threads{:03}".format(omp_threads)
