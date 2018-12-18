@@ -57,14 +57,23 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_discarding_4)
 
+SACA_REGISTER("saca/prefix_doubling.hpp"
+    sacabench::prefix_doubling::prefix_discarding_4_parallel)
+
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
 
 SACA_REGISTER("saca/sads.hpp"
     sacabench::sads::sads)
 
-SACA_REGISTER("saca/gsaca.hpp"
+SACA_REGISTER("saca/gsaca/gsaca.hpp"
     sacabench::gsaca::gsaca)
+
+SACA_REGISTER("saca/gsaca/gsaca_new.hpp"
+        sacabench::gsaca::gsaca_new)
+
+SACA_REGISTER("saca/gsaca/gsaca_parallel.hpp"
+        sacabench::gsaca::gsaca_parallel)
 
 SACA_REGISTER("saca/dc7.hpp"
     sacabench::dc7::dc7)
@@ -92,3 +101,6 @@ SACA_REGISTER("saca/dc3_lite.hpp"
     
 SACA_REGISTER("saca/dc3_par.hpp"
     sacabench::dc3_par::dc3_par)
+    
+SACA_REGISTER("saca/dc3_par2.hpp"
+    sacabench::dc3_par2::dc3_par2)

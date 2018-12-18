@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <set>
 
 #include <CLI/CLI.hpp>
 
@@ -144,6 +145,24 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         batch.add_flag("-z,--plot", plot, "Plot measurements.")->needs(b_opt);
     }
 
+    CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
+    std::string benchmark_source;
+    const std::set<std::string> benchmark_sources{"batch", "construct"};
+    {
+        plot_app
+            .add_set("benchmark_source", benchmark_source, benchmark_sources,
+                     "Where the benchmark_file originated")
+            ->required();
+        plot_app.add_option("input", input_filename, "Path to input file.")
+            ->required();
+        plot_app
+            .add_option("benchmark_file", benchmark_filename,
+                        "Path to benchmark json file.")
+            ->required();
+        plot_app.add_option("-p,--prefix", prefix_size,
+                            "Set the prefix size, if used by the benchmark.");
+    }
+
     CLI11_PARSE(app, argc, argv);
 
     // Check early if file exists
@@ -186,6 +205,39 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << std::endl;
     };
 
+    auto parse_prefix_if_set = [](std::string const& prefix_size,
+                                  auto& prefix) {
+        if (prefix_size.size() > 0) {
+            try {
+                uint32_t unit_factor = 0;
+                size_t input_prefix = 0;
+                if (prefix_size[prefix_size.size() - 1] == 'K') {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size() - 1);
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1024;
+                } else if (prefix_size[prefix_size.size() - 1] == 'M') {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size() - 1);
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1024 * 1024;
+                } else {
+                    std::string number_part =
+                        prefix_size.substr(0, prefix_size.size());
+                    input_prefix = std::stoi(number_part);
+                    unit_factor = 1;
+                }
+                prefix = input_prefix * unit_factor;
+            } catch (const std::invalid_argument& ia) {
+                std::cerr << "ERROR: input prefix is not a "
+                             "valid prefix value."
+                          << std::endl;
+                return 1;
+            }
+        }
+        return 0;
+    };
+
     if (list) {
         implemented_algos();
     }
@@ -224,34 +276,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     std::unique_ptr<util::text_initializer> text;
                     std::string stdin_buf;
 
-                    if (prefix_size.size() > 0) {
-                        try {
-                            uint32_t unit_factor;
-                            size_t input_prefix;
-                            if (prefix_size[prefix_size.size() - 1] == 'K') {
-                                std::string number_part = prefix_size.substr(
-                                    0, prefix_size.size() - 1);
-                                input_prefix = std::stoi(number_part);
-                                unit_factor = 1024;
-                            } else if (prefix_size[prefix_size.size() - 1] ==
-                                       'M') {
-                                std::string number_part = prefix_size.substr(
-                                    0, prefix_size.size() - 1);
-                                input_prefix = std::stoi(number_part);
-                                unit_factor = 1024 * 1024;
-                            } else {
-                                std::string number_part =
-                                    prefix_size.substr(0, prefix_size.size());
-                                input_prefix = std::stoi(number_part);
-                                unit_factor = 1;
-                            }
-                            prefix = input_prefix * unit_factor;
-                        } catch (const std::invalid_argument& ia) {
-                            std::cerr << "ERROR: input prefix is not a "
-                                         "valid prefix value."
-                                      << std::endl;
-                            return 1;
-                        }
+                    if (parse_prefix_if_set(prefix_size, prefix)) {
+                        return 1;
                     }
 
                     if (input_filename == "-") {
@@ -363,33 +389,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
 
-        if (prefix_size.size() > 0) {
-            try {
-                uint32_t unit_factor;
-                size_t input_prefix;
-                if (prefix_size[prefix_size.size() - 1] == 'K') {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size() - 1);
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1024;
-                } else if (prefix_size[prefix_size.size() - 1] == 'M') {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size() - 1);
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1024 * 1024;
-                } else {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size());
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1;
-                }
-                prefix = input_prefix * unit_factor;
-            } catch (const std::invalid_argument& ia) {
-                std::cerr << "ERROR: input prefix is not a "
-                             "valid prefix value."
-                          << std::endl;
-                return 1;
-            }
+        if (parse_prefix_if_set(prefix_size, prefix)) {
+            return 1;
         }
 
         if (input_filename == "-") {
@@ -470,9 +471,47 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
-    if (plot) {
+    auto do_plot = [](auto const& benchmark_filename,
+                      auto const& input_filename, bool batch, size_t text_size,
+                      bool out_benchmark) {
+        auto short_input_filename = input_filename;
+        auto last_pos = input_filename.rfind("/");
+        if (last_pos != std::string::npos) {
+            short_input_filename = input_filename.substr(last_pos + 1);
+        }
+
+        std::string r_command =
+            "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+        std::cerr << "plot benchmark...";
+        if (batch) {
+            r_command += " 1 " + short_input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
+        } else if (out_benchmark) {
+            r_command += " 0 " + short_input_filename + " " +
+                         std::to_string(text_size) +
+                         "'  ..//stats/stat_plot.R test.Rout";
+        } else {
+            std::cerr << "not able to plot." << std::endl;
+            return;
+        }
+        int i = system(r_command.c_str());
+        if (i) {
+            // TODO: Check return value
+        }
+        std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
+    };
+
+    if (plot || plot_app) {
+        if (benchmark_filename == "-") {
+            abort(); // TODO: this can not work!;
+        }
+        if (parse_prefix_if_set(prefix_size, prefix)) {
+            return 1;
+        }
         size_t text_size;
         if (input_filename == "-") {
+            abort(); // TODO: this can not work!
             auto stdin_buf =
                 std::string(std::istreambuf_iterator<char>(std::cin), {});
             auto text = std::make_unique<util::text_initializer_from_span>(
@@ -487,29 +526,20 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             text_size = text->text_size();
         }
 
-        std::string r_command =
-            "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
-        std::cout << "plot benchmark...";
-        if (batch) {
-            r_command += " 1 " + input_filename + " " +
-                         std::to_string(text_size) +
-                         "'  ..//stats/stat_plot.R test.Rout";
-            // TODO: Check return value
-            int i = system(r_command.c_str());
-            (void)i; // suppress  warning
-            std::cout << "saved as: " << benchmark_filename << ".pdf"
-                      << std::endl;
-        } else if (out_benchmark) {
-            r_command += " 0 " + input_filename + " " +
-                         std::to_string(text_size) +
-                         "'  ..//stats/stat_plot.R test.Rout";
-            // TODO: Check return value
-            int i = system(r_command.c_str());
-            (void)i; // suppress  warning
-            std::cout << "saved as: " << benchmark_filename << ".pdf"
-                      << std::endl;
-        } else {
-            std::cout << "not able to plot." << std::endl;
+        if (plot) {
+            do_plot(benchmark_filename, input_filename, batch, text_size,
+                    out_benchmark);
+        }
+        if (plot_app) {
+            if (benchmark_source == "batch") {
+                do_plot(benchmark_filename, input_filename, true, text_size,
+                        true);
+            } else if (benchmark_source == "construct") {
+                do_plot(benchmark_filename, input_filename, false, text_size,
+                        true);
+            } else {
+                abort();
+            }
         }
     }
 
