@@ -156,22 +156,16 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
     }
 
 
-    static void prefix_doubling_gpu(const char* text, int* out_sa, int n) {
+    static void prefix_doubling_gpu(char* gpu_text, int* out_sa, int n) {
         
-        char* gpu_text;
         int* sa;
         //Wofür??
         int* isa_container;
         int* aux_container;
 
-        cudaMallocManaged(&gpu_text, n*sizeof(char));
         cudaMallocManaged(&sa, n*sizeof(int));
         cudaMallocManaged(&isa_container, n*sizeof(int));
         cudaMallocManaged(&aux_container, n*sizeof(int));
-
-        //Copy text to GPU
-        memset(gpu_text, 0, n*sizeof(char));
-        cudaMemcpy(gpu_text, text, n*sizeof(char), cudaMemcpyHostToDevice);
         cudaDeviceSynchronize();
 
 
@@ -183,7 +177,7 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
         cudaDeviceSynchronize();
 
         Compare_first_char comp(gpu_text);
-        initialize_isa(out_sa,sa,aux_container,n, comp);
+        initialize_isa(out_sa, sa, aux_container, n, comp);
         cudaDeviceSynchronize();
 
         std::cout<<std::endl;
@@ -275,9 +269,15 @@ int main()
     int n = text_str.size()+1;
     std::cout<<"n: "<<n<<std::endl;
 
+    char* gpu_text;
     int* out_sa;
+    cudaMallocManaged(&gpu_text, n*sizeof(char));
+    //Copy text to GPU
+    memset(gpu_text, 0, n*sizeof(char));
+    cudaMemcpy(gpu_text, text, n*sizeof(char), cudaMemcpyHostToDevice);
+    
     cudaMallocManaged(&out_sa, n*sizeof(int));
 
-    prefix_doubling_gpu(text, out_sa, n);
+    prefix_doubling_gpu(gpu_text, out_sa, n);
     return 0;
 }
