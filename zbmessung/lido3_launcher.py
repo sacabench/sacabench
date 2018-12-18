@@ -187,7 +187,7 @@ if args.launch:
                 batch_output = outdir / Path("stat-{}.json".format(id))
 
                 local_prefix = PREFIX
-                if WEAK_SCALE:
+                if omp_threads and WEAK_SCALE:
                     local_prefix *= omp_threads
                 local_prefix = "{}M".format(local_prefix)
 

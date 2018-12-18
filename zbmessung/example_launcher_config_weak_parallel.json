@@ -21,6 +21,6 @@
         "threads": [
             1, 2, 4, 8, 16
         ],
-        "weak": true
+        "weak_scale": true
     }
 }
