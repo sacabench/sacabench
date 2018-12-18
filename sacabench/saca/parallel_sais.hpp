@@ -154,11 +154,10 @@ public:
         for (auto& t : threads) {
             t.join();
         }
-    };
+    }
 
     template <typename T, typename sa_index>
     static void prepare(T s, ssize part_length, ssize actual_part_length, span<std::pair<char,sa_index>> r, span<sa_index> SA, span<bool> t, bool suffix_type, size_t k){
-
 
         for(ssize_t i = k*part_length;i<((k*part_length)+actual_part_length);i++){
             r[i].first = '\0';
@@ -196,6 +195,50 @@ public:
         }
     }
 
+    // Induce L_Types for Block B_ks
+    // k = blocknum
+    template <typename T, typename sa_index>
+    static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, span<bool> t, size_t K, size_t blocknum,
+        span<std::pair<char, sa_index>> r, span<std::pair<char, sa_index>> w, size_t thread_count, ssize part_length, ssize rest_length) {
+
+        // Parallel Preparation Phase
+        // TODO: Wait until preparing is fixed, give blocknum as parameter
+
+        prepare_parallel(s, part_length, r, SA, t, L_Type, thread_count, rest_length);
+
+        // Sequential Node Inducing
+
+        ssize translate = (blocknum - 1)*part_length;
+        size_t w_count = 0;
+        char chr;
+
+        for (ssize i = 0; i < thread_count; i++)
+        {
+            ssize pos = (SA[i + translate] - 1);
+            if (SA[i + translate] != static_cast<sa_index>(-1) && pos >= 0 && t[pos] == L_Type)
+            {
+                if (r[i].first == '\0')
+                    chr = s[pos];
+                else
+                    chr = r[i].first;
+
+                sa_index idx = buckets[chr]++;
+
+                // if idx is in Block k or Block k+1
+                if (translate <= idx && idx <= translate + (2 * part_length))
+                    SA[idx] = pos;
+                else
+                    w[w_count++] = std::make_pair(idx, pos);
+
+            }
+        }
+
+        // Parallel Updating Phase
+
+        update_parallel(thread_count, w, SA);
+
+    }
+
     template <typename T, typename sa_index>
     static void induce_S_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
                                bool end, span<sa_index> SA) {
@@ -219,6 +262,20 @@ public:
                 SA[w[i].second] = w[i].first;
             }
 
+        }
+    }
+
+    template <typename sa_index>
+    static void update_parallel(size_t thread_count, span<std::pair<char, sa_index>> w, span<sa_index> SA) {
+
+        std::vector<std::thread> threads;
+
+        for (size_t i = 0; i < thread_count; i++) {
+            threads.push_back(std::thread(update_SA<sa_index>, w, SA, i));
+        }
+
+        for (auto& t : threads) {
+            t.join();
         }
     }
 
