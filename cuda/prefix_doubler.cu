@@ -79,7 +79,8 @@ public:
 
     cudaDeviceSynchronize();
 
-    
+    copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux,n);
+
 
 
     }
@@ -131,7 +132,7 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
 
         int index = blockIdx.x * blockDim.x + threadIdx.x;
         int stride = blockDim.x * gridDim.x;
-
+        //Maybe TODO: Avoid Bank Conflicts
         for (int i = index; i < n; i+=stride) {
             isa[sa[i]]=aux[i];
         }
@@ -152,8 +153,6 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
 
         scatter_to_isa<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(isa,aux,sa,n);
 
-        cudaDeviceSynchronize();
-
     }
 
 
@@ -165,9 +164,7 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
         int* isa_container;
         int* aux_container;
 
-
         cudaMallocManaged(&gpu_text, n*sizeof(char));
-
         cudaMallocManaged(&sa, n*sizeof(int));
         cudaMallocManaged(&isa_container, n*sizeof(int));
         cudaMallocManaged(&aux_container, n*sizeof(int));
@@ -175,27 +172,18 @@ void prefix_sum_cub_inclusive(int* array, OP op, int n)
         //Copy text to GPU
         memset(gpu_text, 0, n*sizeof(char));
         cudaMemcpy(gpu_text, text, n*sizeof(char), cudaMemcpyHostToDevice);
-
         cudaDeviceSynchronize();
+
 
         initialize_sa_gpu<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(n, sa);
-
-
         cudaDeviceSynchronize();
 
-
+        //TODO Sort by four chars by wordpacking
         inital_sorting(gpu_text, sa, aux_container, n);
-
         cudaDeviceSynchronize();
-
-        copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux_container,n);
-        cudaDeviceSynchronize();
-
 
         Compare_first_char comp(gpu_text);
-
         initialize_isa(out_sa,sa,aux_container,n, comp);
-
         cudaDeviceSynchronize();
 
         std::cout<<std::endl;
