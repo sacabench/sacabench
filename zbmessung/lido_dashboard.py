@@ -87,7 +87,7 @@ t_re = re.compile("(([0-9]+)-)?(([0-9]+):)?([0-9]+):([0-9]+)")
 
 import subprocess
 
-stdout = subporcess.run(["squeue" "--format", "%i;%u;%T;%M;%R"])
+stdout = subprocess.run(["squeue" "--format", "%i;%u;%T;%M;%R"])
 stdout = stdout.decode("utf-8")
 
 def parse_time(s):
