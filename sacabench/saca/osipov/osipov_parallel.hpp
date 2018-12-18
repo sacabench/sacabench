@@ -16,8 +16,10 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <saca/osipov/osipov.hpp>
+#include <util/uint_types.hpp>
 
 namespace sacabench::osipov {
+
 
 /*
     \brief Parallel implementation of the osipov algorithm used in class
@@ -26,8 +28,10 @@ namespace sacabench::osipov {
 template <typename sa_index>
 class osipov_par {
 private:
+    using aux_elem = util::next_primitive<sa_index>;
+
     osipov_spans<sa_index> spans;
-    util::span<sa_index> aux;
+    util::span<aux_elem> aux;
 
 public:
     /*
@@ -42,7 +46,7 @@ public:
     */
     inline osipov_par(util::span<sa_index> out_sa, util::span<sa_index> isa,
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
-            util::span<sa_index> aux) :
+            util::span<aux_elem> aux) :
             spans(osipov_spans<sa_index>(out_sa, isa, tuples)), aux(aux){}
 
     // Returns the tuple span (needed for tuple comparison function)
@@ -143,17 +147,16 @@ public:
             //     aux[i] = 0;
             // else
             //     aux[i] = 1;
-            aux[i] = static_cast<sa_index>(i) *
-                     ((cmp(sa[i - 1], sa[i]) | cmp(sa[i - 1], sa[i])) != 0);
+            aux[i] = static_cast<sa_index>(i) * (cmp(sa[i - 1], sa[i]) != 0);
         }
 
         for (size_t i = 1; i < sa.size(); ++i) {
-            isa[sa[i]] = util::max(aux[i], isa[sa[i - 1]]);
+            isa[sa[i]] = util::max<uint64_t>(aux[i], isa[sa[i - 1]]);
         }
     }
 
-    template <typename Op>
-    void prefix_sum(util::span<sa_index> array, Op op) {
+    template <typename elem_type, typename Op>
+    void prefix_sum(util::span<elem_type> array, Op op) {
         // TODO replace with parallel
         for (size_t index = 1; index < array.size(); ++index) {
             array[index] = op(array[index], array[index - 1]);
@@ -227,10 +230,7 @@ public:
                         // work correctly otherwise (producing strange
                         // values in aux)
 
-                        #pragma omp critical(aux)
-                        {
-                            ++aux[i];
-                        }
+                        aux[i] = 1;
                     }
                 }
                 index = spans.sa[i];
@@ -243,10 +243,10 @@ public:
                     // increase value of aux
                     // Critical environment: same as above
 
-                    #pragma omp critical(aux)
-                    {
-                        ++aux[i];
-                    }
+                    auto& data = aux[i];
+
+                    #pragma omp atomic update
+                    ++data;
                 }
                 s += aux[i];
             }
@@ -254,8 +254,8 @@ public:
             // aux has been set, compute prefix sum
             #pragma omp single
             {
-                util::seq_prefix_sum<sa_index, util::sum_fct<sa_index>>(
-                    aux, aux, false, util::sum_fct<sa_index>(), 0);
+                util::seq_prefix_sum<aux_elem, util::sum_fct<aux_elem>>(
+                    aux, aux, false, util::sum_fct<aux_elem>(), 0);
                 // Contains position for first tuple created due to index at
                 // position sa[aux.size()-1]
             }
@@ -306,7 +306,7 @@ public:
         }
 
         // Maybe TODO: replace with parallel
-        prefix_sum(aux, [](sa_index a, sa_index b) { return util::max(a, b); });
+        prefix_sum(aux, [](auto a, auto b) { return util::max(a, b); });
 
         aux[0] = std::get<1>(sorted_tuples[0]);
 
@@ -318,10 +318,10 @@ public:
                               std::get<2>(sorted_tuples[index - sa_index(1)]) !=
                                   std::get<2>(sorted_tuples[index]));
             aux[index] = new_group * ((std::get<1>(sorted_tuples[index])) +
-                                      index - aux[index]);
+                                      index - sa_index(aux[index]));
         }
         // Maybe TODO: replace with parallel
-        prefix_sum(aux, [](sa_index a, sa_index b) { return util::max(a, b); });
+        prefix_sum(aux, [](auto a, auto b) { return util::max(a, b); });
     }
 
 };
@@ -337,6 +337,7 @@ public:
 */
 template <bool wordpacking_4_sort, typename sa_index>
 class osipov_impl_par {
+    using aux_elem = util::next_primitive<sa_index>;
 public:
     static void construct_sa(util::string_span text,
                              util::span<sa_index> out_sa) {
@@ -350,11 +351,11 @@ public:
             auto isa_container = util::make_container<sa_index>(out_sa.size());
             auto tuple_container = util::make_container<std::tuple<sa_index,
                     sa_index, sa_index>>(out_sa.size());
-            auto aux_container = util::make_container<sa_index>(out_sa.size());
-            auto isa = util::span<sa_index>(isa_container);
-            auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(
-                    tuple_container);
-            auto aux = util::span<sa_index>(aux_container);
+            auto aux_container = util::make_container<aux_elem>(out_sa.size());
+
+            auto isa = isa_container.slice();
+            auto tuples = tuple_container.slice();
+            auto aux = aux_container.slice();
             // Create instance of parallel osipov implementation.
             auto impl = osipov_par<sa_index>(out_sa, isa, tuples, aux);
             // Call main osipov function.
