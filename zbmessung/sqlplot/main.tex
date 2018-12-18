@@ -40,33 +40,29 @@
                 name=axis1,
                 width=0.5\textwidth,
                 height=70mm,
-                title={pc\_dblp.xml.200MB},
+                title={commoncrawl.txt},
                 xlabel={num Threads},
                 ylabel={SA construction time [s]},
             ]
 
             %% MULTIPLOT(algo) SELECT threads AS x, time/1000 AS y, MULTIPLOT
-            %% FROM stats WHERE rep_i=0 AND input="pc_dblp.xml.200MB" AND NOT algo="Deep-Shallow_par" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
-            \addplot coordinates { (1,35.0587) (2,35.3393) (4,35.2042) (8,35.2424) (16,35.1312) };
+            %% FROM stats WHERE rep_i=0 AND input="commoncrawl.txt" AND NOT algo="Deep-Shallow_par" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            \addplot coordinates { (1,28.2981) (2,61.3645) (4,137.674) (8,284.744) (16,618.018) };
             \addlegendentry{algo=BPR};
-            \addplot coordinates { (1,32.3077) (2,36.1792) (4,32.5017) (8,32.2455) (16,41.1532) };
+            \addplot coordinates { (1,29.6373) (2,74.7488) (4,174.575) (8,339.26) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (1,172.585) (2,97.4388) (4,56.2671) (8,35.5243) (16,26.9513) };
+            \addplot coordinates { (1,208.234) (2,252.456) (4,318.425) (8,424.083) };
             \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (1,22.4336) (2,20.6522) (4,19.4098) (8,18.8698) (16,18.539) };
+            \addplot coordinates { (1,26.1582) (2,48.8489) (4,94.515) (8,190.863) (16,10.1305) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (2,89.9371) (4,89.9752) (16,89.205) };
+            \addplot coordinates { (1,81.8306) (2,181.533) (4,394.937) (8,908.134) };
             \addlegendentry{algo=GSACA};
-            \addplot coordinates { (1,89.4786) (2,89.1937) (4,89.2681) (8,88.7186) (16,89.2647) };
+            \addplot coordinates { (1,81.8237) (2,181.486) (4,392.112) (8,906.325) };
             \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (1,234.873) (2,163.015) (4,100.693) (8,69.6718) (16,55.088) };
+            \addplot coordinates { (1,287.845) (2,412.553) (4,562.45) };
             \addlegendentry{algo=Osipov\_parallel};
-            \addplot coordinates { (1,206.596) (2,149.208) (4,94.4544) (8,66.0576) (16,58.6044) };
+            \addplot coordinates { (1,253.517) (2,372.944) (4,509.089) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
-            \addplot coordinates { (1,238.201) (2,199.39) (4,199.285) (8,198.365) (16,199.305) };
-            \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (1,169.915) (2,170.341) (4,169.297) (8,169.868) (16,169.725) };
-            \addlegendentry{algo=Osipov\_sequential\_wp};
 
             \legend{}
         \end{axis}
@@ -76,7 +72,7 @@
                 name=axis2,
                 width=0.5\textwidth,
                 height=70mm,
-                title={pc\_sources.200MB},
+                title={commoncrawl.txt},
                 xlabel={num Threads},
                 ylabel={Extra Memory [MB]},
                 legend style={at={(0.5, -0.2)}, anchor=north},
@@ -85,27 +81,92 @@
             %% MULTIPLOT(algo) SELECT threads AS x, memPeak/1000000 AS y, MULTIPLOT
             %% FROM (
             %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep, threads
-            %% ) WHERE input="pc_sources.200MB" AND NOT algo="Deep-Shallow_par" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
-            \addplot coordinates { (1,937.472) (2,937.472) (4,937.472) (8,937.472) (16,937.472) };
+            %% ) WHERE input="commoncrawl.txt" AND NOT algo="Deep-Shallow_par" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            \addplot coordinates { (1,944.015) (2,1789.7) (4,3470.23) (8,6825.68) (16,13536.6) };
             \addlegendentry{algo=BPR};
-            \addplot coordinates { (1,3662.5) (2,3662.5) (4,3662.5) (8,3662.5) (16,3662.5) };
+            \addplot coordinates { (1,3668.99) (2,7240.91) (4,14374) (8,28634.7) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (1,4196.45) (2,4198.69) (4,4202.98) (8,4211.56) (16,4228.68) };
+            \addplot coordinates { (1,4196.45) (2,8393) (4,16785.9) (8,33571.7) };
             \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (1,0.264792) (2,0.264029) (4,0.264573) (8,0.265661) (16,0.267837) };
+            \addplot coordinates { (1,0.264792) (2,0.264029) (4,0.264573) (8,0.265661) (16,0.0) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (1,3355.45) (2,3355.45) (4,3355.45) (8,3355.45) (16,3355.45) };
+            \addplot coordinates { (1,3355.45) (2,6710.89) (4,13421.8) (8,26843.5) };
             \addlegendentry{algo=GSACA};
-            \addplot coordinates { (1,3355.45) (2,3355.45) (4,3355.46) (8,3355.46) (16,3355.48) };
+            \addplot coordinates { (1,3355.45) (2,6710.89) (4,13421.8) (8,26843.6) };
             \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (1,6710.71) (2,9227.11) (4,9227.11) (8,9104.85) (16,9122.25) };
+            \addplot coordinates { (1,6709.8) (2,18450.3) (4,36903.6) };
             \addlegendentry{algo=Osipov\_parallel};
-            \addplot coordinates { (1,6710.71) (2,9227.11) (4,8807.71) (8,9315.62) (16,9314.56) };
+            \addplot coordinates { (1,6709.8) (2,18450.3) (4,36065) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
-            \addplot coordinates { (1,5871.84) (2,5871.84) (4,5871.84) (8,5871.84) (16,5871.84) };
-            \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (1,5871.84) (2,5871.84) (4,5871.84) (8,5871.84) (16,5871.84) };
-            \addlegendentry{algo=Osipov\_sequential\_wp};
+
+        \end{axis}
+    \end{tikzpicture}
+\end{center}
+
+\begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+                name=axis1,
+                width=0.5\textwidth,
+                height=70mm,
+                title={dna.txt},
+                xlabel={num Threads},
+                ylabel={SA construction time [s]},
+            ]
+
+            %% MULTIPLOT(algo) SELECT threads AS x, time/1000 AS y, MULTIPLOT
+            %% FROM stats WHERE rep_i=0 AND input="dna.txt" AND NOT algo="Deep-Shallow_par" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            \addplot coordinates { (1,59.4033) (2,128.075) (4,259.353) (8,610.115) (16,1686.72) };
+            \addlegendentry{algo=BPR};
+            \addplot coordinates { (1,38.5197) (2,101.598) (4,236.856) (8,436.506) };
+            \addlegendentry{algo=BPR\_ref};
+            \addplot coordinates { (1,148.773) (2,184.372) (4,225.571) (8,285.869) };
+            \addlegendentry{algo=Discarding4Parallel};
+            \addplot coordinates { (1,30.9183) (2,60.9494) (4,123.84) (8,309.275) (16,9.81616) };
+            \addlegendentry{algo=DivSufSort\_ref};
+            \addplot coordinates { (1,88.2974) (2,186.423) (4,398.098) (8,927.613) };
+            \addlegendentry{algo=GSACA};
+            \addplot coordinates { (1,88.1879) (2,186.338) (4,399.907) (8,990.527) };
+            \addlegendentry{algo=GSACA\_parallel};
+            \addplot coordinates { (1,200.778) (2,287.025) (4,388.067) };
+            \addlegendentry{algo=Osipov\_parallel};
+            \addplot coordinates { (1,178.085) (2,265.998) (4,357.599) };
+            \addlegendentry{algo=Osipov\_parallel\_wp};
+
+            \legend{}
+        \end{axis}
+        \begin{axis}[
+                at={(axis1.outer north east)},
+                anchor=outer north west,
+                name=axis2,
+                width=0.5\textwidth,
+                height=70mm,
+                title={dna.txt},
+                xlabel={num Threads},
+                ylabel={Extra Memory [MB]},
+                legend style={at={(0.5, -0.2)}, anchor=north},
+            ]
+
+            %% MULTIPLOT(algo) SELECT threads AS x, memPeak/1000000 AS y, MULTIPLOT
+            %% FROM (
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep, threads
+            %% ) WHERE input="dna.txt" AND NOT algo="Deep-Shallow_par" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            \addplot coordinates { (1,1229.49) (2,3630.85) (4,5308.57) (8,16476.5) (16,23187.4) };
+            \addlegendentry{algo=BPR};
+            \addplot coordinates { (1,3565.29) (2,7130.45) (4,14260.8) (8,28521.4) };
+            \addlegendentry{algo=BPR\_ref};
+            \addplot coordinates { (1,4196.45) (2,8393) (4,16785.9) (8,33571.7) };
+            \addlegendentry{algo=Discarding4Parallel};
+            \addplot coordinates { (1,0.264792) (2,0.264029) (4,0.264573) (8,0.265661) (16,0.0) };
+            \addlegendentry{algo=DivSufSort\_ref};
+            \addplot coordinates { (1,3355.44) (2,6710.89) (4,13421.8) (8,26843.5) };
+            \addlegendentry{algo=GSACA};
+            \addplot coordinates { (1,3355.44) (2,6710.89) (4,13421.8) (8,26843.5) };
+            \addlegendentry{algo=GSACA\_parallel};
+            \addplot coordinates { (1,6710.89) (2,18454.9) (4,36909.9) };
+            \addlegendentry{algo=Osipov\_parallel};
+            \addplot coordinates { (1,6710.89) (2,18454.9) (4,36909.9) };
+            \addlegendentry{algo=Osipov\_parallel\_wp};
 
         \end{axis}
     \end{tikzpicture}
