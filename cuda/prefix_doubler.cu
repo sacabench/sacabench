@@ -167,6 +167,63 @@ void scatter_to_isa(int* isa, int* aux,int* sa, int n) {
     }
 }
 
+__global__
+void update_ranks_build_aux(int* two_h_ranks, int* aux, int n) {
+
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        aux[0]=0;
+    }
+
+    for (int i = index+1; i < n; i+=stride) {
+        aux[i] = (two_h_ranks[i-1]!=two_h_ranks[i]) * i;
+    }
+}
+
+__global__
+void update_ranks_build_aux_tilde(int* two_h_ranks, int* h_ranks, int* aux, int n) {
+
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        aux[0]=two_h_ranks[0];
+    }
+
+    for (int i = index+1; i < n; i+=stride) {
+        
+        bool new_group = (two_h_ranks[i-1] != two_h_ranks[i] || h_ranks[i-1] != h_ranks[i]);
+
+        aux[index] = new_group * (two_h_ranks[i] + i - aux[i]);
+    }
+}
+
+void update_ranks(int* two_h_ranks, int* h_ranks, int* aux, int n) {
+
+    //Build Aux
+    update_ranks_build_aux<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(two_h_ranks, aux, n);
+    cudaDeviceSynchronize();
+
+    //prefix sum over aux
+    Max_without_branching max;
+    prefix_sum_cub_inclusive(aux, max, n);
+    cudaDeviceSynchronize();
+
+    //Build aux "tilde"
+    update_ranks_build_aux_tilde<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(two_h_ranks, h_ranks, aux, n);
+    cudaDeviceSynchronize();
+
+    //prefix sum over aux "tilde"
+    prefix_sum_cub_inclusive(aux, max, n);
+    cudaDeviceSynchronize();
+
+    //Scatter to ISA TODO IN MAIN FUNCTION!
+    //scatter_to_isa<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa, n);
+}
+
+
 /*
     Init ISA with prefix sum method
 */
