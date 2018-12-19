@@ -244,6 +244,31 @@ void initialize_isa(int* isa, int* sa, int* aux, int n, Comp comp) {
 
 }
 
+void sort_tuples(int* tuple_index, int* two_h_ranks, int* aux1, int* aux2 ,int n) {
+
+
+     // Determine temporary device storage requirements
+     void     *d_temp_storage = NULL;
+     size_t   temp_storage_bytes = 0;
+ 
+     cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
+         two_h_ranks, aux1, tuple_index, aux2, n);
+     // Allocate temporary storage
+     cudaMalloc(&d_temp_storage, temp_storage_bytes);
+ 
+     // Run sorting operation
+     cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
+        two_h_ranks, aux1, tuple_index, aux2, n);
+ 
+     cudaDeviceSynchronize();
+
+     copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(tuple_index,aux1,n);
+     cudaDeviceSynchronize();
+     copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(two_h_ranks,aux2,n);
+
+
+     
+}
 
 static void prefix_doubling_gpu(int* gpu_text, int* out_sa, int n) {
     
