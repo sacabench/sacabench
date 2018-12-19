@@ -1,10 +1,10 @@
 #pragma once
 
 #include <algorithm>
-#include <byteswap.h>
 #include <omp.h>
 #include <tudocomp_stat/StatPhase.hpp>
 #include <tuple>
+#include <util/macros.hpp>
 #include <util/alphabet.hpp>
 #include <util/assertions.hpp>
 #include <util/bits.hpp>
