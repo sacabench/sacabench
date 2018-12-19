@@ -122,6 +122,12 @@ SACA_REGISTER("saca/nzSufSort.hpp"
 
 SACA_REGISTER("saca/dc3_lite.hpp"
     sacabench::dc3_lite::dc3_lite)
+    
+SACA_REGISTER("saca/dc3_par.hpp"
+    sacabench::dc3_par::dc3_par)
+    
+SACA_REGISTER("saca/dc3_par2.hpp"
+    sacabench::dc3_par2::dc3_par2)
 
 SACA_REGISTER("saca/osipov/osipov_sequential.hpp"
     sacabench::osipov::osipov_sequential)
