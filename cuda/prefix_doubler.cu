@@ -56,10 +56,12 @@ static void initialize_sa_gpu(size_t n, size_t*  sa) {
 
 }
 
+
 /*
     Copies one array size_to another by using GPU threads
-    Maybe use memcpy?
+    Maybe use memcpy? http://horacio9573.no-ip.org/cuda/group__CUDART__MEMORY_g48efa06b81cc031b2aa6fdc2e9930741.html
 */
+/*
 __global__
 static void copy_to_array(size_t* in, size_t* out, size_t n) {
 
@@ -70,7 +72,7 @@ static void copy_to_array(size_t* in, size_t* out, size_t n) {
     }
 
 }
-
+*/
 /*
     Sorts SA according to text using the CUB Radixsort
 */
@@ -101,7 +103,9 @@ static void inital_sorting(size_t* text, size_t* sa, size_t* aux, size_t n) {
 
     cudaDeviceSynchronize();
 
-    copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux,n);
+    //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux,n);
+
+    cudaMemcpy(sa, aux, n*sizeof(size_t), cudaMemcpyDeviceToDevice);
 }
 
 
@@ -129,7 +133,9 @@ void prefix_sum_cub_inclusive(size_t* array, OP op, size_t n)
 
     cudaDeviceSynchronize();
 
-    copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
+    //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
+
+    cudaMemcpy(array, values_out, n*sizeof(size_t), cudaMemcpyDeviceToDevice);
 
 
 }
@@ -262,9 +268,12 @@ void sort_tuples(size_t* tuple_index, size_t* two_h_ranks, size_t* aux1, size_t*
  
      cudaDeviceSynchronize();
 
-     copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(tuple_index,aux1,n);
-     cudaDeviceSynchronize();
-     copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(two_h_ranks,aux2,n);
+     //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(tuple_index,aux1,n);
+     cudaMemcpy(tuple_index, aux1, n*sizeof(size_t), cudaMemcpyDeviceToDevice);
+     cudaMemcpy(two_h_ranks, aux2, n*sizeof(size_t), cudaMemcpyDeviceToDevice);
+
+     //cudaDeviceSynchronize();
+     //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(two_h_ranks,aux2,n);
 
 
      
@@ -309,7 +318,7 @@ static void prefix_doubling_gpu(size_t* gpu_text, size_t* out_sa, size_t n) {
     }
     std::cout<<std::endl;
     
-    size_t h = 4;
+    //size_t h = 4;
 
 /*
     phase.split("Mark singletons");
