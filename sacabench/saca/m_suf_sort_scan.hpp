@@ -18,9 +18,13 @@
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
 
+#include <saca/deep_shallow/log.hpp>
+using sacabench::deep_shallow::duration;
+#include <chrono>
+
 #include <tudocomp_stat/StatPhase.hpp>
 
-//#include<iostream>
+#include<iostream>
 #include <stack>
 #include <utility>
 #include <vector>
@@ -228,6 +232,9 @@ public:
     static inline void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
+        // Set timer for statistics
+        const auto start = std::chrono::steady_clock::now();
+
         // Check if sa_index type fits for text.size(), END symbol and sign bit
         DCHECK(util::assert_text_length<sa_index>(text.size()+1, 1u));
 
@@ -256,6 +263,8 @@ public:
 
         // put head of sentinel chain in array (as it is not included in rtl scan)
         head_uchains_[0] = text.size()-1;
+
+        double time_scan = 0;
 
         for (util::ssize i = text.size() - 2; i > -1; i--) {
             // collect all type s suffix indices
@@ -345,20 +354,24 @@ public:
                 if (!attr.isa.is_rank(chain_index + length)) {
                     //to_be_refined_.push_back(chain_index);
 
-                    // pointer to head and init memory
-                    auto head_pointer = &head_uchains_[attr.text[chain_index + length]];
-                    auto init_pointer = &init_uchain_links_[attr.text[chain_index + length]];
-                    // get last linked element of corresponding chain:
-                    const auto last_linked = *init_pointer;
-                    // if this is first occurence, put it into head array
-                    if(last_linked == END<sa_index>) {
-                        *head_pointer = chain_index;
-                    } else {
-                        // link this element to last element
-                        attr.isa.set_link(*init_pointer, chain_index);
-                    }
-                    // update init uchain links
-                    *init_pointer = chain_index;
+                    const auto time_temp = duration([&](){
+                        // pointer to head and init memory
+                        auto head_pointer = &head_uchains_[attr.text[chain_index + length]];
+                        auto init_pointer = &init_uchain_links_[attr.text[chain_index + length]];
+                        // get last linked element of corresponding chain:
+                        const auto last_linked = *init_pointer;
+                        // if this is first occurence, put it into head array
+                        if(last_linked == END<sa_index>) {
+                            *head_pointer = chain_index;
+                        } else {
+                            // link this element to last element
+                            attr.isa.set_link(*init_pointer, chain_index);
+                        }
+                        // update init uchain links
+                        *init_pointer = chain_index;
+                    });
+
+                    time_scan += time_temp;
                 } else {
                     // make new pair from chain_index and sort key, rank of
                     // chain_index + length to be sorted by easy induced sort
@@ -367,12 +380,6 @@ public:
                     sorting_induced_.push_back(new_sort_pair);
                 }
                 if (attr.isa.is_END(chain_index)) {
-                    // set all (existing) new chain ends to end:
-                    for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
-                        if(init_uchain_links_[i] != END<sa_index>) {
-                            attr.isa.set_END(init_uchain_links_[i]);
-                        }
-                    }
                     break;
                 }
                 // update chain index by following the chain links
@@ -387,10 +394,13 @@ public:
             // fill stack with refined u-chains by simply iterating over head array
             // begin with greatest (last) element
             for(util::ssize i = alphabet.size_with_sentinel()-1; i>=0; i--) {
+                // TODO: optimization: make pairs from head and link!
                 sa_index current_head = head_uchains_[i];
                 if(current_head == END<sa_index>) {
                     continue;
                 }
+                // set all (existing) new chain ends to end:
+                attr.isa.set_END(init_uchain_links_[i]);
                 std::pair<sa_index, sa_index> new_chain(head_uchains_[i], length+sa_index(1));
                 attr.chain_stack.push(new_chain);
             }
@@ -429,7 +439,21 @@ public:
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
         // (try 2 other options)
-        util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
+        //const double tosa_timedur = duration([&](){
+            util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
+            // util::container<sa_index> sa = util::make_container<sa_index>(text.size());
+            // util::isa2sa_simple_scan_msufsort(attr.isa.get_span(), sa.slice());
+            //
+            // for(size_t i = 0; i < sa.size(); ++i) {
+            //     attr.isa.get_span()[i] = sa[i];
+            // }
+        //});
+        const auto end = std::chrono::steady_clock::now();
+        const auto dur = end - start;
+        const double dur_cast = std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
+        const double to_sa_percent = time_scan/dur_cast;
+        std::cout << time_scan << "/" << dur_cast << " = " << to_sa_percent <<"%"<< std::endl;
+
     }
 };
 

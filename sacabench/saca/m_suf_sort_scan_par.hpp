@@ -368,12 +368,6 @@ public:
                     sorting_induced_.push_back(new_sort_pair);
                 }
                 if (attr.isa.is_END(chain_index)) {
-                    // set all (existing) new chain ends to end:
-                    for(size_t i=0; i<alphabet.size_with_sentinel(); i++) {
-                        if(init_uchain_links_[i] != END<sa_index>) {
-                            attr.isa.set_END(init_uchain_links_[i]);
-                        }
-                    }
                     break;
                 }
                 // update chain index by following the chain links
@@ -382,14 +376,8 @@ public:
 
             util::span<pair_si<sa_index>> sorting_induced =
                 util::span<pair_si<sa_index>>(sorting_induced_);
-            // util::span<sa_index> to_be_refined =
-            //     util::span<sa_index>(to_be_refined_);
 
             easy_induced_sort(attr, sorting_induced);
-            // only refine uChain if elements are left!
-            // if (to_be_refined.size() > 0) {
-            //     refine_uChain(attr, to_be_refined, length);
-            // }
 
             // fill stack with refined u-chains by simply iterating over head array
             // begin with greatest (last) element
@@ -398,6 +386,8 @@ public:
                 if(current_head == END<sa_index>) {
                     continue;
                 }
+                // set all (existing) new chain ends to end:
+                attr.isa.set_END(init_uchain_links_[i]);
                 std::pair<sa_index, sa_index> new_chain(head_uchains_[i], length+sa_index(1));
                 attr.chain_stack.push(new_chain);
             }
@@ -436,7 +426,9 @@ public:
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
         // (try 2 other options)
+
         util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
+
     }
 };
 
@@ -498,7 +490,7 @@ template <typename sa_index>
 struct compare_sortkey {
 public:
     // Function for comparisons within introsort
-    compare_sortkey(const util::string_span text) : input_text(text) {}
+    compare_sortkey() {}
 
     bool operator()(const pair_si<sa_index> pair_a,
                     const pair_si<sa_index> pair_b) const {
@@ -508,9 +500,6 @@ public:
 
         return sortkey_a < sortkey_b;
     }
-
-private:
-    const util::string_span input_text;
 };
 
 // function to sort a set of suffix indices
@@ -518,7 +507,7 @@ template <typename sa_index>
 inline void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
                        util::span<pair_si<sa_index>> to_be_ranked) {
     // sort elements after their sortkey:
-    compare_sortkey<sa_index> comparator(attr.text);
+    compare_sortkey<sa_index> comparator;
     util::sort::ips4o_sort_parallel(to_be_ranked, comparator);
 
     // rank all elements in sorted order:

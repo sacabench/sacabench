@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2018 Janina Michaelis <janina.michaelis@tu-dortmund.de>
+ * Copyright (C) 2018 Rosa Pink <rosa.pink@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -14,12 +15,10 @@
 namespace sacabench::util {
 /// \brief Returns a container with bucket sizes in size of the
 ///        effective alphabet of the input string.
-inline container<size_t> get_bucket_sizes(const string_span input) {
-    string temp_input = make_string(input);
-    const alphabet input_alphabet = apply_effective_alphabet(temp_input);
+inline container<size_t> get_bucket_sizes(const string_span input, util::alphabet const& alpha) {
     container<size_t> bucket_sizes =
-        make_container<size_t>(input_alphabet.size_with_sentinel());
-    for (const character c : temp_input) {
+        make_container<size_t>(alpha.size_with_sentinel());
+    for (const character c : input) {
         ++bucket_sizes[c];
     }
     return bucket_sizes;
