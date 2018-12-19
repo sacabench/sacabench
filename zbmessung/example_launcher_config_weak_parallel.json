@@ -12,7 +12,9 @@
             "GSACA_parallel",
             "GSACA",
             "PARALLEL_SAIS",
-            "Deep-Shallow_par"
+            "Deep-Shallow_par",
+            "DC3_parallel",
+            "DC3-Parallel-2"
         ],
         "input": [
             "$WORK/large_datasets/commoncrawl.txt",
