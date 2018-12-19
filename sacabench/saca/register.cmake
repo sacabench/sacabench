@@ -4,8 +4,11 @@
 SACA_REGISTER("saca/external/deep_shallow.hpp"
     sacabench::reference_sacas::deep_shallow)
 
-SACA_REGISTER("saca/external/divsufsort.hpp"
+SACA_REGISTER("saca/external/divsufsort/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
+
+SACA_REGISTER("saca/external/divsufsort/divsufsort_par.hpp"
+    sacabench::reference_sacas::div_suf_sort_par)
 
 SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
     sacabench::reference_sacas::msufsort)
