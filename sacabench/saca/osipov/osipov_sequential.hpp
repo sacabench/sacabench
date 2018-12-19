@@ -1,9 +1,9 @@
 #pragma once
 
 #include <algorithm>
-#include <byteswap.h>
 #include <tudocomp_stat/StatPhase.hpp>
 #include <tuple>
+#include <util/macros.hpp>
 #include <util/alphabet.hpp>
 #include <util/assertions.hpp>
 #include <util/compare.hpp>
