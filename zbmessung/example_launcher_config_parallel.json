@@ -1,19 +1,20 @@
 {
     "launch" : {
         "algo": [
-            "Osipov_sequential",
-            "Osipov_sequential_wp",
             "Osipov_parallel",
             "Osipov_parallel_wp",
             "Discarding4Parallel",
-            "NaivIps4oParallel",
             "DivSufSort_ref",
+            "DivSufSort_PARALLEL_ref",
             "BPR",
             "BPR_ref",
+            "BPR_par",
             "GSACA_parallel",
             "GSACA",
-            "NaivIps4o",
-            "Deep-Shallow_par"
+            "PARALLEL_SAIS",
+            "Deep-Shallow_par",
+            "DC3_parallel",
+            "DC3-Parallel-2"
         ],
         "input": [
             "pc_dblp.xml.200MB",
@@ -22,10 +23,10 @@
             "pc_proteins.200MB",
             "pc_sources.200MB"
         ],
-        "rep": 3,
+        "rep": 2,
         "prefix": "200M",
         "threads": [
-            1, 2, 4, 8, 16
+            1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
         ]
     }
 }

@@ -111,8 +111,6 @@ namespace sacabench::dc3_lite {
                 
                 radixsort_for_big_alphabet(u, out_sa, alphabet_size+1, 0, 2, key_function, compare_function);
                 
-                //std::cout << "u: " << u << std::endl;
-                
                 //position of last index i mod 3 = 0;
                 size_t start_pos_of_0 = u.size()/3 + (u.size() % 3 > 0);
                 //position of last index i mod 3 = 1;
@@ -195,7 +193,6 @@ namespace sacabench::dc3_lite {
                         }
                     }
                 }
-                
                 
                 auto u_1 = u.slice(start_pos_of_0, u.size());
                 auto v_1 = out_sa.slice(start_pos_of_0, out_sa.size());
@@ -313,6 +310,7 @@ namespace sacabench::dc3_lite {
                 phase.split("Calculate SA by equation");
                 size_t m_0 = text_0.size();
                 size_t m_1 = text_0.size()+text_1.size()/2+(text_1.size() % 2 != 0);
+                
                 for (size_t i = 0; i < out_sa.size(); ++i) {
                     if (0u <= out_sa[i] && out_sa[i] < m_0) { out_sa[i] = 3*out_sa[i]; }
                     else if (m_0 <= out_sa[i] && out_sa[i] < m_1) {

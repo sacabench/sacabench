@@ -21,6 +21,10 @@ def write_str(path, data):
     with open(path, 'w') as f:
         f.write(str(data))
 
+def load_str(path):
+    with open(path, 'r') as f:
+        return f.read()
+
 # ---------------------
 
 usage = argparse.ArgumentParser()
@@ -57,7 +61,7 @@ cluster_configs = {
     "48cores": {
         "cores": 48,
         "mem": "250G",
-        "constraint": "cquad01",
+        "constraint": "xeon_e54640v4",
     },
 }
 cluster_config_default='20cores'
@@ -103,7 +107,8 @@ def launch_job(cwd, cmd, output, omp_threads):
     if omp_threads:
         omp_threads_str = "export OMP_NUM_THREADS={}\n".format(omp_threads)
 
-    Path(output).parent.mkdir(parents=True, exist_ok=True)
+    if not args.test_only:
+        Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     clstcfg = cluster_configs[args.cluster_config]
 
@@ -164,7 +169,7 @@ if args.launch:
     index = {
         "output_files" : [],
     }
-    outdir = WORK / Path("batch_{}".format(timestamp))
+    outdir = WORK / Path("measure/{}".format(timestamp))
     for (j, dataset_path) in enumerate(DATASETS):
         dataset_path = os.path.expandvars(dataset_path)
         dataset_path = Path(dataset_path)
@@ -212,22 +217,25 @@ if args.launch:
                     "jobid": jobid,
                     "threads": omp_threads,
                 })
-    write_json(outdir / Path("index.json"), index)
-    print("Started {} jobs!".format(counter))
-    print("Current personal job queue:")
-    subprocess.run("squeue -u $USER", shell=True)
+    if not args.test_only:
+        write_json(outdir / Path("index.json"), index)
+        print("Started {} jobs!".format(counter))
+        print("Current personal job queue:")
+        subprocess.run("squeue -u $USER", shell=True)
 
 def load_data(dir):
     index = load_json(dir / Path("index.json"))
     for output_file in index["output_files"]:
         # Normalize input
         output_file["stat_output"] = Path(output_file["stat_output"])
+        output_file["output"] = Path(output_file["output"])
         output_file["input"] = Path(output_file["input"])
         if "threads" not in output_file:
             output_file["threads"] = None
 
         # Get relevant data
         stat_output = output_file["stat_output"]
+        output = output_file["output"]
         algo = output_file["algo"]
         input = output_file["input"]
         prefix = output_file["prefix"]
@@ -235,6 +243,10 @@ def load_data(dir):
 
         if not stat_output.is_file():
             print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
+            if output.is_file():
+                print("-output----------")
+                print(load_str(output))
+                print("-----------------")
             continue
 
         stats = load_json(stat_output)

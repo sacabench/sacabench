@@ -5,11 +5,16 @@
             "Osipov_parallel_wp",
             "Discarding4Parallel",
             "DivSufSort_ref",
+            "DivSufSort_PARALLEL_ref",
             "BPR",
             "BPR_ref",
+            "BPR_par",
             "GSACA_parallel",
             "GSACA",
-            "Deep-Shallow_par"
+            "PARALLEL_SAIS",
+            "Deep-Shallow_par",
+            "DC3_parallel",
+            "DC3-Parallel-2"
         ],
         "input": [
             "$WORK/large_datasets/commoncrawl.txt",
@@ -17,9 +22,9 @@
             "$WORK/large_datasets/wiki.txt"
         ],
         "rep": 3,
-        "prefix": 200,
+        "prefix": 100,
         "threads": [
-            1, 2, 4, 8, 16
+            1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
         ],
         "weak_scale": true
     }
