@@ -1,0 +1,26 @@
+{
+    "launch" : {
+        "algo": [
+            "Osipov_parallel",
+            "Osipov_parallel_wp",
+            "Discarding4Parallel",
+            "DivSufSort_ref",
+            "BPR",
+            "BPR_ref",
+            "GSACA_parallel",
+            "GSACA",
+            "Deep-Shallow_par"
+        ],
+        "input": [
+            "$WORK/large_datasets/commoncrawl.txt",
+            "$WORK/large_datasets/dna.txt",
+            "$WORK/large_datasets/wiki.txt"
+        ],
+        "rep": 3,
+        "prefix": 200,
+        "threads": [
+            1, 2, 4, 8, 16
+        ],
+        "weak_scale": true
+    }
+}

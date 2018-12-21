@@ -145,8 +145,9 @@ if args.launch:
     ALGOS = []
     DATASETS=[]
     N=1
-    PREFIX="10M"
+    PREFIX=10
     THREADS=[None]
+    WEAK_SCALE = False
     if args.launch_config:
         j = load_json(args.launch_config)
         ALGOS = j["launch"]["algo"]
@@ -155,6 +156,8 @@ if args.launch:
         PREFIX = j["launch"]["prefix"]
         if "threads" in j["launch"]:
             THREADS=j["launch"]["threads"]
+        if "weak_scale" in j["launch"]:
+            WEAK_SCALE = j["launch"]["weak_scale"]
 
     counter = 0
     print("Starting jobs...")
@@ -162,11 +165,16 @@ if args.launch:
         "output_files" : [],
     }
     outdir = WORK / Path("batch_{}".format(timestamp))
-    for (j, dataset) in enumerate(DATASETS):
+    for (j, dataset_path) in enumerate(DATASETS):
+        dataset_path = os.path.expandvars(dataset_path)
+        dataset_path = Path(dataset_path)
+        dataset = dataset_path.name
+
         for (i, algo) in enumerate(ALGOS):
             for omp_threads in THREADS:
                 cwd = sacapath / Path("build")
-                input_path = sacapath / Path("external/datasets/downloads") / Path(dataset)
+                input_path = sacapath / Path("external/datasets/downloads") / dataset_path
+                input_path = input_path.resolve()
 
                 if omp_threads:
                     threads_str = "threads{:03}".format(omp_threads)
@@ -178,27 +186,32 @@ if args.launch:
                 output = outdir / Path("stdout-{}.txt".format(id))
                 batch_output = outdir / Path("stat-{}.json".format(id))
 
+                local_prefix = PREFIX
+                if omp_threads and WEAK_SCALE:
+                    local_prefix *= omp_threads
+                local_prefix = "{}M".format(local_prefix)
+
                 cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
                     bench_out=batch_output,
-                    prefix=PREFIX,
+                    prefix=local_prefix,
                     rep=N,
                     algo=algo,
                     input_path=input_path
                 )
 
                 jobid = launch_job(cwd, cmd, output, omp_threads)
+                counter += 1
                 index["output_files"].append({
                     "output" : str(output),
                     "stat_output" : str(batch_output),
                     "input": str(input_path),
                     "algo": algo,
-                    "prefix": PREFIX,
+                    "prefix": "{}M".format(PREFIX),
+                    "actual_prefix": local_prefix,
                     "rep": N,
                     "jobid": jobid,
                     "threads": omp_threads,
                 })
-
-            counter += 1
     write_json(outdir / Path("index.json"), index)
     print("Started {} jobs!".format(counter))
     print("Current personal job queue:")
