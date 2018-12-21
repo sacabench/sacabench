@@ -418,8 +418,21 @@ size_t create_tuples(size_t size, size_t h, sa_index* sa,
     // Save amount of tuples for last index (gets overwritten by prefix sum)
     s = aux[size-1];
     // Prefix sum
-    exclusive_sum(aux, aux, size);
+    //exclusive_sum(aux, aux, size);
+    // Use h_rank as temporary array as it wasn't needed before
+
+    void* d_temp_storage = NULL;
+    size_t temp_storage_bytes = 0;
+    // Receive needed temp storage
+    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, aux, h_rank, size);
+    // Allocate needed temp storage
+    cudaMalloc(&d_temp_storage, temp_storage_bytes);
+
+    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, aux, h_rank, size);
+    cudaFree(d_temp_storage);
+
     cudaDeviceSynchronize();
+    cudaMemcpy(aux, h_rank, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
     // Adjust s
     s += aux[size-1];
     new_tuple<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa, aux,
@@ -523,10 +536,10 @@ static void prefix_doubling_gpu(uint32_t* gpu_text, uint32_t* out_sa, size_t n) 
     cudaMallocManaged(&h_rank, n*sizeof(uint32_t));
 
     std::cout << "Creating tuples." << std::endl;
-    create_tuples(n, h, sa, isa, aux, tuple_index, h_rank);
+    size_t s = create_tuples(n, h, sa, isa, aux, tuple_index, h_rank);
 
     std::cout << "Tuples: ";
-    for(size_t i=0; i < n; ++i) {
+    for(size_t i=0; i < s; ++i) {
         std::cout << "<" << tuple_index[i] << "," << h_rank[i] << ">, ";
     }
     std::cout << std::endl;
