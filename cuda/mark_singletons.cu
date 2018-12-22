@@ -19,6 +19,16 @@ struct BucketInequality
     uint32_t* isa;
 };
 
+struct CustomAnd
+{
+    template <typename T>
+    CUB_RUNTIME_FUNCTION __forceinline__ __device__
+    T operator()(const T &a, const T &b) const {
+        return a & b;
+    }
+};
+
+
 template <uint32_t BLOCK_THREADS, uint32_t ITEMS_PER_THREAD>
 __global__ static void mark_heads(uint32_t* d_sa, uint32_t* d_isa, bool* d_flags) {
 
@@ -44,9 +54,42 @@ __global__ static void mark_heads(uint32_t* d_sa, uint32_t* d_isa, bool* d_flags
     bool flags[4];
     // Collectively compute head flags for discontinuities in the segment
     BlockDiscontinuity(temp_storage).FlagHeads(flags, thread_data, cub::Inequality());//BucketInequality(d_isa));
-
     // Store flags from a blocked arrangement
     BlockStoreT(store).Store(d_flags, flags);
+}
+
+template <typename OP>
+void prefix_sum_inclusive(bool* flags_in, OP op, size_t n)
+{
+    //Indices
+    bool* flags_out;   // e.g., [        ...        ]
+
+    // Allocate Unified Memory – accessible from CPU or GPU
+    cudaMallocManaged(&flags_out, n*sizeof(bool));
+
+    // Determine temporary device storage requirements
+    void     *d_temp_storage = NULL;
+    size_t   temp_storage_bytes = 0;
+
+    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, flags_in, flags_out, op, n);
+    // Allocate temporary storage
+    cudaMalloc(&d_temp_storage, temp_storage_bytes);
+    // Run exclusive prefix sum
+    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, flags_in, flags_out, op, n);
+
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(flags_in, flags_out, n*sizeof(bool), cudaMemcpyDeviceToDevice);
+}
+
+__global__
+void flag_entries(uint32_t* sa, bool* flags, uint32_t mask, uint32_t n) {
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    for (size_t i = index+1; i < n; i+=stride) {
+        sa[i] = sa[i] & (flags[i] * mask);
+    }
 }
 
 int main()
@@ -55,6 +98,10 @@ int main()
     const uint32_t BLOCK_THREADS = 32;
     const uint32_t ITEMS_PER_THREAD = 4;
     const int TILE_SIZE = BLOCK_THREADS * ITEMS_PER_THREAD;
+
+    /*
+       STEP 0: Initialization on host
+     */
 
     uint32_t* h_sa = new uint32_t[TILE_SIZE];
     uint32_t* h_isa = new uint32_t[TILE_SIZE];
@@ -70,29 +117,49 @@ int main()
     std::cout << std::endl;
     h_head_flags[TILE_SIZE] = true; // pseudo new bucket at the end
 
+    // copy problem to device
     uint32_t* d_sa = NULL;
     uint32_t* d_isa = NULL;
     bool* d_head_flags = NULL;
-
     cudaMalloc((void**)&d_sa, sizeof(uint32_t) * TILE_SIZE);
     cudaMalloc((void**)&d_isa, sizeof(uint32_t) * TILE_SIZE);
     cudaMalloc((void**)&d_head_flags, sizeof(bool) * (TILE_SIZE + 1));
-
-    // copy problem to device
     cudaMemcpy(d_sa, h_sa, sizeof(uint32_t) * TILE_SIZE, cudaMemcpyHostToDevice);
     cudaMemcpy(d_isa, h_isa, sizeof(uint32_t) * TILE_SIZE, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_head_flags, h_head_flags, sizeof(uint32_t) * (TILE_SIZE + 1), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_head_flags, h_head_flags, sizeof(bool) * (TILE_SIZE + 1), cudaMemcpyHostToDevice);
 
     cudaDeviceSynchronize();
 
+    /* 
+       STEP 1: Flag heads of groups
+     */
     mark_heads<BLOCK_THREADS, ITEMS_PER_THREAD><<<g_grid_size, BLOCK_THREADS>>>(d_sa, d_isa, d_head_flags);
-
     cudaDeviceSynchronize();
 
-    // copy solution to host
-    cudaMemcpy(h_head_flags, d_head_flags, sizeof(bool) * TILE_SIZE, cudaMemcpyDeviceToHost);
+    /* 
+       STEP 2: Reduce Flags to singleton groups 
+     */
+    CustomAnd and_op;
+    prefix_sum_inclusive(d_head_flags, and_op, TILE_SIZE);  
+
+    /*
+       STEP 3: Mask SA entries
+     */
+    static constexpr uint32_t NEGATIVE_MASK = uint32_t(1) << (sizeof(uint32_t) * 8 - 1);
+    flag_entries<<<ITEMS_PER_THREAD, BLOCK_THREADS>>>(d_sa, d_head_flags + sizeof(bool), NEGATIVE_MASK, TILE_SIZE);
+
+    /*
+       copy solution to host
+     */
+    cudaMemcpy(h_sa, d_sa, sizeof(uint32_t) * (TILE_SIZE), cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_head_flags, d_head_flags, sizeof(bool) * (TILE_SIZE + 1), cudaMemcpyDeviceToHost);
 
     for (uint32_t i = 0; i < TILE_SIZE; ++i) {
+        std::cout << h_sa[i] << " ";
+    }
+    std::cout << std::endl;
+
+    for (uint32_t i = 0; i < TILE_SIZE + 1; ++i) {
         std::cout << h_head_flags[i] << " ";
     }
     std::cout << std::endl;
