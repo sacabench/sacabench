@@ -1,4 +1,5 @@
 #include <string>
+#include <bitset>
 #include <iostream>
 #include "cub-1.8.0/cub/cub.cuh"
 
@@ -18,16 +19,6 @@ struct BucketInequality
     private:
     uint32_t* isa;
 };
-
-struct CustomAnd
-{
-    template <typename T>
-    CUB_RUNTIME_FUNCTION __forceinline__ __device__
-    T operator()(const T &a, const T &b) const {
-        return a & b;
-    }
-};
-
 
 template <uint32_t BLOCK_THREADS, uint32_t ITEMS_PER_THREAD>
 __global__ static void mark_heads(uint32_t* d_sa, uint32_t* d_isa, bool* d_flags) {
@@ -52,43 +43,36 @@ __global__ static void mark_heads(uint32_t* d_sa, uint32_t* d_isa, bool* d_flags
 
     // block of flags per thread
     bool flags[4];
+    BucketInequality bucket_ineq(d_isa);
     // Collectively compute head flags for discontinuities in the segment
-    BlockDiscontinuity(temp_storage).FlagHeads(flags, thread_data, cub::Inequality());//BucketInequality(d_isa));
+    BlockDiscontinuity(temp_storage).FlagHeads(flags, thread_data, bucket_ineq);
     // Store flags from a blocked arrangement
     BlockStoreT(store).Store(d_flags, flags);
 }
 
-template <typename OP>
-void prefix_sum_inclusive(bool* flags_in, OP op, size_t n)
-{
-    //Indices
-    bool* flags_out;   // e.g., [        ...        ]
-
-    // Allocate Unified Memory – accessible from CPU or GPU
-    cudaMallocManaged(&flags_out, n*sizeof(bool));
-
-    // Determine temporary device storage requirements
-    void     *d_temp_storage = NULL;
-    size_t   temp_storage_bytes = 0;
-
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, flags_in, flags_out, op, n);
-    // Allocate temporary storage
-    cudaMalloc(&d_temp_storage, temp_storage_bytes);
-    // Run exclusive prefix sum
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, flags_in, flags_out, op, n);
-
-    cudaDeviceSynchronize();
-
-    cudaMemcpy(flags_in, flags_out, n*sizeof(bool), cudaMemcpyDeviceToDevice);
-}
-
+/**
+ * \brief Maps array of head flags to array of singleton flags
+ */
 __global__
-void flag_entries(uint32_t* sa, bool* flags, uint32_t mask, uint32_t n) {
+void reduce_flags(bool* in_flags, bool* out_flags, uint32_t n) {
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
 
     for (size_t i = index+1; i < n; i+=stride) {
-        sa[i] = sa[i] & (flags[i] * mask);
+        out_flags[i] = in_flags[i] & in_flags[i+1];
+    }
+}
+
+/**
+  * \brief Applies a bitmask to all flagged entries in sa
+  */
+__global__
+void mask_entries(uint32_t* sa, bool* flags, uint32_t mask, uint32_t n) {
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    for (size_t i = index+1; i < n; i+=stride) {
+        sa[i] = sa[i] | (flags[i] * mask);
     }
 }
 
@@ -100,7 +84,7 @@ int main()
     const int TILE_SIZE = BLOCK_THREADS * ITEMS_PER_THREAD;
 
     /*
-       STEP 0: Initialization on host
+       STEP 0: Example initialization on host
      */
 
     uint32_t* h_sa = new uint32_t[TILE_SIZE];
@@ -108,22 +92,30 @@ int main()
     bool* h_head_flags = new bool[TILE_SIZE + 1];
 
     for (uint32_t i = 0; i < TILE_SIZE; ++i) {
-        h_isa[i] = (i/2) % 10;
-        h_sa[i] = (i/2) % 10;
+        h_isa[i] = (i % 3) / 2; // random example, not intended for production
+        h_sa[i] = i;
         h_head_flags[i] = false;
 
+    }
+    h_head_flags[TILE_SIZE] = true; // pseudo new bucket at the end
+
+    /* debug output
+    std::cout << "ISA" << std::endl;
+    for (uint32_t i = 0; i < TILE_SIZE; ++i) {
         std::cout << h_isa[i] << " ";
     }
     std::cout << std::endl;
-    h_head_flags[TILE_SIZE] = true; // pseudo new bucket at the end
+     */
 
     // copy problem to device
     uint32_t* d_sa = NULL;
     uint32_t* d_isa = NULL;
     bool* d_head_flags = NULL;
+    bool* d_singleton_flags = NULL;
     cudaMalloc((void**)&d_sa, sizeof(uint32_t) * TILE_SIZE);
     cudaMalloc((void**)&d_isa, sizeof(uint32_t) * TILE_SIZE);
     cudaMalloc((void**)&d_head_flags, sizeof(bool) * (TILE_SIZE + 1));
+    cudaMalloc((void**)&d_singleton_flags, sizeof(bool) * (TILE_SIZE + 1));
     cudaMemcpy(d_sa, h_sa, sizeof(uint32_t) * TILE_SIZE, cudaMemcpyHostToDevice);
     cudaMemcpy(d_isa, h_isa, sizeof(uint32_t) * TILE_SIZE, cudaMemcpyHostToDevice);
     cudaMemcpy(d_head_flags, h_head_flags, sizeof(bool) * (TILE_SIZE + 1), cudaMemcpyHostToDevice);
@@ -136,40 +128,51 @@ int main()
     mark_heads<BLOCK_THREADS, ITEMS_PER_THREAD><<<g_grid_size, BLOCK_THREADS>>>(d_sa, d_isa, d_head_flags);
     cudaDeviceSynchronize();
 
+    /* debug output
+    std::cout << "Group Heads" << std::endl;
+    cudaMemcpy(h_head_flags, d_head_flags, sizeof(bool) * (TILE_SIZE + 1), cudaMemcpyDeviceToHost);
+    for (uint32_t i = 0; i < TILE_SIZE + 1; ++i) {
+        std::cout << h_head_flags[i] << " ";
+    }
+    std::cout << std::endl;
+     */
+
     /* 
        STEP 2: Reduce Flags to singleton groups 
      */
-    CustomAnd and_op;
-    prefix_sum_inclusive(d_head_flags, and_op, TILE_SIZE);  
+    reduce_flags<<<ITEMS_PER_THREAD, BLOCK_THREADS>>>(d_head_flags, d_singleton_flags, TILE_SIZE);
 
     /*
        STEP 3: Mask SA entries
      */
     static constexpr uint32_t NEGATIVE_MASK = uint32_t(1) << (sizeof(uint32_t) * 8 - 1);
-    flag_entries<<<ITEMS_PER_THREAD, BLOCK_THREADS>>>(d_sa, d_head_flags + sizeof(bool), NEGATIVE_MASK, TILE_SIZE);
+    mask_entries<<<ITEMS_PER_THREAD, BLOCK_THREADS>>>(d_sa, d_singleton_flags, NEGATIVE_MASK, TILE_SIZE);
 
     /*
        copy solution to host
      */
     cudaMemcpy(h_sa, d_sa, sizeof(uint32_t) * (TILE_SIZE), cudaMemcpyDeviceToHost);
-    cudaMemcpy(h_head_flags, d_head_flags, sizeof(bool) * (TILE_SIZE + 1), cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_head_flags, d_singleton_flags, sizeof(bool) * (TILE_SIZE + 1), cudaMemcpyDeviceToHost);
 
+    /* debug output
+    std::cout << "Singleton Flags and Final SA" << std::endl;
     for (uint32_t i = 0; i < TILE_SIZE; ++i) {
-        std::cout << h_sa[i] << " ";
-    }
-    std::cout << std::endl;
-
-    for (uint32_t i = 0; i < TILE_SIZE + 1; ++i) {
         std::cout << h_head_flags[i] << " ";
+        std::cout << std::bitset<32>(h_sa[i]) << " ";
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
+     */
 
+    /*
+       free memory
+     */
     if(h_sa) delete[] h_sa;
     if(h_isa) delete[] h_isa;
     if(h_head_flags) delete[] h_head_flags;
     if(d_sa) cudaFree(d_sa);
     if(d_isa) cudaFree(d_isa);
     if(d_head_flags) cudaFree(d_head_flags);
+    if(d_singleton_flags) cudaFree(d_singleton_flags);
 
     return 0;
 }
