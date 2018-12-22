@@ -325,7 +325,7 @@ void new_tuple(size_t size, size_t h, sa_index* sa,
                     && index >= 2*h && (isa[index-2*h] &
                     utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
                 tuple_index[aux[i]] = index;
-                h_rank[aux[i]] = isa[index] ^
+                h_rank[aux[i]] = isa[index] |
                     utils<sa_index>::NEGATIVE_MASK;
             }
         }
@@ -378,6 +378,50 @@ size_t create_tuples(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
                 h_rank);
         }
 
+/*
+    \brief Generates 2h-ranks after tuples have been sorted.
+*/
+template <typename sa_index>
+__global__
+void generate_two_h_ranks(size_t size, size_t h, sa_index* tuple_index,
+            sa_index* two_h_rank, sa_index* isa) {
+    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
+    int stride = blockDim.x*gridDim.x;
+    for(size_t i=t_index; i < size; i+=stride) {
+       // Case can only occur if index + h < max. index (of original sequence)
+       if((isa[tuple_index[i]] & utils<sa_index>::NEGATIVE_MASK)
+                == sa_index(0)) {
+           // Retrieve rank of 2h-suffix
+           two_h_rank[i] = isa[tuple_index[i]+h];
+       } else {
+           two_h_rank[i] = isa[tuple_index[i]];
+       }
+   }
+    /*
+    for(size_t i=t_index; i < size; i+=stride) {
+        if(sa[i] >= h) {
+            index = sa[i]-h;
+            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
+                    sa_index(0)) {
+                tuple_index[aux[i]] = index;
+                // Increment aux[i] incase inducing suffix is also added
+                h_rank[aux[i]++] = isa[index];
+            }
+            // Check if inducing suffix is also added.
+            index = sa[i];
+            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
+                    && index >= 2*h && (isa[index-2*h] &
+                    utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
+                tuple_index[aux[i]] = index;
+                h_rank[aux[i]] = isa[index] ^
+                    utils<sa_index>::NEGATIVE_MASK;
+            }
+        }
+    }*/
+}
+/*
+    \brief Sorts generated tuples via radix sort.
+*/
 template <typename sa_index>
 void sort_tuples(sa_index* tuple_index, sa_index* two_h_ranks, sa_index* aux1, sa_index* aux2, size_t n) {
 
@@ -398,8 +442,10 @@ void sort_tuples(sa_index* tuple_index, sa_index* two_h_ranks, sa_index* aux1, s
      cudaDeviceSynchronize();
 
      //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(tuple_index,aux1,n);
-     cudaMemcpy(tuple_index, aux1, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-     cudaMemcpy(two_h_ranks, aux2, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+     cudaMemcpy(tuple_index, aux2, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+     cudaMemcpy(two_h_ranks, aux1, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+
+
 
      //cudaDeviceSynchronize();
      //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(two_h_ranks,aux2,n);
@@ -449,20 +495,51 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa, size_t n) 
     std::cout<<std::endl;
 
     size_t h = 4;
+    size_t size = n;
+    size_t s;
 
     uint32_t* tuple_index;
     uint32_t* h_rank;
-    cudaMallocManaged(&tuple_index, n*sizeof(uint32_t));
-    cudaMallocManaged(&h_rank, n*sizeof(uint32_t));
+    uint32_t* two_h_rank;
+    cudaMallocManaged(&tuple_index, n*sizeof(sa_index));
+    cudaMallocManaged(&h_rank, n*sizeof(sa_index));
+    cudaMallocManaged(&two_h_rank, n*sizeof(sa_index));
 
-    size_t s = create_tuples(n, h, sa, isa, aux, tuple_index, h_rank);
+    while(size > 0) {
+        s = create_tuples(size, h, sa, isa, aux, tuple_index, h_rank);
 
-    std::cout << "Tuples: ";
-    for(size_t i=0; i < s; ++i) {
-        std::cout << "<" << tuple_index[i] << "," << h_rank[i] << ">, ";
+        std::cout << "Tuples: ";
+        for(size_t i=0; i < s; ++i) {
+            std::cout << "<" << tuple_index[i] << "," << h_rank[i] << ">, ";
+        }
+        std::cout << std::endl;
+
+        // Continue iteration as usual only if there are elements left
+        // (i.e. s>0)
+        if(s>0) {
+            // Use two_h_rank as aux2 because it hasn't been filled for this
+            // iteration
+            sort_tuples(tuple_index, h_rank, aux, two_h_rank, s);
+
+            std::cout << "Tuples after sorting: ";
+            for(size_t i=0; i < s; ++i) {
+                std::cout << "<" << tuple_index[i] << "," << h_rank[i] << "," << two_h_rank[i] <<">, ";
+            }
+            std::cout << std::endl;
+
+            // Generate 2h-ranks after sorting
+            generate_two_h_ranks<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(s, h, tuple_index, two_h_rank, isa);
+
+            std::cout << "Tuples with 2h-ranks: ";
+            for(size_t i=0; i < s; ++i) {
+                std::cout << "<" << tuple_index[i] << "," << h_rank[i] << "," << two_h_rank[i] <<">, ";
+            }
+            std::cout << std::endl;
+        }
+        // End of iteration; update size and h.
+        size = s;
+        h = 2*h;
     }
-    std::cout << std::endl;
-
 /*
     phase.split("Mark singletons");
     mark_singletons(sa, isa);
