@@ -20,6 +20,16 @@ struct BucketInequality
     uint32_t* isa;
 };
 
+struct CustomAnd
+{
+    template <typename T>
+    CUB_RUNTIME_FUNCTION __forceinline__ __device__
+    T operator()(const T &a, const T &b) const {
+        return a & b;
+    }
+};
+
+
 template <uint32_t BLOCK_THREADS, uint32_t ITEMS_PER_THREAD>
 __global__ static void mark_heads(uint32_t* d_sa, uint32_t* d_isa, bool* d_flags) {
 
