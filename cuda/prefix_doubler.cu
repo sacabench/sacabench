@@ -49,6 +49,104 @@ void word_packing(const char* chars, sa_index* result, size_t n) {
 
 }
 
+
+
+/*
+void mark_singletons() {
+    auto sa = spans.sa;
+    auto isa = spans.isa;
+    if (sa.size() > 0) {
+        util::container<bool> flags = util::make_container<bool>(sa.size());
+        flags[0] = true;
+
+        // Set flags if predecessor has different rank.
+
+        #pragma omp parallel for
+        for (size_t i = 1; i < sa.size(); ++i) {
+            flags[i] = (isa[sa[i - 1]] != isa[sa[i]]);
+        }
+
+        #pragma omp parallel for
+        for (size_t i = 0; i < sa.size() - 1; ++i) {
+            // flags corresponding to predecessor having a different rank,
+            // i.e. suffix sa[i] has different rank than its predecessor and
+            // successor.
+            if (flags[i] && flags[i + 1]) {
+                isa[sa[i]] = isa[sa[i]] | utils<sa_index>::NEGATIVE_MASK;
+            }
+        }
+        // Check for last position - is singleton, if it has a different
+        // rank than its predecessor (because of missing successor).
+        if (flags[sa.size() - 1]) {
+            isa[sa[sa.size() - 1]] =
+                isa[sa[sa.size() - 1]] | utils<sa_index>::NEGATIVE_MASK;
+        }
+    }
+}*/
+
+template <typename sa_index>
+__global__
+static void set_flags(size_t size, sa_index* sa, sa_index* isa,
+            sa_index* aux) {
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    /*
+    // Set values in aux to 0 (except first value)
+    for(size_t i=index+10; i < size; i+=stride) {
+        aux[i] = 0;
+    }*/
+
+    // Avoid iteration for index 0
+    // Set flags if different rank to predecessor
+    for(size_t i=index+1; i < size; i+=stride) {
+        aux[i] = isa[sa[i-1]] != isa[sa[i]] ? 1 : 0;
+    }
+}
+
+template <typename sa_index>
+__global__
+static void mark_groups(size_t size, sa_index* sa, sa_index* isa,
+            sa_index* aux) {
+
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+    // Check if group is singleton by checking wether flag has been set for
+    // element and successor
+    for(size_t i=index; i < size-1; i+=stride) {
+        if(aux[i] + aux[i+1] > 1) {
+            // Condition met -> invert rank of suffix sa[i]
+            isa[sa[i]] = isa[sa[i]] | utils<sa_index>::NEGATIVE_MASK;
+        }
+    }
+    // Separate check for last suffix because it has no successor
+    if(aux[size-1] > 0) {
+        isa[sa[size-1]] = isa[sa[size-1]] | utils<sa_index>::NEGATIVE_MASK;
+    }
+}
+
+/*
+    \brief PLACEHOLDER FUNCTION: Checks each h-group for singleton groups and
+    marks these groups by inverting them.
+
+    TODO: Replace with efficient version (see mark_singletons.cu).
+*/
+template <typename sa_index>
+static void mark_singletons(size_t size, sa_index* sa, sa_index* isa,
+            sa_index* aux) {
+    if(size > 0) {
+        // First index has no predecessor -> mark as true by default
+        aux[0] = 1;
+
+        // Move sa, isa to shared memory
+
+        set_flags<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
+        cudaDeviceSynchronize();
+        mark_groups<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
+        cudaDeviceSynchronize();
+    }
+}
+
 /*
     Init SA on GPU. Every GPU thread writes his index size_to SA,
     then jumps stride size until end is reached
@@ -116,6 +214,8 @@ static void inital_sorting(sa_index* text, sa_index* sa, sa_index* aux, size_t n
     //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux,n);
 
     cudaMemcpy(sa, aux, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+
+    cudaDeviceSynchronize();
 }
 
 
@@ -325,7 +425,7 @@ void new_tuple(size_t size, size_t h, sa_index* sa,
                     && index >= 2*h && (isa[index-2*h] &
                     utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
                 tuple_index[aux[i]] = index;
-                h_rank[aux[i]] = isa[index] |
+                h_rank[aux[i]] = isa[index] ^
                     utils<sa_index>::NEGATIVE_MASK;
             }
         }
@@ -339,7 +439,16 @@ size_t create_tuples(size_t size, size_t h, sa_index* sa,
     size_t s=0;
     //TODO: Set block_amount and block_size accordingly
     set_tuple<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa, aux);
+
+
     cudaDeviceSynchronize();
+
+    std::cout << "Aux init: ";
+    for(size_t i=0; i < size; ++i) {
+        std::cout << aux[i] << ", ";
+    }
+    std::cout << std::endl;
+
     // Save amount of tuples for last index (gets overwritten by prefix sum)
     s = aux[size-1];
     // Prefix sum
@@ -357,7 +466,15 @@ size_t create_tuples(size_t size, size_t h, sa_index* sa,
     cudaFree(d_temp_storage);
 
     cudaDeviceSynchronize();
+
     cudaMemcpy(aux, h_rank, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+
+    std::cout << "Aux after prefix sum: ";
+    for(size_t i=0; i < size; ++i) {
+        std::cout << aux[i] << ", ";
+    }
+    std::cout << std::endl;
+
     // Adjust s
     s += aux[size-1];
     new_tuple<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa, aux,
@@ -494,6 +611,19 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa, size_t n) 
     }
     std::cout<<std::endl;
 
+    mark_singletons(n, sa, isa, aux);
+
+    std::cout << "Flags: ";
+    for(size_t i = 0; i<n; ++i) {
+        std::cout<<aux[i]<<", ";
+    }
+    std::cout<<std::endl;
+
+    std::cout<<"ISA (with singletons): ";
+    for(size_t i = 0 ; i< n ; ++i) {
+        std::cout<<isa[sa[i]]<<", ";
+    }
+    std::cout<<std::endl;
     size_t h = 4;
     size_t size = n;
     size_t s;
@@ -520,21 +650,24 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa, size_t n) 
             // Use two_h_rank as aux2 because it hasn't been filled for this
             // iteration
             sort_tuples(tuple_index, h_rank, aux, two_h_rank, s);
+            cudaDeviceSynchronize();
 
             std::cout << "Tuples after sorting: ";
             for(size_t i=0; i < s; ++i) {
-                std::cout << "<" << tuple_index[i] << "," << h_rank[i] << "," << two_h_rank[i] <<">, ";
+                std::cout << "<" << tuple_index[i] << "," << h_rank[i] <<">, ";
             }
             std::cout << std::endl;
 
             // Generate 2h-ranks after sorting
             generate_two_h_ranks<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(s, h, tuple_index, two_h_rank, isa);
 
+            cudaDeviceSynchronize();
             std::cout << "Tuples with 2h-ranks: ";
             for(size_t i=0; i < s; ++i) {
                 std::cout << "<" << tuple_index[i] << "," << h_rank[i] << "," << two_h_rank[i] <<">, ";
             }
             std::cout << std::endl;
+            mark_singletons(s, sa, isa, aux);
         }
         // End of iteration; update size and h.
         size = s;
