@@ -25,12 +25,12 @@ namespace sacabench::osipov {
     \brief Parallel implementation of the osipov algorithm used in class
     osipov (see osipov.hpp).
 */
-template <typename sa_index>
+template <bool wordpacking_4_sort, typename sa_index>
 class osipov_par {
 private:
     using aux_elem = util::next_primitive<sa_index>;
 
-    osipov_spans<sa_index> spans;
+    osipov_spans<wordpacking_4_sort, sa_index> spans;
     util::span<aux_elem> aux;
 
 public:
@@ -46,8 +46,8 @@ public:
     */
     inline osipov_par(util::span<sa_index> out_sa, util::span<sa_index> isa,
             util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
-            util::span<aux_elem> aux) :
-            spans(osipov_spans<sa_index>(out_sa, isa, tuples)), aux(aux){}
+            util::span<aux_elem> aux, util::string_span text) :
+            spans(osipov_spans<wordpacking_4_sort, sa_index>(out_sa, isa, tuples, text)), aux(aux){}
 
     // Returns the tuple span (needed for tuple comparison function)
     util::span<std::tuple<sa_index, sa_index, sa_index>> get_tuples() {
@@ -134,10 +134,10 @@ public:
         @param cmp The initial compare function (most probably
         compare_first_four_chars)
     */
-    template <typename compare_func>
-    void initialize_isa(compare_func cmp) {
+    void initialize_isa() {
         auto sa = spans.sa;
         auto isa = spans.isa;
+        auto cmp = spans.cmp_init;
         // Sentinel has lowest rank
         isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
 
@@ -178,9 +178,8 @@ public:
         @param cmp_init The compare function to sort by (most probably
         compare_first_four_chars)
     */
-    template <typename compare_func>
-    void initial_sort(compare_func cmp_init) {
-        util::sort::ips4o_sort_parallel(spans.sa, cmp_init);
+    void initial_sort() {
+        util::sort::ips4o_sort_parallel(spans.sa, spans.cmp_init);
     }
 
     /*
@@ -189,9 +188,8 @@ public:
 
         @param cmp The compare function to sort the tuples.
     */
-    template <typename compare_func>
-    void stable_sort(compare_func cmp) {
-        util::sort::std_par_stable_sort(spans.tuples, cmp);
+    void stable_sort() {
+        util::sort::std_par_stable_sort(spans.tuples, spans.cmp_tuples);
     }
 
     /*
@@ -287,6 +285,7 @@ public:
                 }
             }
         }
+        spans.set_cmp_tuples(spans.tuples);
         return s;
     }
 
@@ -358,10 +357,10 @@ public:
             auto tuples = tuple_container.slice();
             auto aux = aux_container.slice();
             // Create instance of parallel osipov implementation.
-            auto impl = osipov_par<sa_index>(out_sa, isa, tuples, aux);
+            auto impl = osipov_par<wordpacking_4_sort, sa_index>(out_sa, isa,
+                tuples, aux, text);
             // Call main osipov function.
-            osipov<wordpacking_4_sort,sa_index>::prefix_doubling(text, out_sa,
-                impl);
+            osipov<sa_index>::prefix_doubling(text, out_sa, impl);
         } else {
             out_sa[0] = 0;
         }
