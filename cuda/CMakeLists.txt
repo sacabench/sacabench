@@ -11,4 +11,4 @@ target_include_directories(cuda_wrapper INTERFACE
   $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-target_compile_features(cuda_wrapper PUBLIC cxx_std_14)
+target_compile_features(cuda_wrapper PRIVATE cxx_std_14)
