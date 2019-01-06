@@ -182,7 +182,7 @@ void scatter_to_isa(sa_index* isa, sa_index* aux, sa_index* sa, size_t n) {
 
 template <typename sa_index>
 __global__
-void update_ranks_build_aux(sa_index* two_h_ranks, sa_index* aux, size_t n) {
+void update_ranks_build_aux(sa_index* h_ranks, sa_index* aux, size_t n) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -192,26 +192,28 @@ void update_ranks_build_aux(sa_index* two_h_ranks, sa_index* aux, size_t n) {
     }
 
     for (size_t i = index+1; i < n; i+=stride) {
-        aux[i] = (two_h_ranks[i-1]!=two_h_ranks[i]) * i;
+        aux[i] = (h_ranks[i-1]!=h_ranks[i]) * i;
     }
 }
 
 template <typename sa_index>
 __global__
-void update_ranks_build_aux_tilde(sa_index* two_h_ranks, sa_index* h_ranks, sa_index* aux, size_t n) {
+void update_ranks_build_aux_tilde(sa_index* h_ranks, sa_index* two_h_ranks,
+        sa_index* aux, size_t n) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
 
     if(index == 0) {
-        aux[0]=two_h_ranks[0];
+        aux[0]=h_ranks[0];
     }
 
     for (size_t i = index+1; i < n; i+=stride) {
 
-        bool new_group = (two_h_ranks[i-1] != two_h_ranks[i] || h_ranks[i-1] != h_ranks[i]);
-
-        aux[index] = new_group * (two_h_ranks[i] + i - aux[i]);
+        bool new_group = (h_ranks[i-1] != h_ranks[i]
+            || two_h_ranks[i-1] != two_h_ranks[i]);
+        // Werte in aux überschrieben?
+        aux[i] = new_group * (h_ranks[i] + i - aux[i]);
     }
 }
 
@@ -233,7 +235,7 @@ void set_tuple(size_t size, size_t h, sa_index* sa,
             index = sa[i]-h;
             if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                     sa_index(0)) {
-                aux[i] = 1;
+                ++aux[i];
             }
             // Second condition cannot be true if sa[i] < h
             index = sa[i];
@@ -450,12 +452,17 @@ public:
         update_ranks_build_aux<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(h_rank, aux, size);
         cudaDeviceSynchronize();
 
+        std::cout << "Aux after first pass: ";
+        for(size_t i=0; i < size; ++i) {
+            std::cout << aux[i] << ", ";
+        }
+        std::cout << std::endl;
         //prefix sum over aux
         Max_without_branching max;
         prefix_sum_cub_inclusive(aux, max, size);
         cudaDeviceSynchronize();
 
-        std::cout << "Aux after first pass: ";
+        std::cout << "Aux after first pass (prefix sum): ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
@@ -465,11 +472,17 @@ public:
         update_ranks_build_aux_tilde<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(h_rank, two_h_rank, aux, size);
         cudaDeviceSynchronize();
 
+        std::cout << "Aux after second pass: ";
+        for(size_t i=0; i < size; ++i) {
+            std::cout << aux[i] << ", ";
+        }
+        std::cout << std::endl;
+
         //prefix sum over aux "tilde"
         prefix_sum_cub_inclusive(aux, max, size);
         cudaDeviceSynchronize();
 
-        std::cout << "Aux after second pass: ";
+        std::cout << "Aux after second pass(prefix sum): ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
@@ -553,7 +566,7 @@ public:
             Copy tuple indices from temporary storage in tuple_index/two_h_rank
             to sa.
         */
-        cudaMemcpy(tuple_index, sa, size*sizeof(sa_index),
+        cudaMemcpy(sa, tuple_index, size*sizeof(sa_index),
                 cudaMemcpyDeviceToDevice);
         return s;
     }
