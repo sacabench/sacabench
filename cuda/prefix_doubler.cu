@@ -320,9 +320,9 @@ private:
     size_t size;
 
     // Arrays for tuples (use sa for tuple_index)
-    // "Inducing reference"
+    // "Inducing reference" (third component in tuple)
     sa_index* two_h_rank;
-    // Rank at depth h
+    // Rank at depth h (second component in tuple)
     sa_index* h_rank;
 
 
@@ -584,6 +584,8 @@ public:
     */
     void stable_sort() {
         auto aux1 = aux;
+        // Use two_h_rank as aux2 because it hasn't been filled for this
+        // iteration
         auto aux2 = two_h_rank;
 
          // Determine temporary device storage requirements
@@ -702,8 +704,6 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
         // (i.e. s>0)
         if(s>0) {
             osipov.slice_container(s);
-            // Use two_h_rank as aux2 because it hasn't been filled for this
-            // iteration
             osipov.stable_sort();
             cudaDeviceSynchronize();
 
@@ -713,7 +713,7 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
             }
             std::cout << std::endl;
 
-            // TODO: Move to either sort_tuples or update_ranks
+            // TODO: Move to either stable_sort or update_ranks
             // Generate 2h-ranks after sorting
             osipov.generate_two_h_ranks(s, h);
 
