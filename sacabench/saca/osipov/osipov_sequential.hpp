@@ -226,7 +226,7 @@ public:
     /*
         \brief Update rank of each tuple after tuples have been sorted.
     */
-    void update_ranks() {
+    void update_ranks(size_t h) {
         auto tuples = spans.tuples;
         // Index for each reference point while updating index.
         sa_index head = 0;

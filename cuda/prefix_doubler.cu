@@ -446,10 +446,26 @@ public:
         cudaDeviceSynchronize();
     }
 
-    void update_ranks() {
+    /*
+        \brief Computes two_h_ranks and updates h_ranks according to osipov
+        algorithm.
+    */
+    void update_ranks(size_t h) {
+        // Generate 2h-ranks after sorting
+        generate_two_h_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, h, sa,
+                isa, two_h_rank);
+
+        cudaDeviceSynchronize();
+        std::cout << "Tuples with 2h-ranks: ";
+        for(size_t i=0; i < size; ++i) {
+            std::cout << "<" << sa[i] << "," << h_rank[i] << ","
+                << two_h_rank[i] <<">, ";
+        }
+        std::cout << std::endl;
 
         //Build Aux
-        update_ranks_build_aux<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(h_rank, aux, size);
+        update_ranks_build_aux<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(h_rank,
+                aux, size);
         cudaDeviceSynchronize();
 
         std::cout << "Aux after first pass: ";
@@ -469,7 +485,8 @@ public:
         std::cout << std::endl;
 
         //Build aux "tilde"
-        update_ranks_build_aux_tilde<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(h_rank, two_h_rank, aux, size);
+        update_ranks_build_aux_tilde<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+                h_rank, two_h_rank, aux, size);
         cudaDeviceSynchronize();
 
         std::cout << "Aux after second pass: ";
@@ -487,9 +504,6 @@ public:
             std::cout << aux[i] << ", ";
         }
         std::cout << std::endl;
-
-        //Scatter to ISA TODO IN MAIN FUNCTION!
-        //scatter_to_isa<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa, n);
     }
 
 
@@ -713,19 +727,7 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
             }
             std::cout << std::endl;
 
-            // TODO: Move to either stable_sort or update_ranks
-            // Generate 2h-ranks after sorting
-            osipov.generate_two_h_ranks(s, h);
-
-            cudaDeviceSynchronize();
-            std::cout << "Tuples with 2h-ranks: ";
-            for(size_t i=0; i < s; ++i) {
-                std::cout << "<" << sa[i] << "," << h_rank[i] << ","
-                    << two_h_rank[i] <<">, ";
-            }
-            std::cout << std::endl;
-
-            osipov.update_ranks();
+            osipov.update_ranks(h);
 
             std::cout << "Updated h_rank: ";
             for(size_t i=0; i < s; ++i) {

@@ -294,7 +294,7 @@ public:
 
         Parallel version of updating each rank using prefix sums.
     */
-    void update_ranks() {
+    void update_ranks(size_t h) {
         auto sorted_tuples = spans.tuples;
         aux[0] = 0;
 
