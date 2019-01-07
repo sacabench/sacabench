@@ -2,11 +2,11 @@
 #include<cstdint>
 #include<cstddef>
 
-#include "cuda_util.hpp"
+#include "cuda_util.cuh"
 
 #define map_single_error_code(e) case e: out << #e; break;
 
-void map_error_code(cudaError e, std::ostream& out) {
+static void map_error_code(cudaError e, std::ostream& out) {
     switch (e) {
     map_single_error_code(cudaErrorMissingConfiguration)
     map_single_error_code(cudaErrorMemoryAllocation)
