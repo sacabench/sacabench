@@ -71,11 +71,13 @@ static void map_error_code(cudaError e, std::ostream& out) {
     }
 }
 
-void cuda_check(cudaError v, char const* reason) {
+void cuda_check_internal(char const* file, int line, cudaError v, char const* reason) {
     if (v != cudaSuccess) {
-        std::cerr << "CUDA ERROR: " << reason << " (";
+        std::cerr << "CUDA ERROR at " << file << ":" << line << ": ";
         map_error_code(v, std::cerr);
-        std::cerr << ")" << std::endl;
+        if (std::string(reason) != "") {
+            std::cerr << " (" << reason << ")" << std::endl;
+        }
         std::abort();
     }
 }
