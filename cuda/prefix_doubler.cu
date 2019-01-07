@@ -2,6 +2,7 @@
 #include <iostream>
 #include "cub-1.8.0/cub/cub.cuh"
 
+#include "cuda_wrapper_interface.hpp"
 
 #define NUM_BLOCKS 2
 #define NUM_THREADS_PER_BLOCK 4
@@ -807,18 +808,18 @@ int main()
 
 
     uint32_t* packed_text;
-    packed_text = (uint32_t *) malloc(n*sizeof(size_t));
+    packed_text = (uint32_t *) malloc(n*sizeof(uint32_t));
     //Pack text, so you can compare four chars at once
     word_packing(text, packed_text, n);
 
     //GPU arrays
     uint32_t* gpu_text;
     uint32_t* out_sa;
-    cudaMallocManaged(&gpu_text, n*sizeof(uint32_t));
+    gpu_text = allocate_managed_cuda_buffer_of<uint32_t>(n);
     //Copy text to GPU
     memset(gpu_text, 0, n*sizeof(uint32_t));
     cudaMemcpy(gpu_text, packed_text, n*sizeof(uint32_t), cudaMemcpyHostToDevice);
-    cudaMallocManaged(&out_sa, n*sizeof(uint32_t));
+    out_sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
 
     //additional arrays
     uint32_t* sa;
@@ -828,11 +829,11 @@ int main()
     uint32_t* h_rank;
     uint32_t* two_h_rank;
     //allocate additional arrays directly on GPU
-    cudaMallocManaged(&sa, n*sizeof(uint32_t));
-    cudaMallocManaged(&isa, n*sizeof(uint32_t));
-    cudaMallocManaged(&aux, n*sizeof(uint32_t));
-    cudaMallocManaged(&h_rank, n*sizeof(uint32_t));
-    cudaMallocManaged(&two_h_rank, n*sizeof(uint32_t));
+    sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    isa = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    aux = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    two_h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
 
     cudaDeviceSynchronize();
 
