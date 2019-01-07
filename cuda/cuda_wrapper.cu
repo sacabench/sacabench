@@ -3,16 +3,10 @@
 #include<cstddef>
 
 #include <cuda.h>
-#include "../external/cub/cub/cub.cuh"
+#include "cub-1.8.0/cub/cub.cuh"
+#include "cuda_util.cuh"
 
 #include "cuda_wrapper_interface.hpp"
-
-static void cuda_check(bool v, char const* reason) {
-    if (!v) {
-        std::cerr << "cuda error: " << reason << std::endl;
-    }
-    std::abort();
-}
 
 template<typename size_type, typename function>
 static void prefix_sum(size_type* d_in,
@@ -34,11 +28,13 @@ static void prefix_sum(size_type* d_in,
     free_cuda_buffer(d_temp_storage);
 }
 
+/*
 void* allocate_cuda_buffer(size_t size) {
     void* ret = nullptr;
     cuda_check(cudaMalloc(&ret, size), "cudaMalloc");
     return ret;
 }
+*/
 
 void* allocate_managed_cuda_buffer(size_t size) {
     void* ret = nullptr;
