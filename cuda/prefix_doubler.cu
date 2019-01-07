@@ -3,6 +3,7 @@
 #include "cub-1.8.0/cub/cub.cuh"
 
 #include "cuda_wrapper_interface.hpp"
+#include "cuda_util.cuh"
 
 #define NUM_BLOCKS 2
 #define NUM_THREADS_PER_BLOCK 4
@@ -818,7 +819,7 @@ int main()
     gpu_text = allocate_managed_cuda_buffer_of<uint32_t>(n);
     //Copy text to GPU
     memset(gpu_text, 0, n*sizeof(uint32_t));
-    cudaMemcpy(gpu_text, packed_text, n*sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cuda_check(cudaMemcpy(gpu_text, packed_text, n*sizeof(uint32_t), cudaMemcpyHostToDevice));
     out_sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
 
     //additional arrays
@@ -835,7 +836,7 @@ int main()
     h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
     two_h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
 
-    cudaDeviceSynchronize();
+    cuda_check(cudaDeviceSynchronize());
 
     auto osipov = osipov_gpu<uint32_t>(n, gpu_text, sa, isa, aux, h_rank, two_h_rank);
 
