@@ -5,6 +5,11 @@
 
 // void* allocate_cuda_buffer(size_t size);
 void* allocate_managed_cuda_buffer(size_t size);
+template<typename T>
+T* allocate_managed_cuda_buffer_of(size_t size) {
+    return (T*) allocate_managed_cuda_buffer(size * sizeof(T));
+}
+
 void free_cuda_buffer(void* ptr);
 
 void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items);

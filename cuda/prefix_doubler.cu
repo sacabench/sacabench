@@ -2,9 +2,11 @@
 #include <iostream>
 #include "cub-1.8.0/cub/cub.cuh"
 
+#include "cuda_wrapper_interface.hpp"
+#include "cuda_util.cuh"
 
-#define NUM_BLOCKS 2
-#define NUM_THREADS_PER_BLOCK 4
+#define NUM_BLOCKS 4
+#define NUM_THREADS_PER_BLOCK 32
 
 template <typename sa_index>
 struct utils {
@@ -48,6 +50,9 @@ void word_packing(const char* chars, sa_index* result, size_t n) {
     result[n-1] = ((u8)chars[n-1] << 24);
 
 }
+
+
+
 /*
     \brief Kernel function for setting diff flags.
 */
@@ -64,6 +69,10 @@ static void set_flags(size_t size, sa_index* sa, sa_index* isa,
         aux[i] = 0;
     }*/
 
+    if(index == 0) {
+        // First index has no predecessor -> mark as true by default
+        aux[0] = 1;
+    }
     // Avoid iteration for index 0
     // Set flags if different rank to predecessor
     for(size_t i=index+1; i < size; i+=stride) {
@@ -109,6 +118,7 @@ static void initialize_sa_gpu(size_t n, sa_index* sa) {
     for (size_t i = index; i < n; i+=stride) {
         sa[i] = i;
     }
+
 }
 
 /*
@@ -140,6 +150,7 @@ void prefix_sum_cub_inclusive(sa_index* array, OP op, size_t n)
 
     cudaMemcpy(array, values_out, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
 
+    cudaFree(values_out);
 
 }
 
@@ -217,7 +228,6 @@ void update_ranks_build_aux_tilde(sa_index* h_ranks, sa_index* two_h_ranks,
     }
 }
 
-
 /*
 \brief Sets values in aux array if tuples for suffix indices should be
 created.
@@ -283,7 +293,20 @@ void new_tuple(size_t size, size_t h, sa_index* sa,
         }
     }
 }
+/*
+    Auxiliary function for initializing ISA
+    writes aux in ISA
+*/
+template <typename sa_index>
+__global__
+void isa_to_sa(sa_index* isa, sa_index* sa, size_t n) {
 
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+    for (size_t i = index; i < n; i+=stride) {
+        sa[isa[i]^utils<sa_index>::NEGATIVE_MASK]=i;
+    }
+}
 
 /*
     \brief Generates 2h-ranks after tuples have been sorted.
@@ -324,8 +347,6 @@ private:
     sa_index* two_h_rank;
     // Rank at depth h (second component in tuple)
     sa_index* h_rank;
-
-
 
 public:
     /*
@@ -387,8 +408,7 @@ public:
     */
     void mark_singletons() {
         if(size > 0) {
-            // First index has no predecessor -> mark as true by default
-            aux[0] = 1;
+
 
             // Move sa, isa to shared memory
 
@@ -629,8 +649,14 @@ public:
 
     void update_container(size_t s) {
         scatter_to_isa<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa, s);
+        cudaDeviceSynchronize();
+
     }
 
+    void finalize(size_t n) {
+        isa_to_sa<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, n);
+        cudaDeviceSynchronize();
+    }
 
 
 };
@@ -654,7 +680,9 @@ static void copy_to_array(size_t* in, size_t* out, size_t n) {
 template <typename sa_index, class osipov_impl>
 static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
             osipov_impl& osipov) {
+
     size_t size = osipov.get_size();
+    size_t n = size;
     //Fill SA
     osipov.initialize_sa();
     cudaDeviceSynchronize();
@@ -698,6 +726,7 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
     }
     std::cout<<std::endl;
     size_t h = 4;
+    size_t size = n;
     size_t s;
 
     auto h_rank = osipov.get_rank();
@@ -742,10 +771,13 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
         size = s;
         h = 2*h;
     }
-/*
-    phase.split("Mark singletons");
-    mark_singletons(sa, isa);
-    phase.split("Loop Initialization");
+    osipov.finalize(n);
+    std::cout<<"Result:"<<std::endl;
+    for(int i = 0; i < n; ++i) {
+        std::cout<<(sa[i])<<", ";
+    }
+    std::cout<<std::endl;
+}
 
     // std::cout << "isa: " << isa << std::endl;
     size_t size = sa.size();
@@ -800,25 +832,25 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
 }
 int main()
 {
-    std::string text_str = "caabaccaabacaa";
+    std::string text_str = "trhsrznttstrhrhvsrthsrcadcvsdnvsvoisemvosdinvaofmafvnsodivjasifn";
     const char* text = text_str.c_str();
     size_t n = text_str.size()+1;
     std::cout<<"n: "<<n<<std::endl;
 
 
     uint32_t* packed_text;
-    packed_text = (uint32_t *) malloc(n*sizeof(size_t));
+    packed_text = (uint32_t *) malloc(n*sizeof(uint32_t));
     //Pack text, so you can compare four chars at once
     word_packing(text, packed_text, n);
 
     //GPU arrays
     uint32_t* gpu_text;
     uint32_t* out_sa;
-    cudaMallocManaged(&gpu_text, n*sizeof(uint32_t));
+    gpu_text = allocate_managed_cuda_buffer_of<uint32_t>(n);
     //Copy text to GPU
     memset(gpu_text, 0, n*sizeof(uint32_t));
-    cudaMemcpy(gpu_text, packed_text, n*sizeof(uint32_t), cudaMemcpyHostToDevice);
-    cudaMallocManaged(&out_sa, n*sizeof(uint32_t));
+    cuda_check(cudaMemcpy(gpu_text, packed_text, n*sizeof(uint32_t), cudaMemcpyHostToDevice));
+    out_sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
 
     //additional arrays
     uint32_t* sa;
@@ -828,16 +860,16 @@ int main()
     uint32_t* h_rank;
     uint32_t* two_h_rank;
     //allocate additional arrays directly on GPU
-    cudaMallocManaged(&sa, n*sizeof(uint32_t));
-    cudaMallocManaged(&isa, n*sizeof(uint32_t));
-    cudaMallocManaged(&aux, n*sizeof(uint32_t));
-    cudaMallocManaged(&h_rank, n*sizeof(uint32_t));
-    cudaMallocManaged(&two_h_rank, n*sizeof(uint32_t));
+    sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    isa = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    aux = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
+    two_h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
 
-    cudaDeviceSynchronize();
+    cuda_check(cudaDeviceSynchronize());
+
 
     auto osipov = osipov_gpu<uint32_t>(n, gpu_text, sa, isa, aux, h_rank, two_h_rank);
-
 
     prefix_doubling_gpu<uint32_t, osipov_gpu<uint32_t>>(gpu_text, out_sa, osipov);
 
