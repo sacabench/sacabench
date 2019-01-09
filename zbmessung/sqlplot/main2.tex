@@ -143,7 +143,18 @@
     \centering\small
 
     \begin{tikzpicture}
-        \begin{axis}[batchTimePlot,
+        \begin{axis}[
+                ybar stacked,
+                bar width=100pt,
+                xtick=data,
+                width=110mm,height=105mm,
+                nodes near coords,
+                enlarge y limits={upper,value=0.2},
+                ymin=0,
+                enlarge x limits=0.5,
+                title={Runtime},
+                ylabel={SA construction time [s]},
+                every axis y label/.style={at={(0,0.5)},xshift=-25pt,rotate=90},
                 cycle list name={exotic},
                 legend to name=legend0,
                 legend style={
