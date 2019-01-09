@@ -254,112 +254,115 @@ namespace sacabench::util {
      * 
      * Theorem II from CLYDE P. KRUSKAL
      */
-    // template <typename sa_index, typename Compare>
-    // static void merge_sa_dc_parallel_kruskal_2(util::span<sa_index> sa_0,
-                            // util::span<sa_index> sa_12, Compare comp, util::span<sa_index> sa, size_t offset) {
+    template <typename sa_index, typename Compare>
+    static void merge_sa_dc_parallel_kruskal_2(util::span<sa_index> sa_0,
+                            util::span<sa_index> sa_12, Compare comp, util::span<sa_index> sa, size_t offset) {
         
-        // size_t M = sa_0.size();
-        // size_t N = sa_12.size();
+        size_t M = sa_0.size();
+        size_t N = sa_12.size();
         
-        // if(N == 0){
-            // for(size_t i = 0; i < M; ++i){
-                // sa[offset + i] = sa_0[i];
-            // }
-        // }else{
-        
-            // if(M > 1){
+        if(N == 0) {
+            for(size_t i = 0; i < M; ++i) {
+                sa[offset + i] = sa_0[i];
+            }
+        }
+        else {
+            if(M > 1) {
                 
-                // util::span<sa_index> span_sa_0 = util::span<sa_index>(&sa_0[0], M);
-                // util::span<sa_index> span_sa_12 = util::span<sa_index>(&sa_12[0], N);
+                util::span<sa_index> span_sa_0 = util::span<sa_index>(&sa_0[0], M);
+                util::span<sa_index> span_sa_12 = util::span<sa_index>(&sa_12[0], N);
                 
-                // const size_t k = 3;
-                // const size_t factor = ceil(pow(M, 1.0/k));
+                const size_t k = 3;
+                const size_t factor = ceil(pow(M, 1.0/k));
                 
-                // //first step: mark every position of sa_0 with i * M^(1/k)
+                //first step: mark every position of sa_0 with i * M^(1/k)
                 
-                // //auto segments = util::make_container<size_t>(floor(pow(M, 1.0-1.0/k)));
-                // auto segments = util::make_container<size_t>(floor(M/factor));
+                //auto segments = util::make_container<size_t>(floor(pow(M, 1.0-1.0/k)));
+                auto segments = util::make_container<size_t>(floor(M/factor));
                 
-                // //second step: provide N^(1/k) processors for each marked element of sa_0
-                // /*if(offset == 0){
-                    // size_t processors = floor(pow(N, 1.0/k));
-                    // std::cout << "N: " << N << ", M: " << M << std::endl;
-                    // std::cout << "Prozessoren pro Element: " << processors << std::endl;
-                    // std::cout << "also insgesamt: " << segments.size() * processors << " Prozessoren" << std::endl;
-                // }*/
+                //second step: provide N^(1/k) processors for each marked element of sa_0
+                /*if(offset == 0){
+                    size_t processors = floor(pow(N, 1.0/k));
+                    std::cout << "N: " << N << ", M: " << M << std::endl;
+                    std::cout << "Prozessoren pro Element: " << processors << std::endl;
+                    std::cout << "also insgesamt: " << segments.size() * processors << " Prozessoren" << std::endl;
+                }*/
                 
-                // //third step: find positions of marked elements of sa_0 in sa_12
+                //third step: find positions of marked elements of sa_0 in sa_12
                 
-                // //size_t counter = 0;
-                // for(size_t i = factor-1; i < M; i += factor){
-                    // size_t position = binarysearch_parallel(span_sa_12, 0, span_sa_12.size(), span_sa_0[i], false, comp, 1);
-                    // sa[offset + position + i] = span_sa_0[i];
-                    // segments[i/factor] = position;
-                // }
+                //size_t counter = 0;
+                for(size_t i = factor-1; i < M; i += factor){
+                    size_t position = binarysearch_parallel(span_sa_12, 0, span_sa_12.size(), span_sa_0[i], false, comp, 1);
+                    sa[offset + position + i] = span_sa_0[i];
+                    segments[i/factor] = position;
+                }
                 
-                // //fourth step: sort the pairs (X_1, Y_1), (X_2, Y_2),... recursivly
-                // auto span_1 = span_sa_0.slice(0,factor - 1);
-                // auto span_2 = span_sa_12.slice(0, segments[0]);
-                // #pragma omp parallel private (span_1, span_2) shared(sa)
-                // {
+                //fourth step: sort the pairs (X_1, Y_1), (X_2, Y_2),... recursivly
+                auto span_1 = span_sa_0.slice(0,factor - 1);
+                auto span_2 = span_sa_12.slice(0, segments[0]);
+                #pragma omp parallel private (span_1, span_2) shared(sa)
+                {
             
-                    // #pragma omp single nowait
-                    // {
-                        // span_1 = span_sa_0.slice(0,factor - 1);
-                        // span_2 = span_sa_12.slice(0, segments[0]);
-                        // merge_sa_dc_parallel_kruskal_2<sa_index>(span_1, span_2, comp, sa, offset);
-                    // }
-                    // for(size_t i = 1; i < segments.size(); ++i){
-                        // if(segments[i] == segments[i-1]){
+                    #pragma omp single nowait
+                    {
+                        span_1 = span_sa_0.slice(0,factor - 1);
+                        span_2 = span_sa_12.slice(0, segments[0]);
+                        merge_sa_dc_parallel_kruskal_2(span_1, span_2, comp, sa, offset);
+                    }
+                    for(size_t i = 1; i < segments.size(); ++i){
+                        if(segments[i] == segments[i-1]){
                             
-                            // span_1 = span_sa_0.slice(i * factor,(i+1) * factor - 1);
-                            // span_2 = span_sa_12.slice(segments[i-1], segments[i]);
+                            span_1 = span_sa_0.slice(i * factor,(i+1) * factor - 1);
+                            span_2 = span_sa_12.slice(segments[i-1], segments[i]);
                             
-                            // size_t position = offset + segments[i-1] + i * factor;
+                            size_t position = offset + segments[i-1] + i * factor;
                             
-                            // for(size_t j = 0; j < span_1.size(); ++j){
-                                // sa[position++] = span_1[j]; 
-                            // }
+                            for(size_t j = 0; j < span_1.size(); ++j){
+                                sa[position++] = span_1[j]; 
+                            }
                             
-                        // }else{
-                            // #pragma omp single nowait
-                            // {
-                                // span_1 = span_sa_0.slice(i * factor,(i+1) * factor - 1);
-                                // span_2 = span_sa_12.slice(segments[i-1], segments[i]);
-                                // merge_sa_dc_parallel_kruskal_2<sa_index>(span_1, span_2, comp, sa, offset + segments[i-1] + i * factor);
-                            // }
-                        // }
-                    // }
+                        }
+                        else {
+                            #pragma omp single nowait
+                            {
+                                span_1 = span_sa_0.slice(i * factor,(i+1) * factor - 1);
+                                span_2 = span_sa_12.slice(segments[i-1], segments[i]);
+                                merge_sa_dc_parallel_kruskal_2(span_1, span_2, comp, sa, offset + segments[i-1] + i * factor);
+                            }
+                        }
+                    }
                     
-                    // #pragma omp single
-                    // {
-                        // span_1 = span_sa_0.slice((segments.size()) * factor, span_sa_0.size());
-                        // span_2 = span_sa_12.slice(segments[segments.size()-1], span_sa_12.size());
-                        // merge_sa_dc_parallel_kruskal_2<sa_index>(span_1, span_2, comp, sa, offset + segments[segments.size()-1] + (segments.size()) * factor);   
-                    // }
-                    // #pragma omp barrier
-                // }
-                // }else{
-                    // size_t position = 0;
-                    // size_t counter = 0;
-                    // if(sa_0.size() == 1){
-                        // position = binarysearch_parallel(sa_12, 0, sa_12.size(), sa_0[0], false, comp, 1);
-                        // sa[offset + position] = sa_0[0];
-                        
-                        // for(size_t i = 0; i < position; ++i){
-                            // sa[offset + i] = sa_12[counter++];
-                        // }
-                        // for(size_t i = position + 1; i < sa_12.size() + 1; ++i){
-                            // sa[offset + i] = sa_12[counter++];
-                        // }
-                    // }else{
-                        // for(size_t i = 0; i < sa_12.size(); ++i){
-                            // sa[offset + i] = sa_12[counter++];
-                        // }
-                    // }
-                // }
-            // }
-        // }
+                    #pragma omp single
+                    {
+                        span_1 = span_sa_0.slice((segments.size()) * factor, span_sa_0.size());
+                        span_2 = span_sa_12.slice(segments[segments.size()-1], span_sa_12.size());
+                        merge_sa_dc_parallel_kruskal_2(span_1, span_2, comp, sa, offset + segments[segments.size()-1] + (segments.size()) * factor);   
+                    }
+                    #pragma omp barrier
+                }
+            } 
+            else {
+                size_t position = 0;
+                size_t counter = 0;
+                if(sa_0.size() == 1){
+                    position = binarysearch_parallel(sa_12, 0, sa_12.size(), sa_0[0], false, comp, 1);
+                    sa[offset + position] = sa_0[0];
+                    
+                    for(size_t i = 0; i < position; ++i){
+                        sa[offset + i] = sa_12[counter++];
+                    }
+                    for(size_t i = position + 1; i < sa_12.size() + 1; ++i){
+                        sa[offset + i] = sa_12[counter++];
+                    }
+                }
+                else {
+                    for(size_t i = 0; i < sa_12.size(); ++i){
+                        sa[offset + i] = sa_12[counter++];
+                    }
+                }
+            }
+        }
+    }
     
     /**\brief Parallel algorithm for merging two arrays by Valiant and Kruskal with
               optimal span and work.
@@ -445,10 +448,10 @@ namespace sacabench::util {
         util::span<marked_element> marked_elements_1_span = marked_elements_1;
         util::span<marked_element> marked_elements_2_span = marked_elements_2;
         util::span<marked_element> marked_elements_out_span = marked_elements_out;
-        merge_parallel(marked_elements_1_span, marked_elements_2_span, marked_elements_out_span, swapped, 
-                comp_marked_elements, 1);
-        /*merge_sa_dc_parallel_kruskal_2<sa_index>(marked_elements_1_span, marked_elements_2_span, comp,
-                marked_elements_out_span, 0);*/
+        /*merge_parallel(marked_elements_1_span, marked_elements_2_span, marked_elements_out_span, swapped, 
+                comp_marked_elements, 1);*/
+        merge_sa_dc_parallel_kruskal_2(marked_elements_1_span, marked_elements_2_span, comp_marked_elements,
+                marked_elements_out_span, 0);
                 
         /*std::cout << "marked_elements_out: " << std::endl;
         for (size_t i = 0; i < marked_elements_out.size(); ++i) {
@@ -1020,8 +1023,10 @@ namespace sacabench::util {
         auto comp = [&](std::tuple<size_t, bool> a, std::tuple<size_t, bool> b) {
             return std::get<0>(a) < std::get<0>(b);
         };
-        merge_parallel(pos_marked_elements_1_span, pos_1, borders_1_span, false, comp, 1);
-        merge_parallel(pos_marked_elements_2_span, pos_2, borders_2_span, false, comp, 1);
+        /*merge_parallel(pos_marked_elements_1_span, pos_1, borders_1_span, false, comp, 1);
+        merge_parallel(pos_marked_elements_2_span, pos_2, borders_2_span, false, comp, 1);*/
+        merge_sa_dc_parallel_kruskal_2(pos_marked_elements_1_span, pos_1, comp, borders_1_span, 0);
+        merge_sa_dc_parallel_kruskal_2(pos_marked_elements_2_span, pos_2, comp, borders_2_span, 0);
         
         /*std::cout << "borders_1_span: " << std::endl;
         for (size_t i = 0; i < borders_1_span.size(); ++i) {
