@@ -262,6 +262,7 @@ namespace sacabench::util {
         size_t N = sa_12.size();
         
         if(N == 0) {
+            #pragma omp parallel for
             for(size_t i = 0; i < M; ++i) {
                 sa[offset + i] = sa_0[i];
             }
@@ -290,7 +291,7 @@ namespace sacabench::util {
                 
                 //third step: find positions of marked elements of sa_0 in sa_12
                 
-                //size_t counter = 0;
+                #pragma omp parallel for
                 for(size_t i = factor-1; i < M; i += factor){
                     size_t position = binarysearch_parallel(span_sa_12, 0, span_sa_12.size(), span_sa_0[i], false, comp, 1);
                     sa[offset + position + i] = span_sa_0[i];
@@ -317,8 +318,11 @@ namespace sacabench::util {
                             
                             size_t position = offset + segments[i-1] + i * factor;
                             
+                            auto span_sa = sa.slice(position, position + span_1.size());
+                            
+                            #pragma omp parallel for
                             for(size_t j = 0; j < span_1.size(); ++j){
-                                sa[position++] = span_1[j]; 
+                                span_sa[j] = span_1[j]; 
                             }
                             
                         }
@@ -343,21 +347,24 @@ namespace sacabench::util {
             } 
             else {
                 size_t position = 0;
-                size_t counter = 0;
                 if(sa_0.size() == 1){
                     position = binarysearch_parallel(sa_12, 0, sa_12.size(), sa_0[0], false, comp, 1);
                     sa[offset + position] = sa_0[0];
                     
+                    #pragma omp parallel for
                     for(size_t i = 0; i < position; ++i){
-                        sa[offset + i] = sa_12[counter++];
+                        sa[offset + i] = sa_12[i];
                     }
+                    
+                    #pragma omp parallel for
                     for(size_t i = position + 1; i < sa_12.size() + 1; ++i){
-                        sa[offset + i] = sa_12[counter++];
+                        sa[offset + i] = sa_12[i-1];
                     }
                 }
                 else {
+                    #pragma omp parallel for
                     for(size_t i = 0; i < sa_12.size(); ++i){
-                        sa[offset + i] = sa_12[counter++];
+                        sa[offset + i] = sa_12[i];
                     }
                 }
             }
