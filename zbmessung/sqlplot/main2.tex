@@ -154,7 +154,7 @@
                 enlarge x limits=0.5,
                 title={Runtime},
                 ylabel={SA construction time [s]},
-                every axis y label/.style={at={(0,0.5)},xshift=-25pt,rotate=90},
+                every axis y label/.style={at={(0,0.5)},xshift=-34pt,rotate=90},
                 cycle list name={exotic},
                 legend to name=legend0,
                 legend style={
@@ -163,18 +163,20 @@
                 },
                 legend columns=4,
                 %symbolic x coords={pc\_dna.200MB},
-                every node near coord/.append style={color=black, rotate=90, anchor=west},
+                %every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
-            %% MULTIPLOT(phases_id) SELECT phases_id, id AS x, memPeak AS y
-            %% FROM phases GROUP BY MULTIPLOT,x ORDER BY phases_id
-            \addplot coordinates { (0,100) };
+            %% MULTIPLOT(phases_id) SELECT phases_id, id AS x, time AS y
+            %% FROM (
+            %%      SELECT id, phases_id, MEDIAN(memPeak) AS memPeak, MEDIAN(time) AS time FROM phases GROUP BY phases_id
+            %% ) GROUP BY MULTIPLOT,x ORDER BY phases_id
+            \addplot coordinates { (1,800) };
             \addlegendentry{phases\_id=1};
-            \addplot coordinates { (0,200) };
+            \addplot coordinates { (1,200) };
             \addlegendentry{phases\_id=2};
-            \addplot coordinates { (0,100) };
+            \addplot coordinates { (1,400) };
             \addlegendentry{phases\_id=3};
-            \addplot coordinates { (0,300) };
+            \addplot coordinates { (1,130) };
             \addlegendentry{phases\_id=4};
         \end{axis}
     \end{tikzpicture}
@@ -193,14 +195,16 @@
             ]
 
             %% MULTIPLOT(phases_id) SELECT phases_id, id AS x, memPeak AS y
-            %% FROM phases GROUP BY MULTIPLOT,x ORDER BY phases_id
-            \addplot coordinates { (0,100) };
+            %% FROM (
+            %%      SELECT id, phases_id, MEDIAN(memPeak) AS memPeak, MEDIAN(time) AS time FROM phases GROUP BY phases_id
+            %% ) GROUP BY MULTIPLOT,x ORDER BY phases_id
+            \addplot coordinates { (1,100) };
             \addlegendentry{phases\_id=1};
-            \addplot coordinates { (0,200) };
+            \addplot coordinates { (1,200) };
             \addlegendentry{phases\_id=2};
-            \addplot coordinates { (0,100) };
+            \addplot coordinates { (1,100) };
             \addlegendentry{phases\_id=3};
-            \addplot coordinates { (0,300) };
+            \addplot coordinates { (1,300) };
             \addlegendentry{phases\_id=4};
         \end{axis}
     \end{tikzpicture}
