@@ -166,18 +166,18 @@
                 %every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
-            %% MULTIPLOT(phases_id) SELECT phases_id, id AS x, time AS y
+            %% MULTIPLOT(phase_name) SELECT phase_name, id AS x, time AS y
             %% FROM (
-            %%      SELECT id, phases_id, MEDIAN(memPeak) AS memPeak, MEDIAN(time) AS time FROM phases GROUP BY phases_id
+            %%      SELECT id, phases_id, phase_name, MEDIAN(memPeak) AS memPeak, MEDIAN(time) AS time FROM phases GROUP BY phases_id
             %% ) GROUP BY MULTIPLOT,x ORDER BY phases_id
             \addplot coordinates { (1,800) };
-            \addlegendentry{phases\_id=1};
+            \addlegendentry{phase\_name=a};
             \addplot coordinates { (1,200) };
-            \addlegendentry{phases\_id=2};
+            \addlegendentry{phase\_name=b};
             \addplot coordinates { (1,400) };
-            \addlegendentry{phases\_id=3};
+            \addlegendentry{phase\_name=c};
             \addplot coordinates { (1,130) };
-            \addlegendentry{phases\_id=4};
+            \addlegendentry{phase\_name=d};
         \end{axis}
     \end{tikzpicture}
     \hfill
@@ -194,18 +194,18 @@
                 every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
-            %% MULTIPLOT(phases_id) SELECT phases_id, id AS x, memPeak AS y
+            %% MULTIPLOT(phase_name) SELECT phase_name, id AS x, memPeak AS y
             %% FROM (
-            %%      SELECT id, phases_id, MEDIAN(memPeak) AS memPeak, MEDIAN(time) AS time FROM phases GROUP BY phases_id
+            %%      SELECT id, phases_id, phase_name, MEDIAN(memPeak) AS memPeak, MEDIAN(time) AS time FROM phases GROUP BY phases_id
             %% ) GROUP BY MULTIPLOT,x ORDER BY phases_id
             \addplot coordinates { (1,100) };
-            \addlegendentry{phases\_id=1};
+            \addlegendentry{phase\_name=a};
             \addplot coordinates { (1,200) };
-            \addlegendentry{phases\_id=2};
+            \addlegendentry{phase\_name=b};
             \addplot coordinates { (1,100) };
-            \addlegendentry{phases\_id=3};
+            \addlegendentry{phase\_name=c};
             \addplot coordinates { (1,300) };
-            \addlegendentry{phases\_id=4};
+            \addlegendentry{phase\_name=d};
         \end{axis}
     \end{tikzpicture}
     \medskip

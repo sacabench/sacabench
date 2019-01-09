@@ -1,12 +1,12 @@
-RESULT  id=1    phases_id=1 memPeak=100 time=800
-RESULT  id=1    phases_id=2 memPeak=200 time=200
-RESULT  id=1    phases_id=3 memPeak=100 time=400
-RESULT  id=1    phases_id=4 memPeak=300 time=100
-RESULT  id=2    phases_id=1 memPeak=100 time=800
-RESULT  id=2    phases_id=2 memPeak=200 time=200
-RESULT  id=2    phases_id=3 memPeak=100 time=400
-RESULT  id=2    phases_id=4 memPeak=300 time=130
-RESULT  id=0    phases_id=1 memPeak=100 time=800
-RESULT  id=0    phases_id=2 memPeak=200 time=200
-RESULT  id=0    phases_id=3 memPeak=100 time=400
-RESULT  id=0    phases_id=4 memPeak=300 time=200
+RESULT  id=1    phases_id=1 phase_name=a    memPeak=100 time=800
+RESULT  id=1    phases_id=2 phase_name=b    memPeak=200 time=200
+RESULT  id=1    phases_id=3 phase_name=c    memPeak=100 time=400
+RESULT  id=1    phases_id=4 phase_name=d    memPeak=300 time=100
+RESULT  id=2    phases_id=1 phase_name=a    memPeak=100 time=800
+RESULT  id=2    phases_id=2 phase_name=b    memPeak=200 time=200
+RESULT  id=2    phases_id=3 phase_name=c    memPeak=100 time=400
+RESULT  id=2    phases_id=4 phase_name=d    memPeak=300 time=130
+RESULT  id=0    phases_id=1 phase_name=a    memPeak=100 time=800
+RESULT  id=0    phases_id=2 phase_name=b    memPeak=200 time=200
+RESULT  id=0    phases_id=3 phase_name=c    memPeak=100 time=400
+RESULT  id=0    phases_id=4 phase_name=d    memPeak=300 time=200
