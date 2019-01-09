@@ -1,0 +1,4 @@
+RESULT  id=0    phases_id=1 memPeak=100 time=800
+RESULT  id=0    phases_id=2 memPeak=200 time=200
+RESULT  id=0    phases_id=3 memPeak=100 time=400
+RESULT  id=0    phases_id=4 memPeak=300 time=100
