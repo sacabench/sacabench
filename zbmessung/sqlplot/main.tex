@@ -127,14 +127,22 @@
     {fill=yellow!80!white, postaction={pattern=north east lines}},
     {fill=black!80!white, postaction={pattern=north east lines}},
     {fill=blue!80!white, postaction={pattern=north east lines}},
-    {fill=teal!80!white, postaction={pattern=south east lines}},
-    {fill=orange!80!white, postaction={pattern=south east lines}},
-    {fill=cyan!80!white, postaction={pattern=south east lines}},
-    {fill=lime!80!white, postaction={pattern=south east lines}},
-    {fill=red!80!white, postaction={pattern=south east lines}},
-    {fill=yellow!80!white, postaction={pattern=south east lines}},
-    {fill=black!80!white, postaction={pattern=south east lines}},
-    {fill=blue!80!white, postaction={pattern=south east lines}},
+    {fill=teal!80!white, postaction={pattern=north west lines}},
+    {fill=orange!80!white, postaction={pattern=north west lines}},
+    {fill=cyan!80!white, postaction={pattern=north west lines}},
+    {fill=lime!80!white, postaction={pattern=north west lines}},
+    {fill=red!80!white, postaction={pattern=north west lines}},
+    {fill=yellow!80!white, postaction={pattern=north west lines}},
+    {fill=black!80!white, postaction={pattern=north west lines}},
+    {fill=blue!80!white, postaction={pattern=north west lines}},
+    {fill=teal!80!white, postaction={pattern=dots}},
+    {fill=orange!80!white, postaction={pattern=dots}},
+    {fill=cyan!80!white, postaction={pattern=dots}},
+    {fill=lime!80!white, postaction={pattern=dots}},
+    {fill=red!80!white, postaction={pattern=dots}},
+    {fill=yellow!80!white, postaction={pattern=dots}},
+    {fill=black!80!white, postaction={pattern=dots}},
+    {fill=blue!80!white, postaction={pattern=dots}},
     }
 
 % IMPORT-DATA stats sqlplot.txt
@@ -224,6 +232,180 @@
 
     \medskip
     \ref{legend0}
+\end{figure}
+
+\begin{figure}
+    \centering\small
+
+    \begin{tikzpicture}
+        \begin{axis}[batchTimePlot,
+                cycle list name={exotic},
+                legend to name=legend1,
+                legend style={
+                    /tikz/every even column/.append style={column sep=0.5cm,black},
+                    /tikz/every even column/.append style={black},
+                },
+                legend columns=4,
+                symbolic x coords={pc\_dna.200MB},
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
+            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY time
+            \addplot coordinates { (pc\_dna.200MB,32.3096) };
+            \addlegendentry{algo=DivSufSort\_ref};
+            \addplot coordinates { (pc\_dna.200MB,34.9312) };
+            \addlegendentry{algo=BPR};
+            \addplot coordinates { (pc\_dna.200MB,50.2121) };
+            \addlegendentry{algo=BPR\_ref};
+            \addplot coordinates { (pc\_dna.200MB,88.3788) };
+            \addlegendentry{algo=GSACA};
+            \addplot coordinates { (pc\_dna.200MB,89.6768) };
+            \addlegendentry{algo=GSACA\_parallel};
+            \addplot coordinates { (pc\_dna.200MB,106.397) };
+            \addlegendentry{algo=Deep-Shallow\_par};
+            \addplot coordinates { (pc\_dna.200MB,132.79) };
+            \addlegendentry{algo=Osipov\_sequential\_wp};
+            \addplot coordinates { (pc\_dna.200MB,138.08) };
+            \addlegendentry{algo=Discarding4Parallel};
+            \addplot coordinates { (pc\_dna.200MB,155.662) };
+            \addlegendentry{algo=Osipov\_sequential};
+            \addplot coordinates { (pc\_dna.200MB,159.483) };
+            \addlegendentry{algo=Osipov\_parallel\_wp};
+            \addplot coordinates { (pc\_dna.200MB,186.531) };
+            \addlegendentry{algo=Osipov\_parallel};
+        \end{axis}
+    \end{tikzpicture}
+    \hfill
+    \begin{tikzpicture}
+        \begin{axis}[batchMemPlot,
+                symbolic x coords={pc\_dna.200MB},
+                cycle list name={exotic},
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, CEIL(memPeak/1000)/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
+            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY algo
+            \addplot coordinates { (pc\_dna.200MB,1031) };
+            \addlegendentry{algo=BPR};
+            \addplot coordinates { (pc\_dna.200MB,3573) };
+            \addlegendentry{algo=BPR\_ref};
+            \addplot coordinates { (pc\_dna.200MB,2) };
+            \addlegendentry{algo=Deep-Shallow\_par};
+            \addplot coordinates { (pc\_dna.200MB,4196) };
+            \addlegendentry{algo=Discarding4Parallel};
+            \addplot coordinates { (pc\_dna.200MB,0) };
+            \addlegendentry{algo=DivSufSort\_ref};
+            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addlegendentry{algo=GSACA};
+            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addlegendentry{algo=GSACA\_parallel};
+            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addlegendentry{algo=Osipov\_parallel};
+            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addlegendentry{algo=Osipov\_parallel\_wp};
+            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addlegendentry{algo=Osipov\_sequential};
+            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addlegendentry{algo=Osipov\_sequential\_wp};
+
+            \legend{}
+        \end{axis}
+    \end{tikzpicture}
+
+    \medskip
+    \ref{legend1}
+\end{figure}
+
+\begin{figure}
+    \centering\small
+
+    \begin{tikzpicture}
+        \begin{axis}[batchTimePlot,
+                cycle list name={exotic},
+                legend to name=legend2,
+                legend style={
+                    /tikz/every even column/.append style={column sep=0.5cm,black},
+                    /tikz/every even column/.append style={black},
+                },
+                legend columns=4,
+                symbolic x coords={pc\_dna.200MB},
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
+            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY algo
+            \addplot coordinates { (pc\_dna.200MB,34.9312) };
+            \addlegendentry{algo=BPR};
+            \addplot coordinates { (pc\_dna.200MB,50.2121) };
+            \addlegendentry{algo=BPR\_ref};
+            \addplot coordinates { (pc\_dna.200MB,106.397) };
+            \addlegendentry{algo=Deep-Shallow\_par};
+            \addplot coordinates { (pc\_dna.200MB,138.08) };
+            \addlegendentry{algo=Discarding4Parallel};
+            \addplot coordinates { (pc\_dna.200MB,32.3096) };
+            \addlegendentry{algo=DivSufSort\_ref};
+            \addplot coordinates { (pc\_dna.200MB,88.3788) };
+            \addlegendentry{algo=GSACA};
+            \addplot coordinates { (pc\_dna.200MB,89.6768) };
+            \addlegendentry{algo=GSACA\_parallel};
+            \addplot coordinates { (pc\_dna.200MB,186.531) };
+            \addlegendentry{algo=Osipov\_parallel};
+            \addplot coordinates { (pc\_dna.200MB,159.483) };
+            \addlegendentry{algo=Osipov\_parallel\_wp};
+            \addplot coordinates { (pc\_dna.200MB,155.662) };
+            \addlegendentry{algo=Osipov\_sequential};
+            \addplot coordinates { (pc\_dna.200MB,132.79) };
+            \addlegendentry{algo=Osipov\_sequential\_wp};
+        \end{axis}
+    \end{tikzpicture}
+    \hfill
+    \begin{tikzpicture}
+        \begin{axis}[batchMemPlot,
+                symbolic x coords={pc\_dna.200MB},
+                cycle list name={exotic},
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, CEIL(memPeak/1000)/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
+            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY memPeak
+            \addplot coordinates { (pc\_dna.200MB,0) };
+            \addlegendentry{algo=DivSufSort\_ref};
+            \addplot coordinates { (pc\_dna.200MB,2) };
+            \addlegendentry{algo=Deep-Shallow\_par};
+            \addplot coordinates { (pc\_dna.200MB,1031) };
+            \addlegendentry{algo=BPR};
+            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addlegendentry{algo=GSACA};
+            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addlegendentry{algo=GSACA\_parallel};
+            \addplot coordinates { (pc\_dna.200MB,3573) };
+            \addlegendentry{algo=BPR\_ref};
+            \addplot coordinates { (pc\_dna.200MB,4196) };
+            \addlegendentry{algo=Discarding4Parallel};
+            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addlegendentry{algo=Osipov\_sequential};
+            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addlegendentry{algo=Osipov\_sequential\_wp};
+            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addlegendentry{algo=Osipov\_parallel};
+            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addlegendentry{algo=Osipov\_parallel\_wp};
+
+            \legend{}
+        \end{axis}
+    \end{tikzpicture}
+
+    \medskip
+    \ref{legend2}
 \end{figure}
 
 \end{document}

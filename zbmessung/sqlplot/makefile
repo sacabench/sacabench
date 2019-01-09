@@ -1,5 +1,5 @@
 TEX = latexmk
-FILE = main2
+FILE = main
 EXTENSION = .tex
 
 .PHONY: all clean run
