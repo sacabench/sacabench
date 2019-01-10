@@ -5,6 +5,8 @@
 #include "cuda_wrapper_interface.hpp"
 #include "cuda_util.cuh"
 
+#include "prefix_doubler_interface.hpp"
+
 #define NUM_BLOCKS 4
 #define NUM_THREADS_PER_BLOCK 32
 
@@ -36,6 +38,14 @@ public:
     }
 };
 
+Compare_four_chars get_new_cmp_four(uint32_t* text) {
+    return Compare_four_chars<uint32_t>(text);
+}
+
+Compare_four_chars get_new_cmp_four(uint64_t* text) {
+    return Compare_four_chars<uint64_t>(text);
+}
+
 //Quick and dirty version, which packs four chars in one sa_index (either
 //uint32_t or uint64_t)
 template <typename sa_index>
@@ -58,7 +68,7 @@ void word_packing(const char* chars, sa_index* result, size_t n) {
 */
 template <typename sa_index>
 __global__
-static void set_flags(size_t size, sa_index* sa, sa_index* isa,
+static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
             sa_index* aux) {
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -80,13 +90,21 @@ static void set_flags(size_t size, sa_index* sa, sa_index* isa,
     }
 }
 
+void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
+    set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
+}
+
+void set_flags_64(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
+    set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
+}
+
 /*
     \brief Kernel function for checking wether a group should be marked,
     i.e. inverting its rank.
 */
 template <typename sa_index>
 __global__
-static void mark_groups(size_t size, sa_index* sa, sa_index* isa,
+static void mark_groups_kernel(size_t size, sa_index* sa, sa_index* isa,
             sa_index* aux) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -105,13 +123,24 @@ static void mark_groups(size_t size, sa_index* sa, sa_index* isa,
     }
 }
 
+
+void mark_groups(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
+    mark_groups_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
+                aux);
+}
+
+void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
+    mark_groups_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
+                aux);
+}
+
 /*
     \brief Kernel for initializing the sa with the suffix positions (in text
     order).
 */
 template <typename sa_index>
 __global__
-static void initialize_sa_gpu(size_t n, sa_index* sa) {
+static void initialize_sa_gpu_kernel(size_t n, sa_index* sa) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -121,11 +150,18 @@ static void initialize_sa_gpu(size_t n, sa_index* sa) {
 
 }
 
+void initialize_sa(size_t size, uint32_t* sa) {
+    initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
+}
+
+void initialize_sa(size_t size, uint64_t* sa) {
+    initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
+}
 /*
     Calculates inclusive prefix sum on GPU using the provided CUB Method
 */
 template <typename OP, typename sa_index>
-void prefix_sum_cub_inclusive(sa_index* array, OP op, size_t n)
+void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
 {
     //TODO: submit allocated memory instead of allocating new array
     //Indices
@@ -154,6 +190,18 @@ void prefix_sum_cub_inclusive(sa_index* array, OP op, size_t n)
 
 }
 
+void prefix_sum_cub_inclusive(uint32_t* array, Max_without_branching max,
+            size_t size) {
+    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint32_t>(array, max,
+                size);
+}
+
+void prefix_sum_cub_inclusive(uint64_t* array, Max_without_branching max,
+            size_t size) {
+    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint64_t>(array, max,
+                size);
+}
+
 /*
     Auxiliary function for initializing ISA
     Computes inital aux array, with index if own value other to predecessor,
@@ -161,7 +209,7 @@ void prefix_sum_cub_inclusive(sa_index* array, OP op, size_t n)
 */
 template <typename Comp, typename sa_index>
 __global__
-void fill_aux_for_isa(sa_index* sa, sa_index* aux, size_t n, Comp comp) {
+void fill_aux_for_isa_kernel(sa_index* sa, sa_index* aux, size_t n, Comp comp) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -175,14 +223,26 @@ void fill_aux_for_isa(sa_index* sa, sa_index* aux, size_t n, Comp comp) {
     }
 }
 
+void fill_aux_for_isa(uint32_t* sa, uint32_t* isa, size_t size,
+            Compare_four_chars<uint32_t> cmp) {
+    fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
+                size, cmp);
+}
+
+void fill_aux_for_isa(uint64_t* sa, uint64_t* isa, size_t size,
+            Compare_four_chars<uint64_t> cmp) {
+    fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
+                size, cmp);
+}
+
 /*
     Auxiliary function for initializing ISA
     writes aux in ISA
 */
 template <typename sa_index>
 __global__
-void scatter_to_isa(sa_index* isa, sa_index* aux, sa_index* sa, size_t n) {
-
+void scatter_to_isa_kernel(sa_index* isa, sa_index* aux, sa_index* sa,
+            size_t n) {
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
     //Maybe TODO: Avoid Bank Conflicts
@@ -191,9 +251,19 @@ void scatter_to_isa(sa_index* isa, sa_index* aux, sa_index* sa, size_t n) {
     }
 }
 
+void scatter_to_isa(uint32_t* isa, uint32_t* aux, uint32_t* sa, size_t size) {
+    scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
+                size);
+}
+
+void scatter_to_isa(uint64_t* isa, uint64_t* aux, uint64_t* sa, size_t size) {
+    scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
+                size);
+}
+
 template <typename sa_index>
 __global__
-void update_ranks_build_aux(sa_index* h_ranks, sa_index* aux, size_t n) {
+void update_ranks_build_aux_kernel(sa_index* h_ranks, sa_index* aux, size_t n) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -207,9 +277,19 @@ void update_ranks_build_aux(sa_index* h_ranks, sa_index* aux, size_t n) {
     }
 }
 
+void update_ranks_build_aux(uint32_t* h_ranks, uint32_t* aux, size_t size) {
+    update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+            h_ranks, aux, size);
+}
+
+void update_ranks_build_aux(uint64_t* h_ranks, uint64_t* aux, size_t size) {
+    update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+            h_ranks, aux, size);
+}
+
 template <typename sa_index>
 __global__
-void update_ranks_build_aux_tilde(sa_index* h_ranks, sa_index* two_h_ranks,
+void update_ranks_build_aux_tilde_kernel(sa_index* h_ranks, sa_index* two_h_ranks,
         sa_index* aux, size_t n) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -228,13 +308,25 @@ void update_ranks_build_aux_tilde(sa_index* h_ranks, sa_index* two_h_ranks,
     }
 }
 
+void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
+        uint32_t* aux, size_t size) {
+    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+            h_ranks, two_h_ranks, aux, size);
+}
+
+void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
+        uint64_t* aux, size_t size) {
+    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+            h_ranks, two_h_ranks, aux, size);
+}
+
 /*
 \brief Sets values in aux array if tuples for suffix indices should be
 created.
 */
 template <typename sa_index>
 __global__
-void set_tuple(size_t size, size_t h, sa_index* sa,
+void set_tuple_kernel(size_t size, size_t h, sa_index* sa,
         sa_index* isa, sa_index* aux) {
     int t_index = blockIdx.x*blockDim.x + threadIdx.x;
     int stride = blockDim.x*gridDim.x;
@@ -258,6 +350,18 @@ void set_tuple(size_t size, size_t h, sa_index* sa,
     }
 }
 
+void set_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
+            uint32_t* aux) {
+    set_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
+                aux);
+}
+
+void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
+            uint64_t* aux) {
+    set_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
+                aux);
+}
+
 /*
 \brief Creates tuples of <suffix index, h_rank> (missing: 2h_rank) by inserting
     them in the corresponding arrays with the help of aux (contains position for
@@ -265,7 +369,7 @@ void set_tuple(size_t size, size_t h, sa_index* sa,
 */
 template <typename sa_index>
 __global__
-void new_tuple(size_t size, size_t h, sa_index* sa,
+void new_tuple_kernel(size_t size, size_t h, sa_index* sa,
         sa_index* isa, sa_index* aux, sa_index* tuple_index,
         sa_index* h_rank) {
     int t_index = blockIdx.x*blockDim.x + threadIdx.x;
@@ -293,19 +397,40 @@ void new_tuple(size_t size, size_t h, sa_index* sa,
         }
     }
 }
+
+void new_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
+            uint32_t* aux, uint32_t* tuple_index, uint32_t* h_rank) {
+    new_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
+            aux, tuple_index, h_rank);
+}
+
+void new_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
+            uint64_t* aux, uint64_t* tuple_index, uint64_t* h_rank) {
+    new_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
+            aux, tuple_index, h_rank);
+}
+
 /*
     Auxiliary function for initializing ISA
     writes aux in ISA
 */
 template <typename sa_index>
 __global__
-void isa_to_sa(sa_index* isa, sa_index* sa, size_t n) {
+void isa_to_sa_kernel(sa_index* isa, sa_index* sa, size_t n) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
     for (size_t i = index; i < n; i+=stride) {
         sa[isa[i]^utils<sa_index>::NEGATIVE_MASK]=i;
     }
+}
+
+void isa_to_sa(uint32_t* isa, uint32_t* sa, size_t size) {
+    isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
+}
+
+void isa_to_sa(uint64_t* isa, uint64_t* sa, size_t size) {
+    isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
 }
 
 /*
@@ -330,336 +455,18 @@ void generate_two_h_kernel(size_t size, size_t h, sa_index* sa, sa_index* isa,
    }
 }
 
-template <typename sa_index>
-struct osipov_gpu {
-private:
-    sa_index* text;
-
-    Compare_four_chars<sa_index> cmp;
-    // Three base arrays
-    sa_index* sa;
-    sa_index* isa;
-    sa_index* aux;
-    size_t size;
-
-    // Arrays for tuples (use sa for tuple_index)
-    // "Inducing reference" (third component in tuple)
-    sa_index* two_h_rank;
-    // Rank at depth h (second component in tuple)
-    sa_index* h_rank;
-
-public:
-    /*
-    sa_index* text;
-
-    Compare_four_chars<sa_index> cmp;
-    // Three base arrays
-    sa_index* sa;
-    sa_index* isa;
-    sa_index* aux;
-    size_t size;
-
-    // Arrays for tuples (use sa for tuple_index)
-    // "Inducing reference"
-    sa_index* two_h_rank;
-    // Rank at depth h
-    sa_index* h_rank;
-
-    */
-
-    osipov_gpu(size_t size, sa_index* text, sa_index* sa, sa_index* isa,
-            sa_index* aux, sa_index* two_h_rank, sa_index* h_rank) : size(size),
-            text(text), sa(sa), isa(isa), aux(aux), two_h_rank(two_h_rank),
-            h_rank(h_rank), cmp(Compare_four_chars<sa_index>(text)) {}
-
-    /*
-        Getter for debugging.
-    */
-
-    sa_index* get_sa() {return sa;}
-
-    sa_index* get_isa() {return isa;}
-
-    sa_index* get_aux() {return aux;}
-
-    sa_index* get_rank() {return h_rank;}
-
-    sa_index* get_two_rank() {return two_h_rank;}
-
-    size_t get_size() {return size;}
-
-    /*
-        \brief slices array, i.e. sets the correct size.
-    */
-    void slice_container(size_t s) {size = s;}
-
-    /*
-        \brief method which is called in osipov.hpp but doesn't actually do
-        anything.
-        TODO: Check if logic can be moved to slice_container in cpu versions.
-    */
-    void slice_sa(size_t s) {}
-
-    /*
-        \brief PLACEHOLDER FUNCTION: Checks each h-group for singleton groups and
-        marks these groups by inverting them.
-
-        TODO: Replace with efficient version (see mark_singletons.cu).
-    */
-    void mark_singletons() {
-        if(size > 0) {
-
-
-            // Move sa, isa to shared memory
-
-            set_flags<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
-            cudaDeviceSynchronize();
-            mark_groups<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
-            cudaDeviceSynchronize();
-        }
-    }
-
-    /*
-        \brief Init SA on GPU. Every GPU thread writes his index size_to SA,
-        then jumps stride size until end is reached.
-
-        Wrapper for kernel
-    */
-    void initialize_sa() {
-        initialize_sa_gpu<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, sa);
-    }
-
-    /*
-        Initially sorts SA according to text using the CUB Radixsort
-    */
-    void inital_sort() {
-
-         //Actual values; use h_rank as temp storage
-        auto keys_out = h_rank;     // e.g., [        ...        ]
-
-
-        // Allocate Unified Memory – accessible from CPU or GPU
-        // cudaMallocManaged(&keys_out, size*sizeof(sa_index));
-
-
-        // Determine temporary device storage requirements
-        void     *d_temp_storage = NULL;
-        size_t   temp_storage_bytes = 0;
-
-        cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
-            text, keys_out, sa, aux, size);
-        // Allocate temporary storage
-        cudaMalloc(&d_temp_storage, temp_storage_bytes);
-
-
-        // Run sorting operation
-        cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
-            text, keys_out, sa, aux, size);
-
-
-        cudaDeviceSynchronize();
-
-        //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux,n);
-
-        cudaMemcpy(sa, aux, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-
-        cudaDeviceSynchronize();
-    }
-
-    /*
-        \brief Computes two_h_ranks and updates h_ranks according to osipov
-        algorithm.
-    */
-    void update_ranks(size_t h) {
-        // Generate 2h-ranks after sorting
-        generate_two_h_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, h, sa,
-                isa, two_h_rank);
-
-        cudaDeviceSynchronize();
-        std::cout << "Tuples with 2h-ranks: ";
-        for(size_t i=0; i < size; ++i) {
-            std::cout << "<" << sa[i] << "," << h_rank[i] << ","
-                << two_h_rank[i] <<">, ";
-        }
-        std::cout << std::endl;
-
-        //Build Aux
-        update_ranks_build_aux<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(h_rank,
-                aux, size);
-        cudaDeviceSynchronize();
-
-        std::cout << "Aux after first pass: ";
-        for(size_t i=0; i < size; ++i) {
-            std::cout << aux[i] << ", ";
-        }
-        std::cout << std::endl;
-        //prefix sum over aux
-        Max_without_branching max;
-        prefix_sum_cub_inclusive(aux, max, size);
-        cudaDeviceSynchronize();
-
-        std::cout << "Aux after first pass (prefix sum): ";
-        for(size_t i=0; i < size; ++i) {
-            std::cout << aux[i] << ", ";
-        }
-        std::cout << std::endl;
-
-        //Build aux "tilde"
-        update_ranks_build_aux_tilde<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
-                h_rank, two_h_rank, aux, size);
-        cudaDeviceSynchronize();
-
-        std::cout << "Aux after second pass: ";
-        for(size_t i=0; i < size; ++i) {
-            std::cout << aux[i] << ", ";
-        }
-        std::cout << std::endl;
-
-        //prefix sum over aux "tilde"
-        prefix_sum_cub_inclusive(aux, max, size);
-        cudaDeviceSynchronize();
-
-        std::cout << "Aux after second pass(prefix sum): ";
-        for(size_t i=0; i < size; ++i) {
-            std::cout << aux[i] << ", ";
-        }
-        std::cout << std::endl;
-    }
-
-
-    /*
-        Init ISA with prefix sum method
-    */
-    void initialize_isa() {
-
-        fill_aux_for_isa<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa, aux, size, cmp);
-
-        cudaDeviceSynchronize();
-
-        Max_without_branching max;
-
-        prefix_sum_cub_inclusive(aux, max, size);
-
-        cudaDeviceSynchronize();
-
-        scatter_to_isa<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(isa, aux, sa, size);
-
-    }
-
-    /*
-        \brief Extracts the suffix index and the h-rank for all considered
-        suffixes during this iteration.
-    */
-    size_t create_tuples(size_t size, size_t h) {
-        size_t s=0;
-        auto tuple_index = two_h_rank;
-        //TODO: Set block_amount and block_size accordingly
-        set_tuple<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa, aux);
-
-
-        cudaDeviceSynchronize();
-
-        std::cout << "Aux init: ";
-        for(size_t i=0; i < size; ++i) {
-            std::cout << aux[i] << ", ";
-        }
-        std::cout << std::endl;
-
-        // Save amount of tuples for last index (gets overwritten by prefix sum)
-        s = aux[size-1];
-        // Prefix sum
-        //exclusive_sum(aux, aux, size);
-        // Use h_rank as temporary array as it wasn't needed before
-
-        void* d_temp_storage = NULL;
-        size_t temp_storage_bytes = 0;
-        // Receive needed temp storage
-        cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, aux, h_rank, size);
-        // Allocate needed temp storage
-        cudaMalloc(&d_temp_storage, temp_storage_bytes);
-
-        cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, aux, h_rank, size);
-        cudaFree(d_temp_storage);
-
-        cudaDeviceSynchronize();
-
-        cudaMemcpy(aux, h_rank, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-
-        std::cout << "Aux after prefix sum: ";
-        for(size_t i=0; i < size; ++i) {
-            std::cout << aux[i] << ", ";
-        }
-        std::cout << std::endl;
-
-        // Adjust s by amount of tuples from first 'size-1' suffixes.
-        s += aux[size-1];
-        new_tuple<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa, aux,
-                tuple_index, h_rank);
-        cudaDeviceSynchronize();
-        /*
-            Copy tuple indices from temporary storage in tuple_index/two_h_rank
-            to sa.
-        */
-        cudaMemcpy(sa, tuple_index, size*sizeof(sa_index),
-                cudaMemcpyDeviceToDevice);
-        return s;
-    }
-    /*
-        \brief Generates the two-h ranks for each tuple using the corresponding
-        kernel.
-    */
-    void generate_two_h_ranks(size_t size, size_t h) {
-        generate_two_h_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, h, sa,
+void generate_two_h_rank(size_t size, size_t h, uint32_t* sa,
+            uint32_t* isa, uint32_t* two_h_rank) {
+    generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
             isa, two_h_rank);
-    }
+}
 
-    /*
-        \brief Sorts generated tuples via radix sort.
-    */
-    void stable_sort() {
-        auto aux1 = aux;
-        // Use two_h_rank as aux2 because it hasn't been filled for this
-        // iteration
-        auto aux2 = two_h_rank;
+void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
+            uint64_t* isa, uint64_t* two_h_rank) {
+    generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
+            isa, two_h_rank);
+}
 
-         // Determine temporary device storage requirements
-         void     *d_temp_storage = NULL;
-         size_t   temp_storage_bytes = 0;
-
-         cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
-             h_rank, aux1, sa, aux2, size);
-         // Allocate temporary storage
-         cudaMalloc(&d_temp_storage, temp_storage_bytes);
-
-         // Run sorting operation
-         cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes,
-             h_rank, aux1, sa, aux2, size);
-
-         cudaDeviceSynchronize();
-
-         //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(tuple_index,aux1,n);
-         cudaMemcpy(sa, aux2, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-         cudaMemcpy(h_rank, aux1, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-
-
-
-         //cudaDeviceSynchronize();
-         //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(two_h_ranks,aux2,n);
-    }
-
-    void update_container(size_t s) {
-        scatter_to_isa<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa, s);
-        cudaDeviceSynchronize();
-
-    }
-
-    void finalize(size_t n) {
-        isa_to_sa<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, n);
-        cudaDeviceSynchronize();
-    }
-
-
-};
 
 /*
     Copies one array size_to another by using GPU threads
@@ -676,6 +483,8 @@ static void copy_to_array(size_t* in, size_t* out, size_t n) {
     }
 
 }
+
+
 */
 template <typename sa_index, class osipov_impl>
 static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
@@ -726,7 +535,6 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
     }
     std::cout<<std::endl;
     size_t h = 4;
-    size_t size = n;
     size_t s;
 
     auto h_rank = osipov.get_rank();
@@ -779,57 +587,6 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
     std::cout<<std::endl;
 }
 
-    // std::cout << "isa: " << isa << std::endl;
-    size_t size = sa.size();
-    size_t s = 0;
-
-    auto tuple_container =
-        util::make_container<std::tuple<sa_index, sa_index, sa_index>>(
-            size);
-    util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-    compare_tuples<sa_index> cmp;
-    while (size > 0) {
-        phase.split("Iteration");
-        aux = util::span<sa_index>(aux_container).slice(0, size);
-        tuples = tuple_container.slice(0, size);
-
-        //s = create_tuples<sa_index>(tuples.slice(0, size), size, h, sa, isa);
-        s = create_tuples_parallel<sa_index>(tuples.slice(0, size),
-                size, h, sa, isa, aux);
-        //std::cout << "Elements left: " << size << std::endl;
-
-        // std::cout << "Next size: " << s << std::endl;
-        // Skip all operations till size gets its new size, if this
-        // iteration contains no tuples
-        if (s > 0) {
-            tuples = tuples.slice(0, s);
-            aux = util::span<sa_index>(aux).slice(0, s);
-            // std::cout << "Sorting tuples." << std::endl;
-            cmp = compare_tuples<sa_index>(tuples);
-            util::sort::std_par_stable_sort(tuples, cmp);
-            sa = sa.slice(0, s);
-            update_ranks_prefixsum(tuples, aux);
-            // std::cout << "Writing new order to sa." << std::endl;
-            for (size_t i = 0; i < s; ++i) {
-                sa[i] = std::get<0>(tuples[i]);
-            }
-
-            for (size_t i = 0; i < s; ++i) {
-
-                isa[std::get<0>(tuples[i])] =
-                    aux[i]; // std::get<1>(tuples[i]);
-            }
-            mark_singletons(sa, isa);
-        }
-        size = s;
-        h = 2 * h;
-    }
-    phase.split("Write out SA");
-    for (size_t i = 0; i < out_sa.size(); ++i) {
-        out_sa[isa[i] ^ utils<sa_index>::NEGATIVE_MASK] = i;
-    }
-    */
-}
 int main()
 {
     std::string text_str = "trhsrznttstrhrhvsrthsrcadcvsdnvsvoisemvosdinvaofmafvnsodivjasifn";
