@@ -294,7 +294,7 @@ public:
 
         Parallel version of updating each rank using prefix sums.
     */
-    void update_ranks(size_t h) {
+    void update_ranks(size_t) {
         auto sorted_tuples = spans.tuples;
         aux[0] = 0;
 
@@ -396,7 +396,7 @@ struct osipov_parallel_wp {
     static constexpr char const* NAME = "Osipov_parallel_wp";
     static constexpr char const* DESCRIPTION =
         "Prefix Doubling approach for parallel gpu computation as parallel "
-        "approach";
+        "approach on cpu";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,

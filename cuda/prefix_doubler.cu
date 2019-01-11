@@ -25,6 +25,8 @@ struct Max_without_branching
     }
 };
 
+Max_without_branching get_new_Max_fct() {return Max_without_branching();}
+
 template <typename sa_index>
 struct Compare_four_chars
 {
@@ -49,7 +51,7 @@ Compare_four_chars get_new_cmp_four(uint64_t* text) {
 //Quick and dirty version, which packs four chars in one sa_index (either
 //uint32_t or uint64_t)
 template <typename sa_index>
-void word_packing(const char* chars, sa_index* result, size_t n) {
+void word_packing_generic(const char* chars, sa_index* result, size_t n) {
 
     typedef unsigned char u8;
     for(size_t i = 0; i<n-3 ;++i) {
@@ -61,7 +63,13 @@ void word_packing(const char* chars, sa_index* result, size_t n) {
 
 }
 
+void word_packing(const char* chars, uint32_t* result, size_t n) {
+    word_packing_generic(chars, result, n);
+}
 
+void word_packing(const char* chars, uint64_t* result, size_t n) {
+    word_packing_generic(chars, result, n);
+}
 
 /*
     \brief Kernel function for setting diff flags.
@@ -92,10 +100,12 @@ static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
 
 void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
     set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
+    cudaDeviceSynchronize();
 }
 
 void set_flags_64(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
     set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -127,11 +137,13 @@ static void mark_groups_kernel(size_t size, sa_index* sa, sa_index* isa,
 void mark_groups(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
     mark_groups_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
                 aux);
+    cudaDeviceSynchronize();
 }
 
 void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
     mark_groups_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
                 aux);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -152,10 +164,12 @@ static void initialize_sa_gpu_kernel(size_t n, sa_index* sa) {
 
 void initialize_sa(size_t size, uint32_t* sa) {
     initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
+    cudaDeviceSynchronize();
 }
 
 void initialize_sa(size_t size, uint64_t* sa) {
     initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
+    cudaDeviceSynchronize();
 }
 /*
     Calculates inclusive prefix sum on GPU using the provided CUB Method
@@ -190,16 +204,16 @@ void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
 
 }
 
-void prefix_sum_cub_inclusive(uint32_t* array, Max_without_branching max,
-            size_t size) {
-    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint32_t>(array, max,
-                size);
+void prefix_sum_cub_inclusive_max(uint32_t* array, size_t size) {
+    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint32_t>(array,
+                Max_without_branching(), size);
+    cudaDeviceSynchronize();
 }
 
-void prefix_sum_cub_inclusive(uint64_t* array, Max_without_branching max,
-            size_t size) {
-    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint64_t>(array, max,
-                size);
+void prefix_sum_cub_inclusive_max(uint64_t* array, size_t size) {
+    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint64_t>(array,
+                Max_without_branching(), size);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -227,12 +241,14 @@ void fill_aux_for_isa(uint32_t* sa, uint32_t* isa, size_t size,
             Compare_four_chars<uint32_t> cmp) {
     fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
+    cudaDeviceSynchronize();
 }
 
 void fill_aux_for_isa(uint64_t* sa, uint64_t* isa, size_t size,
             Compare_four_chars<uint64_t> cmp) {
     fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -254,11 +270,13 @@ void scatter_to_isa_kernel(sa_index* isa, sa_index* aux, sa_index* sa,
 void scatter_to_isa(uint32_t* isa, uint32_t* aux, uint32_t* sa, size_t size) {
     scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
+    cudaDeviceSynchronize();
 }
 
 void scatter_to_isa(uint64_t* isa, uint64_t* aux, uint64_t* sa, size_t size) {
     scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
+    cudaDeviceSynchronize();
 }
 
 template <typename sa_index>
@@ -280,11 +298,13 @@ void update_ranks_build_aux_kernel(sa_index* h_ranks, sa_index* aux, size_t n) {
 void update_ranks_build_aux(uint32_t* h_ranks, uint32_t* aux, size_t size) {
     update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
+    cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux(uint64_t* h_ranks, uint64_t* aux, size_t size) {
     update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
+    cudaDeviceSynchronize();
 }
 
 template <typename sa_index>
@@ -312,12 +332,14 @@ void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
         uint32_t* aux, size_t size) {
     update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
+    cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
         uint64_t* aux, size_t size) {
     update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -354,12 +376,14 @@ void set_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux) {
     set_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
                 aux);
+    cudaDeviceSynchronize();
 }
 
 void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux) {
     set_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
                 aux);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -402,12 +426,14 @@ void new_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux, uint32_t* tuple_index, uint32_t* h_rank) {
     new_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
+    cudaDeviceSynchronize();
 }
 
 void new_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux, uint64_t* tuple_index, uint64_t* h_rank) {
     new_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -427,10 +453,12 @@ void isa_to_sa_kernel(sa_index* isa, sa_index* sa, size_t n) {
 
 void isa_to_sa(uint32_t* isa, uint32_t* sa, size_t size) {
     isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
+    cudaDeviceSynchronize();
 }
 
 void isa_to_sa(uint64_t* isa, uint64_t* sa, size_t size) {
     isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
+    cudaDeviceSynchronize();
 }
 
 /*
@@ -459,12 +487,14 @@ void generate_two_h_rank(size_t size, size_t h, uint32_t* sa,
             uint32_t* isa, uint32_t* two_h_rank) {
     generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
             isa, two_h_rank);
+    cudaDeviceSynchronize();
 }
 
 void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
             uint64_t* isa, uint64_t* two_h_rank) {
     generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
             isa, two_h_rank);
+    cudaDeviceSynchronize();
 }
 
 
@@ -486,6 +516,8 @@ static void copy_to_array(size_t* in, size_t* out, size_t n) {
 
 
 */
+
+/*
 template <typename sa_index, class osipov_impl>
 static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
             osipov_impl& osipov) {
@@ -587,6 +619,7 @@ static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
     std::cout<<std::endl;
 }
 
+TODO: Move to osipov_gpu.hpp
 int main()
 {
     std::string text_str = "trhsrznttstrhrhvsrthsrcadcvsdnvsvoisemvosdinvaofmafvnsodivjasifn";
@@ -632,3 +665,5 @@ int main()
 
     return 0;
 }
+
+*/

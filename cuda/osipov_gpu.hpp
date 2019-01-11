@@ -1,11 +1,13 @@
 #pragma once
 
 #include <prefix_doubling_interface.hpp>
+#include <cuda_wrapper_interface.hpp>
 #include <sacabench/util/span.hpp>
+#include <type_traits>
 
-
+namespace sacabench::osipov {
 template <typename sa_index>
-struct osipov_gpu {
+class osipov_gpu_main {
 private:
     sa_index* text;
     //TODO: Wrapper for creation of cmp-function!
@@ -70,9 +72,7 @@ public:
             // Move sa, isa to shared memory
 
             set_flags(size, sa, isa, aux);
-            cudaDeviceSynchronize();
             mark_groups(size, sa, isa, aux);
-            cudaDeviceSynchronize();
         }
     }
 
@@ -98,7 +98,8 @@ public:
         // Allocate Unified Memory – accessible from CPU or GPU
         // cudaMallocManaged(&keys_out, size*sizeof(sa_index));
 
-
+        radix_sort_gpu(text, sa, keys_out, aux, size);
+        /*
         // Determine temporary device storage requirements
         void     *d_temp_storage = NULL;
         size_t   temp_storage_bytes = 0;
@@ -115,12 +116,10 @@ public:
 
 
         cudaDeviceSynchronize();
-
+        */
         //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux,n);
 
-        cudaMemcpy(sa, aux, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-
-        cudaDeviceSynchronize();
+        cuda_copy_device_to_device(aux, in, size);
     }
 
     /*
@@ -149,8 +148,7 @@ public:
         }
         std::cout << std::endl;
         //prefix sum over aux
-        Max_without_branching max;
-        prefix_sum_cub_inclusive(aux, max, size);
+        prefix_sum_cub_inclusive_max(aux, size);
 
         std::cout << "Aux after first pass (prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -169,7 +167,7 @@ public:
         std::cout << std::endl;
 
         //prefix sum over aux "tilde"
-        prefix_sum_cub_inclusive(aux, max, size);
+        prefix_sum_cub_inclusive_max(aux, size);
 
         std::cout << "Aux after second pass(prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -187,9 +185,7 @@ public:
         fill_aux_for_isa(sa, aux, size, cmp);
 
 
-        Max_without_branching max;
-
-        prefix_sum_cub_inclusive(aux, max, size);
+        prefix_sum_cub_inclusive_max(aux, size);
 
 
         scatter_to_isa(isa, aux, sa, size);
@@ -218,7 +214,8 @@ public:
         // Prefix sum
         //exclusive_sum(aux, aux, size);
         // Use h_rank as temporary array as it wasn't needed before
-
+        exclusive_sum(aux, h_rank, size);
+        /*
         //TODO: Similar wrapper for ExclusiveSum as for prefix_sum_cub_inclusive
         void* d_temp_storage = NULL;
         size_t temp_storage_bytes = 0;
@@ -233,7 +230,8 @@ public:
         cudaDeviceSynchronize();
 
         cudaMemcpy(aux, h_rank, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-
+        */
+        cuda_copy_device_to_device(h_rank, aux, size);
         std::cout << "Aux after prefix sum: ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
@@ -244,13 +242,14 @@ public:
         s += aux[size-1];
         new_tuple(size, h, sa, isa, aux,
                 tuple_index, h_rank);
-        cudaDeviceSynchronize();
         /*
             Copy tuple indices from temporary storage in tuple_index/two_h_rank
             to sa.
-        */
+
         cudaMemcpy(sa, tuple_index, size*sizeof(sa_index),
                 cudaMemcpyDeviceToDevice);
+                */
+        cuda_copy_device_to_device(tuple_index, sa, size);
         return s;
     }
 
@@ -263,7 +262,8 @@ public:
         // Use two_h_rank as aux2 because it hasn't been filled for this
         // iteration
         auto aux2 = two_h_rank;
-
+        radix_sort_gpu(h_rank, sa, aux1, aux2);
+        /*
          // Determine temporary device storage requirements
          void     *d_temp_storage = NULL;
          size_t   temp_storage_bytes = 0;
@@ -278,10 +278,12 @@ public:
              h_rank, aux1, sa, aux2, size);
 
          cudaDeviceSynchronize();
-
          //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(tuple_index,aux1,n);
          cudaMemcpy(sa, aux2, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
          cudaMemcpy(h_rank, aux1, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+         */
+         cuda_copy_device_to_device(aux1, h_rank, size);
+         cuda_copy_device_to_device(aux2, sa, size);
 
 
 
@@ -291,13 +293,63 @@ public:
 
     void update_container(size_t s) {
         scatter_to_isa(isa, aux, sa, s);
-        cudaDeviceSynchronize();
 
     }
 
     void finalize(util::span<sa_index> out_sa) {
-        isa_to_sa(isa, out_sa.begin(), out_sa.size());
+        isa_to_sa(isa, sa, out_sa.size());
+        cuda_copy_device_to_host(sa, out_sa.begin(), out_sa.size());
     }
-
-
 };
+
+class osipov_gpu {
+    static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "Osipov_gpu";
+    static constexpr char const* DESCRIPTION =
+        "Prefix Doubling approach by Osipov as parallel approach on gpu. "
+        "Currently only supports uint32_t and uint64_t";
+
+    template <typename sa_index>
+    static void construct_sa(util::string_span text, util::alphabet const&,
+                             util::span<sa_index> out_sa) {
+        if(text.size() > 1) {
+            // Currently only supporting uint32_t and uint64_t
+            if(std::is_same<sa_index, uint32_t>::value
+                    || std::is_same<sa_index, uint64_t>::value) {
+                // Allocate memory on gpu
+                sa_index* sa = allocate_managed_cuda_buffer(
+                        out_sa.size()*size_of(sa_index));
+                sa_index* isa = allocate_managed_cuda_buffer(
+                        out_sa.size()*size_of(sa_index));
+                sa_index* aux = allocate_managed_cuda_buffer(
+                        out_sa.size()*size_of(sa_index));
+                sa_index* gpu_text = allocate_managed_cuda_buffer(
+                        out_sa.size()*size_of(sa_index));
+                sa_index* h_rank = allocate_managed_cuda_buffer(
+                        out_sa.size()*size_of(sa_index));
+                sa_index* two_h_rank = allocate_managed_cuda_buffer(
+                        out_sa.size()*size_of(sa_index));
+                // Transform text by wordpacking for gpu
+                word_packing(text.begin(), gpu_text, out_sa.size());
+                auto impl = osipov_gpu_main(out_sa.size(), gpu_text, sa, isa,
+                            aux, two_h_rank, h_rank);
+
+                osipov<sa_index>::prefix_doubling(text, out_sa, impl);
+                free_cuda_buffer(sa);
+                free_cuda_buffer(isa);
+                free_cuda_buffer(aux);
+                free_cuda_buffer(gpu_text);
+                free_cuda_buffer(h_rank);
+                free_cuda_buffer(two_h_rank);
+            }
+            else {
+                std::err << "Type " << sa_index
+                        << " is not supported by osipov on the gpu."
+                        << std::endl;
+            }
+        }
+        else {out_sa[0] = 0;}
+    }
+};
+// End namespace
+}

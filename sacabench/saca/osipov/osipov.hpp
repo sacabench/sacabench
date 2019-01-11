@@ -248,7 +248,7 @@ public:
 
                 // Update ranks in tuples and adjust values to sa/isa
                 osipov.slice_sa(s);
-                osipov.update_ranks();
+                osipov.update_ranks(h);
                 osipov.update_container(s);
                 osipov.mark_singletons();
             }
