@@ -40,11 +40,11 @@ public:
     }
 };
 
-Compare_four_chars get_new_cmp_four(uint32_t* text) {
+Compare_four_chars<uint32_t> get_new_cmp_four(uint32_t* text) {
     return Compare_four_chars<uint32_t>(text);
 }
 
-Compare_four_chars get_new_cmp_four(uint64_t* text) {
+Compare_four_chars<uint64_t> get_new_cmp_four(uint64_t* text) {
     return Compare_four_chars<uint64_t>(text);
 }
 

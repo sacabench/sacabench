@@ -4,6 +4,8 @@ add_executable(cuda_prefix_sum
 
 add_library(cuda_wrapper
     cuda_wrapper.cu
+    cuda_util.cu
+    prefix_doubler.cu
 )
 
 target_include_directories(cuda_wrapper INTERFACE

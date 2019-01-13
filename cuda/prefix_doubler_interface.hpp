@@ -1,11 +1,12 @@
 #pragma once
 
-struct Compare_four_chars;
+struct Max_without_branching;
+template <typename sa_index> struct Compare_four_chars;
 
 Max_without_branching get_new_Max_fct();
 
-Compare_four_chars get_new_cmp_four(uint32_t* text);
-Compare_four_chars get_new_cmp_four(uint64_t* text);
+Compare_four_chars<uint32_t> get_new_cmp_four(uint32_t* text);
+Compare_four_chars<uint64_t> get_new_cmp_four(uint64_t* text);
 
 void word_packing(const char* chars, uint32_t* result, size_t n);
 void word_packing(const char* chars, uint64_t* result, size_t n);

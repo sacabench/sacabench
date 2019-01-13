@@ -14,14 +14,51 @@ static void prefix_sum(size_type* d_in,
                 size_t num_items,
                 function Sum) {
     // Determine temporary device storage requirements
+    void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
-    Sum(nullptr, temp_storage_bytes, d_in, d_out, num_items);
-
+    Sum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
     // Allocate temporary storage
-    void* d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
+    d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
 
     // Run prefix sum
     Sum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+
+    cudaDeviceSynchronize();
+
+    free_cuda_buffer(d_temp_storage);
+}
+
+template <typename size_type>
+static void exclusive_sum(size_type* d_in, size_type* d_out, size_t num_items) {
+    // Determine temporary device storage requirements
+    void *d_temp_storage = NULL;
+    size_t temp_storage_bytes = 0;
+    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
+    // Allocate temporary storage
+    d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
+
+    // Run prefix sum
+    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+
+    cudaDeviceSynchronize();
+
+    free_cuda_buffer(d_temp_storage);
+}
+
+template <typename size_type>
+static void inclusive_sum(size_type* d_in, size_type* d_out, size_t num_items) {
+    // Determine temporary device storage requirements
+    void *d_temp_storage = NULL;
+    size_t temp_storage_bytes = 0;
+    cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
+    // Allocate temporary storage
+    d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
+
+    // Run prefix sum
+    cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
 
     cudaDeviceSynchronize();
 
@@ -44,29 +81,44 @@ void free_cuda_buffer(void* ptr) {
     cuda_check(cudaFree(ptr), "cudaFree");
 }
 
-void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+void exclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+    exclusive_sum(d_in, d_out, num_items);
+}
+void exclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+    exclusive_sum(d_in, d_out, num_items);
+}
+
+void inclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+    inclusive_sum(d_in, d_out, num_items);
+}
+void inclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+    inclusive_sum(d_in, d_out, num_items);
+}
+
+/*
+void exclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::ExclusiveSum(params...), "ExclusiveSum");
     });
 }
 
-void inclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+void inclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::InclusiveSum(params...), "InclusiveSum");
     });
 }
-
-void exclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+void exclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::ExclusiveSum(params...), "ExclusiveSum");
     });
 }
 
-void inclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+void inclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
         cuda_check(cub::DeviceScan::InclusiveSum(params...), "InclusiveSum");
     });
 }
+*/
 
 void cuda_copy_device_to_device(uint32_t* d_in, uint32_t* d_out,
             size_t num_items) {
