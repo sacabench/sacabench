@@ -1,17 +1,21 @@
 #pragma once
 
-#include <prefix_doubling_interface.hpp>
+#include <prefix_doubler_interface.hpp>
 #include <cuda_wrapper_interface.hpp>
-#include <sacabench/util/span.hpp>
+#include <util/span.hpp>
 #include <type_traits>
+#include <string>
 
 namespace sacabench::osipov {
+
+// Method to output type in case of error (usage of unsupported type)
+//template <typename T> std::string type_name();
+
 template <typename sa_index>
 class osipov_gpu_main {
 private:
     sa_index* text;
     //TODO: Wrapper for creation of cmp-function!
-    Compare_four_chars<sa_index> cmp;
     // Three base arrays
     sa_index* sa;
     sa_index* isa;
@@ -26,10 +30,10 @@ private:
 
 public:
 
-    osipov_gpu(size_t size, sa_index* text, sa_index* sa, sa_index* isa,
+    osipov_gpu_main(size_t size, sa_index* text, sa_index* sa, sa_index* isa,
             sa_index* aux, sa_index* two_h_rank, sa_index* h_rank) : size(size),
             text(text), sa(sa), isa(isa), aux(aux), two_h_rank(two_h_rank),
-            h_rank(h_rank), cmp(get_new_cmp_four(text)) {}
+            h_rank(h_rank) {}
 
     /*
         Getter for debugging.
@@ -67,8 +71,6 @@ public:
     */
     void mark_singletons() {
         if(size > 0) {
-
-
             // Move sa, isa to shared memory
 
             set_flags(size, sa, isa, aux);
@@ -89,7 +91,7 @@ public:
     /*
         Initially sorts SA according to text using the CUB Radixsort
     */
-    void inital_sort() {
+    void initial_sort() {
         //TODO: similar Wrapper for SortPairs as for prefix_sum_cub
          //Actual values; use h_rank as temp storage
         auto keys_out = h_rank;     // e.g., [        ...        ]
@@ -119,7 +121,7 @@ public:
         */
         //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(sa,aux,n);
 
-        cuda_copy_device_to_device(aux, in, size);
+        cuda_copy_device_to_device(aux, sa, size);
     }
 
     /*
@@ -182,7 +184,7 @@ public:
     */
     void initialize_isa() {
 
-        fill_aux_for_isa(sa, aux, size, cmp);
+        fill_aux_for_isa(text, sa, aux, size);
 
 
         prefix_sum_cub_inclusive_max(aux, size);
@@ -262,7 +264,7 @@ public:
         // Use two_h_rank as aux2 because it hasn't been filled for this
         // iteration
         auto aux2 = two_h_rank;
-        radix_sort_gpu(h_rank, sa, aux1, aux2);
+        radix_sort_gpu(h_rank, sa, aux1, aux2, size);
         /*
          // Determine temporary device storage requirements
          void     *d_temp_storage = NULL;
@@ -302,7 +304,7 @@ public:
     }
 };
 
-class osipov_gpu {
+struct osipov_gpu {
     static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "Osipov_gpu";
     static constexpr char const* DESCRIPTION =
@@ -314,24 +316,24 @@ class osipov_gpu {
                              util::span<sa_index> out_sa) {
         if(text.size() > 1) {
             // Currently only supporting uint32_t and uint64_t
-            if(std::is_same<sa_index, uint32_t>::value
+            if constexpr (std::is_same<sa_index, uint32_t>::value
                     || std::is_same<sa_index, uint64_t>::value) {
                 // Allocate memory on gpu
-                sa_index* sa = allocate_managed_cuda_buffer(
-                        out_sa.size()*size_of(sa_index));
-                sa_index* isa = allocate_managed_cuda_buffer(
-                        out_sa.size()*size_of(sa_index));
-                sa_index* aux = allocate_managed_cuda_buffer(
-                        out_sa.size()*size_of(sa_index));
-                sa_index* gpu_text = allocate_managed_cuda_buffer(
-                        out_sa.size()*size_of(sa_index));
-                sa_index* h_rank = allocate_managed_cuda_buffer(
-                        out_sa.size()*size_of(sa_index));
-                sa_index* two_h_rank = allocate_managed_cuda_buffer(
-                        out_sa.size()*size_of(sa_index));
+                sa_index* sa = (sa_index*)allocate_managed_cuda_buffer(
+                        out_sa.size()*sizeof(sa_index));
+                sa_index* isa = (sa_index*)allocate_managed_cuda_buffer(
+                        out_sa.size()*sizeof(sa_index));
+                sa_index* aux = (sa_index*)allocate_managed_cuda_buffer(
+                        out_sa.size()*sizeof(sa_index));
+                sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
+                        out_sa.size()*sizeof(sa_index));
+                sa_index* h_rank = (sa_index*)allocate_managed_cuda_buffer(
+                        out_sa.size()*sizeof(sa_index));
+                sa_index* two_h_rank = (sa_index*)allocate_managed_cuda_buffer(
+                        out_sa.size()*sizeof(sa_index));
                 // Transform text by wordpacking for gpu
                 word_packing(text.begin(), gpu_text, out_sa.size());
-                auto impl = osipov_gpu_main(out_sa.size(), gpu_text, sa, isa,
+                auto impl = osipov_gpu_main<sa_index>(out_sa.size(), gpu_text, sa, isa,
                             aux, two_h_rank, h_rank);
 
                 osipov<sa_index>::prefix_doubling(text, out_sa, impl);
@@ -343,7 +345,7 @@ class osipov_gpu {
                 free_cuda_buffer(two_h_rank);
             }
             else {
-                std::err << "Type " << sa_index
+                std::cerr << "Type"
                         << " is not supported by osipov on the gpu."
                         << std::endl;
             }

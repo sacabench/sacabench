@@ -30,7 +30,7 @@ static void prefix_sum(size_type* d_in,
 }
 
 template <typename size_type>
-static void exclusive_sum(size_type* d_in, size_type* d_out, size_t num_items) {
+static void exclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_items) {
     // Determine temporary device storage requirements
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
@@ -48,7 +48,7 @@ static void exclusive_sum(size_type* d_in, size_type* d_out, size_t num_items) {
 }
 
 template <typename size_type>
-static void inclusive_sum(size_type* d_in, size_type* d_out, size_t num_items) {
+static void inclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_items) {
     // Determine temporary device storage requirements
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
@@ -81,18 +81,18 @@ void free_cuda_buffer(void* ptr) {
     cuda_check(cudaFree(ptr), "cudaFree");
 }
 
-void exclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
-    exclusive_sum(d_in, d_out, num_items);
+void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+    exclusive_sum_generic(d_in, d_out, num_items);
 }
-void exclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
-    exclusive_sum(d_in, d_out, num_items);
+void exclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+    exclusive_sum_generic(d_in, d_out, num_items);
 }
 
-void inclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
-    inclusive_sum(d_in, d_out, num_items);
+void inclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
+    inclusive_sum_generic(d_in, d_out, num_items);
 }
-void inclusive_sum_32(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
-    inclusive_sum(d_in, d_out, num_items);
+void inclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
+    inclusive_sum_generic(d_in, d_out, num_items);
 }
 
 /*
@@ -170,14 +170,14 @@ void radix_sort_cub(size_type* d_in1, size_type* d_in2, size_type* aux1,
     cuda_check(cudaDeviceSynchronize());
 }
 
-void radix_sort_gpu_32(uint32_t* d_in1, uint32_t* d_in2, uint32_t* aux1,
+void radix_sort_gpu(uint32_t* d_in1, uint32_t* d_in2, uint32_t* aux1,
             uint32_t* aux2, size_t num_items) {
     radix_sort_cub(d_in1, d_in2, aux1, aux2, num_items);
     /*cuda_copy_device_to_device(d_in1, aux1, num_items);
     cuda_copy_device_to_device(d_in2, aux2, num_items);*/
 }
 
-void radix_sort_gpu_64(uint64_t* d_in1, uint64_t* d_in2, uint64_t* aux1,
+void radix_sort_gpu(uint64_t* d_in1, uint64_t* d_in2, uint64_t* aux1,
             uint64_t* aux2, size_t num_items) {
     radix_sort_cub(d_in1, d_in2, aux1, aux2, num_items);
     /*cuda_copy_device_to_device(d_in1, aux1, num_items);

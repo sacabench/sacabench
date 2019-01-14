@@ -51,7 +51,7 @@ Compare_four_chars<uint64_t> get_new_cmp_four(uint64_t* text) {
 //Quick and dirty version, which packs four chars in one sa_index (either
 //uint32_t or uint64_t)
 template <typename sa_index>
-void word_packing_generic(const char* chars, sa_index* result, size_t n) {
+void word_packing_generic(const uint8_t* chars, sa_index* result, size_t n) {
 
     typedef unsigned char u8;
     for(size_t i = 0; i<n-3 ;++i) {
@@ -63,11 +63,11 @@ void word_packing_generic(const char* chars, sa_index* result, size_t n) {
 
 }
 
-void word_packing(const char* chars, uint32_t* result, size_t n) {
+void word_packing(const uint8_t* chars, uint32_t* result, size_t n) {
     word_packing_generic(chars, result, n);
 }
 
-void word_packing(const char* chars, uint64_t* result, size_t n) {
+void word_packing(const uint8_t* chars, uint64_t* result, size_t n) {
     word_packing_generic(chars, result, n);
 }
 
@@ -103,7 +103,7 @@ void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
     cudaDeviceSynchronize();
 }
 
-void set_flags_64(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
+void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
     set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }
@@ -237,15 +237,16 @@ void fill_aux_for_isa_kernel(sa_index* sa, sa_index* aux, size_t n, Comp comp) {
     }
 }
 
-void fill_aux_for_isa(uint32_t* sa, uint32_t* isa, size_t size,
-            Compare_four_chars<uint32_t> cmp) {
+void fill_aux_for_isa(uint32_t* text, uint32_t* sa, uint32_t* isa,
+            size_t size) {
+    auto cmp = Compare_four_chars<uint32_t>(text);
     fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
     cudaDeviceSynchronize();
 }
 
-void fill_aux_for_isa(uint64_t* sa, uint64_t* isa, size_t size,
-            Compare_four_chars<uint64_t> cmp) {
+void fill_aux_for_isa(uint64_t* text, uint64_t* sa, uint64_t* isa, size_t size) {
+    auto cmp = Compare_four_chars<uint64_t>(text);
     fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
     cudaDeviceSynchronize();

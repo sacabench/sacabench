@@ -1,15 +1,9 @@
 #pragma once
 
 struct Max_without_branching;
-template <typename sa_index> struct Compare_four_chars;
 
-Max_without_branching get_new_Max_fct();
-
-Compare_four_chars<uint32_t> get_new_cmp_four(uint32_t* text);
-Compare_four_chars<uint64_t> get_new_cmp_four(uint64_t* text);
-
-void word_packing(const char* chars, uint32_t* result, size_t n);
-void word_packing(const char* chars, uint64_t* result, size_t n);
+void word_packing(const uint8_t* chars, uint32_t* result, size_t n);
+void word_packing(const uint8_t* chars, uint64_t* result, size_t n);
 
 void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux);
 void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux);
@@ -20,15 +14,11 @@ void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux);
 void initialize_sa(size_t size, uint32_t* sa);
 void initialize_sa(size_t size, uint64_t* sa);
 
-void prefix_sum_cub_inclusive_max(uint32_t* array, Max_without_branching max,
-            size_t size);
-void prefix_sum_cub_inclusive_max(uint64_t* array, Max_without_branching max,
-            size_t size);
+void prefix_sum_cub_inclusive_max(uint32_t* array, size_t size);
+void prefix_sum_cub_inclusive_max(uint64_t* array, size_t size);
 
-void fill_aux_for_isa(uint32_t* sa, uint32_t* isa, size_t size,
-            Compare_four_chars<uint32_t> cmp);
-void fill_aux_for_isa(uint64_t* sa, uint64_t* isa, size_t size,
-            Compare_four_chars<uint64_t> cmp);
+void fill_aux_for_isa(uint32_t* text, uint32_t* sa, uint32_t* isa, size_t size);
+void fill_aux_for_isa(uint64_t* text, uint64_t* sa, uint64_t* isa, size_t size);
 
 void scatter_to_isa(uint32_t* isa, uint32_t* aux, uint32_t* sa, size_t size);
 void scatter_to_isa(uint64_t* isa, uint64_t* aux, uint64_t* sa, size_t size);
