@@ -130,13 +130,13 @@ static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
 }
 
 void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
-    std::cout << "Calling 32 Version of set_flags." << std::endl;
+    //std::cout << "Calling 32 Version of set_flags." << std::endl;
     set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }
 
 void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
-    std::cout << "Calling 64 Version of set_flags." << std::endl;
+    //std::cout << "Calling 64 Version of set_flags." << std::endl;
     set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }

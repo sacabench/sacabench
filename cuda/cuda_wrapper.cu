@@ -17,7 +17,7 @@ static void prefix_sum(size_type* d_in,
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
     Sum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
-    std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
+    //std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
     // Allocate temporary storage
     d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
 
@@ -35,7 +35,7 @@ static void exclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
     cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
-    std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
+    //std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
     // Allocate temporary storage
     d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
 
@@ -53,7 +53,7 @@ static void inclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
     cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
-    std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
+    //std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
     // Allocate temporary storage
     d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
 
