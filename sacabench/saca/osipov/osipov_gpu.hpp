@@ -132,50 +132,52 @@ public:
         // Generate 2h-ranks after sorting
         generate_two_h_rank(size, h, sa,
                 isa, two_h_rank);
-
+        /*
         std::cout << "Tuples with 2h-ranks: ";
         for(size_t i=0; i < size; ++i) {
             std::cout << "<" << sa[i] << "," << h_rank[i] << ","
                 << two_h_rank[i] <<">, ";
         }
         std::cout << std::endl;
-
+        */
         //Build Aux
         update_ranks_build_aux(h_rank,
                 aux, size);
-
+        /*
         std::cout << "Aux after first pass: ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
         std::cout << std::endl;
+        */
         //prefix sum over aux
         prefix_sum_cub_inclusive_max(aux, size);
-
+        /*
         std::cout << "Aux after first pass (prefix sum): ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
         std::cout << std::endl;
-
+        */
         //Build aux "tilde"
         update_ranks_build_aux_tilde(
                 h_rank, two_h_rank, aux, size);
-
+        /*
         std::cout << "Aux after second pass: ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
         std::cout << std::endl;
-
+        */
         //prefix sum over aux "tilde"
         prefix_sum_cub_inclusive_max(aux, size);
-
+        /*
         std::cout << "Aux after second pass(prefix sum): ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
         std::cout << std::endl;
+        */
     }
 
 
@@ -191,7 +193,13 @@ public:
 
 
         scatter_to_isa(isa, aux, sa, size);
-
+        /*
+        std::cout << "Initial isa: ";
+        for(size_t i=0; i < size; ++i) {
+            std::cout << isa[i] << ",";
+        }
+        std::cout << std::endl;
+        */
     }
 
     /*
@@ -204,13 +212,13 @@ public:
         //TODO: Set block_amount and block_size accordingly
         set_tuple(size, h, sa, isa, aux);
 
-
+        /*
         std::cout << "Aux init: ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
         std::cout << std::endl;
-
+        */
         // Save amount of tuples for last index (gets overwritten by prefix sum)
         s = aux[size-1];
         // Prefix sum
@@ -234,12 +242,13 @@ public:
         cudaMemcpy(aux, h_rank, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
         */
         cuda_copy_device_to_device(h_rank, aux, size);
+        /*
         std::cout << "Aux after prefix sum: ";
         for(size_t i=0; i < size; ++i) {
             std::cout << aux[i] << ", ";
         }
         std::cout << std::endl;
-
+        */
         // Adjust s by amount of tuples from first 'size-1' suffixes.
         s += aux[size-1];
         new_tuple(size, h, sa, isa, aux,
@@ -335,6 +344,7 @@ struct osipov_gpu {
                 word_packing(text.begin(), gpu_text, out_sa.size());
                 auto impl = osipov_gpu_main<sa_index>(out_sa.size(), gpu_text, sa, isa,
                             aux, two_h_rank, h_rank);
+                impl.initialize_sa();
 
                 osipov<sa_index>::prefix_doubling(text, out_sa, impl);
                 free_cuda_buffer(sa);
