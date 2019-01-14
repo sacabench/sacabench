@@ -63,6 +63,31 @@ void word_packing_generic(const char* chars, sa_index* result, size_t n) {
 
 }
 
+//Quick and dirty version, which packs four chars in one sa_index (either
+// uint64_t
+void word_packing_64(const char* chars, uint64_t* result, size_t n) {
+
+    for(size_t i = 0; i<n-7 ;++i) {
+        result[i] = ((uint64_t)chars[i] << 56) | ((uint64_t)chars[i+1] << 48) | ((uint64_t)chars[i+2] << 40) | ((uint64_t)chars[i+3] << 32) |
+                    ((uint64_t)chars[i] << 24) | ((uint64_t)chars[i+1] << 16) | ((uint64_t)chars[i+2] << 8) | (uint64_t)chars[i+3];
+    }
+
+    result[n-7] = ((uint64_t)chars[n-7] << 56) | ((uint64_t)chars[n-6] << 48) | ((uint64_t)chars[n-5] << 40) | ((uint64_t)chars[n-4] << 32) |
+                    ((uint64_t)chars[n-3] << 24) | ((uint64_t)chars[n-2] << 16) | ((uint64_t)chars[n-1] << 8);
+
+    result[n-6] = ((uint64_t)chars[n-6] << 56) | ((uint64_t)chars[n-5] << 48) | ((uint64_t)chars[n-4] << 40) | ((uint64_t)chars[n-3] << 32) |
+                    ((uint64_t)chars[n-2] << 24) | ((uint64_t)chars[n-1] << 16);
+    result[n-5] = ((uint64_t)chars[n-5] << 56) | ((uint64_t)chars[n-4] << 48) | ((uint64_t)chars[n-3] << 40) | ((uint64_t)chars[n-2] << 32) |
+                    ((uint64_t)chars[n-3] << 1);
+    result[n-4] = ((uint64_t)chars[n-4] << 56) | ((uint64_t)chars[n-3] << 48) | ((uint64_t)chars[n-2] << 40) | ((uint64_t)chars[n-1] << 32);
+
+
+    result[n-3] = ((uint64_t)chars[n-3] << 56) | ((uint64_t)chars[n-2] << 48) | ((uint64_t)chars[n-1] << 40);
+    result[n-2] = ((uint64_t)chars[n-2] << 56) | ((uint64_t)chars[n-1] << 48);
+    result[n-1] = ((uint64_t)chars[n-1] << 56);
+
+}
+
 void word_packing(const char* chars, uint32_t* result, size_t n) {
     word_packing_generic(chars, result, n);
 }
@@ -666,4 +691,30 @@ int main()
     return 0;
 }
 
+*/
+/*
+int main()
+{
+    std::string text_str = "caabaccaabacaa";
+    const char* text = text_str.c_str();
+    size_t n = text_str.size()+1;
+    std::cout<<"n: "<<n<<std::endl;
+
+    uint64_t* packed_text;
+    packed_text = (uint64_t *) malloc(n*sizeof(uint64_t));
+    for(int i = 0; i<n; ++i) {
+        std::cout<<packed_text[i]<<",";
+    }
+    std::cout<<std::endl;
+
+    //Pack text, so you can compare four chars at once
+    word_packing_64(text, packed_text, n);
+
+    for(int i = 0; i<n; ++i) {
+        std::cout<<packed_text[i]<<",";
+    }
+    std::cout<<std::endl;
+
+    return 0;
+}
 */
