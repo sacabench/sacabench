@@ -84,7 +84,7 @@
 \pgfplotsset{
     landscapePlot/.style={
         ybar,
-        bar width=4pt,
+        bar width= \VAR{config.bar_width}pt,
         xtick=data,
         width=110mm,height=105mm,
         nodes near coords,
@@ -173,6 +173,7 @@
 % IMPORT-DATA stats result/result_algorithm.txt
 
 \begin{figure}
+    \textbf{Configuration} \hfill Prefix size: \VAR{config.prefix} \hfill Repetitions: \VAR{config.repetition_count}
     \centering\small
 
     \begin{tikzpicture}

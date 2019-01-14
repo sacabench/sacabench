@@ -1,3 +1,4 @@
+./*.tex
 *.txt
 sqlplottools/
 # Created by https://www.gitignore.io/api/latex
