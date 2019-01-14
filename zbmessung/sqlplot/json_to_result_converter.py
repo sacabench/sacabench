@@ -1,11 +1,13 @@
 # *******************************************************************************
 # Copyright (C) 2018 David Piper <david.piper@tu-dortmund.de
+#                    Florian Grieskamp <florian.grieskamp@tu-dortmund.de
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
 #******************************************************************************
 
 import sys      # Dependency for accessing arguments.
 import json     # Dependency for processing the json files.
+from jinja2 import Environment, FileSystemLoader # Parsing template files
 
 ########################################
 # FILE HELPER
@@ -277,6 +279,42 @@ def convertAndSaveData(dict, path):
     writeFile(phasesFilePath, phasesFileContent)
 
 ########################################
+# GENERATE TEX SOURCE CODE
+########################################
+class Config:
+    def __init__(self, input_dict):
+        algo_count = len(input_dict)
+        self.bar_width = 160 / algo_count
+
+        configuration_dict = input_dict[0][0]["stats"]
+        for configuration_entry in configuration_dict:
+            if configuration_entry["key"] == "repetitions":
+                self.repetition_count = configuration_entry["value"]
+            if configuration_entry["key"] == "prefix":
+                self.prefix = configuration_entry["value"]
+
+def generate_tex(input_dict):
+    file_loader = FileSystemLoader('templates')
+    env = Environment(
+            block_start_string = '\BLOCK{',
+            block_end_string = '}',
+            variable_start_string = '\VAR{',
+            variable_end_string = '}',
+            comment_start_string = '\#{',
+            comment_end_string = '}',
+            #line_statement_prefix = '%%',
+            #line_comment_prefix = '%#',
+            trim_blocks = True,
+            autoescape = False,
+            loader = file_loader)
+    template = env.get_template('main.tex')
+
+    config = Config(input_dict)
+
+    output_file = open('main.tex', 'w')
+    output_file.write(template.render(config=config))
+
+########################################
 # MAIN
 ########################################
     
@@ -298,6 +336,7 @@ def main(sourceFilePath, destinationFilePath):
 
     inputDataDict = readJSON(sourceFilePath)
     convertAndSaveData(inputDataDict, destinationFilePath)
+    generate_tex(inputDataDict)
 
 if __name__ == "__main__":
     
