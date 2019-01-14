@@ -25,8 +25,6 @@ struct Max_without_branching
     }
 };
 
-Max_without_branching get_new_Max_fct() {return Max_without_branching();}
-
 template <typename sa_index>
 struct Compare_four_chars
 {
@@ -40,32 +38,24 @@ public:
     }
 };
 
-Compare_four_chars<uint32_t> get_new_cmp_four(uint32_t* text) {
-    return Compare_four_chars<uint32_t>(text);
-}
-
-Compare_four_chars<uint64_t> get_new_cmp_four(uint64_t* text) {
-    return Compare_four_chars<uint64_t>(text);
-}
-
 //Quick and dirty version, which packs four chars in one sa_index (either
 //uint32_t or uint64_t)
 template <typename sa_index>
 void word_packing_generic(const uint8_t* chars, sa_index* result, size_t n) {
 
     typedef unsigned char u8;
-    if(n>4) {
+    if(n>3) {
     for(size_t i = 0; i<n-3 ;++i) {
         result[i] = ((u8)chars[i] << 24) | ((u8)chars[i+1] << 16) | ((u8)chars[i+2] << 8) | (u8)chars[i+3];
     }
     }
-    if(n>3) {
+    if(n>2) {
     result[n-3] = ((u8)chars[n-3] << 24) | ((u8)chars[n-2] << 16) | ((u8)chars[n-1] << 8);
     }
-    if(n>2) {
+    if(n>1) {
     result[n-2] = ((u8)chars[n-2] << 24) | ((u8)chars[n-1] << 16);
     }
-    if(n>1) {
+    if(n>0) {
     result[n-1] = ((u8)chars[n-1] << 24);
     }
 

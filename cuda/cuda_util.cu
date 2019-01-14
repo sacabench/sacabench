@@ -66,6 +66,7 @@ static void map_error_code(cudaError e, std::ostream& out) {
     map_single_error_code(cudaErrorProfilerAlreadyStopped)
     map_single_error_code(cudaErrorStartupFailure)
     map_single_error_code(cudaErrorApiFailureBase)
+    map_single_error_code(cudaErrorIllegalAddress)
     default:
         out << "unknown code " << int(e);
     }
