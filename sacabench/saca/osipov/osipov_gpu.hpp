@@ -327,32 +327,19 @@ struct osipov_gpu {
             // Currently only supporting uint32_t and uint64_t
             if constexpr (std::is_same<sa_index, uint32_t>::value
                     || std::is_same<sa_index, uint64_t>::value) {
-                // Allocate memory on gpu
-                sa_index* sa = (sa_index*)allocate_managed_cuda_buffer(
-                        out_sa.size()*sizeof(sa_index));
-                sa_index* isa = (sa_index*)allocate_managed_cuda_buffer(
-                        out_sa.size()*sizeof(sa_index));
-                sa_index* aux = (sa_index*)allocate_managed_cuda_buffer(
-                        out_sa.size()*sizeof(sa_index));
-                sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
-                        out_sa.size()*sizeof(sa_index));
-                sa_index* h_rank = (sa_index*)allocate_managed_cuda_buffer(
-                        out_sa.size()*sizeof(sa_index));
-                sa_index* two_h_rank = (sa_index*)allocate_managed_cuda_buffer(
-                        out_sa.size()*sizeof(sa_index));
-                // Transform text by wordpacking for gpu
-                word_packing(text.begin(), gpu_text, out_sa.size());
-                auto impl = osipov_gpu_main<sa_index>(out_sa.size(), gpu_text, sa, isa,
-                            aux, two_h_rank, h_rank);
-                impl.initialize_sa();
-
-                osipov<sa_index>::prefix_doubling(text, out_sa, impl);
-                free_cuda_buffer(sa);
-                free_cuda_buffer(isa);
-                free_cuda_buffer(aux);
-                free_cuda_buffer(gpu_text);
-                free_cuda_buffer(h_rank);
-                free_cuda_buffer(two_h_rank);
+                construct_sa_internal(text, out_sa);
+            }
+            else if constexpr (std::is_same<sa_index, util::uint40>::value
+                    || std::is_same<sa_index, util::uint48>::value) {
+                auto tmp_out = util::make_container
+                            <util::next_primitive<sa_index>>(out_sa.size());
+                auto tmp_out_span = util::span<util::next_primitive<sa_index>>(
+                            tmp_out);
+                construct_sa_internal(text, tmp_out_span);
+                // Copy content from temporary array
+                for(size_t i=0; i<out_sa.size(); ++i) {
+                    out_sa[i] = (sa_index)tmp_out_span[i];
+                }
             }
             else {
                 std::cerr << "Type"
@@ -361,6 +348,38 @@ struct osipov_gpu {
             }
         }
         else {out_sa[0] = 0;}
+    }
+
+private:
+    template <typename sa_index>
+    static void construct_sa_internal(util::string_span text,
+                    util::span<sa_index> out_sa) {
+        // Allocate memory on gpu
+        sa_index* sa = (sa_index*)allocate_managed_cuda_buffer(
+                out_sa.size()*sizeof(sa_index));
+        sa_index* isa = (sa_index*)allocate_managed_cuda_buffer(
+                out_sa.size()*sizeof(sa_index));
+        sa_index* aux = (sa_index*)allocate_managed_cuda_buffer(
+                out_sa.size()*sizeof(sa_index));
+        sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
+                out_sa.size()*sizeof(sa_index));
+        sa_index* h_rank = (sa_index*)allocate_managed_cuda_buffer(
+                out_sa.size()*sizeof(sa_index));
+        sa_index* two_h_rank = (sa_index*)allocate_managed_cuda_buffer(
+                out_sa.size()*sizeof(sa_index));
+        // Transform text by wordpacking for gpu
+        word_packing(text.begin(), gpu_text, out_sa.size());
+        auto impl = osipov_gpu_main<sa_index>(out_sa.size(), gpu_text, sa, isa,
+                    aux, two_h_rank, h_rank);
+        impl.initialize_sa();
+
+        osipov<sa_index>::prefix_doubling(text, out_sa, impl);
+        free_cuda_buffer(sa);
+        free_cuda_buffer(isa);
+        free_cuda_buffer(aux);
+        free_cuda_buffer(gpu_text);
+        free_cuda_buffer(h_rank);
+        free_cuda_buffer(two_h_rank);
     }
 };
 // End namespace
