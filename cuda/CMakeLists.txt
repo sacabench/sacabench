@@ -14,3 +14,5 @@ target_include_directories(cuda_wrapper INTERFACE
 )
 
 target_compile_features(cuda_wrapper PRIVATE cxx_std_14)
+set_target_properties(cuda_wrapper
+                      PROPERTIES CUDA_SEPARABLE_COMPILATION ON)

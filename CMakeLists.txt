@@ -82,6 +82,10 @@ set(DATASET_ARGS "--delete_original;--min_prefix_size=200;--max_prefix_size=200"
 git_submodule_subdirectory(external/datasets)
 git_submodule(external/cub)
 
+add_subdirectory(sacabench)
+add_subdirectory(external/ips4o)
+add_subdirectory(cuda)
+
 add_subdirectory(external/reference_impls/gsaca)
 add_subdirectory(external/reference_impls/deep-shallow)
 add_subdirectory(external/reference_impls/divsufsort)
@@ -90,11 +94,10 @@ add_subdirectory(external/reference_impls/dc3)
 add_subdirectory(external/reference_impls/msufsort)
 add_subdirectory(external/reference_impls/saca_k)
 add_subdirectory(external/reference_impls/parallel_divsufsort)
-add_subdirectory(sacabench)
+
+set(CMAKE_USE_PTHREADS_INIT OFF CACHE BOOL "")
+#set(gtest_disable_pthreads ON CACHE BOOL "")
 add_subdirectory(test)
 add_subdirectory(bigtest)
-add_subdirectory(external/ips4o)
-
-add_subdirectory(cuda)
 
 ################################################################################
