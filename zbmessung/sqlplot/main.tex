@@ -84,6 +84,7 @@
 \pgfplotsset{
     landscapePlot/.style={
         ybar,
+        bar width=4pt,
         xtick=data,
         width=110mm,height=105mm,
         nodes near coords,
@@ -135,17 +136,41 @@
     {fill=yellow!80!white, postaction={pattern=north west lines}},
     {fill=black!80!white, postaction={pattern=north west lines}},
     {fill=blue!80!white, postaction={pattern=north west lines}},
-    {fill=teal!80!white, postaction={pattern=dots}},
-    {fill=orange!80!white, postaction={pattern=dots}},
-    {fill=cyan!80!white, postaction={pattern=dots}},
-    {fill=lime!80!white, postaction={pattern=dots}},
-    {fill=red!80!white, postaction={pattern=dots}},
-    {fill=yellow!80!white, postaction={pattern=dots}},
-    {fill=black!80!white, postaction={pattern=dots}},
-    {fill=blue!80!white, postaction={pattern=dots}},
+    {fill=teal!80!white, postaction={pattern=horizontal lines}},
+    {fill=orange!80!white, postaction={pattern=horizontal lines}},
+    {fill=cyan!80!white, postaction={pattern=horizontal lines}},
+    {fill=lime!80!white, postaction={pattern=horizontal lines}},
+    {fill=red!80!white, postaction={pattern=horizontal lines}},
+    {fill=yellow!80!white, postaction={pattern=horizontal lines}},
+    {fill=black!80!white, postaction={pattern=horizontal lines}},
+    {fill=blue!80!white, postaction={pattern=horizontal lines}},
+    {fill=teal!80!white, postaction={pattern=crosshatch}},
+    {fill=orange!80!white, postaction={pattern=crosshatch}},
+    {fill=cyan!80!white, postaction={pattern=crosshatch}},
+    {fill=lime!80!white, postaction={pattern=crosshatch}},
+    {fill=red!80!white, postaction={pattern=crosshatch}},
+    {fill=yellow!80!white, postaction={pattern=crosshatch}},
+    {fill=black!80!white, postaction={pattern=crosshatch}},
+    {fill=blue!80!white, postaction={pattern=crosshatch}},
+    {fill=teal!80!white, postaction={pattern=crosshatch dots}},
+    {fill=orange!80!white, postaction={pattern=crosshatch dots}},
+    {fill=cyan!80!white, postaction={pattern=crosshatch dots}},
+    {fill=lime!80!white, postaction={pattern=crosshatch dots}},
+    {fill=red!80!white, postaction={pattern=crosshatch dots}},
+    {fill=yellow!80!white, postaction={pattern=crosshatch dots}},
+    {fill=black!80!white, postaction={pattern=crosshatch dots}},
+    {fill=blue!80!white, postaction={pattern=crosshatch dots}},
+    {fill=teal!80!white, postaction={pattern=fivepointed stars}},
+    {fill=orange!80!white, postaction={pattern=fivepointed stars}},
+    {fill=cyan!80!white, postaction={pattern=fivepointed stars}},
+    {fill=lime!80!white, postaction={pattern=fivepointed stars}},
+    {fill=red!80!white, postaction={pattern=fivepointed stars}},
+    {fill=yellow!80!white, postaction={pattern=fivepointed stars}},
+    {fill=black!80!white, postaction={pattern=fivepointed stars}},
+    {fill=blue!80!white, postaction={pattern=fivepointed stars}},
     }
 
-% IMPORT-DATA stats sqlplot.txt
+% IMPORT-DATA stats result/result_algorithm.txt
 
 \begin{figure}
     \centering\small
@@ -159,72 +184,192 @@
                     /tikz/every even column/.append style={black},
                 },
                 legend columns=4,
-                symbolic x coords={pc\_dna.200MB},
+                symbolic x coords={pc\_english.200MB},
                 every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
             %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
             %% FROM ( 
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
-            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY algo
-            \addplot coordinates { (pc\_dna.200MB,34.9312) };
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="pc_english.200MB" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            \addplot coordinates { (pc\_english.200MB,0.0662611) };
             \addlegendentry{algo=BPR};
-            \addplot coordinates { (pc\_dna.200MB,50.2121) };
+            \addplot coordinates { (pc\_english.200MB,0.0676879) };
+            \addlegendentry{algo=BPR\_par};
+            \addplot coordinates { (pc\_english.200MB,0.0567031) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (pc\_dna.200MB,106.397) };
+            \addplot coordinates { (pc\_english.200MB,0.353588) };
+            \addlegendentry{algo=DC3};
+            \addplot coordinates { (pc\_english.200MB,0.645763) };
+            \addlegendentry{algo=DC3-Lite};
+            \addplot coordinates { (pc\_english.200MB,0.162996) };
+            \addlegendentry{algo=DC3\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.51641) };
+            \addlegendentry{algo=DC7};
+            \addplot coordinates { (pc\_english.200MB,0.159573) };
+            \addlegendentry{algo=Deep-Shallow};
+            \addplot coordinates { (pc\_english.200MB,0.139778) };
+            \addlegendentry{algo=Deep-Shallow\_bb};
+            \addplot coordinates { (pc\_english.200MB,0.160228) };
             \addlegendentry{algo=Deep-Shallow\_par};
-            \addplot coordinates { (pc\_dna.200MB,138.08) };
+            \addplot coordinates { (pc\_english.200MB,0.0627361) };
+            \addlegendentry{algo=Deep-Shallow\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.366535) };
+            \addlegendentry{algo=Discarding2};
+            \addplot coordinates { (pc\_english.200MB,0.300549) };
+            \addlegendentry{algo=Discarding4};
+            \addplot coordinates { (pc\_english.200MB,0.110472) };
             \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (pc\_dna.200MB,32.3096) };
+            \addplot coordinates { (pc\_english.200MB,0.313822) };
+            \addlegendentry{algo=DivSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.0357983) };
+            \addlegendentry{algo=DivSufSort\_PARALLEL\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0377614) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (pc\_dna.200MB,88.3788) };
+            \addplot coordinates { (pc\_english.200MB,0.958601) };
+            \addlegendentry{algo=Doubling};
+            \addplot coordinates { (pc\_english.200MB,0.159384) };
             \addlegendentry{algo=GSACA};
-            \addplot coordinates { (pc\_dna.200MB,89.6768) };
+            \addplot coordinates { (pc\_english.200MB,0.154828) };
             \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,186.531) };
+            \addplot coordinates { (pc\_english.200MB,0.136468) };
+            \addlegendentry{algo=GSACA\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0683112) };
+            \addlegendentry{algo=MSufSort\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.245996) };
+            \addlegendentry{algo=Naiv};
+            \addplot coordinates { (pc\_english.200MB,0.750237) };
+            \addlegendentry{algo=NaivIps4o};
+            \addplot coordinates { (pc\_english.200MB,0.192647) };
+            \addlegendentry{algo=NaivIps4oParallel};
+            \addplot coordinates { (pc\_english.200MB,0.404228) };
             \addlegendentry{algo=Osipov\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,159.483) };
+            \addplot coordinates { (pc\_english.200MB,0.369598) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
-            \addplot coordinates { (pc\_dna.200MB,155.662) };
+            \addplot coordinates { (pc\_english.200MB,0.40406) };
             \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (pc\_dna.200MB,132.79) };
+            \addplot coordinates { (pc\_english.200MB,0.270817) };
             \addlegendentry{algo=Osipov\_sequential\_wp};
+            \addplot coordinates { (pc\_english.200MB,0.0622217) };
+            \addlegendentry{algo=PARALLEL\_SAIS};
+            \addplot coordinates { (pc\_english.200MB,0.178622) };
+            \addlegendentry{algo=SACA-K};
+            \addplot coordinates { (pc\_english.200MB,0.0686803) };
+            \addlegendentry{algo=SACA-K\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0659673) };
+            \addlegendentry{algo=SADS};
+            \addplot coordinates { (pc\_english.200MB,0.0655153) };
+            \addlegendentry{algo=SADS\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0675736) };
+            \addlegendentry{algo=SAIS};
+            \addplot coordinates { (pc\_english.200MB,0.052395) };
+            \addlegendentry{algo=SAIS-LITE\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0697581) };
+            \addlegendentry{algo=SAIS\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.330542) };
+            \addlegendentry{algo=mSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.437682) };
+            \addlegendentry{algo=nzSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.377838) };
+            \addlegendentry{algo=qsufsort};
+            \addplot coordinates { (pc\_english.200MB,0.161841) };
+            \addlegendentry{algo=qsufsort\_ref};
         \end{axis}
     \end{tikzpicture}
     \hfill
     \begin{tikzpicture}
         \begin{axis}[batchMemPlot,
-                symbolic x coords={pc\_dna.200MB},
+                symbolic x coords={pc\_english.200MB},
                 cycle list name={exotic},
                 every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
-            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, CEIL(memPeak/1000)/1000 AS y
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
             %% FROM ( 
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
-            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY algo
-            \addplot coordinates { (pc\_dna.200MB,1031) };
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="pc_english.200MB" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            \addplot coordinates { (pc\_english.200MB,19.2376) };
             \addlegendentry{algo=BPR};
-            \addplot coordinates { (pc\_dna.200MB,3573) };
+            \addplot coordinates { (pc\_english.200MB,53.539) };
+            \addlegendentry{algo=BPR\_par};
+            \addplot coordinates { (pc\_english.200MB,32.6004) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (pc\_dna.200MB,2) };
+            \addplot coordinates { (pc\_english.200MB,21.4679) };
+            \addlegendentry{algo=DC3};
+            \addplot coordinates { (pc\_english.200MB,13.6317) };
+            \addlegendentry{algo=DC3-Lite};
+            \addplot coordinates { (pc\_english.200MB,27.9229) };
+            \addlegendentry{algo=DC3\_ref};
+            \addplot coordinates { (pc\_english.200MB,15.7716) };
+            \addlegendentry{algo=DC7};
+            \addplot coordinates { (pc\_english.200MB,5.552001) };
+            \addlegendentry{algo=Deep-Shallow};
+            \addplot coordinates { (pc\_english.200MB,5.52921) };
+            \addlegendentry{algo=Deep-Shallow\_bb};
+            \addplot coordinates { (pc\_english.200MB,5.552001) };
             \addlegendentry{algo=Deep-Shallow\_par};
-            \addplot coordinates { (pc\_dna.200MB,4196) };
+            \addplot coordinates { (pc\_english.200MB,5.258349) };
+            \addlegendentry{algo=Deep-Shallow\_ref};
+            \addplot coordinates { (pc\_english.200MB,19.9706) };
+            \addlegendentry{algo=Discarding2};
+            \addplot coordinates { (pc\_english.200MB,28.36256) };
+            \addlegendentry{algo=Discarding4};
+            \addplot coordinates { (pc\_english.200MB,34.8888) };
             \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (pc\_dna.200MB,0) };
+            \addplot coordinates { (pc\_english.200MB,7.851693) };
+            \addlegendentry{algo=DivSufSort};
+            \addplot coordinates { (pc\_english.200MB,7.268447) };
+            \addlegendentry{algo=DivSufSort\_PARALLEL\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.5094) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addplot coordinates { (pc\_english.200MB,19.9706) };
+            \addlegendentry{algo=Doubling};
+            \addplot coordinates { (pc\_english.200MB,22.0218) };
             \addlegendentry{algo=GSACA};
-            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addplot coordinates { (pc\_english.200MB,22.0253) };
             \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addplot coordinates { (pc\_english.200MB,17.8258) };
+            \addlegendentry{algo=GSACA\_ref};
+            \addplot coordinates { (pc\_english.200MB,10.4965) };
+            \addlegendentry{algo=MSufSort\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.24288) };
+            \addlegendentry{algo=Naiv};
+            \addplot coordinates { (pc\_english.200MB,7.385168) };
+            \addlegendentry{algo=NaivIps4o};
+            \addplot coordinates { (pc\_english.200MB,13.8856) };
+            \addlegendentry{algo=NaivIps4oParallel};
+            \addplot coordinates { (pc\_english.200MB,51.333) };
             \addlegendentry{algo=Osipov\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addplot coordinates { (pc\_english.200MB,51.333) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
-            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addplot coordinates { (pc\_english.200MB,34.5792) };
             \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addplot coordinates { (pc\_english.200MB,34.5792) };
             \addlegendentry{algo=Osipov\_sequential\_wp};
+            \addplot coordinates { (pc\_english.200MB,11.14305) };
+            \addlegendentry{algo=PARALLEL\_SAIS};
+            \addplot coordinates { (pc\_english.200MB,8.127717) };
+            \addlegendentry{algo=SACA-K};
+            \addplot coordinates { (pc\_english.200MB,5.243313) };
+            \addlegendentry{algo=SACA-K\_ref};
+            \addplot coordinates { (pc\_english.200MB,8.828743) };
+            \addlegendentry{algo=SADS};
+            \addplot coordinates { (pc\_english.200MB,5.928892) };
+            \addlegendentry{algo=SADS\_ref};
+            \addplot coordinates { (pc\_english.200MB,6.089817) };
+            \addlegendentry{algo=SAIS};
+            \addplot coordinates { (pc\_english.200MB,9.441289) };
+            \addlegendentry{algo=SAIS-LITE\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.788576) };
+            \addlegendentry{algo=SAIS\_ref};
+            \addplot coordinates { (pc\_english.200MB,6.909493) };
+            \addlegendentry{algo=mSufSort};
+            \addplot coordinates { (pc\_english.200MB,5.370767) };
+            \addlegendentry{algo=nzSufSort};
+            \addplot coordinates { (pc\_english.200MB,9.437193) };
+            \addlegendentry{algo=qsufsort};
+            \addplot coordinates { (pc\_english.200MB,22.0201) };
+            \addlegendentry{algo=qsufsort\_ref};
 
             \legend{}
         \end{axis}
@@ -246,72 +391,192 @@
                     /tikz/every even column/.append style={black},
                 },
                 legend columns=4,
-                symbolic x coords={pc\_dna.200MB},
+                symbolic x coords={pc\_english.200MB},
                 every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
             %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
             %% FROM ( 
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
-            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY time
-            \addplot coordinates { (pc\_dna.200MB,32.3096) };
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="pc_english.200MB" and rep_id=1 GROUP BY MULTIPLOT,x ORDER BY time
+            \addplot coordinates { (pc\_english.200MB,0.0357983) };
+            \addlegendentry{algo=DivSufSort\_PARALLEL\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0377614) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (pc\_dna.200MB,34.9312) };
-            \addlegendentry{algo=BPR};
-            \addplot coordinates { (pc\_dna.200MB,50.2121) };
+            \addplot coordinates { (pc\_english.200MB,0.052395) };
+            \addlegendentry{algo=SAIS-LITE\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0567031) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (pc\_dna.200MB,88.3788) };
-            \addlegendentry{algo=GSACA};
-            \addplot coordinates { (pc\_dna.200MB,89.6768) };
-            \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,106.397) };
-            \addlegendentry{algo=Deep-Shallow\_par};
-            \addplot coordinates { (pc\_dna.200MB,132.79) };
-            \addlegendentry{algo=Osipov\_sequential\_wp};
-            \addplot coordinates { (pc\_dna.200MB,138.08) };
+            \addplot coordinates { (pc\_english.200MB,0.0622217) };
+            \addlegendentry{algo=PARALLEL\_SAIS};
+            \addplot coordinates { (pc\_english.200MB,0.0627361) };
+            \addlegendentry{algo=Deep-Shallow\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0655153) };
+            \addlegendentry{algo=SADS\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0659673) };
+            \addlegendentry{algo=SADS};
+            \addplot coordinates { (pc\_english.200MB,0.0662611) };
+            \addlegendentry{algo=BPR};
+            \addplot coordinates { (pc\_english.200MB,0.0675736) };
+            \addlegendentry{algo=SAIS};
+            \addplot coordinates { (pc\_english.200MB,0.0676879) };
+            \addlegendentry{algo=BPR\_par};
+            \addplot coordinates { (pc\_english.200MB,0.0683112) };
+            \addlegendentry{algo=MSufSort\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0686803) };
+            \addlegendentry{algo=SACA-K\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0697581) };
+            \addlegendentry{algo=SAIS\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.110472) };
             \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (pc\_dna.200MB,155.662) };
-            \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (pc\_dna.200MB,159.483) };
+            \addplot coordinates { (pc\_english.200MB,0.136468) };
+            \addlegendentry{algo=GSACA\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.139778) };
+            \addlegendentry{algo=Deep-Shallow\_bb};
+            \addplot coordinates { (pc\_english.200MB,0.154828) };
+            \addlegendentry{algo=GSACA\_parallel};
+            \addplot coordinates { (pc\_english.200MB,0.159384) };
+            \addlegendentry{algo=GSACA};
+            \addplot coordinates { (pc\_english.200MB,0.159573) };
+            \addlegendentry{algo=Deep-Shallow};
+            \addplot coordinates { (pc\_english.200MB,0.160228) };
+            \addlegendentry{algo=Deep-Shallow\_par};
+            \addplot coordinates { (pc\_english.200MB,0.161841) };
+            \addlegendentry{algo=qsufsort\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.162996) };
+            \addlegendentry{algo=DC3\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.178622) };
+            \addlegendentry{algo=SACA-K};
+            \addplot coordinates { (pc\_english.200MB,0.192647) };
+            \addlegendentry{algo=NaivIps4oParallel};
+            \addplot coordinates { (pc\_english.200MB,0.245996) };
+            \addlegendentry{algo=Naiv};
+            \addplot coordinates { (pc\_english.200MB,0.270817) };
+            \addlegendentry{algo=Osipov\_sequential\_wp};
+            \addplot coordinates { (pc\_english.200MB,0.300549) };
+            \addlegendentry{algo=Discarding4};
+            \addplot coordinates { (pc\_english.200MB,0.313822) };
+            \addlegendentry{algo=DivSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.330542) };
+            \addlegendentry{algo=mSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.353588) };
+            \addlegendentry{algo=DC3};
+            \addplot coordinates { (pc\_english.200MB,0.366535) };
+            \addlegendentry{algo=Discarding2};
+            \addplot coordinates { (pc\_english.200MB,0.369598) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
-            \addplot coordinates { (pc\_dna.200MB,186.531) };
+            \addplot coordinates { (pc\_english.200MB,0.377838) };
+            \addlegendentry{algo=qsufsort};
+            \addplot coordinates { (pc\_english.200MB,0.40406) };
+            \addlegendentry{algo=Osipov\_sequential};
+            \addplot coordinates { (pc\_english.200MB,0.404228) };
             \addlegendentry{algo=Osipov\_parallel};
+            \addplot coordinates { (pc\_english.200MB,0.437682) };
+            \addlegendentry{algo=nzSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.51641) };
+            \addlegendentry{algo=DC7};
+            \addplot coordinates { (pc\_english.200MB,0.645763) };
+            \addlegendentry{algo=DC3-Lite};
+            \addplot coordinates { (pc\_english.200MB,0.750237) };
+            \addlegendentry{algo=NaivIps4o};
+            \addplot coordinates { (pc\_english.200MB,0.958601) };
+            \addlegendentry{algo=Doubling};
         \end{axis}
     \end{tikzpicture}
     \hfill
     \begin{tikzpicture}
         \begin{axis}[batchMemPlot,
-                symbolic x coords={pc\_dna.200MB},
+                symbolic x coords={pc\_english.200MB},
                 cycle list name={exotic},
                 every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
-            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, CEIL(memPeak/1000)/1000 AS y
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
             %% FROM ( 
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
-            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY algo
-            \addplot coordinates { (pc\_dna.200MB,1031) };
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="pc_english.200MB" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            \addplot coordinates { (pc\_english.200MB,19.2376) };
             \addlegendentry{algo=BPR};
-            \addplot coordinates { (pc\_dna.200MB,3573) };
+            \addplot coordinates { (pc\_english.200MB,53.539) };
+            \addlegendentry{algo=BPR\_par};
+            \addplot coordinates { (pc\_english.200MB,32.6004) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (pc\_dna.200MB,2) };
+            \addplot coordinates { (pc\_english.200MB,21.4679) };
+            \addlegendentry{algo=DC3};
+            \addplot coordinates { (pc\_english.200MB,13.6317) };
+            \addlegendentry{algo=DC3-Lite};
+            \addplot coordinates { (pc\_english.200MB,27.9229) };
+            \addlegendentry{algo=DC3\_ref};
+            \addplot coordinates { (pc\_english.200MB,15.7716) };
+            \addlegendentry{algo=DC7};
+            \addplot coordinates { (pc\_english.200MB,5.552001) };
+            \addlegendentry{algo=Deep-Shallow};
+            \addplot coordinates { (pc\_english.200MB,5.52921) };
+            \addlegendentry{algo=Deep-Shallow\_bb};
+            \addplot coordinates { (pc\_english.200MB,5.552001) };
             \addlegendentry{algo=Deep-Shallow\_par};
-            \addplot coordinates { (pc\_dna.200MB,4196) };
+            \addplot coordinates { (pc\_english.200MB,5.258349) };
+            \addlegendentry{algo=Deep-Shallow\_ref};
+            \addplot coordinates { (pc\_english.200MB,19.9706) };
+            \addlegendentry{algo=Discarding2};
+            \addplot coordinates { (pc\_english.200MB,28.36256) };
+            \addlegendentry{algo=Discarding4};
+            \addplot coordinates { (pc\_english.200MB,34.8888) };
             \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (pc\_dna.200MB,0) };
+            \addplot coordinates { (pc\_english.200MB,7.851693) };
+            \addlegendentry{algo=DivSufSort};
+            \addplot coordinates { (pc\_english.200MB,7.268447) };
+            \addlegendentry{algo=DivSufSort\_PARALLEL\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.5094) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addplot coordinates { (pc\_english.200MB,19.9706) };
+            \addlegendentry{algo=Doubling};
+            \addplot coordinates { (pc\_english.200MB,22.0218) };
             \addlegendentry{algo=GSACA};
-            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addplot coordinates { (pc\_english.200MB,22.0253) };
             \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addplot coordinates { (pc\_english.200MB,17.8258) };
+            \addlegendentry{algo=GSACA\_ref};
+            \addplot coordinates { (pc\_english.200MB,10.4965) };
+            \addlegendentry{algo=MSufSort\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.24288) };
+            \addlegendentry{algo=Naiv};
+            \addplot coordinates { (pc\_english.200MB,7.385168) };
+            \addlegendentry{algo=NaivIps4o};
+            \addplot coordinates { (pc\_english.200MB,13.8856) };
+            \addlegendentry{algo=NaivIps4oParallel};
+            \addplot coordinates { (pc\_english.200MB,51.333) };
             \addlegendentry{algo=Osipov\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addplot coordinates { (pc\_english.200MB,51.333) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
-            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addplot coordinates { (pc\_english.200MB,34.5792) };
             \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addplot coordinates { (pc\_english.200MB,34.5792) };
             \addlegendentry{algo=Osipov\_sequential\_wp};
+            \addplot coordinates { (pc\_english.200MB,11.14305) };
+            \addlegendentry{algo=PARALLEL\_SAIS};
+            \addplot coordinates { (pc\_english.200MB,8.127717) };
+            \addlegendentry{algo=SACA-K};
+            \addplot coordinates { (pc\_english.200MB,5.243313) };
+            \addlegendentry{algo=SACA-K\_ref};
+            \addplot coordinates { (pc\_english.200MB,8.828743) };
+            \addlegendentry{algo=SADS};
+            \addplot coordinates { (pc\_english.200MB,5.928892) };
+            \addlegendentry{algo=SADS\_ref};
+            \addplot coordinates { (pc\_english.200MB,6.089817) };
+            \addlegendentry{algo=SAIS};
+            \addplot coordinates { (pc\_english.200MB,9.441289) };
+            \addlegendentry{algo=SAIS-LITE\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.788576) };
+            \addlegendentry{algo=SAIS\_ref};
+            \addplot coordinates { (pc\_english.200MB,6.909493) };
+            \addlegendentry{algo=mSufSort};
+            \addplot coordinates { (pc\_english.200MB,5.370767) };
+            \addlegendentry{algo=nzSufSort};
+            \addplot coordinates { (pc\_english.200MB,9.437193) };
+            \addlegendentry{algo=qsufsort};
+            \addplot coordinates { (pc\_english.200MB,22.0201) };
+            \addlegendentry{algo=qsufsort\_ref};
 
             \legend{}
         \end{axis}
@@ -333,72 +598,192 @@
                     /tikz/every even column/.append style={black},
                 },
                 legend columns=4,
-                symbolic x coords={pc\_dna.200MB},
+                symbolic x coords={pc\_english.200MB},
                 every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
             %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
             %% FROM ( 
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
-            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY algo
-            \addplot coordinates { (pc\_dna.200MB,34.9312) };
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="pc_english.200MB" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            \addplot coordinates { (pc\_english.200MB,0.0662611) };
             \addlegendentry{algo=BPR};
-            \addplot coordinates { (pc\_dna.200MB,50.2121) };
+            \addplot coordinates { (pc\_english.200MB,0.0676879) };
+            \addlegendentry{algo=BPR\_par};
+            \addplot coordinates { (pc\_english.200MB,0.0567031) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (pc\_dna.200MB,106.397) };
+            \addplot coordinates { (pc\_english.200MB,0.353588) };
+            \addlegendentry{algo=DC3};
+            \addplot coordinates { (pc\_english.200MB,0.645763) };
+            \addlegendentry{algo=DC3-Lite};
+            \addplot coordinates { (pc\_english.200MB,0.162996) };
+            \addlegendentry{algo=DC3\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.51641) };
+            \addlegendentry{algo=DC7};
+            \addplot coordinates { (pc\_english.200MB,0.159573) };
+            \addlegendentry{algo=Deep-Shallow};
+            \addplot coordinates { (pc\_english.200MB,0.139778) };
+            \addlegendentry{algo=Deep-Shallow\_bb};
+            \addplot coordinates { (pc\_english.200MB,0.160228) };
             \addlegendentry{algo=Deep-Shallow\_par};
-            \addplot coordinates { (pc\_dna.200MB,138.08) };
+            \addplot coordinates { (pc\_english.200MB,0.0627361) };
+            \addlegendentry{algo=Deep-Shallow\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.366535) };
+            \addlegendentry{algo=Discarding2};
+            \addplot coordinates { (pc\_english.200MB,0.300549) };
+            \addlegendentry{algo=Discarding4};
+            \addplot coordinates { (pc\_english.200MB,0.110472) };
             \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (pc\_dna.200MB,32.3096) };
+            \addplot coordinates { (pc\_english.200MB,0.313822) };
+            \addlegendentry{algo=DivSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.0357983) };
+            \addlegendentry{algo=DivSufSort\_PARALLEL\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0377614) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (pc\_dna.200MB,88.3788) };
+            \addplot coordinates { (pc\_english.200MB,0.958601) };
+            \addlegendentry{algo=Doubling};
+            \addplot coordinates { (pc\_english.200MB,0.159384) };
             \addlegendentry{algo=GSACA};
-            \addplot coordinates { (pc\_dna.200MB,89.6768) };
+            \addplot coordinates { (pc\_english.200MB,0.154828) };
             \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,186.531) };
+            \addplot coordinates { (pc\_english.200MB,0.136468) };
+            \addlegendentry{algo=GSACA\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0683112) };
+            \addlegendentry{algo=MSufSort\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.245996) };
+            \addlegendentry{algo=Naiv};
+            \addplot coordinates { (pc\_english.200MB,0.750237) };
+            \addlegendentry{algo=NaivIps4o};
+            \addplot coordinates { (pc\_english.200MB,0.192647) };
+            \addlegendentry{algo=NaivIps4oParallel};
+            \addplot coordinates { (pc\_english.200MB,0.404228) };
             \addlegendentry{algo=Osipov\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,159.483) };
+            \addplot coordinates { (pc\_english.200MB,0.369598) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
-            \addplot coordinates { (pc\_dna.200MB,155.662) };
+            \addplot coordinates { (pc\_english.200MB,0.40406) };
             \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (pc\_dna.200MB,132.79) };
+            \addplot coordinates { (pc\_english.200MB,0.270817) };
             \addlegendentry{algo=Osipov\_sequential\_wp};
+            \addplot coordinates { (pc\_english.200MB,0.0622217) };
+            \addlegendentry{algo=PARALLEL\_SAIS};
+            \addplot coordinates { (pc\_english.200MB,0.178622) };
+            \addlegendentry{algo=SACA-K};
+            \addplot coordinates { (pc\_english.200MB,0.0686803) };
+            \addlegendentry{algo=SACA-K\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0659673) };
+            \addlegendentry{algo=SADS};
+            \addplot coordinates { (pc\_english.200MB,0.0655153) };
+            \addlegendentry{algo=SADS\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0675736) };
+            \addlegendentry{algo=SAIS};
+            \addplot coordinates { (pc\_english.200MB,0.052395) };
+            \addlegendentry{algo=SAIS-LITE\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.0697581) };
+            \addlegendentry{algo=SAIS\_ref};
+            \addplot coordinates { (pc\_english.200MB,0.330542) };
+            \addlegendentry{algo=mSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.437682) };
+            \addlegendentry{algo=nzSufSort};
+            \addplot coordinates { (pc\_english.200MB,0.377838) };
+            \addlegendentry{algo=qsufsort};
+            \addplot coordinates { (pc\_english.200MB,0.161841) };
+            \addlegendentry{algo=qsufsort\_ref};
         \end{axis}
     \end{tikzpicture}
     \hfill
     \begin{tikzpicture}
         \begin{axis}[batchMemPlot,
-                symbolic x coords={pc\_dna.200MB},
+                symbolic x coords={pc\_english.200MB},
                 cycle list name={exotic},
                 every node near coord/.append style={color=black, rotate=90, anchor=west},
             ]
 
-            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, CEIL(memPeak/1000)/1000 AS y
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
             %% FROM ( 
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_i, threads, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_i, threads
-            %% ) WHERE input="pc_dna.200MB" AND threads=1 AND rep_i=0 GROUP BY MULTIPLOT,x ORDER BY memPeak
-            \addplot coordinates { (pc\_dna.200MB,0) };
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="pc_english.200MB" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY memPeak
+            \addplot coordinates { (pc\_english.200MB,5.24288) };
+            \addlegendentry{algo=Naiv};
+            \addplot coordinates { (pc\_english.200MB,5.243313) };
+            \addlegendentry{algo=SACA-K\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.258349) };
+            \addlegendentry{algo=Deep-Shallow\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.370767) };
+            \addlegendentry{algo=nzSufSort};
+            \addplot coordinates { (pc\_english.200MB,5.5094) };
             \addlegendentry{algo=DivSufSort\_ref};
-            \addplot coordinates { (pc\_dna.200MB,2) };
+            \addplot coordinates { (pc\_english.200MB,5.52921) };
+            \addlegendentry{algo=Deep-Shallow\_bb};
+            \addplot coordinates { (pc\_english.200MB,5.552001) };
+            \addlegendentry{algo=Deep-Shallow};
+            \addplot coordinates { (pc\_english.200MB,5.552001) };
             \addlegendentry{algo=Deep-Shallow\_par};
-            \addplot coordinates { (pc\_dna.200MB,1031) };
+            \addplot coordinates { (pc\_english.200MB,5.788576) };
+            \addlegendentry{algo=SAIS\_ref};
+            \addplot coordinates { (pc\_english.200MB,5.928892) };
+            \addlegendentry{algo=SADS\_ref};
+            \addplot coordinates { (pc\_english.200MB,6.089817) };
+            \addlegendentry{algo=SAIS};
+            \addplot coordinates { (pc\_english.200MB,6.909493) };
+            \addlegendentry{algo=mSufSort};
+            \addplot coordinates { (pc\_english.200MB,7.268447) };
+            \addlegendentry{algo=DivSufSort\_PARALLEL\_ref};
+            \addplot coordinates { (pc\_english.200MB,7.385168) };
+            \addlegendentry{algo=NaivIps4o};
+            \addplot coordinates { (pc\_english.200MB,7.851693) };
+            \addlegendentry{algo=DivSufSort};
+            \addplot coordinates { (pc\_english.200MB,8.127717) };
+            \addlegendentry{algo=SACA-K};
+            \addplot coordinates { (pc\_english.200MB,8.828743) };
+            \addlegendentry{algo=SADS};
+            \addplot coordinates { (pc\_english.200MB,9.437193) };
+            \addlegendentry{algo=qsufsort};
+            \addplot coordinates { (pc\_english.200MB,9.441289) };
+            \addlegendentry{algo=SAIS-LITE\_ref};
+            \addplot coordinates { (pc\_english.200MB,10.4965) };
+            \addlegendentry{algo=MSufSort\_ref};
+            \addplot coordinates { (pc\_english.200MB,11.14305) };
+            \addlegendentry{algo=PARALLEL\_SAIS};
+            \addplot coordinates { (pc\_english.200MB,13.6317) };
+            \addlegendentry{algo=DC3-Lite};
+            \addplot coordinates { (pc\_english.200MB,13.8856) };
+            \addlegendentry{algo=NaivIps4oParallel};
+            \addplot coordinates { (pc\_english.200MB,15.7716) };
+            \addlegendentry{algo=DC7};
+            \addplot coordinates { (pc\_english.200MB,17.8258) };
+            \addlegendentry{algo=GSACA\_ref};
+            \addplot coordinates { (pc\_english.200MB,19.2376) };
             \addlegendentry{algo=BPR};
-            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addplot coordinates { (pc\_english.200MB,19.9706) };
+            \addlegendentry{algo=Discarding2};
+            \addplot coordinates { (pc\_english.200MB,19.9706) };
+            \addlegendentry{algo=Doubling};
+            \addplot coordinates { (pc\_english.200MB,21.4679) };
+            \addlegendentry{algo=DC3};
+            \addplot coordinates { (pc\_english.200MB,22.0201) };
+            \addlegendentry{algo=qsufsort\_ref};
+            \addplot coordinates { (pc\_english.200MB,22.0218) };
             \addlegendentry{algo=GSACA};
-            \addplot coordinates { (pc\_dna.200MB,3355) };
+            \addplot coordinates { (pc\_english.200MB,22.0253) };
             \addlegendentry{algo=GSACA\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,3573) };
+            \addplot coordinates { (pc\_english.200MB,27.9229) };
+            \addlegendentry{algo=DC3\_ref};
+            \addplot coordinates { (pc\_english.200MB,28.36256) };
+            \addlegendentry{algo=Discarding4};
+            \addplot coordinates { (pc\_english.200MB,32.6004) };
             \addlegendentry{algo=BPR\_ref};
-            \addplot coordinates { (pc\_dna.200MB,4196) };
-            \addlegendentry{algo=Discarding4Parallel};
-            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addplot coordinates { (pc\_english.200MB,34.5792) };
             \addlegendentry{algo=Osipov\_sequential};
-            \addplot coordinates { (pc\_dna.200MB,5872) };
+            \addplot coordinates { (pc\_english.200MB,34.5792) };
             \addlegendentry{algo=Osipov\_sequential\_wp};
-            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addplot coordinates { (pc\_english.200MB,34.8888) };
+            \addlegendentry{algo=Discarding4Parallel};
+            \addplot coordinates { (pc\_english.200MB,51.333) };
             \addlegendentry{algo=Osipov\_parallel};
-            \addplot coordinates { (pc\_dna.200MB,6710) };
+            \addplot coordinates { (pc\_english.200MB,51.333) };
             \addlegendentry{algo=Osipov\_parallel\_wp};
+            \addplot coordinates { (pc\_english.200MB,53.539) };
+            \addlegendentry{algo=BPR\_par};
 
             \legend{}
         \end{axis}
