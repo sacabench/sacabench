@@ -54,8 +54,10 @@ template <typename sa_index>
 void word_packing_generic(const uint8_t* chars, sa_index* result, size_t n) {
 
     typedef unsigned char u8;
+    if(n>4) {
     for(size_t i = 0; i<n-3 ;++i) {
         result[i] = ((u8)chars[i] << 24) | ((u8)chars[i+1] << 16) | ((u8)chars[i+2] << 8) | (u8)chars[i+3];
+    }
     }
     if(n>3) {
     result[n-3] = ((u8)chars[n-3] << 24) | ((u8)chars[n-2] << 16) | ((u8)chars[n-1] << 8);
