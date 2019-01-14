@@ -1,5 +1,6 @@
 TEX = latexmk
 FILE = main
+BENCHMARK = plots.json
 EXTENSION = .tex
 
 .PHONY: all clean run
@@ -11,7 +12,11 @@ sqlplottools:
 	mkdir -p sqlplottools/build
 	cd sqlplottools/build && cmake .. && $(MAKE)
 
-sql: sqlplottools
+json:
+	mkdir -p result
+	python json_to_result_converter.py $(BENCHMARK) result
+
+sql: json sqlplottools
 	./sqlplottools/build/src/sp-process $(FILE)$(EXTENSION)
 
 main: sql
