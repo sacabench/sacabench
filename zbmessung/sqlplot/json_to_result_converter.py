@@ -2,7 +2,7 @@
 # Copyright (C) 2018 David Piper <david.piper@tu-dortmund.de
 #
 # All rights reserved. Published under the BSD-3 license in the LICENSE file.
-# ******************************************************************************
+#******************************************************************************
 
 import sys      # Dependency for accessing arguments.
 import json     # Dependency for processing the json files.
@@ -49,7 +49,7 @@ def writeFile(filepath, content):
 # PROCESSING ALGORITHM DATA
 ########################################
 
-def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionID):    
+def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):    
     """
     Processes the given dictionary and returns a new dictionary.
     This new dicitionary contains the extracted data needed to create a line in the algorithm result file.
@@ -60,8 +60,8 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionID):
         The dictionary which contains the data for an algorithm.
     algorithmID : int
         The id of the current algorithm.
-    repititionID : int
-        The id of the current repitition.
+    repetitionID : int
+        The id of the current repetition.
 
     Returns
     ----------
@@ -71,7 +71,7 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionID):
     data = {}
     
     data["algorithmID"] = algorithmID
-    data["repititionID"] = repititionID
+    data["repetitionID"] = repetitionID
 
     data["title"] = dict["title"]
     data["memFinal"] = dict["memFinal"]
@@ -87,7 +87,7 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionID):
         if statsDict["key"] == "input_file":
             data["inputFile"] = statsDict["value"]
         if statsDict["key"] == "repetitions":
-            data["repititionCount"] = statsDict["value"]
+            data["repetitionCount"] = statsDict["value"]
         if statsDict["key"] == "prefix":
             data["prefix"] = statsDict["value"]
 
@@ -132,8 +132,8 @@ def buildAlgorithmResultString(data):
     content += "algo={}\t".format(data["title"])
     content += "algorithm_name={}\t".format(data["title"])
     content += "id={}\t".format(data["algorithmID"])
-    content += "rep={}\t".format(data["repititionCount"])
-    content += "rep_id={}\t".format(data["repititionID"])
+    content += "rep={}\t".format(data["repetitionCount"])
+    content += "rep_id={}\t".format(data["repetitionID"])
     content += "phases={}\t".format(data["numberOfPhases"])
     content += "extra_sentinels={}\t".format(data["extraSentinels"])
     content += "input={}\t".format(data["inputFile"])
@@ -153,7 +153,7 @@ def buildAlgorithmResultString(data):
 # PROCESSING PHASES DATA
 ########################################
 
-def extractPhaseDataFromDictionary(dict, algorithmID, repititionID, phaseID):
+def extractPhaseDataFromDictionary(dict, algorithmID, repetitionID, phaseID):
     """
     Processes the given dictionary and returns a new dictionary.
     This new dicitionary contains the extracted data needed to create a line in the phases result file.
@@ -164,8 +164,8 @@ def extractPhaseDataFromDictionary(dict, algorithmID, repititionID, phaseID):
         The dictionary which contains the data for an algorithm.
     algorithmID : int
         The id of the current algorithm.
-    repititionID : int
-        The id of the current repitition.
+    repetitionID : int
+        The id of the current repetition.
     phaseID : int
         The id of the current phase.
 
@@ -176,7 +176,7 @@ def extractPhaseDataFromDictionary(dict, algorithmID, repititionID, phaseID):
     
     data = {}
     data["algorithmID"] = algorithmID
-    data["repititionID"] = repititionID
+    data["repetitionID"] = repetitionID
     data["phaseID"] = phaseID
 
     data["title"] = dict["title"]
@@ -206,7 +206,7 @@ def buildPhasesResultString(data):
 
     content = "RESULT\t"
     content += "id={}\t".format(data["algorithmID"])
-    content += "rep_id={}\t".format(data["repititionID"])
+    content += "rep_id={}\t".format(data["repetitionID"])
     content += "phase_id={}\t".format(data["phaseID"])
     content += "phase_name={}\t".format(data["title"])
     content += "memOff={}\t".format(data["memOff"])
@@ -235,29 +235,29 @@ def convertAndSaveData(dict, path):
     algorithmFileContent = ""
     phasesFileContent = ""
 
-    currentRepititionNumber = 0
+    currentrepetitionNumber = 0
     currentAlgorithmNumber = 0
     currentPhaseNumber = 0
 
     for algorithm in dict:
-        # Set id of current repitition to 0 when processing an new algorithm.
-        currentRepititionNumber = 0
+        # Set id of current repetition to 0 when processing an new algorithm.
+        currentrepetitionNumber = 0
 
         # Increase id of each algorithm.
         currentAlgorithmNumber += 1
 
-        for repitition in algorithm:
-            # Increase id of current repitition when processing a new repitition of the current algorith.
-            currentRepititionNumber += 1
+        for repetition in algorithm:
+            # Increase id of current repetition when processing a new repetition of the current algorith.
+            currentrepetitionNumber += 1
 
             # Set id of current phase to 0 when processing an new repititon.
             currentPhaseNumber = 0
 
-            algorithmDataDict = extractAlgorithmDataFromDictionary(repitition, currentAlgorithmNumber, currentRepititionNumber)
+            algorithmDataDict = extractAlgorithmDataFromDictionary(repetition, currentAlgorithmNumber, currentrepetitionNumber)
             algorithmFileContent += buildAlgorithmResultString(algorithmDataDict)
 
             # List of sub contains only one element.
-            allPhases = repitition["sub"][0]["sub"]
+            allPhases = repetition["sub"][0]["sub"]
             for algorithmPhase in allPhases:
                 # An algorithm contains next to its normal phases also some preparation phases.
                 # Process only normal phases and ignore the preparation phases.
@@ -267,7 +267,7 @@ def convertAndSaveData(dict, path):
 
                         currentPhaseNumber += 1
 
-                        phaseDataDict = extractPhaseDataFromDictionary(phase, currentAlgorithmNumber, currentRepititionNumber, currentPhaseNumber)
+                        phaseDataDict = extractPhaseDataFromDictionary(phase, currentAlgorithmNumber, currentrepetitionNumber, currentPhaseNumber)
                         phasesFileContent += buildPhasesResultString(phaseDataDict)
 
     algorithmFilePath = "{}/result_algorithm.txt".format(path)
