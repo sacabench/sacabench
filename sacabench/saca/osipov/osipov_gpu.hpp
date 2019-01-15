@@ -3,8 +3,14 @@
 #include <prefix_doubler_interface.hpp>
 #include <cuda_wrapper_interface.hpp>
 #include <util/span.hpp>
+#include <saca/osipov/osipov.hpp>
 #include <type_traits>
-#include <string>
+#include <util/span.hpp>
+#include <util/string.hpp>
+#include <saca/osipov/osipov.hpp>
+#include <util/uint_types.hpp>
+#include <util/container.hpp>
+#include <util/alphabet.hpp>
 
 namespace sacabench::osipov {
 
