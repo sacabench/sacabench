@@ -52,11 +52,11 @@ def writeFile(filepath, content):
 def get_processor_info():
     if platform.system() == "Windows":
         family = platform.processor()
-        name = subprocess.check_output(["wmic","cpu","get", "name"]).strip().split("\n")[1]
+        name = subprocess.check_output(["wmic","cpu","get", "name"]).strip().decode().split("\n")[1]
         return ' '.join([name, family])
     elif platform.system() == "Linux":
         command = "grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'"
-        name = subprocess.check_output(command, shell=True).strip().split("\n")[1]
+        name = subprocess.check_output(command, shell=True).strip().decode().split("\n")[1]
         return name
     return ""
 
@@ -300,7 +300,7 @@ class Config:
         self.bar_width = 160 / algo_count
         
         configuration_dict = input_dict[0][0]["stats"]
-        print configuration_dict
+        print(configuration_dict)
         for configuration_entry in configuration_dict:
             if configuration_entry["key"] == "repetitions":
                 self.repetition_count = configuration_entry["value"]
@@ -353,7 +353,7 @@ def main(sourceFilePath, destinationFilePath):
     """
     
     processor_info = get_processor_info()
-    print processor_info
+    print(processor_info)
     
     inputDataDict = readJSON(sourceFilePath)
     convertAndSaveData(inputDataDict, destinationFilePath)
