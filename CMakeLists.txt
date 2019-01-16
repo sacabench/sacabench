@@ -113,8 +113,11 @@ add_subdirectory(external/reference_impls/msufsort)
 add_subdirectory(external/reference_impls/saca_k)
 add_subdirectory(external/reference_impls/parallel_divsufsort)
 
+if(SACA_ENABLE_CUDA)
 set(CMAKE_USE_PTHREADS_INIT OFF CACHE BOOL "")
 #set(gtest_disable_pthreads ON CACHE BOOL "")
+endif()
+
 add_subdirectory(test)
 add_subdirectory(bigtest)
 
