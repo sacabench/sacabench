@@ -126,7 +126,7 @@
     {fill=lime!80!white, postaction={pattern=north east lines}},
     {fill=red!80!white, postaction={pattern=north east lines}},
     {fill=yellow!80!white, postaction={pattern=north east lines}},
-    {fill=black!80!white, postaction={pattern=north east lines}},
+    {fill=black!30!white, postaction={pattern=north east lines}},
     {fill=blue!80!white, postaction={pattern=north east lines}},
     {fill=teal!80!white, postaction={pattern=north west lines}},
     {fill=orange!80!white, postaction={pattern=north west lines}},
@@ -134,7 +134,7 @@
     {fill=lime!80!white, postaction={pattern=north west lines}},
     {fill=red!80!white, postaction={pattern=north west lines}},
     {fill=yellow!80!white, postaction={pattern=north west lines}},
-    {fill=black!80!white, postaction={pattern=north west lines}},
+    {fill=black!30!white, postaction={pattern=north west lines}},
     {fill=blue!80!white, postaction={pattern=north west lines}},
     {fill=teal!80!white, postaction={pattern=horizontal lines}},
     {fill=orange!80!white, postaction={pattern=horizontal lines}},
@@ -142,7 +142,7 @@
     {fill=lime!80!white, postaction={pattern=horizontal lines}},
     {fill=red!80!white, postaction={pattern=horizontal lines}},
     {fill=yellow!80!white, postaction={pattern=horizontal lines}},
-    {fill=black!80!white, postaction={pattern=horizontal lines}},
+    {fill=black!30!white, postaction={pattern=horizontal lines}},
     {fill=blue!80!white, postaction={pattern=horizontal lines}},
     {fill=teal!80!white, postaction={pattern=crosshatch}},
     {fill=orange!80!white, postaction={pattern=crosshatch}},
@@ -150,7 +150,7 @@
     {fill=lime!80!white, postaction={pattern=crosshatch}},
     {fill=red!80!white, postaction={pattern=crosshatch}},
     {fill=yellow!80!white, postaction={pattern=crosshatch}},
-    {fill=black!80!white, postaction={pattern=crosshatch}},
+    {fill=black!30!white, postaction={pattern=crosshatch}},
     {fill=blue!80!white, postaction={pattern=crosshatch}},
     {fill=teal!80!white, postaction={pattern=crosshatch dots}},
     {fill=orange!80!white, postaction={pattern=crosshatch dots}},
@@ -158,7 +158,7 @@
     {fill=lime!80!white, postaction={pattern=crosshatch dots}},
     {fill=red!80!white, postaction={pattern=crosshatch dots}},
     {fill=yellow!80!white, postaction={pattern=crosshatch dots}},
-    {fill=black!80!white, postaction={pattern=crosshatch dots}},
+    {fill=black!30!white, postaction={pattern=crosshatch dots}},
     {fill=blue!80!white, postaction={pattern=crosshatch dots}},
     {fill=teal!80!white, postaction={pattern=fivepointed stars}},
     {fill=orange!80!white, postaction={pattern=fivepointed stars}},
@@ -166,7 +166,7 @@
     {fill=lime!80!white, postaction={pattern=fivepointed stars}},
     {fill=red!80!white, postaction={pattern=fivepointed stars}},
     {fill=yellow!80!white, postaction={pattern=fivepointed stars}},
-    {fill=black!80!white, postaction={pattern=fivepointed stars}},
+    {fill=black!30!white, postaction={pattern=fivepointed stars}},
     {fill=blue!80!white, postaction={pattern=fivepointed stars}},
     }
 
@@ -234,7 +234,7 @@
             %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
             %% FROM ( 
             %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
-            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY time
         \end{axis}
     \end{tikzpicture}
     \hfill
@@ -248,7 +248,7 @@
             %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
             %% FROM ( 
             %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
-            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY time
             \legend{}
         \end{axis}
     \end{tikzpicture}
@@ -276,7 +276,7 @@
             %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
             %% FROM ( 
             %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
-            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY memPeak
         \end{axis}
     \end{tikzpicture}
     \hfill
@@ -290,7 +290,7 @@
             %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
             %% FROM ( 
             %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
-            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY memPeak
             \legend{}
         \end{axis}
     \end{tikzpicture}

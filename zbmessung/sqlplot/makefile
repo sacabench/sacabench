@@ -1,7 +1,5 @@
 TEX = latexmk
-FILE = main
 BENCHMARK = plots.json
-EXTENSION = .tex
 
 .PHONY: all clean run
 
@@ -14,16 +12,22 @@ sqlplottools:
 
 json:
 	mkdir -p result
-	python json_to_result_converter.py $(BENCHMARK) result
+	python json_to_result_converter.py plotconfig.json $(BENCHMARK) result
 
 sql: json sqlplottools
-	./sqlplottools/build/src/sp-process $(FILE)$(EXTENSION)
+	for file in $(shell ls *.tex); do \
+		./sqlplottools/build/src/sp-process $$file; \
+	done;
 
 main: sql
-	$(TEX) -pdf $(FILE)
+	for file in $(shell ls *.tex); do \
+		$(TEX) -pdf $$file; \
+	done;
 
 run: main
-	$(TEX) -pdf -pv $(FILE)
+	for file in $(shell ls *.tex); do \
+		$(TEX) -pdf -pv $$file; \
+	done;
 
 clean:
 	$(TEX) -C
