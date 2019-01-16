@@ -1,0 +1,12 @@
+[
+    {
+        "input": "pc_english.200MB",
+        "prefix": "1024",
+        "repetitions": "3"
+    },
+    {
+        "input": "pc_dna.200MB",
+        "prefix": "1024",
+        "repetitions": "3"
+    }
+]

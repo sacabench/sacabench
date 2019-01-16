@@ -295,23 +295,23 @@ def convertAndSaveData(dict, path):
 # GENERATE TEX SOURCE CODE
 ########################################
 class Config:
-    def __init__(self, input_dict):
+    def __init__(self, config_dict, input_dict):
         algo_count = len(input_dict)
         self.bar_width = 160 / algo_count
-        
-        configuration_dict = input_dict[0][0]["stats"]
-        print(configuration_dict)
-        for configuration_entry in configuration_dict:
-            if configuration_entry["key"] == "repetitions":
-                self.repetition_count = configuration_entry["value"]
-            if configuration_entry["key"] == "prefix":
-                self.prefix = configuration_entry["value"]
-            if get_processor_info():
-                self.cpu = get_processor_info()
-            if configuration_entry["key"] == "input_file":
-                self.input_file = configuration_entry["value"]
 
-def generate_tex(input_dict):
+        print(config_dict)
+        
+        if config_dict["repetitions"]:
+            self.repetition_count = config_dict["repetitions"]
+        if config_dict["prefix"]:
+            self.prefix = config_dict["prefix"]
+        if get_processor_info():
+            self.cpu = get_processor_info()
+        if config_dict["input"]:
+            self.input_file = config_dict["input"]
+            self.escaped_input_file = config_dict["input"].replace("_", "\_")
+
+def generate_tex(config_dict, input_dict):
     file_loader = FileSystemLoader('templates')
     env = Environment(
             block_start_string = '\BLOCK{',
@@ -325,18 +325,18 @@ def generate_tex(input_dict):
             trim_blocks = True,
             autoescape = False,
             loader = file_loader)
-    template = env.get_template('main.tex')
+    template = env.get_template('batch.tex')
 
-    config = Config(input_dict)
-
-    output_file = open('main.tex', 'w')
-    output_file.write(template.render(config=config))
+    for count, configuration in enumerate(config_dict):
+        config = Config(configuration, input_dict)
+        output_file = open('batch-{}.tex'.format(count), 'w')
+        output_file.write(template.render(config=config))
 
 ########################################
 # MAIN
 ########################################
     
-def main(sourceFilePath, destinationFilePath):
+def main(plotConfigPath, sourceFilePath, destinationFilePath):
     """
     Main function for processing the result json of the saca benchmark tool.
     It converts the json at the given source file path into two result text files.
@@ -355,15 +355,17 @@ def main(sourceFilePath, destinationFilePath):
     processor_info = get_processor_info()
     print(processor_info)
     
+    configDict = readJSON(plotConfigPath)
     inputDataDict = readJSON(sourceFilePath)
     convertAndSaveData(inputDataDict, destinationFilePath)
-    generate_tex(inputDataDict)
+    generate_tex(configDict, inputDataDict)
 
 if __name__ == "__main__":
     
     # Get source and destination file path from given arguments.
-    sourceFilePath = sys.argv[1]
-    destinationFilePath = sys.argv[2]
+    plotConfigPath = sys.argv[1]
+    sourceFilePath = sys.argv[2]
+    destinationFilePath = sys.argv[3]
 
     # start main function
-    main(sourceFilePath, destinationFilePath)
+    main(plotConfigPath, sourceFilePath, destinationFilePath)
