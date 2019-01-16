@@ -182,21 +182,35 @@ public:
 
     }
 
-    template <typename T, typename sa_index>
-    static void induce_L_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
-                               bool end, span<sa_index> SA) {
-        generate_buckets<T, sa_index>(s, buckets, K, end);
-        for (size_t i = 0; i < s.size(); i++) {
-            ssize pre_index =
-                SA[i] - (sa_index)1; // pre index of the ith suffix array position
+    //template <typename T, typename sa_index>
+    //static void induce_L_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
+    //                           bool end, span<sa_index> SA) {
+    //    generate_buckets<T, sa_index>(s, buckets, K, end);
+    //    for (size_t i = 0; i < s.size(); i++) {
+    //        ssize pre_index =
+    //            SA[i] - (sa_index)1; // pre index of the ith suffix array position
 
-            if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 &&
-                t[pre_index] == L_Type) { // pre index is type L
-                SA[buckets[s.at(pre_index)]++] =
-                    pre_index; // "sort" index in the bucket
-            }
-        }
-    }
+    //        if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 &&
+    //            t[pre_index] == L_Type) { // pre index is type L
+    //            SA[buckets[s.at(pre_index)]++] =
+    //                pre_index; // "sort" index in the bucket
+    //        }
+    //    }
+    //}
+
+        //template <typename T, typename sa_index>
+    //static void induce_S_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
+    //                           bool end, span<sa_index> SA) {
+    //    generate_buckets<T, sa_index>(s, buckets, K, end);
+    //    for (ssize i = s.size() - 1; i >= 0; i--) {
+    //        ssize pre_index = SA[i] - (sa_index)1;
+
+    //        if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 && t[pre_index] == S_Type) {
+    //            SA[--buckets[s.at(pre_index)]] = pre_index;
+    //        }
+    //    }
+    //}
+
 
     // Induce L_Types for Block B_ks
     // k = blocknum
@@ -206,7 +220,7 @@ public:
 
         // translate: translates the position in the block to global pos
         // w_count: pointer for the next free entry in write-buffer w
-        sa_index translate = (sa_index)((blocknum)*(part_length));
+        sa_index translate = (sa_index)(blocknum*part_length);
         size_t w_count = 0;
         sa_index chr;
 
@@ -244,33 +258,49 @@ public:
             }
         }
 
-        // Print w
-        /*for (sa_index i = 0; i < w.size(); i++)
-        {
-            if (i == (sa_index)0)
-                std::cout << "w: [ ";
-
-            std::cout << "<" << (ssize)w[i].first << "," << (ssize)w[i].second << "> ";
-
-            if (i == (sa_index)w.size() - (sa_index)1)
-                std::cout << "]" << std::endl;
-        }*/
-
-
     }
 
+    // Induce S Types for Block B_ks
+    // k = blocknum
     template <typename T, typename sa_index>
-    static void induce_S_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
-                               bool end, span<sa_index> SA) {
-        generate_buckets<T, sa_index>(s, buckets, K, end);
-        for (ssize i = s.size() - 1; i >= 0; i--) {
-            ssize pre_index = SA[i] - (sa_index)1;
+    static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, span<bool> t, size_t blocknum,
+        container<std::pair<sa_index, sa_index>> &r, container<std::pair<sa_index, sa_index>> &w, ssize part_length) {
 
-            if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 && t[pre_index] == S_Type) {
-                SA[--buckets[s.at(pre_index)]] = pre_index;
+        // translate: translates the position in the block to global pos
+        // w_count: pointer for the next free entry in write-buffer w
+        sa_index translate = (sa_index)(blocknum*part_length);
+        size_t w_count = 0;
+        char chr;
+
+        const auto end = std::min(part_length, (ssize)(SA.size() - translate)) - 1;
+
+        for (ssize i = end; i >= 0; --i)
+        {
+            ssize pos = (ssize)SA[i + translate] - 1;
+
+            if ((ssize)SA[(sa_index)i + translate] >= (ssize)0 && pos >= (ssize)0 && pos < (ssize)SA.size() && t[pos] == S_Type)
+            {
+
+                if (r[i].first == (sa_index)0)
+                    chr = (char)s[(sa_index)pos];
+                else
+                    chr = (char)r[i].first;
+
+                sa_index idx = --buckets[chr];
+
+                // if idx is in Block k or Block k+1
+                if (translate <= idx && idx <= translate + (sa_index)(2 * part_length) && idx < SA.size()) {
+                    SA[idx] = (sa_index)pos;
+                }
+                else if (idx < SA.size()) {
+                    w[w_count++] = std::make_pair(idx, (sa_index)pos);
+                }
+
             }
         }
+
     }
+
 
     // Updating and writing into the SuffixArray, w needs to be properly connected to the rest of the code now
     template <typename sa_index>
@@ -317,6 +347,74 @@ public:
             w[i].second = static_cast<sa_index>(-1);
         }
     }
+
+    template <typename T, typename sa_index>
+    static void pipelined_Inducing(T s, span<sa_index> SA, span<bool> t, container<sa_index> buckets, size_t K, size_t thread_count,
+        container<std::pair<sa_index, sa_index>> &r, container<std::pair<sa_index, sa_index>> &w, ssize part_length, bool type) {
+
+        generate_buckets<T, sa_index>(s, buckets, K, type);
+
+        ssize preparing_block = -1;
+        ssize inducing_block = -2;
+        ssize updating_block = -3;
+
+        ssize blocknum = 0;
+
+        // To differentiate the L-Type-Inducing from the S-Type-Inducing we just invert the blocknumber we are currently handling when functions are being called
+        // (Since the only difference between L- and S-Type inducing is basically in which order the text is being read)
+
+        while (blocknum <= (ssize)thread_count + 2) {
+
+            // Preparing, inducing and updating. Note, that in the first iteration, only the first block is being prepared.
+            if (blocknum < (ssize)thread_count + 1) {
+                preparing_block++;
+                inducing_block++;
+                updating_block++;
+            }
+
+            // Preparing for all block finished
+            if (blocknum == (ssize)thread_count + 1) {
+                preparing_block = -1;
+                inducing_block++;
+                updating_block++;
+            }
+
+            // Preparing and inducing finished
+            if (blocknum == (ssize)thread_count + 2) {
+                preparing_block = -1;
+                inducing_block = -1;
+                updating_block++;
+            }
+
+
+            if (updating_block >= (ssize)0) {
+                std::cout << "Upda for block" << ((type == L_Type) ? updating_block : (thread_count - updating_block)) << " in iteration " << ((type == L_Type) ? blocknum : (thread_count - blocknum + 2)) << std::endl;
+                update_parallel<sa_index>(thread_count, part_length, &w, SA);
+            }
+
+            if (inducing_block >= (ssize)0) {
+                if (type == L_Type) {
+                    std::cout << "L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
+                    induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length);
+                }
+                else
+                {
+                    std::cout << "S-In for block" << (thread_count - inducing_block) << " in iteration " << (thread_count - blocknum)+2 << std::endl;
+                    induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, (thread_count - inducing_block), r, w, part_length);
+                }
+            }
+
+            if (preparing_block >= (ssize)0) {
+                std::cout << "Prep for block" << ((type == L_Type) ? preparing_block : (thread_count - preparing_block)) << " in iteration " << ((type == L_Type) ? blocknum : (thread_count - blocknum + 2)) << std::endl;
+                prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, ((type == L_Type) ? preparing_block : (thread_count - preparing_block)));
+            }
+
+            blocknum++;
+
+        }
+
+    }
+
 
     template <typename T, typename sa_index>
     static void run_saca(T s, span<sa_index> SA, size_t K) {
@@ -383,48 +481,22 @@ public:
             }
         }
 
-        generate_buckets<T, sa_index>(s, buckets, K, false);
-       
-        // Main Loop for each block, need to add shifted parallelization for blocks later
-        for (size_t blocknum = 0; blocknum <= thread_count; blocknum++)
-        { 
-            std::cout << "loop for block " << blocknum << std::endl;
+        pipelined_Inducing(s, SA, t, buckets, K, thread_count, r, w, part_length, L_Type);
 
-            /*for (ssize i = 0; i < (ssize)r.size(); i++) {
-                r[i].first = (sa_index)(0);
-                r[i].second = static_cast<sa_index>(-1);
-            }
+        generate_buckets<T, sa_index>(s, buckets, K, true);
 
-            for (size_t i = 0; i < thread_count - 1; i++) {
-
-                size_t j = 0;
-                sa_index pos;
-                sa_index chr;
-
-                j = (blocknum*part_length) + i;
-                if (j < (size_t)SA.size() && SA[j] != static_cast<sa_index>(-1)) {
-                    pos = SA[j] - static_cast<sa_index>(1);
-                    if (pos >= static_cast<sa_index>(0) && pos != static_cast<sa_index>(-1) && pos < t.size() && t[pos] == L_Type) {
-                        chr = s[pos];
-                        r[i] = std::make_pair(chr, pos);
-                        std::cout << "Write Tuple <" << (ssize)chr << ", " << (ssize)pos << "> to r, j = " << j << ", k = " << blocknum << ", i = " << i << ", pl = " << part_length << std::endl;
-                    }
-                }
-            }*/
-
-
-
+        for (ssize blocknum = thread_count; blocknum >= 0; blocknum--)
+        {
             // Parallel Preparation Phase
-            prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, blocknum);
-
-            induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, blocknum, r, w, part_length);
+            prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, S_Type, thread_count, blocknum);
+            induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, blocknum, r, w, part_length);
 
             // Parallel Updating Phase
             update_parallel<sa_index>(thread_count, part_length, &w, SA);
         }
 
-        induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
-        
+        // pipelined_Inducing(s, SA, t, buckets, K, thread_count, r, w, part_length, S_Type);
+
         // Recursion Call #############################################################
         
         // because we have at most n/2 LMS, we can store the sorted indices in
@@ -496,16 +568,7 @@ public:
         }
 
         std::cout << "start final inducing..." << std::endl;
-        /*for (sa_index i = 0; i < s.size(); i++)
-        {
-            if (i == (sa_index)0)
-                std::cout << "SA before inducing LMS :   [ ";
 
-            std::cout << (ssize)SA[i] << " ";
-
-            if (i == (sa_index)SA.size() - (sa_index)1)
-                std::cout << "]" << std::endl;
-        }*/
         // FINAL INDUCING ##########################################################
 
         // induce the final SA
@@ -535,59 +598,24 @@ public:
 
         std::cout << "finished inducing LMS..." << std::endl;
 
-        generate_buckets<T, sa_index>(s, buckets, K, false);
-
-        // Shifted parallelization is applied here -> B0 preparing, B0 Inducing B1 Preparing, B0 Updating B1 Inducing B2 Preparing ...
-        // For n blocks, n + 2 iterations are neeeded.
-
-        ssize preparing_block = -1;
-        ssize inducing_block = -2;
-        ssize updating_block = -3;
-
-        for (size_t blocknum = 0; blocknum <= thread_count + 2; blocknum++) {
-
-            // Preparing, inducing and updating. Note, that in the first iteration, only the first block is being prepared.
-            if (blocknum < thread_count + 1) {
-                preparing_block++;
-                inducing_block++;
-                updating_block++;
-            }
-
-            // Preparing for all block finished
-            if (blocknum == thread_count + 1) {
-                preparing_block = -1;
-                inducing_block++;
-                updating_block++;
-            }
-
-            // Preparing and inducing finished
-            if (blocknum == thread_count + 2) {
-                preparing_block = -1;
-                inducing_block = -1;
-                updating_block++;
-            }
-
-
-            if (updating_block >= (ssize)0) {
-                std::cout << "Upda for block" << updating_block << " in iteration " << blocknum << std::endl;
-                update_parallel<sa_index>(thread_count, part_length, &w, SA);
-            }
-
-            if (inducing_block >= (ssize)0) {
-                std::cout << "L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
-                induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length);
-            }
-
-            if (preparing_block >= (ssize)0) {
-                std::cout << "Prep for block" << preparing_block << " in iteration " << blocknum << std::endl;
-                prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, preparing_block);
-            }
-
-        } 
-
         
-        std::cout << "finished inducing L Types" << std::endl;
-        induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
+        pipelined_Inducing(s, SA, t, buckets, K, thread_count, r, w, part_length, L_Type);
+
+        generate_buckets<T, sa_index>(s, buckets, K, true);
+
+        for (ssize blocknum = thread_count; blocknum >= 0; blocknum--)
+        {
+            // Parallel Preparation Phase
+            prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, S_Type, thread_count, blocknum);
+            induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, blocknum, r, w, part_length);
+
+            // Parallel Updating Phase
+            update_parallel<sa_index>(thread_count, part_length, &w, SA);
+        }
+
+
+        // pipelined_Inducing(s, SA, t, buckets, K, thread_count, r, w, part_length, S_Type);
+
         std::cout << "finished inducing S Types" << std::endl;
 
         for (sa_index i = 0; i < s.size(); i++)
