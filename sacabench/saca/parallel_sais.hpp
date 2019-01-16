@@ -299,8 +299,6 @@ public:
 
         std::vector<std::thread> threads;
 
-        std::cout << "Start updating" << std::endl;
-
         for (size_t i = 0; i < thread_count; i++) {
             threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA, i));
         }
@@ -345,6 +343,7 @@ public:
         // Prepare blocks for parallel computing
         size_t thread_count = std::thread::hardware_concurrency();
         thread_count = std::min(thread_count, s.size() - 1);
+        thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
@@ -529,38 +528,57 @@ public:
 
         std::cout << "finished inducing LMS..." << std::endl;
 
-        // Print out SA
-        /*for (sa_index i = 0; i < s.size(); i++)
-        {
-            if (i == (sa_index)0)
-                std::cout << "SA before final Inducing :   [ ";
-
-            std::cout << (ssize)SA[i] << " ";
-
-            if (i == (sa_index)SA.size() - (sa_index)1)
-                std::cout << "]" << std::endl;
-        }*/
-
          generate_buckets<T, sa_index>(s, buckets, K, false);
 
         //Main Loop for each block, need to add shifted parallelization for blocks later
-        for (size_t blocknum = 0; blocknum <= thread_count; blocknum++)
-        {
-            std::cout << "loop for block " << blocknum << std::endl;
+        
+        
+        // Shifted parallelization is applied here -> B0 preparing, B0 Inducing B1 Preparing, B0 Updating B1 Inducing B2 Preparing ...
+        // For n blocks, n + 2 iterations are neeeded.
+        
+        ssize preparing_block = -1;
+        ssize inducing_block = -2;
+        ssize updating_block = -3;
+        
+        for (size_t blocknum = 0; blocknum <= thread_count + 2; blocknum++) {
+        
+            // Preparing, inducing and updating. Note, that in the first iteration, only the first block is being prepared.
+            if (blocknum < thread_count + 1) {
+                preparing_block++;
+                inducing_block++;
+                updating_block++;
+            }
+            
+            // Preparing for all block finished
+            if (blocknum == thread_count + 1) {
+                preparing_block = -1;
+                inducing_block++;
+                updating_block++;
+            }
+            
+            // Preparing and inducing finished
+            if (blocknum == thread_count + 2) {
+                preparing_block = -1;
+                inducing_block = -1;
+                updating_block++;
+            }
 
-            // Parallel Preparation Phase
-            // TODO: Wait until preparing is fixed, give blocknum as parameter
-            prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, blocknum);
-
-            induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, blocknum, r, w, part_length);
-
-            // Parallel Updating Phase
-
-            update_parallel<sa_index>(thread_count, part_length, &w, SA);
+            if (preparing_block >= (ssize)0) {
+                std::cout<<"Prep for block" << preparing_block << " in iteration " << blocknum << std::endl;
+                prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, preparing_block);
+            }
+            
+            if (inducing_block >= (ssize)0) {
+                std::cout<<"L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
+                induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length);
+            }
+            
+            if (updating_block >= (ssize)0) {
+                std::cout<<"Upda for block" << updating_block << " in iteration " << blocknum << std::endl;
+                update_parallel<sa_index>(thread_count, part_length, &w, SA);
+            }
         }
-
-
-        // induce_L_Types<T, sa_index>(s, buckets, t, K, false, SA);
+        
         std::cout << "finished inducing L Types" << std::endl;
         induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
         std::cout << "finished inducing S Types" << std::endl;
