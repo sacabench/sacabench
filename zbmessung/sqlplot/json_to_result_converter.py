@@ -8,6 +8,7 @@
 import sys      # Dependency for accessing arguments.
 import json     # Dependency for processing the json files.
 from jinja2 import Environment, FileSystemLoader # Parsing template files
+import platform, subprocess  # Getting information about CPU
 
 ########################################
 # FILE HELPER
@@ -46,6 +47,18 @@ def writeFile(filepath, content):
     textFile = open(filepath, "w")
     textFile.write(content)
     textFile.close()
+    
+    
+def get_processor_info():
+    if platform.system() == "Windows":
+        family = platform.processor()
+        name = subprocess.check_output(["wmic","cpu","get", "name"]).strip().split("\n")[1]
+        return ' '.join([name, family])
+    elif platform.system() == "Linux":
+        command = "grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'"
+        name = subprocess.check_output(command, shell=True).strip().split("\n")[1]
+        return name
+    return ""
 
 ########################################
 # PROCESSING ALGORITHM DATA
@@ -285,13 +298,18 @@ class Config:
     def __init__(self, input_dict):
         algo_count = len(input_dict)
         self.bar_width = 160 / algo_count
-
+        
         configuration_dict = input_dict[0][0]["stats"]
+        print configuration_dict
         for configuration_entry in configuration_dict:
             if configuration_entry["key"] == "repetitions":
                 self.repetition_count = configuration_entry["value"]
             if configuration_entry["key"] == "prefix":
                 self.prefix = configuration_entry["value"]
+            if get_processor_info():
+                self.cpu = get_processor_info()
+            if configuration_entry["key"] == "input_file":
+                self.input_file = configuration_entry["value"]
 
 def generate_tex(input_dict):
     file_loader = FileSystemLoader('templates')
@@ -333,7 +351,10 @@ def main(sourceFilePath, destinationFilePath):
     destinationFilePath : str
         The directory to which the two result files will be saved to.
     """
-
+    
+    processor_info = get_processor_info()
+    print processor_info
+    
     inputDataDict = readJSON(sourceFilePath)
     convertAndSaveData(inputDataDict, destinationFilePath)
     generate_tex(inputDataDict)
