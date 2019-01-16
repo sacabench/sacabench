@@ -27,8 +27,13 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_saca_k
   ${CMAKE_DL_LIBS}
   atomic
+)
+
+if(SACA_ENABLE_CUDA)
+target_link_libraries(saca_bench_lib INTERFACE
   cuda_wrapper
 )
+endif()
 
 # Create executable that runs all registered SACAs
 add_executable(sacabench
