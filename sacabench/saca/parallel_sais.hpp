@@ -146,7 +146,7 @@ public:
         auto &r = *r_;
         // overwrite readbuffer with NULLs
         for (ssize i = 0; i < (ssize)r.size(); i++) {
-            r[i].first = '\0';
+            r[i].first = (sa_index)(0);
             r[i].second = static_cast<sa_index>(-1);
         }
 
@@ -287,7 +287,7 @@ public:
 
 
             w[i].first = static_cast<sa_index>(0);
-            w[i].second = static_cast<sa_index>(-1);
+            w[i].second = (sa_index)(-1);
 
         }
     }
@@ -313,7 +313,7 @@ public:
     static void init_Write_Buffer(ssize part_length, container<std::pair<sa_index, sa_index>> &w) {
         
         for (ssize_t i = 0; i < part_length; i++) {
-            w[i].first = '\0';
+            w[i].first = (sa_index)(0);
             w[i].second = static_cast<sa_index>(-1);
         }
     }
@@ -343,6 +343,7 @@ public:
         // Prepare blocks for parallel computing
         size_t thread_count = std::thread::hardware_concurrency();
         thread_count = std::min(thread_count, s.size() - 1);
+        thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
@@ -353,8 +354,6 @@ public:
         init_Write_Buffer(part_length, w);
 
         compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
-        
-       
 
         // First Induction ###################################################
 
@@ -374,51 +373,7 @@ public:
             }
         }
 
-
-        induce_L_Types<T, sa_index>(s, buckets, t, K, false, SA);
-        std::stringstream sa_string;
-        // Print out SA
-        for (sa_index i = 0; i < s.size(); i++)
-        {
-            if (i == (sa_index)0)
-                sa_string << "SA at the end of sequential :   [ ";
-
-            sa_string << (ssize)SA[i];
-            sa_string << " ";
-
-            if (i == (sa_index)SA.size() - (sa_index)1)
-                sa_string << "]";
-        }
-
-        // Inserting LMS 
-        {
-            generate_buckets<T, sa_index>(s, buckets, K, true);
-            // Initialize each entry in SA with -1
-            for (size_t i = 0; i < s.size(); i++) {
-                SA[i] = (sa_index)-1;
-            }
-            // iterate from left to right (starting by 1 cause 0 can never be LMS)
-            // and put LMS to end of the bucket and move bucket's tail backwards
-            for (size_t i = 1; i < s.size(); i++) {
-                if (is_LMS(t, i)) {
-                    SA[--buckets[s.at(i)]] = i;
-                }
-            }
-        }
-
         generate_buckets<T, sa_index>(s, buckets, K, false);
-
-        // Print out Bucket Array
-        /*for (size_t i = 0; i < buckets.size(); i++)
-        {
-            if (i == 0)
-                std::cout << "bucketarray : [ ";
-
-            std::cout << (ssize)buckets[i] << " ";
-
-            if (i == buckets.size() - 1)
-                std::cout << "]" << std::endl;
-        }*/
        
         // Main Loop for each block, need to add shifted parallelization for blocks later
         for (size_t blocknum = 0; blocknum <= thread_count; blocknum++)
@@ -434,32 +389,19 @@ public:
             // Parallel Updating Phase
 
             update_parallel<sa_index>(thread_count, part_length, &w, SA);
-
-            for (sa_index i = 0; i < s.size(); i++)
-            {
-                if (i == (sa_index)0)
-                    std::cout << "SA at the end of block " << blocknum << "  :   [ ";
-
-                std::cout << (ssize)SA[i] << " ";
-
-                if (i == (sa_index)SA.size() - (sa_index)1)
-                    std::cout << "]" << std::endl;
-            }
         }
 
         // Print out SA
         for (sa_index i = 0; i < s.size(); i++)
         {
             if (i == (sa_index)0)
-                std::cout << "SA at the end of pipeline   :   [ ";
+                std::cout << "SA at the end of L pipeline :   [ ";
 
             std::cout << (ssize)SA[i] << " ";
 
             if (i == (sa_index)SA.size() - (sa_index)1)
                 std::cout << "]" << std::endl;
         }
-
-        std::cout << sa_string.str() << std::endl;
 
         induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
 
@@ -527,7 +469,6 @@ public:
             SA[n1 + current_LMS] = name - 1;
         }
 
-        // not needed
         for (ssize i = s.size() - 1, j = s.size() - 1; i >= n1; i--) {
             if (SA[i] >= (sa_index)0 && SA[i] != ((sa_index)-1)) {
                 SA[j--] = SA[i];
@@ -561,11 +502,16 @@ public:
 
         // induce the final SA
         generate_buckets<T, sa_index>(s, buckets, K, true);
+        std::cout << "buckets generated" << std::endl;
         size_t j;
         for (size_t i = 1, j = 0; i < s.size(); i++) {
+            std::cout << "check is_LMS" << std::endl;
             if (is_LMS(t, i)) {
+                std::cout << "finished checking, j = " << j << ", i = "  << i << std::endl;
                 s1[j++] = i;
             }
+            std::cout << "finished iteration" << std::endl;
+
         }
         std::cout << "start final inducing1..." << std::endl;
         for (ssize i = 0; i < n1; i++) {
@@ -584,8 +530,8 @@ public:
 
         std::cout << "finished inducing LMS..." << std::endl;
 
-        //// Print out SA
-        for (sa_index i = 0; i < s.size(); i++)
+        // Print out SA
+        /*for (sa_index i = 0; i < s.size(); i++)
         {
             if (i == (sa_index)0)
                 std::cout << "SA before final Inducing :   [ ";
@@ -594,23 +540,11 @@ public:
 
             if (i == (sa_index)SA.size() - (sa_index)1)
                 std::cout << "]" << std::endl;
-        }
-
-        generate_buckets<T, sa_index>(s, buckets, K, false);
-
-        // Print out Bucket Array
-        /*for (size_t i = 0; i < buckets.size(); i++)
-        {
-        if (i == 0)
-        std::cout << "bucketarray : [ ";
-
-        std::cout << (ssize)buckets[i] << " ";
-
-        if (i == buckets.size() - 1)
-        std::cout << "]" << std::endl;
         }*/
 
-        // Main Loop for each block, need to add shifted parallelization for blocks later
+         generate_buckets<T, sa_index>(s, buckets, K, false);
+
+        //Main Loop for each block, need to add shifted parallelization for blocks later
         for (size_t blocknum = 0; blocknum <= thread_count; blocknum++)
         {
             std::cout << "loop for block " << blocknum << std::endl;
