@@ -274,22 +274,24 @@ public:
 
     // Updating and writing into the SuffixArray, w needs to be properly connected to the rest of the code now
     template <typename sa_index>
-    static void update_SA(ssize part_length, container<std::pair<sa_index, sa_index>> *w_, span<sa_index> SA) {
+    static void update_SA(ssize part_length, container<std::pair<sa_index, sa_index>> *w_, span<sa_index> SA, size_t thread_id) {
         
         auto &w = *w_;
+        std::cout << "Started updating " << thread_id << std::endl;
+        size_t offset = thread_id * part_length;
 
-        for (ssize_t i = 0; i < part_length; i++) {
+        for (ssize_t i = offset; i < part_length + offset; i++) {
 
-            if (w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1) && (size_t)w[i].first < SA.size())
+            if (i < w.size() && w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1) && (size_t)w[i].first < SA.size())
             {
                 SA[w[i].first] = w[i].second; 
             }
 
-
-            w[i].first = static_cast<sa_index>(0);
+            w[i].first = (sa_index)(0);
             w[i].second = (sa_index)(-1);
-
         }
+
+        std::cout << "Finished updating " << thread_id << std::endl;
     }
 
     template <typename sa_index>
@@ -297,10 +299,10 @@ public:
 
         std::vector<std::thread> threads;
 
-        // std::cout << "Start updating" << std::endl;
+        std::cout << "Start updating" << std::endl;
 
         for (size_t i = 0; i < thread_count; i++) {
-            threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA));
+            threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA, i));
         }
 
         for (auto& t : threads) {
@@ -343,7 +345,6 @@ public:
         // Prepare blocks for parallel computing
         size_t thread_count = std::thread::hardware_concurrency();
         thread_count = std::min(thread_count, s.size() - 1);
-        thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
@@ -381,13 +382,11 @@ public:
             std::cout << "loop for block " << blocknum << std::endl;
 
             // Parallel Preparation Phase
-            // TODO: Wait until preparing is fixed, give blocknum as parameter
             prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, blocknum);
 
             induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, blocknum, r, w, part_length);
 
             // Parallel Updating Phase
-
             update_parallel<sa_index>(thread_count, part_length, &w, SA);
         }
 
