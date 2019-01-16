@@ -278,11 +278,11 @@ public:
         
         auto &w = *w_;
         std::cout << "Started updating " << thread_id << std::endl;
-        size_t offset = thread_id * part_length;
+        ssize offset = thread_id * part_length;
 
         for (ssize_t i = offset; i < part_length + offset; i++) {
 
-            if (i < w.size() && w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1) && (size_t)w[i].first < SA.size())
+            if (i < (ssize_t)w.size() && w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1) && (size_t)w[i].first < SA.size())
             {
                 SA[w[i].first] = w[i].second; 
             }
