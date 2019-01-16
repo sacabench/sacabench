@@ -26,7 +26,7 @@ TEST(Cub, prefix_sum) {
 
     */
     // Run exclusive prefix sum
-    exclusive_sum_64(d_in, d_out, num_items);
+    exclusive_sum(d_in, d_out, num_items);
 
     for(size_t i=0; i < num_items; ++i) {
         std::cout << d_in[i] << ", ";
