@@ -213,7 +213,7 @@ public:
         for (ssize i = 0; i < (ssize)part_length && i+(ssize)translate < (ssize)SA.size(); i++)
         {
             ssize pos = ((ssize)SA[i + translate] - 1);
-            std::cout << "i: " << (sa_index)i << ", pos: " << pos << ", i+trans: " << (i+translate) << std::endl;
+            //std::cout << "i: " << (sa_index)i << ", pos: " << pos << ", i+trans: " << (i+translate) << std::endl;
 
             if ((ssize)SA[(sa_index)i + translate] >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && t[pos] == L_Type)
             {
@@ -223,29 +223,29 @@ public:
                 else
                     chr = (sa_index)r[i].first;
 
-                std::cout << "chr: " << (sa_index)chr << std::endl;
+                //std::cout << "chr: " << (sa_index)chr << std::endl;
 
                 sa_index idx = buckets[chr];
                 buckets[chr]++;
 
-                std::cout << "idx: " << (sa_index)idx << std::endl;
+                //std::cout << "idx: " << (sa_index)idx << std::endl;
 
                 // if idx is in Block k or Block k+1
                 if (translate <= idx && idx <= translate + (sa_index)(2 * part_length) && idx < SA.size()) {
                     SA[idx] = (sa_index)pos;
-                    std::cout << "Directly written " << (size_t)pos << " to pos " << (size_t)idx << std::endl;
+                    //std::cout << "Directly written " << (size_t)pos << " to pos " << (size_t)idx << std::endl;
                 }
                 else if (idx < SA.size()) {
                     w[w_count++] = std::make_pair((sa_index)idx, (sa_index)pos);
-                    std::cout << "Inserted Touple <" << (ssize)idx << ", " << (ssize)pos << "> at w_count " << (ssize)(w_count - 1) << " in w" << std::endl;
-                    std::cout << "Insertion Check <" << (ssize)(w[w_count-1].first) << ", " << (ssize)(w[w_count - 1].second) << "> at w_count " << (ssize)(w_count - 1) << " in w" << std::endl;
+                    //std::cout << "Inserted Touple <" << (ssize)idx << ", " << (ssize)pos << "> at w_count " << (ssize)(w_count - 1) << " in w" << std::endl;
+                    //std::cout << "Insertion Check <" << (ssize)(w[w_count-1].first) << ", " << (ssize)(w[w_count - 1].second) << "> at w_count " << (ssize)(w_count - 1) << " in w" << std::endl;
                 }
 
             }
         }
 
         // Print w
-        for (sa_index i = 0; i < w.size(); i++)
+        /*for (sa_index i = 0; i < w.size(); i++)
         {
             if (i == (sa_index)0)
                 std::cout << "w: [ ";
@@ -254,7 +254,7 @@ public:
 
             if (i == (sa_index)w.size() - (sa_index)1)
                 std::cout << "]" << std::endl;
-        }
+        }*/
 
 
     }
@@ -277,7 +277,7 @@ public:
     static void update_SA(ssize part_length, container<std::pair<sa_index, sa_index>> *w_, span<sa_index> SA, size_t thread_id) {
         
         auto &w = *w_;
-        std::cout << "Started updating " << thread_id << std::endl;
+        // std::cout << "Started updating " << thread_id << std::endl;
         ssize offset = thread_id * part_length;
 
         for (ssize_t i = offset; i < part_length + offset; i++) {
@@ -291,7 +291,7 @@ public:
             w[i].second = (sa_index)(-1);
         }
 
-        std::cout << "Finished updating " << thread_id << std::endl;
+        // std::cout << "Finished updating " << thread_id << std::endl;
     }
 
     template <typename sa_index>
@@ -332,7 +332,6 @@ public:
         std::cout << std::endl;
 
         std::cout << "s.size : " << s.size() << std::endl;
-        std::cout << "SA.size: " << SA.size() << std::endl;
 
 
         container<sa_index> buckets = make_container<sa_index>(K);
@@ -343,9 +342,18 @@ public:
         // Prepare blocks for parallel computing
         size_t thread_count = std::thread::hardware_concurrency();
         thread_count = std::min(thread_count, s.size() - 1);
-        thread_count = 1;
+        // thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
+
+        // a bit whacky, but its a workaround to keep the condition rest_length <= part_length
+        // Other idea: Only sequential algorithm if rest_length > part_length (since that only happens on very small inputs)
+        while (rest_length > part_length && thread_count > 1)
+        {
+            thread_count--;
+            part_length = s.size() / thread_count;
+            rest_length = (s.size() - (thread_count - 1) * part_length);
+        }
 
         // Read/Write Buffer for the pipeline
         container<std::pair<sa_index, sa_index>> r = make_container<std::pair<sa_index,sa_index>>(s.size());
@@ -354,6 +362,8 @@ public:
         init_Write_Buffer(part_length, w);
 
         compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
+
+        std::cout << "thread_count: " << thread_count << ", part_length: " << part_length << ", rest_length: " << rest_length << std::endl;
 
         // First Induction ###################################################
 
@@ -377,8 +387,32 @@ public:
        
         // Main Loop for each block, need to add shifted parallelization for blocks later
         for (size_t blocknum = 0; blocknum <= thread_count; blocknum++)
-        {
+        { 
             std::cout << "loop for block " << blocknum << std::endl;
+
+            /*for (ssize i = 0; i < (ssize)r.size(); i++) {
+                r[i].first = (sa_index)(0);
+                r[i].second = static_cast<sa_index>(-1);
+            }
+
+            for (size_t i = 0; i < thread_count - 1; i++) {
+
+                size_t j = 0;
+                sa_index pos;
+                sa_index chr;
+
+                j = (blocknum*part_length) + i;
+                if (j < (size_t)SA.size() && SA[j] != static_cast<sa_index>(-1)) {
+                    pos = SA[j] - static_cast<sa_index>(1);
+                    if (pos >= static_cast<sa_index>(0) && pos != static_cast<sa_index>(-1) && pos < t.size() && t[pos] == L_Type) {
+                        chr = s[pos];
+                        r[i] = std::make_pair(chr, pos);
+                        std::cout << "Write Tuple <" << (ssize)chr << ", " << (ssize)pos << "> to r, j = " << j << ", k = " << blocknum << ", i = " << i << ", pl = " << part_length << std::endl;
+                    }
+                }
+            }*/
+
+
 
             // Parallel Preparation Phase
             prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, blocknum);
@@ -389,31 +423,7 @@ public:
             update_parallel<sa_index>(thread_count, part_length, &w, SA);
         }
 
-        // Print out SA
-        for (sa_index i = 0; i < s.size(); i++)
-        {
-            if (i == (sa_index)0)
-                std::cout << "SA at the end of L pipeline :   [ ";
-
-            std::cout << (ssize)SA[i] << " ";
-
-            if (i == (sa_index)SA.size() - (sa_index)1)
-                std::cout << "]" << std::endl;
-        }
-
         induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
-
-        // Print out SA
-        for (sa_index i = 0; i < s.size(); i++)
-        {
-            if (i == (sa_index)0)
-                std::cout << "SA after inducing S-Types :   [ ";
-
-            std::cout << (ssize)SA[i] << " ";
-
-            if (i == (sa_index)SA.size() - (sa_index)1)
-                std::cout << "]" << std::endl;
-        }
         
         // Recursion Call #############################################################
         
@@ -430,8 +440,8 @@ public:
         // rest half of the suffix array can be used
         for (size_t i = n1; i < s.size(); i++) {
             SA[i] = (sa_index)-1;
-        }
-
+        } 
+         
         // The given names correspond to the buckets the LMS are sorted into.
         // To find the names, the strings have to be compared by its type and
         // lexicographical value per char
@@ -486,7 +496,7 @@ public:
         }
 
         std::cout << "start final inducing..." << std::endl;
-        for (sa_index i = 0; i < s.size(); i++)
+        /*for (sa_index i = 0; i < s.size(); i++)
         {
             if (i == (sa_index)0)
                 std::cout << "SA before inducing LMS :   [ ";
@@ -495,7 +505,7 @@ public:
 
             if (i == (sa_index)SA.size() - (sa_index)1)
                 std::cout << "]" << std::endl;
-        }
+        }*/
         // FINAL INDUCING ##########################################################
 
         // induce the final SA
@@ -503,12 +513,9 @@ public:
         std::cout << "buckets generated" << std::endl;
         size_t j;
         for (size_t i = 1, j = 0; i < s.size(); i++) {
-            std::cout << "check is_LMS" << std::endl;
             if (is_LMS(t, i)) {
-                std::cout << "finished checking, j = " << j << ", i = "  << i << std::endl;
                 s1[j++] = i;
             }
-            std::cout << "finished iteration" << std::endl;
 
         }
         std::cout << "start final inducing1..." << std::endl;
@@ -528,34 +535,31 @@ public:
 
         std::cout << "finished inducing LMS..." << std::endl;
 
-         generate_buckets<T, sa_index>(s, buckets, K, false);
+        generate_buckets<T, sa_index>(s, buckets, K, false);
 
-        //Main Loop for each block, need to add shifted parallelization for blocks later
-        
-        
         // Shifted parallelization is applied here -> B0 preparing, B0 Inducing B1 Preparing, B0 Updating B1 Inducing B2 Preparing ...
         // For n blocks, n + 2 iterations are neeeded.
-        
+
         ssize preparing_block = -1;
         ssize inducing_block = -2;
         ssize updating_block = -3;
-        
+
         for (size_t blocknum = 0; blocknum <= thread_count + 2; blocknum++) {
-        
+
             // Preparing, inducing and updating. Note, that in the first iteration, only the first block is being prepared.
             if (blocknum < thread_count + 1) {
                 preparing_block++;
                 inducing_block++;
                 updating_block++;
             }
-            
+
             // Preparing for all block finished
             if (blocknum == thread_count + 1) {
                 preparing_block = -1;
                 inducing_block++;
                 updating_block++;
             }
-            
+
             // Preparing and inducing finished
             if (blocknum == thread_count + 2) {
                 preparing_block = -1;
@@ -563,21 +567,24 @@ public:
                 updating_block++;
             }
 
-            if (preparing_block >= (ssize)0) {
-                std::cout<<"Prep for block" << preparing_block << " in iteration " << blocknum << std::endl;
-                prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, preparing_block);
-            }
-            
-            if (inducing_block >= (ssize)0) {
-                std::cout<<"L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
-                induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length);
-            }
-            
+
             if (updating_block >= (ssize)0) {
-                std::cout<<"Upda for block" << updating_block << " in iteration " << blocknum << std::endl;
+                std::cout << "Upda for block" << updating_block << " in iteration " << blocknum << std::endl;
                 update_parallel<sa_index>(thread_count, part_length, &w, SA);
             }
-        }
+
+            if (inducing_block >= (ssize)0) {
+                std::cout << "L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
+                induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length);
+            }
+
+            if (preparing_block >= (ssize)0) {
+                std::cout << "Prep for block" << preparing_block << " in iteration " << blocknum << std::endl;
+                prepare_parallel<T, sa_index>(s, part_length, &r, SA, t, L_Type, thread_count, preparing_block);
+            }
+
+        } 
+
         
         std::cout << "finished inducing L Types" << std::endl;
         induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
