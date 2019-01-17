@@ -19,9 +19,10 @@
             "pc_sources.200MB"
         ],
         "rep": 1,
-        "prefix": "200M",
+        "prefix": 200,
         "threads": [
-            1, 2, 4, 8, 16
-        ]
+            1, 2, 4, 8, 16, 20
+        ],
+        "weak_scale": false
     }
 }
