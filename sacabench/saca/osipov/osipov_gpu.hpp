@@ -385,31 +385,23 @@ private:
     static void construct_sa_internal(util::string_span text,
                     util::span<sa_index> out_sa) {
         // Allocate memory on gpu
-        std::cout << "allocate sa of size " << out_sa.size()*sizeof(sa_index) << " ." << std::endl;
         sa_index* sa = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-                std::cout << "allocate isa." << std::endl;
         sa_index* isa = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-            std::cout << "allocate aux." << std::endl;
         sa_index* aux = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        std::cout << "allocate text." << std::endl;
         sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        std::cout << "allocate h_rank." << std::endl;
         sa_index* h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        std::cout << "allocate two_h_rank." << std::endl;
         sa_index* two_h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
         // Transform text by wordpacking for gpu
-        std::cout << "wordpacking." << std::endl;
         word_packing(text.begin(), gpu_text, out_sa.size());
         auto impl = osipov_gpu_main<sa_index>(out_sa.size(), gpu_text, sa, isa,
                     aux, two_h_rank, h_rank);
 
-        std::cout << "initialize sa." << std::endl;
         impl.initialize_sa();
 
         osipov<sa_index>::prefix_doubling(text, out_sa, impl);
