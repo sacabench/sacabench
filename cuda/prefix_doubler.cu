@@ -7,8 +7,8 @@
 
 #include "prefix_doubler_interface.hpp"
 
-#define NUM_BLOCKS 4
-#define NUM_THREADS_PER_BLOCK 32
+#define NUM_BLOCKS 1024
+#define NUM_THREADS_PER_BLOCK 256
 
 template <typename sa_index>
 struct utils {
@@ -16,14 +16,6 @@ struct utils {
                                               << (sizeof(sa_index) * 8 - 1);
 };
 
-struct Max_without_branching
-{
-    template <typename T>
-    CUB_RUNTIME_FUNCTION __forceinline__ __device__
-    T operator()(const T &x, const T &y) const {
-        return (x ^ ((x ^ y) & -(x < y)));
-    }
-};
 
 template <typename sa_index>
 struct Compare_four_chars
@@ -196,50 +188,7 @@ void initialize_sa_gpu(size_t size, uint64_t* sa) {
     initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
     cudaDeviceSynchronize();
 }
-/*
-    Calculates inclusive prefix sum on GPU using the provided CUB Method
-*/
-template <typename OP, typename sa_index>
-void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
-{
-    //TODO: submit allocated memory instead of allocating new array
-    //Indices
-    sa_index  *values_out;   // e.g., [        ...        ]
 
-    // Allocate Unified Memory – accessible from CPU or GPU
-    cudaMallocManaged(&values_out, n*sizeof(sa_index));
-
-    // Determine temporary device storage requirements
-    void     *d_temp_storage = NULL;
-    size_t   temp_storage_bytes = 0;
-
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, values_out,op, n);
-    // Allocate temporary storage
-    cudaMalloc(&d_temp_storage, temp_storage_bytes);
-    // Run exclusive prefix sum
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, values_out,op, n);
-
-    cudaDeviceSynchronize();
-
-    //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
-
-    cudaMemcpy(array, values_out, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-
-    cudaFree(values_out);
-
-}
-
-void prefix_sum_cub_inclusive_max(uint32_t* array, size_t size) {
-    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint32_t>(array,
-                Max_without_branching(), size);
-    cudaDeviceSynchronize();
-}
-
-void prefix_sum_cub_inclusive_max(uint64_t* array, size_t size) {
-    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint64_t>(array,
-                Max_without_branching(), size);
-    cudaDeviceSynchronize();
-}
 
 /*
     Auxiliary function for initializing ISA

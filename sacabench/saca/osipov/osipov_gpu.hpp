@@ -67,7 +67,7 @@ public:
         anything.
         TODO: Check if logic can be moved to slice_container in cpu versions.
     */
-    void slice_sa(size_t s) {}
+    void slice_sa(size_t) {}
 
     /*
         \brief PLACEHOLDER FUNCTION: Checks each h-group for singleton groups and
@@ -157,7 +157,8 @@ public:
         std::cout << std::endl;
         */
         //prefix sum over aux
-        prefix_sum_cub_inclusive_max(aux, size);
+        inclusive_max(aux, text, size);
+        cuda_copy_device_to_device(text, aux, size);
         /*
         std::cout << "Aux after first pass (prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -176,7 +177,8 @@ public:
         std::cout << std::endl;
         */
         //prefix sum over aux "tilde"
-        prefix_sum_cub_inclusive_max(aux, size);
+        inclusive_max(aux, text, size);
+        cuda_copy_device_to_device(text, aux, size);
         /*
         std::cout << "Aux after second pass(prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -195,8 +197,8 @@ public:
         fill_aux_for_isa(text, sa, aux, size);
 
 
-        prefix_sum_cub_inclusive_max(aux, size);
-
+        inclusive_max(aux, isa, size);
+        cuda_copy_device_to_device(isa, aux, size);
 
         scatter_to_isa(isa, aux, sa, size);
         /*
@@ -226,7 +228,10 @@ public:
         std::cout << std::endl;
         */
         // Save amount of tuples for last index (gets overwritten by prefix sum)
-        s = aux[size-1];
+        // Use text as temporary storage as it is not needed anymore and is the
+        // only managed memory on the gpu.
+        cuda_copy_device_to_device((aux + (size-1)), text, 1);
+        s = text[0];
         // Prefix sum
         //exclusive_sum(aux, aux, size);
         // Use h_rank as temporary array as it wasn't needed before
@@ -256,7 +261,10 @@ public:
         std::cout << std::endl;
         */
         // Adjust s by amount of tuples from first 'size-1' suffixes.
-        s += aux[size-1];
+        // Use text as temporary storage as it is not needed anymore and is the
+        // only managed memory on the gpu.
+        cuda_copy_device_to_device((aux + (size-1)), text, 1);
+        s += text[0];
         new_tuple(size, h, sa, isa, aux,
                 tuple_index, h_rank);
         /*
@@ -361,17 +369,17 @@ private:
     static void construct_sa_internal(util::string_span text,
                     util::span<sa_index> out_sa) {
         // Allocate memory on gpu
-        sa_index* sa = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* sa = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* isa = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* isa = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* aux = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* aux = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
         sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* h_rank = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* two_h_rank = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* two_h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
         // Transform text by wordpacking for gpu
         word_packing(text.begin(), gpu_text, out_sa.size());

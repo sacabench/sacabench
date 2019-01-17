@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 
-// void* allocate_cuda_buffer(size_t size);
+void* allocate_cuda_buffer(size_t size);
 void* allocate_managed_cuda_buffer(size_t size);
 template<typename T>
 T* allocate_managed_cuda_buffer_of(size_t size) {
@@ -17,6 +17,9 @@ void exclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items);
 
 void inclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items);
 void inclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items);
+
+void inclusive_max(uint32_t* d_in, uint32_t* d_out, size_t size);
+void inclusive_max(uint64_t* d_in, uint64_t* d_out, size_t size);
 
 //extern "C"
 void cuda_copy_device_to_device(uint64_t* d_in, uint64_t* d_out,

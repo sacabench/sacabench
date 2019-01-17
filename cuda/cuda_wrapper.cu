@@ -8,6 +8,18 @@
 
 #include "cuda_wrapper_interface.hpp"
 
+struct Max_without_branching
+{
+    template <typename T>
+    CUB_RUNTIME_FUNCTION __forceinline__ __device__
+    T operator()(const T &x, const T &y) const {
+        return (x ^ ((x ^ y) & -(x < y)));
+    }
+};
+
+/*
+    DEPRECATED: Doesn't seem to allocate temporary bytes.
+*/
 template<typename size_type, typename function>
 static void prefix_sum(size_type* d_in,
                 size_type* d_out,
@@ -64,6 +76,44 @@ static void inclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_
 
     free_cuda_buffer(d_temp_storage);
 }
+/*
+    Calculates inclusive prefix sum on GPU using the provided CUB Method
+*/
+template <typename OP, typename size_type>
+void inclusive_scan_generic(size_type* d_in, size_type* d_out, OP op,
+            size_t num_items)
+{
+    //TODO: submit allocated memory instead of allocating new array
+    //Indices
+    //sa_index  *values_out;   // e.g., [        ...        ]
+
+    // Allocate Unified Memory – accessible from CPU or GPU
+    //cudaMallocManaged(&values_out, n*sizeof(sa_index));
+
+    // Determine temporary device storage requirements
+    void     *d_temp_storage = NULL;
+    size_t   temp_storage_bytes = 0;
+
+    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, d_in,
+                d_out, op, num_items);
+    // Allocate temporary storage
+    cudaMalloc(&d_temp_storage, temp_storage_bytes);
+    // Run exclusive prefix sum
+    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, d_in,
+                d_out, op, num_items);
+
+    cudaDeviceSynchronize();
+
+    free_cuda_buffer(d_temp_storage);
+    //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
+    /*
+    cudaMemcpy(array, values_out, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+
+    cudaFree(values_out);*/
+}
+
+
+
 
 void* allocate_cuda_buffer(size_t size) {
     void* ret = nullptr;
@@ -95,6 +145,15 @@ void inclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
     inclusive_sum_generic(d_in, d_out, num_items);
 }
 
+void inclusive_max(uint32_t* d_in, uint32_t* d_out, size_t size) {
+    inclusive_scan_generic<Max_without_branching, uint32_t>(d_in,
+                d_out, Max_without_branching(), size);
+}
+
+void inclusive_max(uint64_t* d_in, uint64_t* d_out, size_t size) {
+    inclusive_scan_generic<Max_without_branching, uint64_t>(d_in,
+                d_out, Max_without_branching(), size);
+}
 /*
 void exclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
     prefix_sum(d_in, d_out, num_items, [](auto... params) {
@@ -168,6 +227,7 @@ void radix_sort_cub(size_type* d_in1, size_type* d_in2, size_type* aux1,
     cuda_check(cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes, d_in1,
                 aux1, d_in2, aux2, num_items));
     cuda_check(cudaDeviceSynchronize());
+    free_cuda_buffer(d_temp_storage);
 }
 
 void radix_sort_gpu(uint32_t* d_in1, uint32_t* d_in2, uint32_t* aux1,
