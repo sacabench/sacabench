@@ -131,6 +131,32 @@ void free_cuda_buffer(void* ptr) {
     cuda_check(cudaFree(ptr), "cudaFree");
 }
 
+template <typename size_type>
+bool check_cuda_memory(size_t bytes_needed) {
+    size_t free_bytes = 0;
+    size_t total_bytes = 0;
+    bool sufficient_memory;
+    cuda_check(cudaMemGetInfo(&free_bytes, &total_bytes));
+    sufficient_memory = free_bytes > bytes_needed ? true : false;
+    return sufficient_memory;
+}
+
+size_t check_cuda_memory_free() {
+    //size_t bytes_needed = sizeof(size_type)*num_arrays*num_items + 0.001*sizeof(size_type)*num_items*2;
+    size_t free_bytes = 0;
+    size_t total_bytes = 0;
+    cuda_check(cudaMemGetInfo(&free_bytes, &total_bytes));
+    return free_bytes;
+}
+
+bool check_cuda_memory_32(size_t bytes_needed) {
+    return check_cuda_memory<uint32_t>(bytes_needed);
+}
+
+bool check_cuda_memory_64(size_t bytes_needed) {
+    return check_cuda_memory<uint64_t>(bytes_needed);
+}
+
 void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
     exclusive_sum_generic(d_in, d_out, num_items);
 }

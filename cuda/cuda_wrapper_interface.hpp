@@ -12,6 +12,11 @@ T* allocate_managed_cuda_buffer_of(size_t size) {
 
 void free_cuda_buffer(void* ptr);
 
+bool check_cuda_memory_32(size_t bytes_needed);
+bool check_cuda_memory_64(size_t bytes_needed);
+
+size_t check_cuda_memory_free();
+
 void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items);
 void exclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items);
 
