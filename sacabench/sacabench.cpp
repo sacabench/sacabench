@@ -479,6 +479,34 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                                  std::ios_base::trunc);
                 write_bench(benchmark_file);
             }
+            
+            
+            // Create json file with config 
+            // file name, prefix size, amount of repetitions
+            nlohmann::json config_json = nlohmann::json::array();
+            
+            //TODO: model_name only returns exit status of command instead of model name
+            auto model_name = system("grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'");
+           
+            nlohmann::json j = {
+                                    {"input", input_filename},
+                                    {"prefix", prefix},
+                                    {"repititions", repetition_count},
+                                    {"model_name", model_name}
+                                };
+            
+            config_json.push_back(j);                   
+            
+            auto write_config = [&](std::ostream& out) {
+                // auto j = stat_array.to_json();
+                out << config_json.dump(4) << std::endl;
+            };
+            
+            std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
+                                             std::ios_base::out |
+                                                 std::ios_base::binary |
+                                                 std::ios_base::trunc);
+                write_config(config_file);
         }
     }
 
