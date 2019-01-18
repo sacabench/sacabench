@@ -49,9 +49,6 @@ usage.add_argument("--sacabench-directory", default=sacabench_default,
 usage.add_argument("--launch-config", type=Path,
                    help="Config file used by launch.")
 
-usage.add_argument("--omp-threads", type=int,
-                   help="Amount of threads OMP may use.")
-
 cluster_configs = {
     "20cores": {
         "cores": 20,
