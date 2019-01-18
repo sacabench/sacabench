@@ -63,6 +63,11 @@ cluster_configs = {
         "mem": "250G",
         "constraint": "xeon_e54640v4",
     },
+    "gpu": {
+        "cores": 20,
+        "mem": "60G",
+        "constraint": "tesla_k40",
+    },
 }
 cluster_config_default='20cores'
 usage.add_argument("--cluster-config", default=cluster_config_default,
