@@ -49,27 +49,6 @@ usage.add_argument("--sacabench-directory", default=sacabench_default,
 usage.add_argument("--launch-config", type=Path,
                    help="Config file used by launch.")
 
-cluster_configs = {
-    "20cores": {
-        "cores": 20,
-        "mem": "60G",
-        "constraint": "xeon_e52640v4",
-    },
-    "48cores": {
-        "cores": 48,
-        "mem": "250G",
-        "constraint": "xeon_e54640v4",
-    },
-    "gpu": {
-        "cores": 20,
-        "mem": "60G",
-        "constraint": "tesla_k40",
-    },
-}
-cluster_config_default='20cores'
-usage.add_argument("--cluster-config", default=cluster_config_default,
-                   help="Maximum amount of cores requested. Defaults to {}.".format(cluster_config_default), choices = list(iter(cluster_configs)))
-
 args = usage.parse_args()
 # ---------------------
 
@@ -92,13 +71,14 @@ batch_template = """#!/bin/bash
 #SBATCH --mail-type=FAIL
 {test_only}
 {omp_threads}
+{extra_args}
 cd {cwd}
 {cmd}
 """
 
 # ---------------------
 
-def launch_job(cwd, cmd, output, omp_threads):
+def launch_job(cwd, cmd, output, omp_threads, clstcfg):
     jobname = "sacabench"
 
     test_only = ""
@@ -111,8 +91,6 @@ def launch_job(cwd, cmd, output, omp_threads):
 
     if not args.test_only:
         Path(output).parent.mkdir(parents=True, exist_ok=True)
-
-    clstcfg = cluster_configs[args.cluster_config]
 
     cores = clstcfg["cores"]
     if omp_threads:
@@ -129,6 +107,7 @@ def launch_job(cwd, cmd, output, omp_threads):
         mem=clstcfg["mem"],
         constraint=clstcfg["constraint"],
         omp_threads=omp_threads_str,
+        extra_args="\n".join(map(lambda x: "#SBATCH " + x, clstcfg["extra_args"]))
     )
 
     if args.print_sbatch:
@@ -146,6 +125,29 @@ timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 WORK = Path(os.path.expandvars("$WORK"))
 HOME = Path(os.path.expandvars("$HOME"))
 sacapath = Path(os.path.expandvars(args.sacabench_directory))
+cluster_configs = {
+    "20cores": {
+        "cores": 20,
+        "mem": "60G",
+        "constraint": "xeon_e52640v4",
+        "extra_args": [],
+    },
+    "48cores": {
+        "cores": 48,
+        "mem": "250G",
+        "constraint": "xeon_e54640v4",
+        "extra_args": [],
+    },
+    "gpu": {
+        "cores": 20,
+        "mem": "60G",
+        "constraint": "tesla_k40",
+        "extra_args": [
+            "--gres=gpu:2",
+        ],
+    },
+}
+cluster_config_default='20cores'
 
 if args.launch:
     #TODO: Move to external config file
@@ -155,6 +157,7 @@ if args.launch:
     PREFIX=10
     THREADS=[None]
     WEAK_SCALE = False
+    CLUSTER_CONFIG = cluster_config_default
     if args.launch_config:
         j = load_json(args.launch_config)
         ALGOS = j["launch"]["algo"]
@@ -165,6 +168,8 @@ if args.launch:
             THREADS=j["launch"]["threads"]
         if "weak_scale" in j["launch"]:
             WEAK_SCALE = j["launch"]["weak_scale"]
+        if "cluster_config" in j["launch"]:
+            CLUSTER_CONFIG = j["launch"]["cluster_config"]
 
     counter = 0
     print("Starting jobs...")
@@ -206,7 +211,7 @@ if args.launch:
                     input_path=input_path
                 )
 
-                jobid = launch_job(cwd, cmd, output, omp_threads)
+                jobid = launch_job(cwd, cmd, output, omp_threads, cluster_configs[CLUSTER_CONFIG])
                 counter += 1
                 index["output_files"].append({
                     "output" : str(output),
