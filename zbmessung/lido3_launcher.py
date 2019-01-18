@@ -69,9 +69,9 @@ batch_template = """#!/bin/bash
 #SBATCH --job-name={jobname}
 #SBATCH --export=ALL
 #SBATCH --mail-type=FAIL
+{extra_args}
 {test_only}
 {omp_threads}
-{extra_args}
 cd {cwd}
 {cmd}
 """
