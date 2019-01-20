@@ -54,6 +54,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
     bool plot = false;
+    bool automation = false;
     {
         construct.set_config("--config", "",
                              "Read an config file for CLI args");
@@ -143,6 +144,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Blacklist algorithms from execution")
             ->excludes(wlist);
         batch.add_flag("-z,--plot", plot, "Plot measurements.")->needs(b_opt);
+        batch.add_flag("--automation", automation, "Automatic generation of pdf report.");
     }
 
     CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
@@ -491,7 +493,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             nlohmann::json j = {
                                     {"input", input_filename},
                                     {"prefix", prefix},
-                                    {"repititions", repetition_count},
+                                    {"repetitions", repetition_count},
                                     {"model_name", model_name}
                                 };
             
@@ -507,6 +509,12 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                                  std::ios_base::binary |
                                                  std::ios_base::trunc);
                 write_config(config_file);
+        }
+
+        if (automation) {
+            std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
+            std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
+            system(command.c_str());
         }
     }
 
