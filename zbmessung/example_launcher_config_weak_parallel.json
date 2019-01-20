@@ -1,0 +1,29 @@
+{
+    "launch" : {
+        "algo": [
+            "Osipov_parallel",
+            "Osipov_parallel_wp",
+            "Discarding4Parallel",
+            "DivSufSort_ref",
+            "DivSufSort_PARALLEL_ref",
+            "BPR_ref",
+            "BPR_par",
+            "GSACA_parallel",
+            "PARALLEL_SAIS",
+            "Deep-Shallow_par",
+            "DC3_parallel",
+            "DC3-Parallel-2"
+        ],
+        "input": [
+            "$WORK/large_datasets/commoncrawl.txt",
+            "$WORK/large_datasets/dna.txt",
+            "$WORK/large_datasets/wiki.txt"
+        ],
+        "rep": 3,
+        "prefix": 100,
+        "threads": [
+            1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
+        ],
+        "weak_scale": true
+    }
+}

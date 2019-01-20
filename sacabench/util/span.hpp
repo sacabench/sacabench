@@ -198,6 +198,16 @@ public:
     inline std::ostream& debug_write(std::ostream& out) const {
         return debug_write(out, write_map_char_to_int<std::remove_cv_t<T>>);
     }
+    inline std::ostream& escaped_write(std::ostream& out) const {
+        for (uint8_t byte : *this) {
+            if (byte >= 32 && byte <= 126) {
+                out << byte;
+            } else {
+                out << "\\x" << std::hex << uint32_t(byte) << std::dec;
+            }
+        }
+        return out;
+    }
 };
 
 template <typename T>

@@ -11,10 +11,12 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 
-#include "saca_run.hpp"
+#include "saca_run_serial.hpp"
+#include "saca_run_serial_big_buckets.hpp"
+#include "saca_run_parallel.hpp"
 
 namespace sacabench::deep_shallow {
-class saca {
+class serial {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "Deep-Shallow";
@@ -37,4 +39,53 @@ public:
         logger::get().flush();
     }
 };
+
+class serial_big_buckets {
+public:
+    static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "Deep-Shallow_bb";
+    static constexpr char const* DESCRIPTION =
+        "Deep Shallow SACA by Manzini and Ferragina";
+
+    /// \brief Use Deep Shallow Sorting to construct the suffix array.
+    template <typename sa_index_type>
+    inline static void construct_sa(util::string_span text,
+                                    const util::alphabet& alphabet,
+                                    span<sa_index_type> sa) {
+
+        // Check if `sa_index_type` is suitable.
+        DCHECK(util::assert_text_length<sa_index_type>(text.size(), 1));
+
+        // Construct an object of type `saca_run`, which contains the algorithm.
+        // This will construct the suffix array in `sa` using deep-shallow.
+        saca_run_bb<sa_index_type> r(text, alphabet.size_without_sentinel(), sa);
+
+        logger::get().flush();
+    }
+};
+
+class parallel {
+public:
+    static constexpr size_t EXTRA_SENTINELS = 1;
+    static constexpr char const* NAME = "Deep-Shallow_par";
+    static constexpr char const* DESCRIPTION =
+        "Parallel Deep Shallow SACA by Manzini and Ferragina";
+
+    /// \brief Use Deep Shallow Sorting to construct the suffix array.
+    template <typename sa_index_type>
+    inline static void construct_sa(util::string_span text,
+                                    const util::alphabet& alphabet,
+                                    span<sa_index_type> sa) {
+
+        // Check if `sa_index_type` is suitable.
+        DCHECK(util::assert_text_length<sa_index_type>(text.size(), 1));
+
+        // Construct an object of type `saca_run`, which contains the algorithm.
+        // This will construct the suffix array in `sa` using deep-shallow.
+        parallel_saca_run<sa_index_type> r(text, alphabet.size_without_sentinel(), sa);
+
+        logger::get().flush();
+    }
+};
+
 } // namespace sacabench::deep_shallow
