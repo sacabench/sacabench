@@ -71,4 +71,8 @@ run_test(pss_tests DEPS saca_bench_lib)
 run_test(naive_tests DEPS saca_bench_lib)
 run_test(osipov_tests DEPS saca_bench_lib)
 run_test(prefix_sum_tests DEPS saca_bench_lib)
+
+if(SACA_ENABLE_CUDA)
+run_test(osipov_gpu_tests DEPS saca_bench_lib)
 run_test(cub_tests DEPS saca_bench_lib)
+endif()

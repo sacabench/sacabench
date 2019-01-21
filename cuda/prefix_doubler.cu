@@ -7,7 +7,11 @@
 
 #include "prefix_doubler_interface.hpp"
 
+<<<<<<< HEAD
 #define NUM_BLOCKS 2048
+=======
+#define NUM_BLOCKS 1024
+>>>>>>> e6c87dd3905c814a438885192e1bc8e36b983ef2
 #define NUM_THREADS_PER_BLOCK 256
 
 template <typename sa_index>
@@ -16,14 +20,6 @@ struct utils {
                                               << (sizeof(sa_index) * 8 - 1);
 };
 
-struct Max_without_branching
-{
-    template <typename T>
-    CUB_RUNTIME_FUNCTION __forceinline__ __device__
-    T operator()(const T &x, const T &y) const {
-        return (x ^ ((x ^ y) & -(x < y)));
-    }
-};
 
 template <typename sa_index>
 struct Compare_four_chars
@@ -229,17 +225,6 @@ void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
 
 }
 
-void prefix_sum_cub_inclusive_max(uint32_t* array, size_t size) {
-    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint32_t>(array,
-                Max_without_branching(), size);
-    cudaDeviceSynchronize();
-}
-
-void prefix_sum_cub_inclusive_max(uint64_t* array, size_t size) {
-    prefix_sum_cub_inclusive_kernel<Max_without_branching, uint64_t>(array,
-                Max_without_branching(), size);
-    cudaDeviceSynchronize();
-}
 
 /*
     Auxiliary function for initializing ISA

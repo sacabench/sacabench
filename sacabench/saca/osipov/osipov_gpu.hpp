@@ -67,7 +67,7 @@ public:
         anything.
         TODO: Check if logic can be moved to slice_container in cpu versions.
     */
-    void slice_sa(size_t s) {}
+    void slice_sa(size_t) {}
 
     /*
         \brief PLACEHOLDER FUNCTION: Checks each h-group for singleton groups and
@@ -157,7 +157,8 @@ public:
         std::cout << std::endl;
         */
         //prefix sum over aux
-        prefix_sum_cub_inclusive_max(aux, size);
+        inclusive_max(aux, text, size);
+        cuda_copy_device_to_device(text, aux, size);
         /*
         std::cout << "Aux after first pass (prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -176,7 +177,8 @@ public:
         std::cout << std::endl;
         */
         //prefix sum over aux "tilde"
-        prefix_sum_cub_inclusive_max(aux, size);
+        inclusive_max(aux, text, size);
+        cuda_copy_device_to_device(text, aux, size);
         /*
         std::cout << "Aux after second pass(prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -195,8 +197,8 @@ public:
         fill_aux_for_isa(text, sa, aux, size);
 
 
-        prefix_sum_cub_inclusive_max(aux, size);
-
+        inclusive_max(aux, isa, size);
+        cuda_copy_device_to_device(isa, aux, size);
 
         scatter_to_isa(isa, aux, sa, size);
         /*
@@ -226,7 +228,10 @@ public:
         std::cout << std::endl;
         */
         // Save amount of tuples for last index (gets overwritten by prefix sum)
-        s = aux[size-1];
+        // Use text as temporary storage as it is not needed anymore and is the
+        // only managed memory on the gpu.
+        cuda_copy_device_to_device((aux + (size-1)), text, 1);
+        s = text[0];
         // Prefix sum
         //exclusive_sum(aux, aux, size);
         // Use h_rank as temporary array as it wasn't needed before
@@ -256,7 +261,10 @@ public:
         std::cout << std::endl;
         */
         // Adjust s by amount of tuples from first 'size-1' suffixes.
-        s += aux[size-1];
+        // Use text as temporary storage as it is not needed anymore and is the
+        // only managed memory on the gpu.
+        cuda_copy_device_to_device((aux + (size-1)), text, 1);
+        s += text[0];
         new_tuple(size, h, sa, isa, aux,
                 tuple_index, h_rank);
         /*
@@ -330,27 +338,43 @@ struct osipov_gpu {
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
         if(text.size() > 1) {
+            bool memory_sufficient = false;
+            size_t bytes_needed = sizeof(sa_index)*8*out_sa.size()
+            + 0.0001*sizeof(sa_index)*out_sa.size()*2;
             // Currently only supporting uint32_t and uint64_t
-            if constexpr (std::is_same<sa_index, uint32_t>::value
-                    || std::is_same<sa_index, uint64_t>::value) {
-                construct_sa_internal(text, out_sa);
+            if constexpr (std::is_same<sa_index, uint32_t>::value) {
+                memory_sufficient = check_cuda_memory_32(bytes_needed);
+                if(memory_sufficient) {construct_sa_internal(text, out_sa);}
+            }
+            else if constexpr (std::is_same<sa_index, uint64_t>::value) {
+                memory_sufficient = check_cuda_memory_64(bytes_needed);
+                if(memory_sufficient) {construct_sa_internal(text, out_sa);}
             }
             else if constexpr (std::is_same<sa_index, util::uint40>::value
                     || std::is_same<sa_index, util::uint48>::value) {
-                auto tmp_out = util::make_container
-                            <util::next_primitive<sa_index>>(out_sa.size());
-                auto tmp_out_span = util::span<util::next_primitive<sa_index>>(
-                            tmp_out);
-                construct_sa_internal(text, tmp_out_span);
-                // Copy content from temporary array
-                for(size_t i=0; i<out_sa.size(); ++i) {
-                    out_sa[i] = (sa_index)tmp_out_span[i];
+                memory_sufficient = check_cuda_memory_64(bytes_needed);
+                if(memory_sufficient) {
+                    auto tmp_out = util::make_container
+                                <util::next_primitive<sa_index>>(out_sa.size());
+                    auto tmp_out_span = util::span<util::next_primitive<sa_index>>(
+                                tmp_out);
+                    construct_sa_internal(text, tmp_out_span);
+                    // Copy content from temporary array
+                    for(size_t i=0; i<out_sa.size(); ++i) {
+                        out_sa[i] = (sa_index)tmp_out_span[i];
+                    }
                 }
             }
             else {
-                std::cerr << "Type"
-                        << " is not supported by osipov on the gpu."
+                std::cerr << "Type" << " is not supported by osipov on the gpu."
                         << std::endl;
+            }
+
+            if(!memory_sufficient) {
+                if(std::is_same<sa_index, uint32_t>::value) {
+                    print_exceeded_memory<uint32_t>(bytes_needed);
+                }
+                else {print_exceeded_memory<uint64_t>(bytes_needed);}
             }
         }
         else {out_sa[0] = 0;}
@@ -361,22 +385,23 @@ private:
     static void construct_sa_internal(util::string_span text,
                     util::span<sa_index> out_sa) {
         // Allocate memory on gpu
-        sa_index* sa = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* sa = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* isa = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* isa = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* aux = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* aux = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
         sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* h_rank = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* two_h_rank = (sa_index*)allocate_managed_cuda_buffer(
+        sa_index* two_h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
         // Transform text by wordpacking for gpu
         word_packing(text.begin(), gpu_text, out_sa.size());
         auto impl = osipov_gpu_main<sa_index>(out_sa.size(), gpu_text, sa, isa,
                     aux, two_h_rank, h_rank);
+
         impl.initialize_sa();
 
         osipov<sa_index>::prefix_doubling(text, out_sa, impl);
@@ -386,6 +411,15 @@ private:
         free_cuda_buffer(gpu_text);
         free_cuda_buffer(h_rank);
         free_cuda_buffer(two_h_rank);
+    }
+
+    template <typename sa_index>
+    static void print_exceeded_memory(size_t bytes_needed) {
+        size_t free_bytes = check_cuda_memory_free();
+        std::cerr << "The specified input's needed memory of "
+        << bytes_needed / (1024*1024)
+        << "MB exceeds your graphic card's available memory of"
+        << free_bytes / (1024*1024) <<"MB ." << std::endl;
     }
 };
 // End namespace

@@ -11,16 +11,11 @@
 #include <util/bits.hpp>
 #include <saca/osipov/osipov_parallel.hpp>
 #include <saca/osipov/osipov_sequential.hpp>
-#include <saca/osipov/osipov_gpu.hpp>
 #include "test/saca.hpp"
 
 using namespace sacabench::osipov;
 using namespace sacabench;
 using namespace sacabench::util;
-
-TEST(OsipovGpu, CornerCases) {
-    test::saca_corner_cases<sacabench::osipov::osipov_gpu>();
-}
 
 TEST(OsipovPar, CornerCases) {
     test::saca_corner_cases<sacabench::osipov::osipov_parallel>();

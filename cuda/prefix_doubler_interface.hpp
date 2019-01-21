@@ -14,9 +14,6 @@ void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux);
 void initialize_sa_gpu(size_t size, uint32_t* sa);
 void initialize_sa_gpu(size_t size, uint64_t* sa);
 
-void prefix_sum_cub_inclusive_max(uint32_t* array, size_t size);
-void prefix_sum_cub_inclusive_max(uint64_t* array, size_t size);
-
 void fill_aux_for_isa(uint32_t* text, uint32_t* sa, uint32_t* isa, size_t size);
 void fill_aux_for_isa(uint64_t* text, uint64_t* sa, uint64_t* isa, size_t size);
 
