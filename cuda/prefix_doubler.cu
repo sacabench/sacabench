@@ -7,11 +7,7 @@
 
 #include "prefix_doubler_interface.hpp"
 
-<<<<<<< HEAD
 #define NUM_BLOCKS 2048
-=======
-#define NUM_BLOCKS 1024
->>>>>>> e6c87dd3905c814a438885192e1bc8e36b983ef2
 #define NUM_THREADS_PER_BLOCK 256
 
 template <typename sa_index>
