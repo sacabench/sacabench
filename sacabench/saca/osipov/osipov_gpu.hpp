@@ -157,8 +157,8 @@ public:
         std::cout << std::endl;
         */
         //prefix sum over aux
-        inclusive_max(aux, text, size);
-        cuda_copy_device_to_device(text, aux, size);
+        inclusive_max(aux, size);
+        //cuda_copy_device_to_device(text, aux, size);
         /*
         std::cout << "Aux after first pass (prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -177,8 +177,8 @@ public:
         std::cout << std::endl;
         */
         //prefix sum over aux "tilde"
-        inclusive_max(aux, text, size);
-        cuda_copy_device_to_device(text, aux, size);
+        inclusive_max(aux, size);
+        //cuda_copy_device_to_device(text, aux, size);
         /*
         std::cout << "Aux after second pass(prefix sum): ";
         for(size_t i=0; i < size; ++i) {
@@ -197,8 +197,8 @@ public:
         fill_aux_for_isa(text, sa, aux, size);
 
 
-        inclusive_max(aux, isa, size);
-        cuda_copy_device_to_device(isa, aux, size);
+        inclusive_max(aux, size);
+        //cuda_copy_device_to_device(isa, aux, size);
 
         scatter_to_isa(isa, aux, sa, size);
         /*
@@ -235,7 +235,7 @@ public:
         // Prefix sum
         //exclusive_sum(aux, aux, size);
         // Use h_rank as temporary array as it wasn't needed before
-        exclusive_sum(aux, h_rank, size);
+        exclusive_sum(aux, size);
         /*
         //TODO: Similar wrapper for ExclusiveSum as for prefix_sum_cub_inclusive
         void* d_temp_storage = NULL;
@@ -252,7 +252,7 @@ public:
 
         cudaMemcpy(aux, h_rank, size*sizeof(sa_index), cudaMemcpyDeviceToDevice);
         */
-        cuda_copy_device_to_device(h_rank, aux, size);
+        //cuda_copy_device_to_device(h_rank, aux, size);
         /*
         std::cout << "Aux after prefix sum: ";
         for(size_t i=0; i < size; ++i) {
