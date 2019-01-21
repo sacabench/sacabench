@@ -49,25 +49,6 @@ usage.add_argument("--sacabench-directory", default=sacabench_default,
 usage.add_argument("--launch-config", type=Path,
                    help="Config file used by launch.")
 
-usage.add_argument("--omp-threads", type=int,
-                   help="Amount of threads OMP may use.")
-
-cluster_configs = {
-    "20cores": {
-        "cores": 20,
-        "mem": "60G",
-        "constraint": "xeon_e52640v4",
-    },
-    "48cores": {
-        "cores": 48,
-        "mem": "250G",
-        "constraint": "xeon_e54640v4",
-    },
-}
-cluster_config_default='20cores'
-usage.add_argument("--cluster-config", default=cluster_config_default,
-                   help="Maximum amount of cores requested. Defaults to {}.".format(cluster_config_default), choices = list(iter(cluster_configs)))
-
 args = usage.parse_args()
 # ---------------------
 
@@ -88,6 +69,7 @@ batch_template = """#!/bin/bash
 #SBATCH --job-name={jobname}
 #SBATCH --export=ALL
 #SBATCH --mail-type=FAIL
+{extra_args}
 {test_only}
 {omp_threads}
 cd {cwd}
@@ -96,7 +78,7 @@ cd {cwd}
 
 # ---------------------
 
-def launch_job(cwd, cmd, output, omp_threads):
+def launch_job(cwd, cmd, output, omp_threads, clstcfg):
     jobname = "sacabench"
 
     test_only = ""
@@ -109,8 +91,6 @@ def launch_job(cwd, cmd, output, omp_threads):
 
     if not args.test_only:
         Path(output).parent.mkdir(parents=True, exist_ok=True)
-
-    clstcfg = cluster_configs[args.cluster_config]
 
     cores = clstcfg["cores"]
     if omp_threads:
@@ -127,6 +107,7 @@ def launch_job(cwd, cmd, output, omp_threads):
         mem=clstcfg["mem"],
         constraint=clstcfg["constraint"],
         omp_threads=omp_threads_str,
+        extra_args="\n".join(map(lambda x: "#SBATCH " + x, clstcfg["extra_args"]))
     )
 
     if args.print_sbatch:
@@ -144,6 +125,29 @@ timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 WORK = Path(os.path.expandvars("$WORK"))
 HOME = Path(os.path.expandvars("$HOME"))
 sacapath = Path(os.path.expandvars(args.sacabench_directory))
+cluster_configs = {
+    "20cores": {
+        "cores": 20,
+        "mem": "60G",
+        "constraint": "xeon_e52640v4",
+        "extra_args": [],
+    },
+    "48cores": {
+        "cores": 48,
+        "mem": "250G",
+        "constraint": "xeon_e54640v4",
+        "extra_args": [],
+    },
+    "gpu": {
+        "cores": 20,
+        "mem": "60G",
+        "constraint": "tesla_k40",
+        "extra_args": [
+            "--gres=gpu:2",
+        ],
+    },
+}
+cluster_config_default='20cores'
 
 if args.launch:
     #TODO: Move to external config file
@@ -153,6 +157,7 @@ if args.launch:
     PREFIX=10
     THREADS=[None]
     WEAK_SCALE = False
+    CLUSTER_CONFIG = cluster_config_default
     if args.launch_config:
         j = load_json(args.launch_config)
         ALGOS = j["launch"]["algo"]
@@ -163,6 +168,8 @@ if args.launch:
             THREADS=j["launch"]["threads"]
         if "weak_scale" in j["launch"]:
             WEAK_SCALE = j["launch"]["weak_scale"]
+        if "cluster_config" in j["launch"]:
+            CLUSTER_CONFIG = j["launch"]["cluster_config"]
 
     counter = 0
     print("Starting jobs...")
@@ -204,7 +211,7 @@ if args.launch:
                     input_path=input_path
                 )
 
-                jobid = launch_job(cwd, cmd, output, omp_threads)
+                jobid = launch_job(cwd, cmd, output, omp_threads, cluster_configs[CLUSTER_CONFIG])
                 counter += 1
                 index["output_files"].append({
                     "output" : str(output),
@@ -241,17 +248,24 @@ def load_data(dir):
         prefix = output_file["prefix"]
         threads = output_file["threads"]
 
-        if not stat_output.is_file():
-            print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
-            if output.is_file():
-                print("-output----------")
-                print(load_str(output))
-                print("-----------------")
-            continue
+        err_reason = ""
 
-        stats = load_json(stat_output)
-        assert len(stats) == 1
-        yield (output_file, stats[0])
+        if stat_output.is_file():
+            stats = load_json(stat_output)
+            if len(stats) == 1:
+                yield (output_file, stats[0])
+                continue
+            else:
+                err_reason = "empty json stats"
+        else:
+            err_reason = "no file {}".format(stat_output.name)
+
+        print("Missing data for {}, {}, {}, {} ({})".format(algo, input.name, prefix, threads, err_reason))
+        if output.is_file():
+            print("-output----------")
+            print(load_str(output))
+            print("-----------------")
+        continue
 
 def stat_nav_sub(stat, title):
     phase = stat["sub"]
