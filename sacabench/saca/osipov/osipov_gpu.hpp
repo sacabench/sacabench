@@ -339,8 +339,8 @@ struct osipov_gpu {
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
         if(text.size() > 1) {
-            bool memory_sufficient = false;
-            size_t bytes_needed = sizeof(sa_index)*8*out_sa.size()
+            bool memory_sufficient = true;
+            size_t bytes_needed = sizeof(sa_index)*7*out_sa.size()
             + 0.0001*sizeof(sa_index)*out_sa.size()*2;
             // Currently only supporting uint32_t and uint64_t
             if constexpr (std::is_same<sa_index, uint32_t>::value) {
