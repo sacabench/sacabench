@@ -22,19 +22,18 @@ struct Max_without_branching
 */
 template<typename size_type, typename function>
 static void prefix_sum(size_type* d_in,
-                size_type* d_out,
                 size_t num_items,
                 function Sum) {
     // Determine temporary device storage requirements
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
-    Sum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    Sum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
     //std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
     // Allocate temporary storage
     d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
 
     // Run prefix sum
-    Sum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    Sum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
 
     cudaDeviceSynchronize();
 
@@ -42,17 +41,17 @@ static void prefix_sum(size_type* d_in,
 }
 
 template <typename size_type>
-static void exclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_items) {
+static void exclusive_sum_generic(size_type* d_in, size_t num_items) {
     // Determine temporary device storage requirements
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
-    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
     //std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
     // Allocate temporary storage
     d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
 
     // Run prefix sum
-    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
 
     cudaDeviceSynchronize();
 
@@ -60,17 +59,17 @@ static void exclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_
 }
 
 template <typename size_type>
-static void inclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_items) {
+static void inclusive_sum_generic(size_type* d_in, size_t num_items) {
     // Determine temporary device storage requirements
     void *d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
-    cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
     //std::cout << "tmp bytes: " << temp_storage_bytes << std::endl;
     // Allocate temporary storage
     d_temp_storage = allocate_managed_cuda_buffer(temp_storage_bytes);
 
     // Run prefix sum
-    cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_out, num_items);
+    cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
 
     cudaDeviceSynchronize();
 
@@ -80,7 +79,7 @@ static void inclusive_sum_generic(size_type* d_in, size_type* d_out, size_t num_
     Calculates inclusive prefix sum on GPU using the provided CUB Method
 */
 template <typename OP, typename size_type>
-void inclusive_scan_generic(size_type* d_in, size_type* d_out, OP op,
+void inclusive_scan_generic(size_type* d_in, OP op,
             size_t num_items)
 {
     //TODO: submit allocated memory instead of allocating new array
@@ -95,12 +94,12 @@ void inclusive_scan_generic(size_type* d_in, size_type* d_out, OP op,
     size_t   temp_storage_bytes = 0;
 
     cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, d_in,
-                d_out, op, num_items);
+                d_in, op, num_items);
     // Allocate temporary storage
     cudaMalloc(&d_temp_storage, temp_storage_bytes);
     // Run exclusive prefix sum
     cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, d_in,
-                d_out, op, num_items);
+                d_in, op, num_items);
 
     cudaDeviceSynchronize();
 
@@ -157,28 +156,27 @@ bool check_cuda_memory_64(size_t bytes_needed) {
     return check_cuda_memory<uint64_t>(bytes_needed);
 }
 
-void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
-    exclusive_sum_generic(d_in, d_out, num_items);
+void exclusive_sum(uint64_t* d_in, size_t num_items) {
+    exclusive_sum_generic(d_in, num_items);
 }
-void exclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
-    exclusive_sum_generic(d_in, d_out, num_items);
-}
-
-void inclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items) {
-    inclusive_sum_generic(d_in, d_out, num_items);
-}
-void inclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items) {
-    inclusive_sum_generic(d_in, d_out, num_items);
+void exclusive_sum(uint32_t* d_in, size_t num_items) {
+    exclusive_sum_generic(d_in, num_items);
 }
 
-void inclusive_max(uint32_t* d_in, uint32_t* d_out, size_t size) {
-    inclusive_scan_generic<Max_without_branching, uint32_t>(d_in,
-                d_out, Max_without_branching(), size);
+void inclusive_sum(uint64_t* d_in, size_t num_items) {
+    inclusive_sum_generic(d_in, num_items);
+}
+void inclusive_sum(uint32_t* d_in, size_t num_items) {
+    inclusive_sum_generic(d_in, num_items);
 }
 
-void inclusive_max(uint64_t* d_in, uint64_t* d_out, size_t size) {
-    inclusive_scan_generic<Max_without_branching, uint64_t>(d_in,
-                d_out, Max_without_branching(), size);
+void inclusive_max(uint32_t* d_in, size_t size) {
+    inclusive_scan_generic<Max_without_branching, uint32_t>(d_in
+                    , Max_without_branching(), size);
+}
+
+void inclusive_max(uint64_t* d_in, size_t size) {
+    inclusive_scan_generic<Max_without_branching, uint64_t>(d_in, Max_without_branching(), size);
 }
 /*
 void exclusive_sum_64(uint64_t* d_in, uint64_t* d_out, size_t num_items) {

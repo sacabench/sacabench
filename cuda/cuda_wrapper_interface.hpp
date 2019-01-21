@@ -17,14 +17,14 @@ bool check_cuda_memory_64(size_t bytes_needed);
 
 size_t check_cuda_memory_free();
 
-void exclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items);
-void exclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items);
+void exclusive_sum(uint64_t* d_in, size_t num_items);
+void exclusive_sum(uint32_t* d_in, size_t num_items);
 
-void inclusive_sum(uint64_t* d_in, uint64_t* d_out, size_t num_items);
-void inclusive_sum(uint32_t* d_in, uint32_t* d_out, size_t num_items);
+void inclusive_sum(uint64_t* d_in, size_t num_items);
+void inclusive_sum(uint32_t* d_in, size_t num_items);
 
-void inclusive_max(uint32_t* d_in, uint32_t* d_out, size_t size);
-void inclusive_max(uint64_t* d_in, uint64_t* d_out, size_t size);
+void inclusive_max(uint32_t* d_in, size_t size);
+void inclusive_max(uint64_t* d_in, size_t size);
 
 //extern "C"
 void cuda_copy_device_to_device(uint64_t* d_in, uint64_t* d_out,

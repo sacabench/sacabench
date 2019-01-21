@@ -1,7 +1,3 @@
-add_executable(cuda_prefix_sum
-    Prefix_Sum_Benchmark.cu
-)
-
 add_library(cuda_wrapper
     cuda_wrapper.cu
     cuda_util.cu
