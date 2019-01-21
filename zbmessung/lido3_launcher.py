@@ -241,17 +241,24 @@ def load_data(dir):
         prefix = output_file["prefix"]
         threads = output_file["threads"]
 
-        if not stat_output.is_file():
-            print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
-            if output.is_file():
-                print("-output----------")
-                print(load_str(output))
-                print("-----------------")
-            continue
+        err_reason = ""
 
-        stats = load_json(stat_output)
-        assert len(stats) == 1
-        yield (output_file, stats[0])
+        if stat_output.is_file():
+            stats = load_json(stat_output)
+            if len(stats) == 1:
+                yield (output_file, stats[0])
+                continue
+            else:
+                err_reason = "empty json stats"
+        else:
+            err_reason = "no file {}".format(stat_output.name)
+
+        print("Missing data for {}, {}, {}, {} ({})".format(algo, input.name, prefix, threads, err_reason))
+        if output.is_file():
+            print("-output----------")
+            print(load_str(output))
+            print("-----------------")
+        continue
 
 def stat_nav_sub(stat, title):
     phase = stat["sub"]
