@@ -353,23 +353,26 @@ void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
 \brief Sets values in aux array if tuples for suffix indices should be
 created.
 */
+
 template <typename sa_index>
 __global__
-void set_tuple_kernel(size_t size, size_t h, sa_index* sa,
+void set_tuple_kernel_shared(size_t size, size_t h, sa_index* sa,
         sa_index* isa, sa_index* aux) {
+    extern __shared__ int sa_buffer[];
     int t_index = blockIdx.x*blockDim.x + threadIdx.x;
     int stride = blockDim.x*gridDim.x;
     sa_index index;
     for(size_t i=t_index; i < size; i+=stride) {
+        sa_buffer[threadIdx.x] = sa[i];
         aux[i] = 0;
-        if(sa[i] >= h) {
-            index = sa[i]-h;
+        if(sa_buffer[threadIdx.x] >= h) {
+            index = sa_buffer[threadIdx.x]-h;
             if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                     sa_index(0)) {
                 ++aux[i];
             }
             // Second condition cannot be true if sa[i] < h
-            index = sa[i];
+            index = sa_buffer[threadIdx.x];
             if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
                     && index >= 2*h && (isa[index-2*h] &
                     utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
@@ -381,18 +384,17 @@ void set_tuple_kernel(size_t size, size_t h, sa_index* sa,
 
 void set_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux) {
-    set_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
+    set_tuple_kernel_shared<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
 
 void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux) {
-    set_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
+    set_tuple_kernel_shared<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, size*sizeof(uint64_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
-
 /*
 \brief Creates tuples of <suffix index, h_rank> (missing: 2h_rank) by inserting
     them in the corresponding arrays with the help of aux (contains position for
