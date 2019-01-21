@@ -7,8 +7,8 @@
 
 #include "prefix_doubler_interface.hpp"
 
-#define NUM_BLOCKS 4
-#define NUM_THREADS_PER_BLOCK 32
+#define NUM_BLOCKS 2048
+#define NUM_THREADS_PER_BLOCK 256
 
 template <typename sa_index>
 struct utils {
@@ -204,28 +204,28 @@ void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
 {
     //TODO: submit allocated memory instead of allocating new array
     //Indices
-    sa_index  *values_out;   // e.g., [        ...        ]
+    //sa_index  *values_out;   // e.g., [        ...        ]
 
     // Allocate Unified Memory – accessible from CPU or GPU
-    cudaMallocManaged(&values_out, n*sizeof(sa_index));
+    //cudaMallocManaged(&values_out, n*sizeof(sa_index));
 
     // Determine temporary device storage requirements
     void     *d_temp_storage = NULL;
     size_t   temp_storage_bytes = 0;
 
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, values_out,op, n);
+    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, array,op, n);
     // Allocate temporary storage
     cudaMalloc(&d_temp_storage, temp_storage_bytes);
     // Run exclusive prefix sum
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, values_out,op, n);
+    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, array,op, n);
 
     cudaDeviceSynchronize();
 
     //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
 
-    cudaMemcpy(array, values_out, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
+    //cudaMemcpy(array, values_out, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
 
-    cudaFree(values_out);
+    //cudaFree(values_out);
 
 }
 
@@ -287,7 +287,7 @@ void scatter_to_isa_kernel(sa_index* isa, sa_index* aux, sa_index* sa,
             size_t n) {
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
-    //Maybe TODO: Avoid Bank Conflicts
+
     for (size_t i = index; i < n; i+=stride) {
         isa[sa[i]]=aux[i];
     }
