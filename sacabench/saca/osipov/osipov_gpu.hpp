@@ -20,7 +20,6 @@ namespace sacabench::osipov {
 template <typename sa_index>
 class osipov_gpu_main {
 private:
-    sa_index* text;
     //TODO: Wrapper for creation of cmp-function!
     // Three base arrays
     sa_index* sa;
@@ -36,9 +35,9 @@ private:
 
 public:
 
-    osipov_gpu_main(size_t size, sa_index* text, sa_index* sa, sa_index* isa,
+    osipov_gpu_main(size_t size, sa_index* sa, sa_index* isa,
             sa_index* aux, sa_index* two_h_rank, sa_index* h_rank) : size(size),
-            text(text), sa(sa), isa(isa), aux(aux), two_h_rank(two_h_rank),
+            sa(sa), isa(isa), aux(aux), two_h_rank(two_h_rank),
             h_rank(h_rank) {}
 
     /*
@@ -101,7 +100,7 @@ public:
         //TODO: similar Wrapper for SortPairs as for prefix_sum_cub
          //Actual values; use h_rank as temp storage
         auto keys_out = h_rank;     // e.g., [        ...        ]
-
+        auto text = two_h_rank;
 
         // Allocate Unified Memory – accessible from CPU or GPU
         // cudaMallocManaged(&keys_out, size*sizeof(sa_index));
@@ -193,6 +192,7 @@ public:
         Init ISA with prefix sum method
     */
     void initialize_isa() {
+        auto text = two_h_rank;
 
         fill_aux_for_isa(text, sa, aux, size);
 
@@ -215,7 +215,8 @@ public:
         suffixes during this iteration.
     */
     size_t create_tuples(size_t size, size_t h) {
-        size_t s=0;
+        sa_index s=0;
+        sa_index s_tmp = 0;
         auto tuple_index = two_h_rank;
         //TODO: Set block_amount and block_size accordingly
         set_tuple(size, h, sa, isa, aux);
@@ -230,8 +231,8 @@ public:
         // Save amount of tuples for last index (gets overwritten by prefix sum)
         // Use text as temporary storage as it is not needed anymore and is the
         // only managed memory on the gpu.
-        cuda_copy_device_to_device((aux + (size-1)), text, 1);
-        s = text[0];
+        cuda_copy_device_to_host((aux + (size-1)), &s_tmp, 1);
+        s = s_tmp;
         // Prefix sum
         //exclusive_sum(aux, aux, size);
         // Use h_rank as temporary array as it wasn't needed before
@@ -263,8 +264,8 @@ public:
         // Adjust s by amount of tuples from first 'size-1' suffixes.
         // Use text as temporary storage as it is not needed anymore and is the
         // only managed memory on the gpu.
-        cuda_copy_device_to_device((aux + (size-1)), text, 1);
-        s += text[0];
+        cuda_copy_device_to_host((aux + (size-1)), &s_tmp, 1);
+        s += s_tmp;
         new_tuple(size, h, sa, isa, aux,
                 tuple_index, h_rank);
         /*
@@ -391,15 +392,16 @@ private:
                 out_sa.size()*sizeof(sa_index));
         sa_index* aux = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
-        sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
-                out_sa.size()*sizeof(sa_index));
+        /*sa_index* gpu_text = (sa_index*)allocate_managed_cuda_buffer(
+                out_sa.size()*sizeof(sa_index));*/
         sa_index* h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
         sa_index* two_h_rank = (sa_index*)allocate_cuda_buffer(
                 out_sa.size()*sizeof(sa_index));
         // Transform text by wordpacking for gpu
-        word_packing(text.begin(), gpu_text, out_sa.size());
-        auto impl = osipov_gpu_main<sa_index>(out_sa.size(), gpu_text, sa, isa,
+        word_packing(text.begin(), out_sa.begin(), out_sa.size());
+        cuda_copy_host_to_device(out_sa.begin(), two_h_rank, out_sa.size());
+        auto impl = osipov_gpu_main<sa_index>(out_sa.size(), sa, isa,
                     aux, two_h_rank, h_rank);
 
         impl.initialize_sa();
@@ -408,7 +410,7 @@ private:
         free_cuda_buffer(sa);
         free_cuda_buffer(isa);
         free_cuda_buffer(aux);
-        free_cuda_buffer(gpu_text);
+        //free_cuda_buffer(gpu_text);
         free_cuda_buffer(h_rank);
         free_cuda_buffer(two_h_rank);
     }
