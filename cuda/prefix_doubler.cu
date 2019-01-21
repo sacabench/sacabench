@@ -109,7 +109,7 @@ static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
     // Avoid iteration for index 0
     // Set flags if different rank to predecessor
     for(size_t i=index+1; i < size; i+=stride) {
-        aux[i] = isa[sa[i-1]] != isa[sa[i]] ? 1 : 0;
+        aux[i] = (isa[sa[i-1]] != isa[sa[i]]);
     }
 }
 
