@@ -23,6 +23,7 @@
         "threads": [
             1, 2, 4, 8, 16, 20
         ],
-        "weak_scale": false
+        "weak_scale": false,
+        "cluster_config": "gpu"
     }
 }
