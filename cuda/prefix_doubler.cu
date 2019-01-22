@@ -875,16 +875,56 @@ void generate_two_h_kernel(const size_t size, const size_t h,
    }
 }
 
+template <typename sa_index>
+__global__
+void generate_two_h_kernel_shared32(const size_t size, const size_t h,
+            const sa_index* sa, const sa_index* isa, sa_index* two_h_rank) {
+    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
+    int stride = blockDim.x*gridDim.x;
+    extern __shared__ uint32_t generate_two_h_sa_buffer32[];
+    for(size_t i=t_index; i < size; i+=stride) {
+       // Case can only occur if index + h < max. index (of original sequence)
+       generate_two_h_sa_buffer32[threadIdx.x] = sa[i];
+       if((isa[sa[i]] & utils<sa_index>::NEGATIVE_MASK)
+                == sa_index(0)) {
+           // Retrieve rank of 2h-suffix
+           two_h_rank[i] = isa[generate_two_h_sa_buffer32[threadIdx.x]+h];
+       } else {
+           two_h_rank[i] = isa[generate_two_h_sa_buffer32[threadIdx.x]];
+       }
+   }
+}
+
+template <typename sa_index>
+__global__
+void generate_two_h_kernel_shared64(const size_t size, const size_t h,
+            const sa_index* sa, const sa_index* isa, sa_index* two_h_rank) {
+    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
+    int stride = blockDim.x*gridDim.x;
+    extern __shared__ uint64_t generate_two_h_sa_buffer64[];
+    for(size_t i=t_index; i < size; i+=stride) {
+       // Case can only occur if index + h < max. index (of original sequence)
+       generate_two_h_sa_buffer64[threadIdx.x] = sa[i];
+       if((isa[sa[i]] & utils<sa_index>::NEGATIVE_MASK)
+                == sa_index(0)) {
+           // Retrieve rank of 2h-suffix
+           two_h_rank[i] = isa[generate_two_h_sa_buffer64[threadIdx.x]+h];
+       } else {
+           two_h_rank[i] = isa[generate_two_h_sa_buffer64[threadIdx.x]];
+       }
+   }
+}
+
 void generate_two_h_rank(size_t size, size_t h, uint32_t* sa,
             uint32_t* isa, uint32_t* two_h_rank) {
-    generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
+    generate_two_h_kernel_shared32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
             isa, two_h_rank);
     cudaDeviceSynchronize();
 }
 
 void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
             uint64_t* isa, uint64_t* two_h_rank) {
-    generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
+    generate_two_h_kernel_shared64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
             isa, two_h_rank);
     cudaDeviceSynchronize();
 }
