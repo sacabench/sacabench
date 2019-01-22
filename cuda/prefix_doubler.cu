@@ -444,6 +444,32 @@ void update_ranks_build_aux_kernel(sa_index* h_ranks, sa_index* aux, size_t n) {
     }
 }
 
+/*
+    Minimally increases computation time (for 100MB pc_sources).
+*/
+__global__
+void update_ranks_build_aux_kernel_32(uint32_t* h_ranks, uint32_t* aux, size_t n) {
+    extern __shared__ uint32_t s_h_rank[];
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        aux[0]=0;
+    }
+
+    for (size_t i = index+1; i < n; i+=stride) {
+        if(threadIdx.x == 0) {
+            s_h_rank[0] = h_ranks[i-1];
+        }
+
+        s_h_rank[threadIdx.x+1] = h_ranks[i];
+
+        __syncthreads();
+        aux[i] = (s_h_rank[threadIdx.x] != s_h_rank[threadIdx.x+1]) * i;
+        //aux[i] = (h_ranks[i-1]!=h_ranks[i]) * i;
+    }
+}
+
 void update_ranks_build_aux(uint32_t* h_ranks, uint32_t* aux, size_t size) {
     update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
@@ -456,6 +482,9 @@ void update_ranks_build_aux(uint64_t* h_ranks, uint64_t* aux, size_t size) {
     cudaDeviceSynchronize();
 }
 
+/*
+    Seems minimally slower than with shared memory (100MB pc_sources).
+*/
 template <typename sa_index>
 __global__
 void update_ranks_build_aux_tilde_kernel(sa_index* h_ranks, sa_index* two_h_ranks,
@@ -477,17 +506,77 @@ void update_ranks_build_aux_tilde_kernel(sa_index* h_ranks, sa_index* two_h_rank
     }
 }
 
+__global__
+void update_ranks_build_aux_tilde_kernel_32(uint32_t* h_ranks,
+            uint32_t* two_h_ranks, uint32_t* aux, size_t n) {
+    extern __shared__ uint32_t smem[];
+    uint32_t* s_h_rank = smem;
+    uint32_t* s_two_h_rank = &s_h_rank[NUM_THREADS_PER_BLOCK+1];
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        aux[0]=h_ranks[0];
+    }
+
+    for (size_t i = index+1; i < n; i+=stride) {
+        if(threadIdx.x == 0) {
+            s_h_rank[0] = h_ranks[i-1];
+            s_two_h_rank[0] = two_h_ranks[i-1];
+        }
+
+        s_h_rank[threadIdx.x+1] = h_ranks[i];
+        s_two_h_rank[threadIdx.x+1] = two_h_ranks[i];
+
+        __syncthreads();
+        bool new_group = (s_h_rank[threadIdx.x] != s_h_rank[threadIdx.x+1]
+            || s_two_h_rank[threadIdx.x] != s_two_h_rank[threadIdx.x+1]);
+        // Werte in aux überschrieben?
+        aux[i] = new_group * (s_h_rank[threadIdx.x+1] + i - aux[i]);
+    }
+}
+
+__global__
+void update_ranks_build_aux_tilde_kernel_64(uint64_t* h_ranks,
+            uint64_t* two_h_ranks, uint64_t* aux, size_t n) {
+    extern __shared__ uint64_t smem_64[];
+    uint64_t* s_h_rank = smem_64;
+    uint64_t* s_two_h_rank = &s_h_rank[NUM_THREADS_PER_BLOCK+1];
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        aux[0]=h_ranks[0];
+    }
+
+    for (size_t i = index+1; i < n; i+=stride) {
+        if(threadIdx.x == 0) {
+            s_h_rank[0] = h_ranks[i-1];
+            s_two_h_rank[0] = two_h_ranks[i-1];
+        }
+
+        s_h_rank[threadIdx.x+1] = h_ranks[i];
+        s_two_h_rank[threadIdx.x+1] = two_h_ranks[i];
+
+        __syncthreads();
+        bool new_group = (s_h_rank[threadIdx.x] != s_h_rank[threadIdx.x+1]
+            || s_two_h_rank[threadIdx.x] != s_two_h_rank[threadIdx.x+1]);
+        // Werte in aux überschrieben?
+        aux[i] = new_group * (s_h_rank[threadIdx.x+1] + i - aux[i]);
+    }
+}
+
 void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
         uint32_t* aux, size_t size) {
-    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
-            h_ranks, two_h_ranks, aux, size);
+    update_ranks_build_aux_tilde_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+            2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint32_t)>>>(h_ranks, two_h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
         uint64_t* aux, size_t size) {
-    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
-            h_ranks, two_h_ranks, aux, size);
+    update_ranks_build_aux_tilde_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+            2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(h_ranks, two_h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
 
@@ -647,200 +736,3 @@ void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
             isa, two_h_rank);
     cudaDeviceSynchronize();
 }
-
-
-/*
-    Copies one array size_to another by using GPU threads
-    Maybe use memcpy? http://horacio9573.no-ip.org/cuda/group__CUDART__MEMORY_g48efa06b81cc031b2aa6fdc2e9930741.html
-*/
-/*
-__global__
-static void copy_to_array(size_t* in, size_t* out, size_t n) {
-
-    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
-    size_t stride = blockDim.x * gridDim.x;
-    for (size_t i = index; i < n; i+=stride) {
-        in[i] = out[i];
-    }
-
-}
-
-
-*/
-
-/*
-template <typename sa_index, class osipov_impl>
-static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
-            osipov_impl& osipov) {
-
-    size_t size = osipov.get_size();
-    size_t n = size;
-    //Fill SA
-    osipov.initialize_sa();
-    cudaDeviceSynchronize();
-
-    //Sort by four characters
-    osipov.inital_sort();
-    cudaDeviceSynchronize();
-    auto sa = osipov.get_sa();
-    std::cout<<"SA: ";
-    for(size_t i = 0; i<size; ++i) {
-        std::cout<<sa[i]<<", ";
-    }
-    std::cout<<std::endl;
-
-    //Init ISA with group numbers according to initial sorting
-    osipov.initialize_isa();
-    cudaDeviceSynchronize();
-
-    auto isa = osipov.get_isa();
-
-    std::cout<<std::endl;
-    std::cout<<"ISA: ";
-    for(size_t i = 0 ; i< size ; ++i) {
-        std::cout<<isa[sa[i]]<<", ";
-    }
-    std::cout<<std::endl;
-
-    osipov.mark_singletons();
-
-    auto aux = osipov.get_aux();
-
-    std::cout << "Flags: ";
-    for(size_t i = 0; i<size; ++i) {
-        std::cout<<aux[i]<<", ";
-    }
-    std::cout<<std::endl;
-
-    std::cout<<"ISA (with singletons): ";
-    for(size_t i = 0 ; i< size ; ++i) {
-        std::cout<<isa[sa[i]]<<", ";
-    }
-    std::cout<<std::endl;
-    size_t h = 4;
-    size_t s;
-
-    auto h_rank = osipov.get_rank();
-    auto two_h_rank = osipov.get_two_rank();
-
-    while(size > 0) {
-        osipov.slice_container(size);
-
-        s = osipov.create_tuples(size, h);
-
-        std::cout << "Tuples: ";
-        for(size_t i=0; i < s; ++i) {
-            std::cout << "<" << sa[i] << "," << h_rank[i] << ">, ";
-        }
-        std::cout << std::endl;
-
-        // Continue iteration as usual only if there are elements left
-        // (i.e. s>0)
-        if(s>0) {
-            osipov.slice_container(s);
-            osipov.stable_sort();
-            cudaDeviceSynchronize();
-
-            std::cout << "Tuples after sorting: ";
-            for(size_t i=0; i < s; ++i) {
-                std::cout << "<" << sa[i] << "," << h_rank[i] <<">, ";
-            }
-            std::cout << std::endl;
-
-            osipov.update_ranks(h);
-
-            std::cout << "Updated h_rank: ";
-            for(size_t i=0; i < s; ++i) {
-                std::cout << "<" << sa[i] << "," << aux[i] << ">, ";
-            }
-            osipov.update_container(s);
-            std::cout << std::endl;
-            // TODO: UPDATE SA!
-            osipov.mark_singletons();
-        }
-        // End of iteration; update size and h.
-        size = s;
-        h = 2*h;
-    }
-    osipov.finalize(n);
-    std::cout<<"Result:"<<std::endl;
-    for(int i = 0; i < n; ++i) {
-        std::cout<<(sa[i])<<", ";
-    }
-    std::cout<<std::endl;
-}
-
-TODO: Move to osipov_gpu.hpp
-int main()
-{
-    std::string text_str = "trhsrznttstrhrhvsrthsrcadcvsdnvsvoisemvosdinvaofmafvnsodivjasifn";
-    const char* text = text_str.c_str();
-    size_t n = text_str.size()+1;
-    std::cout<<"n: "<<n<<std::endl;
-
-
-    uint32_t* packed_text;
-    packed_text = (uint32_t *) malloc(n*sizeof(uint32_t));
-    //Pack text, so you can compare four chars at once
-    word_packing(text, packed_text, n);
-
-    //GPU arrays
-    uint32_t* gpu_text;
-    uint32_t* out_sa;
-    gpu_text = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    //Copy text to GPU
-    memset(gpu_text, 0, n*sizeof(uint32_t));
-    cuda_check(cudaMemcpy(gpu_text, packed_text, n*sizeof(uint32_t), cudaMemcpyHostToDevice));
-    out_sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
-
-    //additional arrays
-    uint32_t* sa;
-    uint32_t* isa;
-    uint32_t* aux;
-
-    uint32_t* h_rank;
-    uint32_t* two_h_rank;
-    //allocate additional arrays directly on GPU
-    sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    isa = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    aux = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    two_h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
-
-    cuda_check(cudaDeviceSynchronize());
-
-
-    auto osipov = osipov_gpu<uint32_t>(n, gpu_text, sa, isa, aux, h_rank, two_h_rank);
-
-    prefix_doubling_gpu<uint32_t, osipov_gpu<uint32_t>>(gpu_text, out_sa, osipov);
-
-    return 0;
-}
-
-*/
-/*
-int main()
-{
-    std::string text_str = "caabaccaabacaa";
-    const char* text = text_str.c_str();
-    size_t n = text_str.size()+1;
-    std::cout<<"n: "<<n<<std::endl;
-
-    uint64_t* packed_text;
-    packed_text = (uint64_t *) malloc(n*sizeof(uint64_t));
-    for(int i = 0; i<n; ++i) {
-        std::cout<<packed_text[i]<<",";
-    }
-    std::cout<<std::endl;
-
-    //Pack text, so you can compare four chars at once
-    word_packing_64(text, packed_text, n);
-
-    for(int i = 0; i<n; ++i) {
-        std::cout<<packed_text[i]<<",";
-    }
-    std::cout<<std::endl;
-
-    return 0;
-}
-*/
