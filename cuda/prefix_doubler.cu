@@ -92,8 +92,8 @@ void word_packing(const uint8_t* chars, uint64_t* result, size_t n) {
 */
 template <typename sa_index>
 __global__
-static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
-            sa_index* aux) {
+static void set_flags_kernel(const size_t size, const sa_index* sa,
+            const sa_index* isa, sa_index* aux) {
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
 
@@ -118,8 +118,8 @@ static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
     \brief Kernel function (uint32_t) for setting diff flags.
 */
 __global__
-static void set_flags_kernel_32(size_t size, uint32_t* sa, uint32_t* isa,
-            uint32_t* aux) {
+static void set_flags_kernel_32(const size_t size, const uint32_t* sa,
+            const uint32_t* isa, uint32_t* aux) {
     extern __shared__ uint32_t smem_32[];
     uint32_t* s_isa = smem_32;
     uint32_t* s_sa = &s_isa[NUM_THREADS_PER_BLOCK+1];
@@ -158,8 +158,8 @@ static void set_flags_kernel_32(size_t size, uint32_t* sa, uint32_t* isa,
     types (shared memory doesn't support template parameters).
 */
 __global__
-static void set_flags_kernel_64(size_t size, uint64_t* sa, uint64_t* isa,
-            uint64_t* aux) {
+static void set_flags_kernel_64(const size_t size, const uint64_t* sa,
+            const uint64_t* isa, uint64_t* aux) {
     extern __shared__ uint64_t smem_64[];
     uint64_t* s_isa = smem_64;
     uint64_t* s_sa = &s_isa[NUM_THREADS_PER_BLOCK+1];
@@ -214,8 +214,8 @@ void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
 */
 template <typename sa_index>
 __global__
-static void mark_groups_kernel(size_t size, sa_index* sa, sa_index* isa,
-            sa_index* aux) {
+static void mark_groups_kernel(const size_t size, const sa_index* sa,
+            sa_index* isa, const sa_index* aux) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -234,8 +234,8 @@ static void mark_groups_kernel(size_t size, sa_index* sa, sa_index* isa,
 }
 
 __global__
-static void mark_groups_kernel_32(size_t size, uint32_t* sa, uint32_t* isa,
-            uint32_t* aux) {
+static void mark_groups_kernel_32(const size_t size, const uint32_t* sa,
+            uint32_t* isa, const uint32_t* aux) {
     extern __shared__ uint32_t s_aux_32[];
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -263,8 +263,8 @@ static void mark_groups_kernel_32(size_t size, uint32_t* sa, uint32_t* isa,
 }
 
 __global__
-static void mark_groups_kernel_64(size_t size, uint64_t* sa, uint64_t* isa,
-            uint64_t* aux) {
+static void mark_groups_kernel_64(const size_t size, const uint64_t* sa,
+            uint64_t* isa, const uint64_t* aux) {
     extern __shared__ uint64_t s_aux_64[];
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -311,7 +311,7 @@ void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
 */
 template <typename sa_index>
 __global__
-static void initialize_sa_gpu_kernel(size_t n, sa_index* sa) {
+static void initialize_sa_gpu_kernel(const size_t n, sa_index* sa) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -371,7 +371,8 @@ void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
 */
 template <typename Comp, typename sa_index>
 __global__
-void fill_aux_for_isa_kernel(sa_index* sa, sa_index* aux, size_t n, Comp comp) {
+void fill_aux_for_isa_kernel(const sa_index* sa, sa_index* aux, const size_t n,
+            Comp comp) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -406,8 +407,8 @@ void fill_aux_for_isa(uint64_t* text, uint64_t* sa, uint64_t* isa, size_t size) 
 */
 template <typename sa_index>
 __global__
-void scatter_to_isa_kernel(sa_index* isa, sa_index* aux, sa_index* sa,
-            size_t n) {
+void scatter_to_isa_kernel(sa_index* isa, const sa_index* aux,
+            const sa_index* sa, const size_t n) {
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
 
@@ -430,7 +431,7 @@ void scatter_to_isa(uint64_t* isa, uint64_t* aux, uint64_t* sa, size_t size) {
 
 template <typename sa_index>
 __global__
-void update_ranks_build_aux_kernel(sa_index* h_ranks, sa_index* aux, size_t n) {
+void update_ranks_build_aux_kernel(const sa_index* h_ranks, sa_index* aux, size_t n) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -537,8 +538,8 @@ void update_ranks_build_aux_tilde_kernel_32(uint32_t* h_ranks,
 }
 
 __global__
-void update_ranks_build_aux_tilde_kernel_64(uint64_t* h_ranks,
-            uint64_t* two_h_ranks, uint64_t* aux, size_t n) {
+void update_ranks_build_aux_tilde_kernel_64(const uint64_t* h_ranks,
+            const uint64_t* two_h_ranks, uint64_t* aux, const size_t n) {
     extern __shared__ uint64_t smem_64[];
     uint64_t* s_h_rank = smem_64;
     uint64_t* s_two_h_rank = &s_h_rank[NUM_THREADS_PER_BLOCK+1];
@@ -633,8 +634,8 @@ void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
 */
 template <typename sa_index>
 __global__
-void new_tuple_kernel(size_t size, size_t h, sa_index* sa,
-        sa_index* isa, sa_index* aux, sa_index* tuple_index,
+void new_tuple_kernel(const size_t size, const size_t h, const sa_index* sa,
+        const sa_index* isa, sa_index* aux, sa_index* tuple_index,
         sa_index* h_rank) {
     int t_index = blockIdx.x*blockDim.x + threadIdx.x;
     int stride = blockDim.x*gridDim.x;
@@ -682,7 +683,7 @@ void new_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
 */
 template <typename sa_index>
 __global__
-void isa_to_sa_kernel(sa_index* isa, sa_index* sa, size_t n) {
+void isa_to_sa_kernel(const sa_index* isa, sa_index* sa, size_t n) {
 
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
@@ -707,8 +708,8 @@ void isa_to_sa(uint64_t* isa, uint64_t* sa, size_t size) {
 */
 template <typename sa_index>
 __global__
-void generate_two_h_kernel(size_t size, size_t h, sa_index* sa, sa_index* isa,
-            sa_index* two_h_rank) {
+void generate_two_h_kernel(const size_t size, const size_t h,
+            const sa_index* sa, const sa_index* isa, sa_index* two_h_rank) {
     int t_index = blockIdx.x*blockDim.x + threadIdx.x;
     int stride = blockDim.x*gridDim.x;
     for(size_t i=t_index; i < size; i+=stride) {
