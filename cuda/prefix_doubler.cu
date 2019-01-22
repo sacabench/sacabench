@@ -88,6 +88,7 @@ void word_packing(const uint8_t* chars, uint64_t* result, size_t n) {
 
 /*
     \brief Kernel function for setting diff flags.
+    DEPRECATED
 */
 template <typename sa_index>
 __global__
@@ -206,18 +207,7 @@ void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
             2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }
-/*
-void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
-    //std::cout << "Calling 32 Version of set_flags." << std::endl;
-    set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
-    cudaDeviceSynchronize();
-}
 
-void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
-    //std::cout << "Calling 64 Version of set_flags." << std::endl;
-    set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
-    cudaDeviceSynchronize();
-}*/
 /*
     \brief Kernel function for checking wether a group should be marked,
     i.e. inverting its rank.
@@ -243,15 +233,74 @@ static void mark_groups_kernel(size_t size, sa_index* sa, sa_index* isa,
     }
 }
 
+__global__
+static void mark_groups_kernel_32(size_t size, uint32_t* sa, uint32_t* isa,
+            uint32_t* aux) {
+    extern __shared__ uint32_t s_aux_32[];
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+    // Check if group is singleton by checking wether flag has been set for
+    // element and successor
+    for(size_t i=index; i < size-1; i+=stride) {
+        // Load aux values into shared memory.
+
+        if(threadIdx.x == 0) {
+            s_aux_32[0] = aux[i];
+        }
+
+        s_aux_32[threadIdx.x+1] = aux[i+1];
+
+        __syncthreads();
+        if(s_aux_32[threadIdx.x] + s_aux_32[threadIdx.x+1] > 1) {
+            // Condition met -> invert rank of suffix sa[i]
+            isa[sa[i]] = isa[sa[i]] | utils<uint32_t>::NEGATIVE_MASK;
+        }
+    }
+    // Separate check for last suffix because it has no successor
+    if(index == 0 && aux[size-1] > 0) {
+        isa[sa[size-1]] = isa[sa[size-1]] | utils<uint32_t>::NEGATIVE_MASK;
+    }
+}
+
+__global__
+static void mark_groups_kernel_64(size_t size, uint64_t* sa, uint64_t* isa,
+            uint64_t* aux) {
+    extern __shared__ uint64_t s_aux_64[];
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+    // Check if group is singleton by checking wether flag has been set for
+    // element and successor
+    for(size_t i=index; i < size-1; i+=stride) {
+        // Load aux values into shared memory.
+
+        if(threadIdx.x == 0) {
+            s_aux_64[0] = aux[i];
+        }
+
+        s_aux_64[threadIdx.x+1] = aux[i+1];
+
+        __syncthreads();
+        if(s_aux_64[threadIdx.x] + s_aux_64[threadIdx.x+1] > 1) {
+            // Condition met -> invert rank of suffix sa[i]
+            isa[sa[i]] = isa[sa[i]] | utils<uint64_t>::NEGATIVE_MASK;
+        }
+    }
+    // Separate check for last suffix because it has no successor
+    if(index == 0 && aux[size-1] > 0) {
+        isa[sa[size-1]] = isa[sa[size-1]] | utils<uint64_t>::NEGATIVE_MASK;
+    }
+}
 
 void mark_groups(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
-    mark_groups_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
+    mark_groups_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+            (NUM_THREADS_PER_BLOCK+1)*sizeof(uint32_t)>>>(size, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
 
 void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
-    mark_groups_kernel<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
+    mark_groups_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+            (NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(size, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
