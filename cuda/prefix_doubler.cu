@@ -113,6 +113,100 @@ static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
     }
 }
 
+/*
+    \brief Kernel function (uint32_t) for setting diff flags.
+*/
+__global__
+static void set_flags_kernel_32(size_t size, uint32_t* sa, uint32_t* isa,
+            uint32_t* aux) {
+    extern __shared__ uint32_t smem_32[];
+    uint32_t* s_isa = smem_32;
+    uint32_t* s_sa = &s_isa[NUM_THREADS_PER_BLOCK+1];
+
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        // First index has no predecessor -> mark as true by default
+        aux[0] = 1;
+    }
+    // Avoid iteration for index 0
+    // Set flags if different rank to predecessor
+    for(size_t i=index+1; i < size; i+=stride) {
+        // Load into shared memory according to stride offset
+        // Load first element with current stride offset
+        if(threadIdx.x == 0) {
+            s_sa[0] = sa[i-1];
+            s_isa[0] = isa[s_sa[0]];
+        }
+        // Load second isa value for following computation
+        s_sa[threadIdx.x+1] = sa[i];
+        s_isa[threadIdx.x+1] = isa[s_sa[threadIdx.x+1]];
+
+        __syncthreads();
+
+        aux[i] = (s_isa[threadIdx.x] != s_isa[threadIdx.x+1]);
+        // aux[i] = (isa[sa[i-1]] != isa[sa[i]]);
+    }
+}
+/*
+    \brief Kernel function (uint64_t) for setting diff flags.
+
+    Shared memory needs different name to 32-bit Version because cuda sometimes
+    behaves strangely. This also caused the split of the kernel for different
+    types (shared memory doesn't support template parameters).
+*/
+__global__
+static void set_flags_kernel_64(size_t size, uint64_t* sa, uint64_t* isa,
+            uint64_t* aux) {
+    extern __shared__ uint64_t smem_64[];
+    uint64_t* s_isa = smem_64;
+    uint64_t* s_sa = &s_isa[NUM_THREADS_PER_BLOCK+1];
+
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        // First index has no predecessor -> mark as true by default
+        aux[0] = 1;
+    }
+
+
+    // Avoid iteration for index 0
+    // Set flags if different rank to predecessor
+    for(size_t i=index+1; i < size; i+=stride) {
+        // Load into shared memory according to stride offset
+        // Load first element with current stride offset
+        if(threadIdx.x == 0) {
+            s_sa[0] = sa[i-1];
+            s_isa[0] = isa[s_sa[0]];
+        }
+        // Load second isa value (isa[sa[i+1]] for thread i) for following
+        // computation
+        s_sa[threadIdx.x+1] = sa[i];
+        s_isa[threadIdx.x+1] = isa[s_sa[threadIdx.x+1]];
+
+        __syncthreads();
+
+        aux[i] = (s_isa[threadIdx.x] != s_isa[threadIdx.x+1]);
+        // aux[i] = (isa[sa[i-1]] != isa[sa[i]]);
+    }
+}
+
+void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
+    //std::cout << "Calling 32 Version of set_flags." << std::endl;
+    set_flags_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+            2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint32_t)>>>(size, sa, isa, aux);
+    cudaDeviceSynchronize();
+}
+
+void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
+    //std::cout << "Calling 64 Version of set_flags." << std::endl;
+    set_flags_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+            2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(size, sa, isa, aux);
+    cudaDeviceSynchronize();
+}
+/*
 void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
     //std::cout << "Calling 32 Version of set_flags." << std::endl;
     set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
@@ -123,8 +217,7 @@ void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
     //std::cout << "Calling 64 Version of set_flags." << std::endl;
     set_flags_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
-}
-
+}*/
 /*
     \brief Kernel function for checking wether a group should be marked,
     i.e. inverting its rank.
