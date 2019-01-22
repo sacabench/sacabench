@@ -386,6 +386,43 @@ void fill_aux_for_isa_kernel(const sa_index* sa, sa_index* aux, const size_t n,
     }
 }
 
+template <typename Comp, typename sa_index>
+__global__
+void fill_aux_for_isa_kernel_shared32(const sa_index* sa, sa_index* aux, const size_t n,
+            Comp comp) {
+    extern __shared__ uint32_t fill_aux_buffer32[];
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        aux[0]=0;
+        fill_aux_buffer32[0] = sa[0];
+    }
+
+    for (size_t i = index+1; i < n; i+=stride) {
+        fill_aux_buffer32[threadIdx.x] = sa[i];
+        aux[i] = i * (comp(fill_aux_buffer32[threadIdx.x - 1], fill_aux_buffer32[threadIdx.x]) != 0);
+    }
+}
+template <typename Comp, typename sa_index>
+__global__
+void fill_aux_for_isa_kernel_shared64(const sa_index* sa, sa_index* aux, const size_t n,
+            Comp comp) {
+    extern __shared__ uint64_t fill_aux_buffer64[];
+    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t stride = blockDim.x * gridDim.x;
+
+    if(index == 0) {
+        aux[0]=0;
+        fill_aux_buffer64[0] = sa[0];
+    }
+
+    for (size_t i = index+1; i < n; i+=stride) {
+        //sa_buffer[threadIdx.x] = sa[i];
+        aux[i] = i * (comp(sa[i - 1], sa[i]) != 0);
+    }
+}
+
 void fill_aux_for_isa(uint32_t* text, uint32_t* sa, uint32_t* isa,
             size_t size) {
     auto cmp = Compare_four_chars<uint32_t>(text);
@@ -607,23 +644,51 @@ created.
 
 template <typename sa_index>
 __global__
-void set_tuple_kernel_shared(size_t size, size_t h, sa_index* sa,
+void set_tuple_kernel_shared32(size_t size, size_t h, sa_index* sa,
         sa_index* isa, sa_index* aux) {
-    extern __shared__ int sa_buffer[];
+    extern __shared__ int sa_buffer32[];
     int t_index = blockIdx.x*blockDim.x + threadIdx.x;
     int stride = blockDim.x*gridDim.x;
     sa_index index;
     for(size_t i=t_index; i < size; i+=stride) {
-        sa_buffer[threadIdx.x] = sa[i];
+        sa_buffer32[threadIdx.x] = sa[i];
         aux[i] = 0;
-        if(sa_buffer[threadIdx.x] >= h) {
-            index = sa_buffer[threadIdx.x]-h;
+        if(sa_buffer32[threadIdx.x] >= h) {
+            index = sa_buffer32[threadIdx.x]-h;
             if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                     sa_index(0)) {
                 ++aux[i];
             }
             // Second condition cannot be true if sa[i] < h
-            index = sa_buffer[threadIdx.x];
+            index = sa_buffer32[threadIdx.x];
+            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
+                    && index >= 2*h && (isa[index-2*h] &
+                    utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
+                ++aux[i];
+            }
+        }
+    }
+}
+
+template <typename sa_index>
+__global__
+void set_tuple_kernel_shared64(size_t size, size_t h, sa_index* sa,
+        sa_index* isa, sa_index* aux) {
+    extern __shared__ int sa_buffer64[];
+    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
+    int stride = blockDim.x*gridDim.x;
+    sa_index index;
+    for(size_t i=t_index; i < size; i+=stride) {
+        sa_buffer64[threadIdx.x] = sa[i];
+        aux[i] = 0;
+        if(sa_buffer64[threadIdx.x] >= h) {
+            index = sa_buffer64[threadIdx.x]-h;
+            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
+                    sa_index(0)) {
+                ++aux[i];
+            }
+            // Second condition cannot be true if sa[i] < h
+            index = sa_buffer64[threadIdx.x];
             if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
                     && index >= 2*h && (isa[index-2*h] &
                     utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
@@ -635,14 +700,14 @@ void set_tuple_kernel_shared(size_t size, size_t h, sa_index* sa,
 
 void set_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux) {
-    set_tuple_kernel_shared<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
+    set_tuple_kernel_shared32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
 
 void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux) {
-    set_tuple_kernel_shared<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, size*sizeof(uint64_t)>>>(size, h, sa, isa,
+    set_tuple_kernel_shared64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, size*sizeof(uint64_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
