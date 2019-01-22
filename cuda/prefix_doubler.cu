@@ -508,11 +508,12 @@ void update_ranks_build_aux_tilde_kernel(sa_index* h_ranks, sa_index* two_h_rank
 }
 
 __global__
-void update_ranks_build_aux_tilde_kernel_32(uint32_t* h_ranks,
-            uint32_t* two_h_ranks, uint32_t* aux, size_t n) {
+void update_ranks_build_aux_tilde_kernel_32(const uint32_t* h_ranks,
+            const uint32_t* two_h_ranks, uint32_t* aux, const size_t n) {
     extern __shared__ uint32_t smem[];
     uint32_t* s_h_rank = smem;
     uint32_t* s_two_h_rank = &s_h_rank[NUM_THREADS_PER_BLOCK+1];
+    uint32_t aux_val;
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
 
@@ -533,7 +534,8 @@ void update_ranks_build_aux_tilde_kernel_32(uint32_t* h_ranks,
         bool new_group = (s_h_rank[threadIdx.x] != s_h_rank[threadIdx.x+1]
             || s_two_h_rank[threadIdx.x] != s_two_h_rank[threadIdx.x+1]);
         // Werte in aux überschrieben?
-        aux[i] = new_group * (s_h_rank[threadIdx.x+1] + i - aux[i]);
+        aux_val = new_group * (s_h_rank[threadIdx.x+1] + i - aux[i]);
+        aux[i] = aux_val;
     }
 }
 
@@ -560,6 +562,7 @@ void update_ranks_build_aux_tilde_kernel_64(const uint64_t* h_ranks,
         s_two_h_rank[threadIdx.x+1] = two_h_ranks[i];
 
         __syncthreads();
+
         bool new_group = (s_h_rank[threadIdx.x] != s_h_rank[threadIdx.x+1]
             || s_two_h_rank[threadIdx.x] != s_two_h_rank[threadIdx.x+1]);
         // Werte in aux überschrieben?
@@ -567,6 +570,7 @@ void update_ranks_build_aux_tilde_kernel_64(const uint64_t* h_ranks,
     }
 }
 
+/*
 void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
         uint32_t* aux, size_t size) {
     update_ranks_build_aux_tilde_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
@@ -578,6 +582,21 @@ void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
         uint64_t* aux, size_t size) {
     update_ranks_build_aux_tilde_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
             2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(h_ranks, two_h_ranks, aux, size);
+    cudaDeviceSynchronize();
+}
+*/
+
+void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
+        uint32_t* aux, size_t size) {
+    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+            h_ranks, two_h_ranks, aux, size);
+    cudaDeviceSynchronize();
+}
+
+void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
+        uint64_t* aux, size_t size) {
+    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+            h_ranks, two_h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
 
