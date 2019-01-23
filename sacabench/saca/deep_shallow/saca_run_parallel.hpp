@@ -323,6 +323,7 @@ private:
         #pragma omp parallel
         {
             // Schedule the buckets in serial
+            #pragma omp single
             while (bd.are_buckets_left()) {
 
                 // Find the smallest unsorted bucket.
