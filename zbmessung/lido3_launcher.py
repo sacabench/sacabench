@@ -223,6 +223,7 @@ if args.launch:
                     "rep": N,
                     "jobid": jobid,
                     "threads": omp_threads,
+                    "is_weak": bool(WEAK_SCALE),
                 })
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)
@@ -306,9 +307,11 @@ def to_sqlplot(output_file, stats):
             "prefix": output_file["prefix"],
             "threads": output_file["threads"],
             "rep": output_file["rep"],
+            "is_weak": output_file["is_weak"],
             "rep_i": stati,
             **get_algo_stat(stat),
         }
+        #pprint(o)
 
         s = "RESULT"
         for k in sorted(o):
@@ -326,16 +329,33 @@ if args.combine:
         threads = output_file["threads"]
         input = output_file["input"]
 
-        for entry in stats:
-            stat_list = entry["stats"]
-            stat_list.append({
-                "key": "input_file",
-                "value": input.name,
-            })
-            stat_list.append({
-                "key": "thread_count",
-                "value": threads,
-            })
+        if False:
+            for entry in stats:
+                stat_list = entry["stats"]
+                stat_list.append({
+                    "key": "input_file",
+                    "value": input.name,
+                })
+                stat_list.append({
+                    "key": "thread_count",
+                    "value": threads,
+                })
+                stat_list.append({
+                    "key": "base_prefix_key",
+                    "value": str(output_file["prefix"]),
+                })
+                stat_list.append({
+                    "key": "actual_prefix_key",
+                    "value": str(output_file["actual_prefix"]),
+                })
+                stat_list.append({
+                    "key": "repetitions",
+                    "value": str(output_file["rep"]),
+                })
+                stat_list.append({
+                    "key": "is_weak",
+                    "value": output_file["is_weak"],
+                })
 
         sqlplot_out += to_sqlplot(output_file, stats)
 
