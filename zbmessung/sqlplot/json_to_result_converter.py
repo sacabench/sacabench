@@ -6,6 +6,7 @@
 #******************************************************************************
 
 import sys      # Dependency for accessing arguments.
+import os
 import json     # Dependency for processing the json files.
 from jinja2 import Environment, FileSystemLoader # Parsing template files
 import platform, subprocess  # Getting information about CPU
@@ -93,14 +94,11 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
     data["memOff"] = dict["memOff"]
     data["memPeak"] = dict["memPeak"]
 
-    timeEnd = dict["timeEnd"]
-    timeStart = dict["timeStart"]
-    data["time"] = timeEnd - timeStart
-
     stats = dict["stats"]
     for statsDict in stats:
         if statsDict["key"] == "input_file":
-            data["inputFile"] = statsDict["value"]
+            fullInputPath = statsDict["value"]
+            data["inputFile"] = os.path.basename(fullInputPath)
         if statsDict["key"] == "repetitions":
             data["repetitionCount"] = statsDict["value"]
         if statsDict["key"] == "prefix":
@@ -117,6 +115,13 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
             data["saIndexBitSize"] = statsDict["value"]
         if statsDict["key"] == "text_size":
             data["textSize"] = statsDict["value"]
+    
+    timeDict = dict["sub"][0]["sub"]
+    for timeEntry in timeDict:
+        if timeEntry["title"] == "Algorithm":
+            timeEnd = timeEntry["timeEnd"]
+            timeStart = timeEntry["timeStart"]
+            data["time"] = timeEnd - timeStart
 
     numberOfPhases = 0
     allPhases = dict["sub"][0]["sub"]
@@ -286,6 +291,7 @@ def convertAndSaveData(dict, path):
                         phasesFileContent += buildPhasesResultString(phaseDataDict)
 
     algorithmFilePath = "{}/result_algorithm.txt".format(path)
+    print("Saving {} to {}".format(algorithmFileContent, algorithmFilePath))
     writeFile(algorithmFilePath, algorithmFileContent)
 
     phasesFilePath = "{}/result_phases.txt".format(path)
