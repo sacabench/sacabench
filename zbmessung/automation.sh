@@ -9,7 +9,11 @@ currentdir=$(pwd)
 # Create a temporary directory and save the filename.
 tempdir=$(dirname $(mktemp -d))
 
-# Get path to this script. This script is called from build directory.
+# This is the scriptpath used when called by hand from command line.
+# TODO: Remove this, when automation is completed.
+#scriptpath="."
+
+# This is the scriptpath used when called by benchmarking tool from build directory.
 scriptpath="../zbmessung"
 
 # Copy sqlplot directory to previously generated temporary directory.
@@ -28,5 +32,4 @@ mv *.pdf $pdf_dest_path
 cd $currentdir
 
 # Delete sqlplot directory in temporary directory.
-#rm -rf $tempdir/sqlplot
-open $tempdir/sqlplot
+rm -rf $tempdir/sqlplot
