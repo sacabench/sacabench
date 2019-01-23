@@ -320,6 +320,8 @@ if args.combine:
     dir = Path(args.combine)
     sqlplot_out = ""
     file_map = {}
+
+    combined_json = []
     for (output_file, stats) in load_data(dir):
         threads = output_file["threads"]
         input = output_file["input"]
@@ -333,7 +335,20 @@ if args.combine:
         (input, threads) = key
         op = dir / Path("results-{}-{}.json".format(input.name, threads))
         print("Writing data to {}".format(op))
+        combined_json.append({
+            "threads": threads,
+            "input": input.name,
+            "stats": file_map[key],
+        })
+        combined_json += file_map[key]
         write_json(op, file_map[key])
     op = dir / Path("sqlplot.txt")
     print("Writing data to {}".format(op))
     write_str(op, sqlplot_out)
+
+    op = dir / Path("results-combined.json")
+    print("Writing data to {}".format(op))
+    write_json(op, {
+        "measures": combined_json,
+        "sqlplot": sqlplot_out,
+    })
