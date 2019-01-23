@@ -8,7 +8,9 @@
 #include "prefix_doubler_interface.hpp"
 
 #define NUM_BLOCKS 2048
-#define NUM_THREADS_PER_BLOCK 256
+#define NUM_THREADS_PER_BLOCK 1024
+
+#define NUMBER_BLOCKS(x) ((x + NUM_THREADS_PER_BLOCK - 1) / NUM_THREADS_PER_BLOCK)
 
 template <typename sa_index>
 struct utils {
@@ -196,14 +198,14 @@ static void set_flags_kernel_64(const size_t size, const uint64_t* sa,
 
 void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
     //std::cout << "Calling 32 Version of set_flags." << std::endl;
-    set_flags_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+    set_flags_kernel_32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
             2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint32_t)>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }
 
 void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
     //std::cout << "Calling 64 Version of set_flags." << std::endl;
-    set_flags_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+    set_flags_kernel_64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
             2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }
@@ -292,14 +294,15 @@ static void mark_groups_kernel_64(const size_t size, const uint64_t* sa,
 }
 
 void mark_groups(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
-    mark_groups_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+    mark_groups_kernel_32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
             (NUM_THREADS_PER_BLOCK+1)*sizeof(uint32_t)>>>(size, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
 
 void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
-    mark_groups_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
+
+    mark_groups_kernel_64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
             (NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(size, sa, isa,
                 aux);
     cudaDeviceSynchronize();
@@ -322,12 +325,14 @@ static void initialize_sa_gpu_kernel(const size_t n, sa_index* sa) {
 }
 
 void initialize_sa_gpu(size_t size, uint32_t* sa) {
-    initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
+
+    initialize_sa_gpu_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, sa);
     cudaDeviceSynchronize();
 }
 
 void initialize_sa_gpu(size_t size, uint64_t* sa) {
-    initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
+
+    initialize_sa_gpu_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, sa);
     cudaDeviceSynchronize();
 }
 /*
@@ -426,14 +431,16 @@ void fill_aux_for_isa_kernel_shared64(const sa_index* sa, sa_index* aux, const s
 void fill_aux_for_isa(uint32_t* text, uint32_t* sa, uint32_t* isa,
             size_t size) {
     auto cmp = Compare_four_chars<uint32_t>(text);
-    fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
+
+    fill_aux_for_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
     cudaDeviceSynchronize();
 }
 
 void fill_aux_for_isa(uint64_t* text, uint64_t* sa, uint64_t* isa, size_t size) {
     auto cmp = Compare_four_chars<uint64_t>(text);
-    fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
+
+    fill_aux_for_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
     cudaDeviceSynchronize();
 }
@@ -455,13 +462,15 @@ void scatter_to_isa_kernel(sa_index* isa, const sa_index* aux,
 }
 
 void scatter_to_isa(uint32_t* isa, uint32_t* aux, uint32_t* sa, size_t size) {
-    scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
+
+    scatter_to_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
     cudaDeviceSynchronize();
 }
 
 void scatter_to_isa(uint64_t* isa, uint64_t* aux, uint64_t* sa, size_t size) {
-    scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
+
+    scatter_to_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
     cudaDeviceSynchronize();
 }
@@ -509,13 +518,15 @@ void update_ranks_build_aux_kernel_32(uint32_t* h_ranks, uint32_t* aux, size_t n
 }
 
 void update_ranks_build_aux(uint32_t* h_ranks, uint32_t* aux, size_t size) {
-    update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+
+    update_ranks_build_aux_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux(uint64_t* h_ranks, uint64_t* aux, size_t size) {
-    update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+
+    update_ranks_build_aux_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
@@ -625,14 +636,16 @@ void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
 
 void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
         uint32_t* aux, size_t size) {
-    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+
+    update_ranks_build_aux_tilde_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
         uint64_t* aux, size_t size) {
-    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+
+    update_ranks_build_aux_tilde_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
@@ -700,14 +713,16 @@ void set_tuple_kernel_shared64(size_t size, size_t h, sa_index* sa,
 
 void set_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux) {
-    set_tuple_kernel_shared32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
+
+    set_tuple_kernel_shared32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
 
 void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux) {
-    set_tuple_kernel_shared64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, size*sizeof(uint64_t)>>>(size, h, sa, isa,
+
+    set_tuple_kernel_shared64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, size*sizeof(uint64_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
@@ -816,14 +831,16 @@ void new_tuple_kernel_shared64(const size_t size, const size_t h, const sa_index
 
 void new_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux, uint32_t* tuple_index, uint32_t* h_rank) {
-    new_tuple_kernel_shared32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
+
+    new_tuple_kernel_shared32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
     cudaDeviceSynchronize();
 }
 
 void new_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux, uint64_t* tuple_index, uint64_t* h_rank) {
-    new_tuple_kernel_shared64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa, isa,
+
+    new_tuple_kernel_shared64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
     cudaDeviceSynchronize();
 }
@@ -844,12 +861,14 @@ void isa_to_sa_kernel(const sa_index* isa, sa_index* sa, size_t n) {
 }
 
 void isa_to_sa(uint32_t* isa, uint32_t* sa, size_t size) {
-    isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
+
+    isa_to_sa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
     cudaDeviceSynchronize();
 }
 
 void isa_to_sa(uint64_t* isa, uint64_t* sa, size_t size) {
-    isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
+
+    isa_to_sa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
     cudaDeviceSynchronize();
 }
 
@@ -917,14 +936,15 @@ void generate_two_h_kernel_shared64(const size_t size, const size_t h,
 
 void generate_two_h_rank(size_t size, size_t h, uint32_t* sa,
             uint32_t* isa, uint32_t* two_h_rank) {
-    generate_two_h_kernel_shared32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
+    generate_two_h_kernel_shared32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
             isa, two_h_rank);
     cudaDeviceSynchronize();
 }
 
 void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
             uint64_t* isa, uint64_t* two_h_rank) {
-    generate_two_h_kernel_shared64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
+
+    generate_two_h_kernel_shared64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
             isa, two_h_rank);
     cudaDeviceSynchronize();
 }
