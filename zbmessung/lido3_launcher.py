@@ -325,6 +325,18 @@ if args.combine:
     for (output_file, stats) in load_data(dir):
         threads = output_file["threads"]
         input = output_file["input"]
+
+        for entry in stats:
+            stat_list = entry["stats"]
+            stat_list.append({
+                "key": "input_file",
+                "value": input.name,
+            })
+            stat_list.append({
+                "key": "thread_count",
+                "value": threads,
+            })
+
         sqlplot_out += to_sqlplot(output_file, stats)
 
         key = (input, str(threads))
@@ -335,11 +347,12 @@ if args.combine:
         (input, threads) = key
         op = dir / Path("results-{}-{}.json".format(input.name, threads))
         print("Writing data to {}".format(op))
-        combined_json.append({
-            "threads": threads,
-            "input": input.name,
-            "stats": file_map[key],
-        })
+        #combined_json.append({
+        #    "threads": threads,
+        #    "input": input.name,
+        #    "stats": file_map[key],
+        #})
+        combined_json += file_map[key]
         write_json(op, file_map[key])
     op = dir / Path("sqlplot.txt")
     print("Writing data to {}".format(op))
@@ -347,7 +360,11 @@ if args.combine:
 
     op = dir / Path("results-combined.json")
     print("Writing data to {}".format(op))
-    write_json(op, {
-        "measures": combined_json,
-        "sqlplot": sqlplot_out,
-    })
+    #write_json(op, {
+    #    "measures": combined_json,
+    #    "sqlplot": sqlplot_out,
+    #})
+    write_json(op, combined_json)
+
+    # input_file
+    # thread_count
