@@ -348,7 +348,19 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         }
                     }
                 }
+
+                auto short_input_filename = input_filename;
+                auto last_pos = input_filename.rfind("/");
+                if (last_pos != std::string::npos) {
+                    short_input_filename = input_filename.substr(last_pos + 1);
+                }
+
                 root.log("algorithm_name", algo->name());
+                root.log("input_file", short_input_filename);
+                //root.log("repetitions", repetition_count);
+                root.log("thread_count", omp_get_max_threads());
+                root.log("prefix", prefix);
+
                 sum_array.push_back(root.to_json());
             }
 
