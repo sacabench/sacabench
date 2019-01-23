@@ -340,7 +340,6 @@ if args.combine:
             "input": input.name,
             "stats": file_map[key],
         })
-        combined_json += file_map[key]
         write_json(op, file_map[key])
     op = dir / Path("sqlplot.txt")
     print("Writing data to {}".format(op))
