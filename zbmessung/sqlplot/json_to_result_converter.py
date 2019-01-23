@@ -105,6 +105,8 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
             data["repetitionCount"] = statsDict["value"]
         if statsDict["key"] == "prefix":
             data["prefix"] = statsDict["value"]
+        if statsDict["key"] == "thread_count":
+            data["thread_count"] = statsDict["value"]
 
     # Access first item in list of subs to get needed values. 
     # Every item of sub list contains these values.
@@ -153,6 +155,7 @@ def buildAlgorithmResultString(data):
     content += "extra_sentinels={}\t".format(data["extraSentinels"])
     content += "input={}\t".format(data["inputFile"])
     content += "prefix={}\t".format(data["prefix"])
+    content += "thread_count={}\t".format(data["thread_count"])
     content += "sa_index_bit_size={}\t".format(data["saIndexBitSize"])
     content += "text_size={}\t".format(data["textSize"])
     content += "memOff={}\t".format(data["memOff"])
