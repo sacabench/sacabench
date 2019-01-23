@@ -16,18 +16,17 @@
 #include <util/merge_sa_dc.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <util/sort/radixsort_parallel.hpp>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
-namespace sacabench::dc3 {
+namespace sacabench::dc3_par2 {
 
-class dc3 {
+class dc3_par2 {
 public:
     static constexpr size_t EXTRA_SENTINELS = 3;
-    static constexpr char const* NAME = "DC3";
+    static constexpr char const* NAME = "DC3-Parallel-2";
     static constexpr char const* DESCRIPTION =
-        "Difference Cover Modulo 3 as described by Juha Kärkkäinen and Peter "
+        "Parallelized Difference Cover Modulo 3 as described by Juha Kärkkäinen and Peter "
         "Sanders";
 
     template <typename sa_index>
@@ -220,22 +219,152 @@ private:
         //-----------------------Phase 3------------------------------//
         dc3.split("Phase 3");
 
+        util::span<sa_index> sa_0_span; 
+        util::span<sa_index> sa_12_span; 
+        if (text.size() % 3 == 0) {
+            if (sa_0.size() <= 1) { /*sa_0_span = util::span();*/ }
+            else { sa_0_span = util::span(&sa_0[1], sa_0.size()-1); }
+            sa_12_span = triplets_12;
+        }
+        else {
+            sa_0_span = sa_0;
+            if (sa_12.size() <= 1) { /*sa_12_span = util::span();*/ }
+            else { sa_12_span = util::span(&triplets_12[1], triplets_12.size()-1); }
+        }
         // merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
         if constexpr (rec) {
+            auto comp = [&](sa_index a, sa_index b) {
+                size_t start_pos_mod_2 = span_t_12.size() / 2 + ((span_t_12.size() % 2) != 0);
+                size_t position_i_isa = 0;
+                size_t position_j_isa = 0;
 
-            merge_sa_dc<const sa_index, sa_index>(
-                sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
-                span_t_12, out_sa,
-                std::less<sacabench::util::span<const sa_index>>(),
-                [](auto a, auto b, auto c) {
-                    return get_substring_recursion<sa_index>(a, b, c);
-                });
+                sa_index one = 1;
+                sa_index two = 2;
+
+                size_t size_isa_12 = span_t_12.size();
+                
+                sacabench::util::span<sa_index> t_0;
+                sacabench::util::span<sa_index> t_12;
+                if (b % 3 == 1) {
+                    t_0 = text.slice(a, a+one);
+                    t_12 = text.slice(b, b+one);
+                } else {
+                    t_0 = text.slice(a, a+two);
+                    t_12 = text.slice(b, b+two);
+                }
+                
+                size_t size_t_0 = t_0.size();
+                size_t size_t_12 = t_12.size();
+                if (b % 3 == 1) {
+                    position_j_isa = start_pos_mod_2 + static_cast<size_t>(b + one) / 3;
+                    position_i_isa = static_cast<size_t>(a + one) / 3;
+
+                    if (position_i_isa >= size_isa_12 ||
+                        position_j_isa >= size_isa_12) {
+                        position_i_isa = 0;
+                        position_j_isa = 0;
+                    }
+                } else {
+                    position_j_isa = static_cast<size_t>(b + two) / 3;
+                    position_i_isa = start_pos_mod_2 + static_cast<size_t>(a + two) / 3;
+                    if (position_i_isa >= size_isa_12 ||
+                        position_j_isa >= size_isa_12) {
+                        position_i_isa = 0;
+                        position_j_isa = 0;
+                    }
+                }
+
+                const bool less_than = t_0 < t_12;
+                const bool eq = t_0 == t_12;
+                // NB: This is a closure so that we can evaluate it later,
+                // because evaluating it if `eq` is not true causes
+                // out-of-bounds errors.
+                auto lesser_suf = 
+                            !((2 * (static_cast<size_t>(b) + size_t_12)) / 3 >=
+                             size_isa_12) && // if index to compare for t_12
+                                             // is out of bounds of isa then
+                                             // sa_0[i] is never
+                                             // lexicographically smaller than 
+                                             // sa_12[j]
+                           ((2 * (static_cast<size_t>(a) + size_t_0)) / 3 >=
+                                size_isa_12 || // if index to compare for t_0
+                                               // is out of bounds of isa then
+                                               // sa_0[i] is lexicographically
+                                               // smaller
+                            span_t_12[position_i_isa] < span_t_12[position_j_isa]);
+                
+                return less_than || (eq && lesser_suf);
+            };
+            //util::merge_sa_dc_parallel_opt(sa_0_span, sa_12_span, out_sa, comp);
+            util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
+            //util::merge(sa_0_span, sa_12_span, out_sa, false, comp);
 
         } else {
-            merge_sa_dc<const sacabench::util::character, sa_index>(
-                sacabench::util::span(&text[0], text.size()), sa_0, triplets_12,
-                span_t_12, out_sa, std::less<sacabench::util::string_span>(),
-                [](auto a, auto b, auto c) { return get_substring(a, b, c); });
+            auto comp = [&](sa_index a, sa_index b) {
+                size_t start_pos_mod_2 = span_t_12.size() / 2 + ((span_t_12.size() % 2) != 0);
+                size_t position_i_isa = 0;
+                size_t position_j_isa = 0;
+
+                sa_index one = 1;
+                sa_index two = 2;
+
+                size_t size_isa_12 = span_t_12.size();
+                
+                sacabench::util::string_span t_0;
+                sacabench::util::string_span t_12;
+                if (b % 3 == 1) {
+                    t_0 = text.slice(a, a+one);
+                    t_12 = text.slice(b, b+one);
+                } else {
+                    t_0 = text.slice(a, a+two);
+                    t_12 = text.slice(b, b+two);
+                }
+                
+                size_t size_t_0 = t_0.size();
+                size_t size_t_12 = t_12.size();
+                if (b % 3 == 1) {
+                    position_j_isa = start_pos_mod_2 + static_cast<size_t>(b + one) / 3;
+                    position_i_isa = static_cast<size_t>(a + one) / 3;
+
+                    if (position_i_isa >= size_isa_12 ||
+                        position_j_isa >= size_isa_12) {
+                        position_i_isa = 0;
+                        position_j_isa = 0;
+                    }
+                } else {
+                    position_j_isa = static_cast<size_t>(b + two) / 3;
+                    position_i_isa = start_pos_mod_2 + static_cast<size_t>(a + two) / 3;
+                    if (position_i_isa >= size_isa_12 ||
+                        position_j_isa >= size_isa_12) {
+                        position_i_isa = 0;
+                        position_j_isa = 0;
+                    }
+                }
+
+                const bool less_than = t_0 < t_12;
+                const bool eq = t_0 == t_12;
+                // NB: This is a closure so that we can evaluate it later,
+                // because evaluating it if `eq` is not true causes
+                // out-of-bounds errors.
+                auto lesser_suf = 
+                            !((2 * (static_cast<size_t>(b) + size_t_12)) / 3 >=
+                             size_isa_12) && // if index to compare for t_12
+                                             // is out of bounds of isa then
+                                             // sa_0[i] is never
+                                             // lexicographically smaller than
+                                             // sa_12[j]
+                           ((2 * (static_cast<size_t>(a) + size_t_0)) / 3 >=
+                                size_isa_12 || // if index to compare for t_0
+                                               // is out of bounds of isa then
+                                               // sa_0[i] is lexicographically
+                                               // smaller
+                            span_t_12[position_i_isa] < span_t_12[position_j_isa]);
+                
+                return less_than || (eq && lesser_suf);
+            };
+            //util::merge_sa_dc_parallel_opt(sa_0_span, sa_12_span, out_sa, comp);
+            util::merge_sa_dc_parallel(sa_0_span, sa_12_span, out_sa, comp);
+            //util::merge(sa_0_span, sa_12_span, out_sa, false, comp);
         }
     }
 
@@ -325,10 +454,8 @@ private:
                 sa_0_to_be_sorted[counter++] =
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
-        
-        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
-        util::sort::radixsort_parallel<C, sa_index>(sa_0_to_be_sorted, text.size());
 
+        std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
             sa_0[i] = std::get<2>(sa_0_to_be_sorted[i]);
         }
@@ -505,6 +632,6 @@ private:
             }
         }
     }
-}; // class dc3
+}; // class dc3_par2
 
-} // namespace sacabench::dc3
+} // namespace sacabench::dc3_par2

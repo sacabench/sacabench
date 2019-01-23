@@ -409,6 +409,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
         nlohmann::json stat_array = nlohmann::json::array();
 
+        size_t sanity_counter = 0;
         for (const auto& algo : saca_list) {
             if (!whitelist.empty()) {
                 if (std::find(whitelist.begin(), whitelist.end(),
@@ -423,6 +424,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             nlohmann::json alg_array = nlohmann::json::array();
 
             for (uint32_t i = 0; i < repetition_count; i++) {
+                sanity_counter++;
                 tdc::StatPhase root(algo->name().data());
                 {
                     std::cerr << "Running " << algo->name() << " (" << (i + 1)
@@ -519,6 +521,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
             std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
             system(command.c_str());
+        }
+
+        if (sanity_counter == 0) {
+            std::cerr << "ERROR: No Algorithm ran!\n";
+            return 1;
         }
     }
 
