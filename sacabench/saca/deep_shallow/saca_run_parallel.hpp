@@ -163,7 +163,10 @@ private:
         for (const size_t& si : bucket) {
 
             // Check, if there is a suitable entry in anchor_data.
+            omp_set_lock(&writelock);
             const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
+            omp_unset_lock(&writelock);
+
             if (leftmost_suffix_opt.has_value()) {
 
                 // Test, if the suffix is in the valid range, that means
@@ -183,6 +186,7 @@ private:
 
                     // This is the position of the known sorted suffix in its
                     // bucket.
+                    omp_set_lock(&writelock);
                     const size_t sorted_bucket =
                         ad.get_position_in_suffixarray(si);
 
@@ -195,6 +199,7 @@ private:
                         input_text[leftmost_suffix],
                         input_text[leftmost_suffix +
                                    static_cast<sa_index_type>(1)]);
+                    omp_unset_lock(&writelock);
 
                     // Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
@@ -327,12 +332,10 @@ private:
             while (bd.are_buckets_left()) {
 
                 // Find the smallest unsorted bucket.
-                omp_set_lock(&writelock);
                 const auto unsorted_bucket = bd.get_smallest_bucket();
                 const auto alpha = unsorted_bucket.first;
                 const auto beta = unsorted_bucket.second;
                 const size_t size_of_bucket = bd.size_of_bucket(alpha, beta);
-                omp_unset_lock(&writelock);
 
                 if (size_of_bucket < 2) {
                     // Buckets with a size of 0 or 1 are already sorted.
@@ -345,6 +348,9 @@ private:
                     }
                 }
             }
+
+            // Start execution of buckets.
+            omp_unset_lock(&writelock);
         }
 
         // At this point, all tasks are synced.
