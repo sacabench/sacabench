@@ -489,9 +489,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             
             //TODO: model_name only returns exit status of command instead of model name
             auto model_name = system("grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'");
-           
+            
+            // input_filename contains full path to input file. For config_json file we only need the name.
+            auto filename_start_index = input_filename.find_last_of("\\/") + 1;
+            auto filename_end_index = input_filename.length();
+            auto corrected_input_filename = input_filename.substr(filename_start_index, filename_end_index);
             nlohmann::json j = {
-                                    {"input", input_filename},
+                                    {"input", corrected_input_filename},
                                     {"prefix", prefix},
                                     {"repetitions", repetition_count},
                                     {"model_name", model_name}
