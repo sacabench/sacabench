@@ -57,8 +57,8 @@ set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wpedantic;-Wextra;-Werror=return-type;-fd
 if (SACA_WERROR)
     set(SACA_BENCH_FLAGS "${SACA_BENCH_FLAGS};-Werror;-pedantic-errors")
 endif()
-set(SACA_BENCH_DEBUG_FLAGS "-O0;-g;-ggdb;-DDEBUG")
-set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG;-g")
+set(SACA_BENCH_DEBUG_FLAGS "-O0;-g;-ggdb;-DDEBUG;")
+set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG;-g;")
 
 ENDIF()
 
@@ -88,6 +88,7 @@ add_subdirectory(external/reference_impls/bpr)
 add_subdirectory(external/reference_impls/dc3)
 add_subdirectory(external/reference_impls/msufsort)
 add_subdirectory(external/reference_impls/saca_k)
+add_subdirectory(external/reference_impls/parallel_divsufsort)
 add_subdirectory(sacabench)
 add_subdirectory(test)
 add_subdirectory(bigtest)
