@@ -182,12 +182,12 @@ static void initialize_sa_gpu_kernel(size_t n, sa_index* sa) {
 
 void initialize_sa_gpu(size_t size, uint32_t* sa) {
     initialize_sa_gpu_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, sa);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void initialize_sa_gpu(size_t size, uint64_t* sa) {
     initialize_sa_gpu_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, sa);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 /*
     Calculates inclusive prefix sum on GPU using the provided CUB Method
