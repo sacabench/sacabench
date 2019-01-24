@@ -155,13 +155,13 @@ static void mark_groups_kernel(size_t size, sa_index* sa, sa_index* isa,
 void mark_groups(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
     mark_groups_kernel<<<NUM_BLOCKS(size),NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
                 aux);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
     mark_groups_kernel<<<NUM_BLOCKS(size),NUM_THREADS_PER_BLOCK>>>(size, sa, isa,
                 aux);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 /*
