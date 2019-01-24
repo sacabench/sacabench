@@ -8,9 +8,7 @@
 #include "prefix_doubler_interface.hpp"
 
 #define NUM_BLOCKS 2048
-#define NUM_THREADS_PER_BLOCK 1024
-
-#define NUMBER_BLOCKS(x) ((x + NUM_THREADS_PER_BLOCK - 1) / NUM_THREADS_PER_BLOCK)
+#define NUM_THREADS_PER_BLOCK 256
 
 template <typename sa_index>
 struct utils {
@@ -198,14 +196,14 @@ static void set_flags_kernel_64(const size_t size, const uint64_t* sa,
 
 void set_flags(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
     //std::cout << "Calling 32 Version of set_flags." << std::endl;
-    set_flags_kernel_32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
+    set_flags_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
             2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint32_t)>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }
 
 void set_flags(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
     //std::cout << "Calling 64 Version of set_flags." << std::endl;
-    set_flags_kernel_64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
+    set_flags_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
             2*(NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(size, sa, isa, aux);
     cudaDeviceSynchronize();
 }
@@ -294,15 +292,14 @@ static void mark_groups_kernel_64(const size_t size, const uint64_t* sa,
 }
 
 void mark_groups(size_t size, uint32_t* sa, uint32_t* isa, uint32_t* aux) {
-    mark_groups_kernel_32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
+    mark_groups_kernel_32<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
             (NUM_THREADS_PER_BLOCK+1)*sizeof(uint32_t)>>>(size, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
 
 void mark_groups(size_t size, uint64_t* sa, uint64_t* isa, uint64_t* aux) {
-
-    mark_groups_kernel_64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK,
+    mark_groups_kernel_64<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK,
             (NUM_THREADS_PER_BLOCK+1)*sizeof(uint64_t)>>>(size, sa, isa,
                 aux);
     cudaDeviceSynchronize();
@@ -325,14 +322,12 @@ static void initialize_sa_gpu_kernel(const size_t n, sa_index* sa) {
 }
 
 void initialize_sa_gpu(size_t size, uint32_t* sa) {
-
-    initialize_sa_gpu_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, sa);
+    initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
     cudaDeviceSynchronize();
 }
 
 void initialize_sa_gpu(size_t size, uint64_t* sa) {
-
-    initialize_sa_gpu_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, sa);
+    initialize_sa_gpu_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, sa);
     cudaDeviceSynchronize();
 }
 /*
@@ -391,56 +386,17 @@ void fill_aux_for_isa_kernel(const sa_index* sa, sa_index* aux, const size_t n,
     }
 }
 
-template <typename Comp, typename sa_index>
-__global__
-void fill_aux_for_isa_kernel_shared32(const sa_index* sa, sa_index* aux, const size_t n,
-            Comp comp) {
-    extern __shared__ uint32_t fill_aux_buffer32[];
-    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
-    size_t stride = blockDim.x * gridDim.x;
-
-    if(index == 0) {
-        aux[0]=0;
-        fill_aux_buffer32[0] = sa[0];
-    }
-
-    for (size_t i = index+1; i < n; i+=stride) {
-        fill_aux_buffer32[threadIdx.x] = sa[i];
-        aux[i] = i * (comp(fill_aux_buffer32[threadIdx.x - 1], fill_aux_buffer32[threadIdx.x]) != 0);
-    }
-}
-template <typename Comp, typename sa_index>
-__global__
-void fill_aux_for_isa_kernel_shared64(const sa_index* sa, sa_index* aux, const size_t n,
-            Comp comp) {
-    extern __shared__ uint64_t fill_aux_buffer64[];
-    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
-    size_t stride = blockDim.x * gridDim.x;
-
-    if(index == 0) {
-        aux[0]=0;
-        fill_aux_buffer64[0] = sa[0];
-    }
-
-    for (size_t i = index+1; i < n; i+=stride) {
-        //sa_buffer[threadIdx.x] = sa[i];
-        aux[i] = i * (comp(sa[i - 1], sa[i]) != 0);
-    }
-}
-
 void fill_aux_for_isa(uint32_t* text, uint32_t* sa, uint32_t* isa,
             size_t size) {
     auto cmp = Compare_four_chars<uint32_t>(text);
-
-    fill_aux_for_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(sa, isa,
+    fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
     cudaDeviceSynchronize();
 }
 
 void fill_aux_for_isa(uint64_t* text, uint64_t* sa, uint64_t* isa, size_t size) {
     auto cmp = Compare_four_chars<uint64_t>(text);
-
-    fill_aux_for_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(sa, isa,
+    fill_aux_for_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
     cudaDeviceSynchronize();
 }
@@ -462,15 +418,13 @@ void scatter_to_isa_kernel(sa_index* isa, const sa_index* aux,
 }
 
 void scatter_to_isa(uint32_t* isa, uint32_t* aux, uint32_t* sa, size_t size) {
-
-    scatter_to_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
+    scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
     cudaDeviceSynchronize();
 }
 
 void scatter_to_isa(uint64_t* isa, uint64_t* aux, uint64_t* sa, size_t size) {
-
-    scatter_to_isa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
+    scatter_to_isa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
     cudaDeviceSynchronize();
 }
@@ -518,15 +472,13 @@ void update_ranks_build_aux_kernel_32(uint32_t* h_ranks, uint32_t* aux, size_t n
 }
 
 void update_ranks_build_aux(uint32_t* h_ranks, uint32_t* aux, size_t size) {
-
-    update_ranks_build_aux_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
+    update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux(uint64_t* h_ranks, uint64_t* aux, size_t size) {
-
-    update_ranks_build_aux_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
+    update_ranks_build_aux_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
@@ -636,16 +588,14 @@ void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
 
 void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
         uint32_t* aux, size_t size) {
-
-    update_ranks_build_aux_tilde_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
+    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
         uint64_t* aux, size_t size) {
-
-    update_ranks_build_aux_tilde_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
+    update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
     cudaDeviceSynchronize();
 }
@@ -657,51 +607,23 @@ created.
 
 template <typename sa_index>
 __global__
-void set_tuple_kernel_shared32(size_t size, size_t h, sa_index* sa,
+void set_tuple_kernel_shared(size_t size, size_t h, sa_index* sa,
         sa_index* isa, sa_index* aux) {
-    extern __shared__ uint32_t set_tuple_sa_buffer32[];
+    extern __shared__ int sa_buffer[];
     int t_index = blockIdx.x*blockDim.x + threadIdx.x;
     int stride = blockDim.x*gridDim.x;
     sa_index index;
     for(size_t i=t_index; i < size; i+=stride) {
-        set_tuple_sa_buffer32[threadIdx.x] = sa[i];
+        sa_buffer[threadIdx.x] = sa[i];
         aux[i] = 0;
-        if(set_tuple_sa_buffer32[threadIdx.x] >= h) {
-            index = set_tuple_sa_buffer32[threadIdx.x]-h;
+        if(sa_buffer[threadIdx.x] >= h) {
+            index = sa_buffer[threadIdx.x]-h;
             if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                     sa_index(0)) {
                 ++aux[i];
             }
             // Second condition cannot be true if sa[i] < h
-            index = set_tuple_sa_buffer32[threadIdx.x];
-            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
-                    && index >= 2*h && (isa[index-2*h] &
-                    utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
-                ++aux[i];
-            }
-        }
-    }
-}
-
-template <typename sa_index>
-__global__
-void set_tuple_kernel_shared64(size_t size, size_t h, sa_index* sa,
-        sa_index* isa, sa_index* aux) {
-    extern __shared__ uint64_t set_tuple_sa_buffer64[];
-    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
-    int stride = blockDim.x*gridDim.x;
-    sa_index index;
-    for(size_t i=t_index; i < size; i+=stride) {
-        set_tuple_sa_buffer64[threadIdx.x] = sa[i];
-        aux[i] = 0;
-        if(set_tuple_sa_buffer64[threadIdx.x] >= h) {
-            index = set_tuple_sa_buffer64[threadIdx.x]-h;
-            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
-                    sa_index(0)) {
-                ++aux[i];
-            }
-            // Second condition cannot be true if sa[i] < h
-            index = set_tuple_sa_buffer64[threadIdx.x];
+            index = sa_buffer[threadIdx.x];
             if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
                     && index >= 2*h && (isa[index-2*h] &
                     utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
@@ -713,16 +635,14 @@ void set_tuple_kernel_shared64(size_t size, size_t h, sa_index* sa,
 
 void set_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux) {
-
-    set_tuple_kernel_shared32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
+    set_tuple_kernel_shared<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
 
 void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux) {
-
-    set_tuple_kernel_shared64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, size*sizeof(uint64_t)>>>(size, h, sa, isa,
+    set_tuple_kernel_shared<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK, size*sizeof(uint64_t)>>>(size, h, sa, isa,
                 aux);
     cudaDeviceSynchronize();
 }
@@ -731,7 +651,6 @@ void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
     them in the corresponding arrays with the help of aux (contains position for
     insertion)
 */
-/*
 template <typename sa_index>
 __global__
 void new_tuple_kernel(const size_t size, const size_t h, const sa_index* sa,
@@ -762,85 +681,17 @@ void new_tuple_kernel(const size_t size, const size_t h, const sa_index* sa,
         }
     }
 }
-*/
-
-template <typename sa_index>
-__global__
-void new_tuple_kernel_shared32(const size_t size, const size_t h, const sa_index* sa,
-        const sa_index* isa, sa_index* aux, sa_index* tuple_index,
-        sa_index* h_rank) {
-    extern __shared__ uint32_t new_tuple_sa_buffer32[];
-    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
-    int stride = blockDim.x*gridDim.x;
-    // Using aux, sa_val and isa_val to reduce access to global memory
-    sa_index index;
-    for(size_t i=t_index; i < size; i+=stride) {
-        if(sa[i] >= h) {
-            new_tuple_sa_buffer32[threadIdx.x] = sa[i];
-            index = new_tuple_sa_buffer32[threadIdx.x]-h;
-            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
-                    sa_index(0)) {
-                tuple_index[aux[i]] = index;
-                // Increment aux[i] incase inducing suffix is also added
-                h_rank[aux[i]++] = isa[index];
-            }
-            // Check if inducing suffix is also added.
-            index = new_tuple_sa_buffer32[threadIdx.x];
-            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
-                    && index >= 2*h && (isa[index-2*h] &
-                    utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
-                tuple_index[aux[i]] = index;
-                h_rank[aux[i]] = isa[index] ^
-                    utils<sa_index>::NEGATIVE_MASK;
-            }
-        }
-    }
-}
-template <typename sa_index>
-__global__
-void new_tuple_kernel_shared64(const size_t size, const size_t h, const sa_index* sa,
-        const sa_index* isa, sa_index* aux, sa_index* tuple_index,
-        sa_index* h_rank) {
-    extern __shared__ uint64_t new_tuple_sa_buffer64[];
-    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
-    int stride = blockDim.x*gridDim.x;
-    // Using aux, sa_val and isa_val to reduce access to global memory
-    sa_index index;
-    for(size_t i=t_index; i < size; i+=stride) {
-        if(sa[i] >= h) {
-            new_tuple_sa_buffer64[threadIdx.x] = sa[i];
-            index = new_tuple_sa_buffer64[threadIdx.x]-h;
-            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
-                    sa_index(0)) {
-                tuple_index[aux[i]] = index;
-                // Increment aux[i] incase inducing suffix is also added
-                h_rank[aux[i]++] = isa[index];
-            }
-            // Check if inducing suffix is also added.
-            index = new_tuple_sa_buffer64[threadIdx.x];
-            if((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)
-                    && index >= 2*h && (isa[index-2*h] &
-                    utils<sa_index>::NEGATIVE_MASK) == sa_index(0)) {
-                tuple_index[aux[i]] = index;
-                h_rank[aux[i]] = isa[index] ^
-                    utils<sa_index>::NEGATIVE_MASK;
-            }
-        }
-    }
-}
 
 void new_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux, uint32_t* tuple_index, uint32_t* h_rank) {
-
-    new_tuple_kernel_shared32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint32_t)>>>(size, h, sa, isa,
+    new_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
     cudaDeviceSynchronize();
 }
 
 void new_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux, uint64_t* tuple_index, uint64_t* h_rank) {
-
-    new_tuple_kernel_shared64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa, isa,
+    new_tuple_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
     cudaDeviceSynchronize();
 }
@@ -861,14 +712,12 @@ void isa_to_sa_kernel(const sa_index* isa, sa_index* sa, size_t n) {
 }
 
 void isa_to_sa(uint32_t* isa, uint32_t* sa, size_t size) {
-
-    isa_to_sa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
+    isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
     cudaDeviceSynchronize();
 }
 
 void isa_to_sa(uint64_t* isa, uint64_t* sa, size_t size) {
-
-    isa_to_sa_kernel<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
+    isa_to_sa_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
     cudaDeviceSynchronize();
 }
 
@@ -894,57 +743,16 @@ void generate_two_h_kernel(const size_t size, const size_t h,
    }
 }
 
-template <typename sa_index>
-__global__
-void generate_two_h_kernel_shared32(const size_t size, const size_t h,
-            const sa_index* sa, const sa_index* isa, sa_index* two_h_rank) {
-    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
-    int stride = blockDim.x*gridDim.x;
-    extern __shared__ uint32_t generate_two_h_sa_buffer32[];
-    for(size_t i=t_index; i < size; i+=stride) {
-       // Case can only occur if index + h < max. index (of original sequence)
-       generate_two_h_sa_buffer32[threadIdx.x] = sa[i];
-       if((isa[sa[i]] & utils<sa_index>::NEGATIVE_MASK)
-                == sa_index(0)) {
-           // Retrieve rank of 2h-suffix
-           two_h_rank[i] = isa[generate_two_h_sa_buffer32[threadIdx.x]+h];
-       } else {
-           two_h_rank[i] = isa[generate_two_h_sa_buffer32[threadIdx.x]];
-       }
-   }
-}
-
-template <typename sa_index>
-__global__
-void generate_two_h_kernel_shared64(const size_t size, const size_t h,
-            const sa_index* sa, const sa_index* isa, sa_index* two_h_rank) {
-    int t_index = blockIdx.x*blockDim.x + threadIdx.x;
-    int stride = blockDim.x*gridDim.x;
-    extern __shared__ uint64_t generate_two_h_sa_buffer64[];
-    for(size_t i=t_index; i < size; i+=stride) {
-       // Case can only occur if index + h < max. index (of original sequence)
-       generate_two_h_sa_buffer64[threadIdx.x] = sa[i];
-       if((isa[sa[i]] & utils<sa_index>::NEGATIVE_MASK)
-                == sa_index(0)) {
-           // Retrieve rank of 2h-suffix
-           two_h_rank[i] = isa[generate_two_h_sa_buffer64[threadIdx.x]+h];
-       } else {
-           two_h_rank[i] = isa[generate_two_h_sa_buffer64[threadIdx.x]];
-       }
-   }
-}
-
 void generate_two_h_rank(size_t size, size_t h, uint32_t* sa,
             uint32_t* isa, uint32_t* two_h_rank) {
-    generate_two_h_kernel_shared32<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
+    generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
             isa, two_h_rank);
     cudaDeviceSynchronize();
 }
 
 void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
             uint64_t* isa, uint64_t* two_h_rank) {
-
-    generate_two_h_kernel_shared64<<<NUMBER_BLOCKS(size), NUM_THREADS_PER_BLOCK, NUM_THREADS_PER_BLOCK*sizeof(uint64_t)>>>(size, h, sa,
+    generate_two_h_kernel<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(size, h, sa,
             isa, two_h_rank);
     cudaDeviceSynchronize();
 }
