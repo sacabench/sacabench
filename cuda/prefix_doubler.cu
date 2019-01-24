@@ -212,7 +212,7 @@ void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
     // Run exclusive prefix sum
     cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, array,op, n);
 
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 
     //copy_to_array<<<NUM_BLOCKS(size),NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
 
@@ -249,14 +249,14 @@ void fill_aux_for_isa(uint32_t* text, uint32_t* sa, uint32_t* isa,
     auto cmp = Compare_four_chars<uint32_t>(text);
     fill_aux_for_isa_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
-    cudaDeviceSynchronize();
+   // cudaDeviceSynchronize();
 }
 
 void fill_aux_for_isa(uint64_t* text, uint64_t* sa, uint64_t* isa, size_t size) {
     auto cmp = Compare_four_chars<uint64_t>(text);
     fill_aux_for_isa_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(sa, isa,
                 size, cmp);
-    cudaDeviceSynchronize();
+   // cudaDeviceSynchronize();
 }
 
 /*
@@ -278,13 +278,13 @@ void scatter_to_isa_kernel(sa_index* isa, sa_index* aux, sa_index* sa,
 void scatter_to_isa(uint32_t* isa, uint32_t* aux, uint32_t* sa, size_t size) {
     scatter_to_isa_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void scatter_to_isa(uint64_t* isa, uint64_t* aux, uint64_t* sa, size_t size) {
     scatter_to_isa_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, aux, sa,
                 size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 template <typename sa_index>
@@ -302,17 +302,18 @@ void update_ranks_build_aux_kernel(sa_index* h_ranks, sa_index* aux, size_t n) {
         aux[i] = (h_ranks[i-1]!=h_ranks[i]) * i;
     }
 }
+//HIER
 
 void update_ranks_build_aux(uint32_t* h_ranks, uint32_t* aux, size_t size) {
     update_ranks_build_aux_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux(uint64_t* h_ranks, uint64_t* aux, size_t size) {
     update_ranks_build_aux_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, aux, size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 template <typename sa_index>
@@ -340,14 +341,14 @@ void update_ranks_build_aux_tilde(uint32_t* h_ranks, uint32_t* two_h_ranks,
         uint32_t* aux, size_t size) {
     update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void update_ranks_build_aux_tilde(uint64_t* h_ranks, uint64_t* two_h_ranks,
         uint64_t* aux, size_t size) {
     update_ranks_build_aux_tilde_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
             h_ranks, two_h_ranks, aux, size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 /*
@@ -384,14 +385,14 @@ void set_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux) {
     set_tuple_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
                 aux);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void set_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux) {
     set_tuple_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
                 aux);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 /*
@@ -434,14 +435,14 @@ void new_tuple(size_t size, size_t h, uint32_t* sa, uint32_t* isa,
             uint32_t* aux, uint32_t* tuple_index, uint32_t* h_rank) {
     new_tuple_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void new_tuple(size_t size, size_t h, uint64_t* sa, uint64_t* isa,
             uint64_t* aux, uint64_t* tuple_index, uint64_t* h_rank) {
     new_tuple_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, h, sa, isa,
             aux, tuple_index, h_rank);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 /*
@@ -461,12 +462,12 @@ void isa_to_sa_kernel(sa_index* isa, sa_index* sa, size_t n) {
 
 void isa_to_sa(uint32_t* isa, uint32_t* sa, size_t size) {
     isa_to_sa_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void isa_to_sa(uint64_t* isa, uint64_t* sa, size_t size) {
     isa_to_sa_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(isa, sa, size);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 /*
@@ -495,14 +496,14 @@ void generate_two_h_rank(size_t size, size_t h, uint32_t* sa,
             uint32_t* isa, uint32_t* two_h_rank) {
     generate_two_h_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, h, sa,
             isa, two_h_rank);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
             uint64_t* isa, uint64_t* two_h_rank) {
     generate_two_h_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, h, sa,
             isa, two_h_rank);
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 }
 
 
