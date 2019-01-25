@@ -326,8 +326,8 @@ private:
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
         
-        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
-        util::sort::radixsort_parallel<C, sa_index>(sa_0_to_be_sorted, text.size());
+        std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+        //util::sort::radixsort_parallel<C, sa_index>(sa_0_to_be_sorted, text.size());
 
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
             sa_0[i] = std::get<2>(sa_0_to_be_sorted[i]);

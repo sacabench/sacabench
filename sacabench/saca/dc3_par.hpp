@@ -87,11 +87,12 @@ private:
             }
         }
 
-        std::sort(triplets_12_to_be_sorted.begin(),
-                  triplets_12_to_be_sorted.end());
+        //std::sort(triplets_12_to_be_sorted.begin(),
+        //          triplets_12_to_be_sorted.end());
         
-        //util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
-
+        util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        
+        #pragma omp parallel for
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
             triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
         }
@@ -665,24 +666,23 @@ private:
         sa_index start_pos_mod_2 =
             isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
 
-        sa_index counter = 0;
-        size_t i = 0;
-        for (i = 0; i < 3 * start_pos_mod_2; i += 3) {
-                sa_0_to_be_sorted[counter++] =
+        #pragma omp parallel for
+        for (size_t i = 0; i < 3 * start_pos_mod_2; i += 3) {
+                sa_0_to_be_sorted[i/3] =
                     (std::tuple<C, sa_index, sa_index>(text[i], isa_12[i / 3],
                                                        i));  
         }
         #pragma omp parallel for
-        for (i = 3 * start_pos_mod_2; i < text.size() - 2; i += 3) {
-                sa_0_to_be_sorted[counter++] =
+        for (size_t i = 3 * start_pos_mod_2; i < text.size() - 2; i += 3) {
+                sa_0_to_be_sorted[i/3] =
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
 
-        std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
                   
-        //util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+        util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
 
-        //std::sort(std::execution::par, sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+        #pragma omp parallel for
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
             sa_0[i] = std::get<2>(sa_0_to_be_sorted[i]);
         }
