@@ -32,12 +32,12 @@ public:
     static const bool L_Type = 0;
     static const bool S_Type = 1;
 
-    static bool is_LMS(span<bool> t, ssize position) {
+    static bool is_LMS(std::vector<bool>& t, ssize position) {
         return (position > 0) && (t[position] == S_Type && t[position - 1] == L_Type);
     }
 
     template <typename T>
-    static void compute_types(span<bool> t, T s, span<size_t> thread_border, span<bool> thread_info, ssize part_length, ssize rest_length, size_t thread_count) {
+    static void compute_types(std::vector<bool>& t, T s, span<size_t> thread_border, span<bool> thread_info, ssize part_length, ssize rest_length, size_t thread_count) {
         std::vector<std::thread> threads;
         
         for (size_t i = 0; i < thread_border.size() - 1; i++) { thread_border[i] = part_length; }
@@ -47,13 +47,13 @@ public:
 
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
-                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, part_length, i, thread_border, thread_info));
+                threads.push_back(std::thread(compute_types_first_pass<T>, std::ref(t), s, i * part_length, part_length, i, thread_border, thread_info));
             }
             else {
-                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, rest_length, i, thread_border, thread_info));
+                threads.push_back(std::thread(compute_types_first_pass<T>, std::ref(t), s, i * part_length, rest_length, i, thread_border, thread_info));
             }
         }
-       
+
         for (auto& t : threads) {
             t.join();
         }
@@ -69,12 +69,13 @@ public:
 
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
-                threads.push_back(std::thread(compute_types_second_pass<T>, t, i * part_length, part_length, i, thread_border, thread_info));
+                threads.push_back(std::thread(compute_types_second_pass<T>, std::ref(t), i * part_length, part_length, i, thread_border, thread_info));
             }
             else {
-                threads.push_back(std::thread(compute_types_second_pass<T>, t, i * part_length, rest_length, i, thread_border, thread_info));
+                threads.push_back(std::thread(compute_types_second_pass<T>, std::ref(t), i * part_length, rest_length, i, thread_border, thread_info));
             }
         }
+        
 
         for (auto& t : threads) {
             t.join();
@@ -82,7 +83,7 @@ public:
     }
     
     template <typename T>
-    static void compute_types_first_pass(span<bool> t, T s, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+    static void compute_types_first_pass(std::vector<bool>& t, T s, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
         // first pass - classify all elements that are possible to be classified within the thread
         for (ssize i = len - 1; i >= 0; i--) {           
             if ((size_t)i + offset + 1 < s.size()) {
@@ -110,7 +111,7 @@ public:
     }
 
     template <typename T>
-    static void compute_types_second_pass(span<bool> t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+    static void compute_types_second_pass(std::vector<bool>& t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
         // second pass - use info of threads what the type of their border character was
         for (size_t i = thread_border[thread_id]; i < len; i++) {
             t[i + offset] = thread_info[thread_id + 1];
@@ -141,7 +142,7 @@ public:
 
     template <typename T, typename sa_index>
     static void prepare_parallel(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r,
-                                 span<sa_index> SA, span<bool> t, bool suffix_type, size_t thread_count, size_t blocknum){
+                                 span<sa_index> SA, std::vector<bool>& t, bool suffix_type, size_t thread_count, size_t blocknum){
 
         // overwrite readbuffer with NULLs
         for (ssize i = 0; i < (ssize)r.size(); i++) {
@@ -152,7 +153,7 @@ public:
             std::vector<std::thread> threads;
 
         for (size_t i = 0; i < thread_count-1; i++) {
-                threads.push_back(std::thread(prepare<T,sa_index>, s, part_length, r, SA, t, suffix_type, blocknum, i));
+                threads.push_back(std::thread(prepare<T,sa_index>, s, part_length, r, SA, std::ref(t), suffix_type, blocknum, i));
         }
 
         for (auto& t : threads) {
@@ -161,8 +162,7 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void prepare(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r, span<sa_index> SA, span<bool> t, bool suffix_type, size_t k, size_t i){
-
+    static void prepare(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r, span<sa_index> SA, std::vector<bool>& t, bool suffix_type, size_t k, size_t i){
         // std::cout << "Started preparing " << i << std::endl;
 
         size_t j = 0;
@@ -217,7 +217,7 @@ public:
     // Induce L_Types for Block B_ks
     // k = blocknum
     template <typename T, typename sa_index>
-    static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, span<bool> t, size_t blocknum,
+    static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<bool>& t, size_t blocknum,
         span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length) {
 
         // translate: translates the position in the block to global pos
@@ -265,7 +265,7 @@ public:
     // Induce S Types for Block B_ks
     // k = blocknum
     template <typename T, typename sa_index>
-    static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, span<bool> t, size_t blocknum,
+    static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<bool>& t, size_t blocknum,
         span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length) {
 
         // translate: translates the position in the block to global pos
@@ -365,7 +365,7 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void pipelined_Inducing(T s, span<sa_index> SA, span<bool> t, span<sa_index> buckets, size_t K, size_t thread_count,
+    static void pipelined_Inducing(T s, span<sa_index> SA, std::vector<bool>& t, span<sa_index> buckets, size_t K, size_t thread_count,
         span<std::pair<sa_index, sa_index>> r1, span<std::pair<sa_index, sa_index>> r2, span<std::pair<sa_index, sa_index>> w1, span<std::pair<sa_index, sa_index>> w2, ssize part_length, bool type) {
 
         generate_buckets<T, sa_index>(s, buckets, K, type);
@@ -466,7 +466,7 @@ public:
 
 
         container<sa_index> buckets = make_container<sa_index>(K);
-        container<bool> t = make_container<bool>(SA.size());
+        std::vector<bool> t(s.size());
         container<size_t> thread_border = make_container<size_t>(std::thread::hardware_concurrency());
         container<bool> thread_info = make_container<bool>(std::thread::hardware_concurrency());
         
