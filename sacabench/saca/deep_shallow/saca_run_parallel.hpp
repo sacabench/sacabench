@@ -7,6 +7,7 @@
 #pragma once
 
 #include <optional>
+#include <omp.h>
 
 #include <util/is_sorted.hpp>
 #include <util/sort/bucketsort.hpp>
@@ -41,6 +42,7 @@ private:
     anchor_data<sa_index_type> ad;
 
     size_t max_blind_sort_size;
+    omp_lock_t writelock;
 
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
@@ -161,7 +163,10 @@ private:
         for (const size_t& si : bucket) {
 
             // Check, if there is a suitable entry in anchor_data.
+            omp_set_lock(&writelock);
             const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
+            omp_unset_lock(&writelock);
+
             if (leftmost_suffix_opt.has_value()) {
 
                 // Test, if the suffix is in the valid range, that means
@@ -181,6 +186,7 @@ private:
 
                     // This is the position of the known sorted suffix in its
                     // bucket.
+                    omp_set_lock(&writelock);
                     const size_t sorted_bucket =
                         ad.get_position_in_suffixarray(si);
 
@@ -193,6 +199,7 @@ private:
                         input_text[leftmost_suffix],
                         input_text[leftmost_suffix +
                                    static_cast<sa_index_type>(1)]);
+                    omp_unset_lock(&writelock);
 
                     // Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
@@ -282,8 +289,10 @@ private:
     inline void sort_bucket(const u_char alpha, const u_char beta) {
 
         // Get bucket bounds.
+        omp_set_lock(&writelock);
         const auto bucket_start = bd.start_of_bucket(alpha, beta);
         const auto bucket_end = bd.end_of_bucket(alpha, beta);
+        omp_unset_lock(&writelock);
 
         DCHECK_LT(bucket_start, bucket_end);
 
@@ -303,24 +312,23 @@ private:
         // Debug check: the bucket is correctly suffix sorted.
         DCHECK(is_partially_suffix_sorted(bucket, input_text));
 
-        #pragma omp critical
-        {
-            for (sa_index_type i = 0; i < bucket.size(); ++i) {
-                ad.update_anchor(bucket[i], bucket_start + i);
-            }
-            // Mark this bucket as sorted.
-            bd.mark_bucket_sorted(alpha, beta);
+        omp_set_lock(&writelock);
+        for (sa_index_type i = 0; i < bucket.size(); ++i) {
+            ad.update_anchor(bucket[i], bucket_start + i);
         }
+        // Mark this bucket as sorted.
+        bd.mark_bucket_sorted(alpha, beta);
+        omp_unset_lock(&writelock);
     }
 
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
 
         // Spawn a task pool to run the buckets in parallel
-        //#pragma omp parallel
+        #pragma omp parallel
         {
             // Schedule the buckets in serial
-            //#pragma omp single
+            #pragma omp single
             while (bd.are_buckets_left()) {
 
                 // Find the smallest unsorted bucket.
@@ -332,21 +340,17 @@ private:
                 if (size_of_bucket < 2) {
                     // Buckets with a size of 0 or 1 are already sorted.
                     // Do nothing.
-                } else if (size_of_bucket > 10) {
+                } else {
                     // Sort big buckets in parallel
                     #pragma omp task
                     {
                         sort_bucket(alpha, beta);
                     }
-                } else {
-                    // Sort small buckets in serial
-                    sort_bucket(alpha, beta);
                 }
-
-                #pragma omp critical
-                // Mark this bucket as sorted.
-                bd.mark_bucket_sorted(alpha, beta);
             }
+
+            // Start execution of buckets.
+            omp_unset_lock(&writelock);
         }
 
         // At this point, all tasks are synced.
@@ -359,6 +363,8 @@ public:
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
           bd(_alphabet_size), ad(text.size()),
           max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
+
+        omp_init_lock(&writelock);
 
         // Fill sa with unsorted suffix array.
         for (size_t i = 0; i < sa.size(); ++i) {
@@ -376,6 +382,8 @@ public:
             // Sort all buckets iteratively.
             sort_all_buckets();
         }
+
+        omp_destroy_lock(&writelock);
     }
 };
 } // namespace sacabench::deep_shallow
