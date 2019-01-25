@@ -533,7 +533,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         if (automation) {
             std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
             std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
-            system(command.c_str());
+            int exit_status = system(command.c_str());
+            if (exit_status < 0) {
+                std::cerr << "error thrown while running plot automation script." << std::endl;
+            }
         }
 
         if (sanity_counter == 0) {
@@ -566,9 +569,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             std::cerr << "not able to plot." << std::endl;
             return;
         }
-        int i = system(r_command.c_str());
-        if (i) {
-            // TODO: Check return value
+        int exit_status = system(r_command.c_str());
+        if (exit_status < 0) {
+            std::cerr << "error thrown while running R-script." << std::endl;
         }
         std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
     };
