@@ -6,7 +6,7 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-
+#include <byteswap.h>
 
 
 namespace sacabench::osipov {
@@ -18,13 +18,117 @@ struct utils {
 };
 
 /*
-    Wrapper struct which contains spans for sa, isa and tuples.
+    \brief Comparison function comparing only the first symbol of two
+    suffixes. Used for initial sort of sa.
+
+    @param text Text the suffix array is being constructed for.
+*/
+struct compare_first_char {
+public:
+    inline compare_first_char(const util::string_span text) : text(text) {}
+
+    // elem and compare_to need to be smaller than input.size()
+    inline bool operator()(const size_t& elem,
+                           const size_t& compare_to) const {
+        return text[elem] < text[compare_to];
+    }
+
+private:
+    const util::string_span text;
+};
+
+/*
+    \brief Comparison function comparing the first four symbols of two
+    suffixes. Depentant on the generic bool parameter (wordpacking_4_sort)
+    wordpacking is either used or not. Used for initial sort of sa.
+
+    @param text Text the suffix array is being constructed for.
+*/
+template <bool wordpacking_4_sort>
+struct compare_first_four_chars {
+public:
+    inline compare_first_four_chars(const util::string_span text)
+        : text(text) {}
+
+    inline bool operator()(const size_t& elem,
+                           const size_t& compare_to) const {
+
+        if constexpr (wordpacking_4_sort) {
+            auto elem_wp = *((uint32_t const*)&text[elem]);
+            auto compare_to_wp = *((uint32_t const*)&text[compare_to]);
+            elem_wp = bswap_32(elem_wp);
+            compare_to_wp = bswap_32(compare_to_wp);
+
+            return elem_wp < compare_to_wp;
+        } else {
+            // max_length computation to ensure fail-safety (although should
+            // never be exceeded due to sentinel as last char)
+            size_t max_elem_length =
+                std::min(text.size() - elem, size_t(4));
+            size_t max_compare_to_length =
+                std::min(text.size() - compare_to, size_t(4));
+            size_t max_length =
+                std::min(max_elem_length, max_compare_to_length);
+            for (size_t i = 0; i < max_length; ++i) {
+                if (text[elem + i] != text[compare_to + i]) {
+                    // Chars differ -> either elem is smaller or not
+                    return (text[elem + i] < text[compare_to + i]);
+                }
+            }
+
+            // suffixes didn't differ within their first 4 chars.
+            return false;
+        }
+    }
+
+private:
+    const util::string_span text;
+};
+
+/*
+    \brief Comparison function for comparing two tuples used in the osipov
+    algorithm.
+
+    This comparison function takes the indices of two tuples within a span
+    of all tuples and checks wether the second component is smaller for the
+    first tuple (second component of a tuple is sort key for stable sort
+    within each iteration).
 */
 template <typename sa_index>
+struct compare_tuples {
+public:
+    inline compare_tuples(
+        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples)
+        : tuples(tuples) {}
+
+    // Empty constructor used for temporary creation of compare function
+    inline compare_tuples() {}
+
+    inline bool operator()(
+        const std::tuple<sa_index, sa_index, sa_index>& elem,
+        const std::tuple<sa_index, sa_index, sa_index>& compare_to) const {
+        return std::get<1>(elem) < std::get<1>(compare_to);
+    }
+
+    inline void set_tuples(util::span<std::tuple<sa_index, sa_index, sa_index>>
+            new_tuples) {
+        tuples = new_tuples;
+    }
+
+private:
+    util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
+};
+
+/*
+    Wrapper struct which contains spans for sa, isa and tuples.
+*/
+template <bool wordpacking_4_sort, typename sa_index>
 struct osipov_spans {
     util::span<sa_index> sa;
     util::span<sa_index> isa;
     util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
+    compare_first_four_chars<wordpacking_4_sort> cmp_init;
+    compare_tuples<sa_index> cmp_tuples;
 
     /*
         \brief Constructor given spans for sa, isa and tuples. Initializes the
@@ -40,8 +144,9 @@ struct osipov_spans {
         in the osipov algorithm.
     */
     inline osipov_spans(util::span<sa_index> out_sa, util::span<sa_index> isa,
-            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples) :
-            sa(out_sa), isa(isa), tuples(tuples){
+            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
+            util::string_span text) : sa(out_sa), isa(isa), tuples(tuples),
+            cmp_init(compare_first_four_chars<wordpacking_4_sort>(text)) {
         initialize_sa(out_sa.size());
     }
 
@@ -50,6 +155,11 @@ struct osipov_spans {
         for (size_t i = 0; i < text_length; ++i) {
             sa[i] = i;
         }
+    }
+
+    inline void set_cmp_tuples(util::span<std::tuple<sa_index, sa_index,
+            sa_index>> tuples) {
+        cmp_tuples.set_tuples(tuples);
     }
 
 
@@ -81,103 +191,10 @@ struct osipov_spans {
     the main method frame for the osipov algorithm, given a specific
     implementation of the algorithm (containing all methods being called here).
 */
-template <bool wordpacking_4_sort, typename sa_index>
+template <typename sa_index>
 class osipov {
 
-    /*
-        \brief Comparison function comparing only the first symbol of two
-        suffixes. Used for initial sort of sa.
 
-        @param text Text the suffix array is being constructed for.
-    */
-    struct compare_first_char {
-    public:
-        inline compare_first_char(const util::string_span text) : text(text) {}
-
-        // elem and compare_to need to be smaller than input.size()
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
-            return text[elem] < text[compare_to];
-        }
-
-    private:
-        const util::string_span text;
-    };
-
-    /*
-        \brief Comparison function comparing the first four symbols of two
-        suffixes. Depentant on the generic bool parameter (wordpacking_4_sort)
-        wordpacking is either used or not. Used for initial sort of sa.
-
-        @param text Text the suffix array is being constructed for.
-    */
-    struct compare_first_four_chars {
-    public:
-        inline compare_first_four_chars(const util::string_span text)
-            : text(text) {}
-
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
-
-            if constexpr (wordpacking_4_sort) {
-                auto elem_wp = *((uint32_t const*)&text[elem]);
-                auto compare_to_wp = *((uint32_t const*)&text[compare_to]);
-                elem_wp = bswap_32(elem_wp);
-                compare_to_wp = bswap_32(compare_to_wp);
-
-                return elem_wp < compare_to_wp;
-            } else {
-                // max_length computation to ensure fail-safety (although should
-                // never be exceeded due to sentinel as last char)
-                size_t max_elem_length =
-                    std::min(text.size() - elem, size_t(4));
-                size_t max_compare_to_length =
-                    std::min(text.size() - compare_to, size_t(4));
-                size_t max_length =
-                    std::min(max_elem_length, max_compare_to_length);
-                for (size_t i = 0; i < max_length; ++i) {
-                    if (text[elem + i] != text[compare_to + i]) {
-                        // Chars differ -> either elem is smaller or not
-                        return (text[elem + i] < text[compare_to + i]);
-                    }
-                }
-
-                // suffixes didn't differ within their first 4 chars.
-                return false;
-            }
-        }
-
-    private:
-        const util::string_span text;
-    };
-
-    /*
-        \brief Comparison function for comparing two tuples used in the osipov
-        algorithm.
-
-        This comparison function takes the indices of two tuples within a span
-        of all tuples and checks wether the second component is smaller for the
-        first tuple (second component of a tuple is sort key for stable sort
-        within each iteration).
-    */
-    struct compare_tuples {
-    public:
-        inline compare_tuples(
-            util::span<std::tuple<sa_index, sa_index, sa_index>>& tuples)
-            : tuples(tuples) {}
-
-        // Empty constructor used for temporary creation of compare function
-        inline compare_tuples() {}
-
-        inline bool operator()(
-            const std::tuple<sa_index, sa_index, sa_index>& elem,
-            const std::tuple<sa_index, sa_index, sa_index>& compare_to) const {
-            return std::get<1>(elem) < std::get<1>(compare_to);
-        }
-
-    private:
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-    };
 
 /*
     \brief Main function of osipov algorithm. Takes an osipov implementation
@@ -198,11 +215,10 @@ public:
         sa_index h = 4;
         // Sort by h characters
         // TODO: Check if feasible for gpu-version
-        auto cmp_init = compare_first_four_chars(text);
         phase.split("Initial 4-Sort");
-        osipov.initial_sort(cmp_init);
+        osipov.initial_sort();
         phase.split("Initialize ISA");
-        osipov.initialize_isa(cmp_init);
+        osipov.initialize_isa();
         phase.split("Mark singletons");
         osipov.mark_singletons();
         phase.split("Loop Initialization");
@@ -213,7 +229,6 @@ public:
 
         // Could be needed for gpu-variant -> move to osipov_impl
         // TODO: Check if feasible for gpu-version
-        compare_tuples cmp;
         while (size > 0) {
             phase.split("Iteration");
             // Using wrapper method for slicing all corresponding spans used
@@ -229,14 +244,11 @@ public:
                 // Wrapper for slicing tuple/aux
                 osipov.slice_container(s);
 
-                // Stably sort tuples
-                auto tuples = osipov.get_tuples();
-                cmp = compare_tuples(tuples);
-                osipov.stable_sort(cmp);
+                osipov.stable_sort();
 
                 // Update ranks in tuples and adjust values to sa/isa
                 osipov.slice_sa(s);
-                osipov.update_ranks();
+                osipov.update_ranks(h);
                 osipov.update_container(s);
                 osipov.mark_singletons();
             }
