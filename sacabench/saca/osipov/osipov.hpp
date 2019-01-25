@@ -211,6 +211,7 @@ public:
         tdc::StatPhase phase("Initialization");
         // Check if enough bits free for negation.
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
+        (void) text;
 
         sa_index h = 4;
         // Sort by h characters
