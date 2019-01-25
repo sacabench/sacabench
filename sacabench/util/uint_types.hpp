@@ -307,6 +307,34 @@ using uint48 = UIntPair<uint16_t>;
 static_assert(sizeof(uint40) == 5, "sizeof uint40 is wrong");
 static_assert(sizeof(uint48) == 6, "sizeof uint48 is wrong");
 
+template<typename base>
+struct next_primitive_type;
+
+template<>
+struct next_primitive_type<uint32_t> {
+    using type = uint32_t;
+};
+template<>
+struct next_primitive_type<uint40> {
+    using type = uint64_t;
+};
+template<>
+struct next_primitive_type<uint48> {
+    using type = uint64_t;
+};
+template<>
+struct next_primitive_type<uint64_t> {
+    using type = uint64_t;
+};
+
+/// Helper for getting next highest primitve intger type
+/// for a given sa_index type.
+///
+/// Needed because some operations, like atomic data accesses,
+/// are only define on the primitive types.
+template<typename base>
+using next_primitive = typename next_primitive_type<base>::type;
+
 } // namespace sacabench::util
 
 namespace std {
