@@ -152,7 +152,7 @@ public:
 
             std::vector<std::thread> threads;
 
-        for (size_t i = 0; i < r.size(); i++) {
+        for (size_t i = 0; i < r.size() && i < thread_count - 1; i++) {
                 threads.push_back(std::thread(prepare<T,sa_index>, s, part_length, r, SA, std::ref(t), suffix_type, blocknum, i));
         }
 
