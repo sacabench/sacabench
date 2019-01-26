@@ -218,13 +218,14 @@ public:
     // k = blocknum
     template <typename T, typename sa_index>
     static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<bool>& t, size_t blocknum,
-        span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length) {
+        span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length, size_t *w_count) {
 
         // translate: translates the position in the block to global pos
         // w_count: pointer for the next free entry in write-buffer w
         sa_index translate = (sa_index)(blocknum*part_length);
-        size_t w_count = 0;
         sa_index chr;
+
+        // std::cout << "At the beginning of L Inducing w_count is " << *w_count << std::endl;
 
         for (ssize i = 0; i < (ssize)part_length && i+(ssize)translate < (ssize)SA.size(); i++)
         {
@@ -252,7 +253,7 @@ public:
                     //std::cout << "Directly written " << (size_t)pos << " to pos " << (size_t)idx << std::endl;
                 }
                 else if (idx < SA.size()) {
-                    w[w_count++] = std::make_pair((sa_index)idx, (sa_index)pos);
+                    w[(*w_count)++] = std::make_pair((sa_index)idx, (sa_index)pos);
                     //std::cout << "Inserted Touple <" << (ssize)idx << ", " << (ssize)pos << "> at w_count " << (ssize)(w_count - 1) << " in w" << std::endl;
                     //std::cout << "Insertion Check <" << (ssize)(w[w_count-1].first) << ", " << (ssize)(w[w_count - 1].second) << "> at w_count " << (ssize)(w_count - 1) << " in w" << std::endl;
                 }
@@ -260,18 +261,19 @@ public:
             }
         }
 
+        // std::cout << "At the end of L Inducing w_count is " << *w_count << std::endl;
+
     }
 
     // Induce S Types for Block B_ks
     // k = blocknum
     template <typename T, typename sa_index>
     static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<bool>& t, size_t blocknum,
-        span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length) {
+        span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length, size_t *w_count) {
 
         // translate: translates the position in the block to global pos
         // w_count: pointer for the next free entry in write-buffer w
         sa_index translate = (sa_index)(blocknum*part_length);
-        size_t w_count = 0;
         sa_index chr;
 
         const auto end = std::min(part_length, (ssize)(SA.size() - translate)) - 1;
@@ -300,18 +302,17 @@ public:
                     SA[idx] = (sa_index)pos;
                 }
                 else if (idx < SA.size()) {
-                    w[w_count++] = std::make_pair(idx, (sa_index)pos);
+                    w[(*w_count)++] = std::make_pair(idx, (sa_index)pos);
                 }
 
             }
         }
-
     }
 
 
     // Updating and writing into the SuffixArray, w needs to be properly connected to the rest of the code now
     template <typename sa_index>
-    static void update_SA(ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t thread_id) {
+    static void update_SA(ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t thread_id, size_t *w_count) {
         
         // std::cout << "Started updating " << thread_id << std::endl;
         ssize offset = thread_id * part_length;
@@ -319,6 +320,8 @@ public:
         for (ssize i = offset; i < part_length + offset; i++) {
 
             // std::cout << " Update for pos i = " << i << " " << std::endl;
+            if ((size_t)i > *w_count)
+                break;
 
             if (i < (ssize)w.size() && w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1)) {
 
@@ -341,28 +344,32 @@ public:
     }
 
     template <typename sa_index>
-    static void update_parallel(size_t thread_count, ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA) {
+    static void update_parallel(size_t thread_count, ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
 
+        // std::cout << "At the beginning of Updating w_count is " << (*w_count) << std::endl;
         std::vector<std::thread> threads;
+        if (*w_count > 0) {
+            for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
+                threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA, i, w_count));
+            }
 
-        for (size_t i = 0; i < thread_count; i++) {
-            threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA, i));
+            for (auto& t : threads) {
+                t.join();
+            }
         }
 
-        for (auto& t : threads) {
-            t.join();
-        }
+        *w_count = 0;
     }
 
     // Initialization of the Write Buffer, maybe can be put together with the Preparing-Phase later
-    template <typename sa_index>
+    /*template <typename sa_index>
     static void init_Write_Buffer(span<std::pair<sa_index, sa_index>> w) {
         
         for (ssize i = 0; i < (ssize)w.size(); i++) {
             w[i].first = (sa_index)(0);
             w[i].second = static_cast<sa_index>(-1);
         }
-    }
+    }*/
 
     template <typename T, typename sa_index>
     static void pipelined_Inducing(T s, span<sa_index> SA, std::vector<bool>& t, span<sa_index> buckets, size_t K, size_t thread_count,
@@ -376,8 +383,11 @@ public:
 
         ssize blocknum = 0;
 
-        // To differentiate the L-Type-Inducing from the S-Type-Inducing we just invert the blocknumber we are currently handling when functions are being called
-        // (Since the only difference between L- and S-Type inducing is basically in which order the text is being read)
+        size_t write_amount_1 = 0;
+        size_t write_amount_2 = 0;
+
+        // To differentiate the L-Type-Inducing from the S-Type-Inducing we just invert the blocknumber we are currently handling when methods are being called
+        // (Since the only difference between L- and S-Type inducing is basically in which order the text is being read and which types to look for while reading)
 
         while (blocknum <= (ssize)thread_count + 2) {
 
@@ -408,9 +418,10 @@ public:
                 // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
 
                 auto& w = cur_update_block % 2 == 0 ? w1 : w2;
+                size_t& write_amount = cur_update_block % 2 == 0 ? write_amount_1 : write_amount_2;
 
                 // std::cout << "Upda for block" << cur_update_block << " in iteration " << cur_blocknum << std::endl;
-                update_parallel<sa_index>(thread_count, part_length, w, SA);
+                update_parallel<sa_index>(thread_count, part_length, w, SA, &write_amount);
             }
 
             if (inducing_block >= (ssize)0) {
@@ -418,18 +429,22 @@ public:
                 if (type == L_Type) {
                     auto& r = inducing_block % 2 == 0 ? r1 : r2;
                     auto& w = inducing_block % 2 == 0 ? w1 : w2;
+                    size_t& write_amount = inducing_block % 2 == 0 ? write_amount_1 : write_amount_2;
 
                     // std::cout << "L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
-                    induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length);
+                    induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length, &write_amount);
                 }
                 else
                 {
                     auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;
                     auto& w = (thread_count - inducing_block) % 2 == 0 ? w1 : w2;
+                    size_t& write_amount = (thread_count - inducing_block) % 2 == 0 ? write_amount_1 : write_amount_2;
 
                     // std::cout << "S-In for block" << (thread_count - inducing_block) << " in iteration " << (thread_count - blocknum)+2 << std::endl;
-                    induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, (thread_count - inducing_block), r, w, part_length);
+                    induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, (thread_count - inducing_block), r, w, part_length, &write_amount);
                 }
+
+                // std::cout << "write_1: " << write_amount_1 << ", write_2: " << write_amount_2 << std::endl;
             }
 
             if (preparing_block >= (ssize)0) {
@@ -473,12 +488,10 @@ public:
         // Prepare blocks for parallel computing
         size_t thread_count = std::thread::hardware_concurrency();
         thread_count = std::min(thread_count, s.size() - 1);
-        // thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
-        // a bit whacky, but its a workaround to keep the condition rest_length <= part_length
-        // Other idea: Only sequential algorithm if rest_length > part_length (since that only happens on very small inputs)
+        // for very small inputs, so that we can always assure that rest_length <= part_length
         while (rest_length > part_length && thread_count > 1)
         {
             thread_count--;
@@ -486,15 +499,12 @@ public:
             rest_length = (s.size() - (thread_count - 1) * part_length);
         }
 
-        // Read/Write Buffer for the pipeline
+        // Read/Write Buffer for the pipeline, one single buffer cut into 4 seperate ones, each with length "part_length + 1"
         container<std::pair<sa_index, sa_index>> buffers = make_container<std::pair<sa_index, sa_index>>(4 * part_length + 4);
-        span<std::pair<sa_index, sa_index>> r1 = buffers.slice(0 * part_length + 0, 1 * part_length + 1);
+        span<std::pair<sa_index, sa_index>> r1 = buffers.slice(0, 1 * part_length + 1);
         span<std::pair<sa_index, sa_index>> w1 = buffers.slice(1 * part_length + 1, 2 * part_length + 2);
         span<std::pair<sa_index, sa_index>> r2 = buffers.slice(2 * part_length + 2, 3 * part_length + 3);
         span<std::pair<sa_index, sa_index>> w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
-
-        init_Write_Buffer(w1);
-        init_Write_Buffer(w2);
 
         compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
 
