@@ -152,7 +152,7 @@ public:
 
             std::vector<std::thread> threads;
 
-        for (size_t i = 0; i < thread_count-1; i++) {
+        for (size_t i = 0; i < r.size(); i++) {
                 threads.push_back(std::thread(prepare<T,sa_index>, s, part_length, r, SA, std::ref(t), suffix_type, blocknum, i));
         }
 
@@ -272,7 +272,7 @@ public:
         // w_count: pointer for the next free entry in write-buffer w
         sa_index translate = (sa_index)(blocknum*part_length);
         size_t w_count = 0;
-        char chr;
+        sa_index chr;
 
         const auto end = std::min(part_length, (ssize)(SA.size() - translate)) - 1;
 
@@ -285,9 +285,9 @@ public:
             {
 
                 if (r[i].first == (sa_index)0)
-                    chr = (char)s[(sa_index)pos];
+                    chr = (sa_index)s[(sa_index)pos];
                 else
-                    chr = (char)r[i].first;
+                    chr = r[i].first;
 
                 // std::cout << "chr: " << (sa_index)chr << std::endl;
 
