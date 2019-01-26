@@ -37,10 +37,32 @@ public:
     }
 
     template <typename T>
+    static void compute_types_sequential(std::vector<bool>& t, T s) {
+        t[s.size() - 1] = S_Type;
+
+        for (ssize i = s.size() - 2; i >= 0; i--) {
+            if (s.at(i + 1) < s.at(i)) {
+                t[i] = L_Type;
+            }
+            else if (s.at(i + 1) > s.at(i)) {
+                t[i] = S_Type;
+            }
+            else {
+                t[i] = t[i + 1];
+            }
+        }
+    }
+
+    template <typename T>
     static void compute_types(std::vector<bool>& t, T s, span<size_t> thread_border, span<bool> thread_info, ssize part_length, ssize rest_length, size_t thread_count) {
+
         std::vector<std::thread> threads;
         
-        for (size_t i = 0; i < thread_border.size() - 1; i++) { thread_border[i] = part_length; }
+        for (size_t i = 0; i < thread_border.size() - 1; i++) 
+        { 
+            thread_border[i] = part_length; 
+        }
+
         thread_border[thread_count - 1] = rest_length;
 
         t[s.size() - 1] = S_Type;
@@ -119,8 +141,7 @@ public:
     }    
     
     template <typename T, typename sa_index>
-    static void generate_buckets(T s, span<sa_index> buckets, size_t K,
-                                 bool end) {
+    static void generate_buckets(T s, span<sa_index> buckets, size_t K, bool end) {
         size_t sum = 0;
 
         for (size_t i = 0; i < K; i++) {
@@ -348,7 +369,7 @@ public:
 
         // std::cout << "At the beginning of Updating w_count is " << (*w_count) << std::endl;
         std::vector<std::thread> threads;
-        if (*w_count > 0) {
+
             for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
                 threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA, i, w_count));
             }
@@ -356,14 +377,13 @@ public:
             for (auto& t : threads) {
                 t.join();
             }
-        }
 
         *w_count = 0;
     }
 
     // Initialization of the Write Buffer, maybe can be put together with the Preparing-Phase later
     /*template <typename sa_index>
-    static void init_Write_Buffer(span<std::pair<sa_index, sa_index>> w) {
+    static void init_Write_Buffer(span<std::pair<sa_index, sa_index>> w) {  
         
         for (ssize i = 0; i < (ssize)w.size(); i++) {
             w[i].first = (sa_index)(0);
@@ -436,7 +456,7 @@ public:
                 }
                 else
                 {
-                    auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;
+                    auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;  
                     auto& w = (thread_count - inducing_block) % 2 == 0 ? w1 : w2;
                     size_t& write_amount = (thread_count - inducing_block) % 2 == 0 ? write_amount_1 : write_amount_2;
 
@@ -500,13 +520,16 @@ public:
         }
 
         // Read/Write Buffer for the pipeline, one single buffer cut into 4 seperate ones, each with length "part_length + 1"
+        
         container<std::pair<sa_index, sa_index>> buffers = make_container<std::pair<sa_index, sa_index>>(4 * part_length + 4);
         span<std::pair<sa_index, sa_index>> r1 = buffers.slice(0, 1 * part_length + 1);
         span<std::pair<sa_index, sa_index>> w1 = buffers.slice(1 * part_length + 1, 2 * part_length + 2);
         span<std::pair<sa_index, sa_index>> r2 = buffers.slice(2 * part_length + 2, 3 * part_length + 3);
         span<std::pair<sa_index, sa_index>> w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
 
-        compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
+        // compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
+
+        compute_types_sequential(t, s);
 
         // std::cout << "thread_count: " << thread_count << ", part_length: " << part_length << ", rest_length: " << rest_length << std::endl;
 
@@ -669,6 +692,7 @@ public:
 
         // tdc::StatPhase parallel_sais("Main Phase");
         // std::cout << std::endl << std::endl;
+
         if (text.size() > 1) {
             run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel());
         }
