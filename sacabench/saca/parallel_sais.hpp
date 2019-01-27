@@ -33,11 +33,11 @@ public:
     static const int S_Type = 1;
 
     static char getBit(std::vector<char>& t, int index) {
-        return (t[index/8] >> 7-(index & 0x7)) & 0x1;
+        return (t[index/8] >> (7-(index & 0x7)) & 0x1);
     }   
 
     static void setBit(std::vector<char>& t, int index, int value) {
-        t[index/8] = t[index/8] | (value & 0x1) << 7-(index & 0x7);
+        t[index/8] = t[index/8] | (value & 0x1) << (7-(index & 0x7));
     }
 
     static bool is_LMS(std::vector<char>& t, ssize position) {
