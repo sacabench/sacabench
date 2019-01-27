@@ -485,7 +485,7 @@ public:
 
 
     template <typename T, typename sa_index>
-    static void run_saca(T s, span<sa_index> SA, size_t K) {
+    static void run_saca(T s, span<sa_index> SA, size_t K, container<std::pair<sa_index, sa_index>> &buff) {
 
         /*for (size_t i = 0; i < s.size(); i++)
         {
@@ -508,6 +508,7 @@ public:
         // Prepare blocks for parallel computing
         size_t thread_count = std::thread::hardware_concurrency();
         thread_count = std::min(thread_count, s.size() - 1);
+        // thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
@@ -520,12 +521,27 @@ public:
         }
 
         // Read/Write Buffer for the pipeline, one single buffer cut into 4 seperate ones, each with length "part_length + 1"
-        
-        container<std::pair<sa_index, sa_index>> buffers = make_container<std::pair<sa_index, sa_index>>(4 * part_length + 4);
-        span<std::pair<sa_index, sa_index>> r1 = buffers.slice(0, 1 * part_length + 1);
-        span<std::pair<sa_index, sa_index>> w1 = buffers.slice(1 * part_length + 1, 2 * part_length + 2);
-        span<std::pair<sa_index, sa_index>> r2 = buffers.slice(2 * part_length + 2, 3 * part_length + 3);
-        span<std::pair<sa_index, sa_index>> w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
+        container<std::pair<sa_index, sa_index>> buffers;
+        span<std::pair<sa_index, sa_index>> r1;
+        span<std::pair<sa_index, sa_index>> w1;
+        span<std::pair<sa_index, sa_index>> r2;
+        span<std::pair<sa_index, sa_index>> w2;
+
+        if (buff.size() >= (size_t)(4 * part_length + 4)) 
+        {
+            r1 = buff.slice(0, 1 * part_length + 1);
+            w1 = buff.slice(1 * part_length + 1, 2 * part_length + 2);
+            r2 = buff.slice(2 * part_length + 2, 3 * part_length + 3);
+            w2 = buff.slice(3 * part_length + 3, 4 * part_length + 4);
+        }
+        else
+        {
+            buffers = make_container<std::pair<sa_index, sa_index>>(4 * part_length + 4);
+            r1 = buffers.slice(0, 1 * part_length + 1);
+            w1 = buffers.slice(1 * part_length + 1, 2 * part_length + 2);
+            r2 = buffers.slice(2 * part_length + 2, 3 * part_length + 3);
+            w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
+        }
 
         // compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
 
@@ -618,7 +634,7 @@ public:
         span<sa_index> sa_ = SA.slice(0, n1);
 
         if (name < n1) {
-            run_saca<span<sa_index const>, sa_index>(s1, sa_, name);
+            run_saca<span<sa_index const>, sa_index>(s1, sa_, name, buffers.size() > buff.size() ? buffers : buff);
         } else {
             for (ssize i = 0; i < n1; i++) {
                 SA[s1[i]] = i;
@@ -692,9 +708,9 @@ public:
 
         // tdc::StatPhase parallel_sais("Main Phase");
         // std::cout << std::endl << std::endl;
-
+        container<std::pair<sa_index, sa_index>> buffers = make_container<std::pair<sa_index, sa_index>>(0);
         if (text.size() > 1) {
-            run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel());
+            run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel(), buffers);
         }
     }
 };
