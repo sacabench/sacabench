@@ -1,0 +1,21 @@
+This package contains parallel merge sort written in Intel(R) Threading Building 
+Blocks, Intel(R) CIlk(TM) Plus, and OpenMP*.  See source files for licensing terms.
+
+To build and run all versions of the sort on Linux:
+1. cd build
+2. run "make"
+3. run "make run"
+
+To build an individual sort, run one of:
+* make tbb-highlevel.x 
+* make tbb-lowlevel.x
+* make cilkplus.x  
+* make gomp.x              # OpenMP version built with gcc
+* make openmp.x            # OpenMP version built with icc
+
+- Arch D. Robison
+  April 10, 2014
+
+--------------------------------------------------------------------------------
+*The OpenMP name and the OpenMP logo are registered trademarks of the OpenMP 
+ Architecture Review Board.

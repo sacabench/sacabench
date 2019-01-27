@@ -24,6 +24,7 @@ private:
     bool flushed = false;
 
     size_t elements_induction_sorted;
+    size_t elements_simple_induction_sorted;
     size_t elements_blind_sorted;
     size_t elements_quick_sorted;
 
@@ -67,6 +68,10 @@ public:
         elements_induction_sorted += n;
     }
 
+    inline void sorted_elements_simple_induction(const size_t n) {
+        elements_simple_induction_sorted += n;
+    }
+
     inline void time_spent_blind(const size_t n) { ns_blind_sorted += n; }
 
     inline void time_spent_quick(const size_t n) { ns_quick_sorted += n; }
@@ -88,6 +93,8 @@ public:
         myfile << "# Sorted by Blind-Sort: " << elements_blind_sorted << "\n";
         myfile << "# Sorted by Quicksort: " << elements_quick_sorted << "\n";
         myfile << "# Sorted by Induction: " << elements_induction_sorted
+               << "\n";
+        myfile << "# Sorted by Simple Induction: " << elements_simple_induction_sorted
                << "\n\n";
         myfile << "# Time spent by Blind Sort: " << ns_blind_sorted << "\n";
         myfile << "# Time spent by Quick Sort: " << ns_quick_sorted << "\n";
@@ -140,6 +147,7 @@ public:
     inline void sorted_elements_blind(const size_t) {}
     inline void sorted_elements_quick(const size_t) {}
     inline void sorted_elements_induction(const size_t) {}
+    inline void sorted_elements_simple_induction(const size_t) {}
     inline void time_spent_blind(const size_t) {}
     inline void time_spent_quick(const size_t) {}
     inline void time_spent_induction_sorting(const size_t) {}

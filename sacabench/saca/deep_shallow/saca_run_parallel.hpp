@@ -7,6 +7,7 @@
 #pragma once
 
 #include <optional>
+#include <omp.h>
 
 #include <util/is_sorted.hpp>
 #include <util/sort/bucketsort.hpp>
@@ -25,13 +26,6 @@
 
 namespace sacabench::deep_shallow {
 
-inline void print_text(const util::string_span text) {
-    for (const util::character& c : text) {
-        std::cout << (char)(c + 'a' - 1) << " ";
-    }
-    std::cout << std::endl;
-}
-
 template <typename T>
 using span = util::span<T>;
 using u_char = util::character;
@@ -39,7 +33,7 @@ using u_char = util::character;
 /// \brief Represents a run on a specific input of the Deep Shallow SACA.
 ///        After construction, the suffix array construction is completed.
 template <typename sa_index_type>
-class saca_run {
+class parallel_saca_run {
 private:
     util::string_span input_text;
     size_t alphabet_size;
@@ -48,6 +42,7 @@ private:
     anchor_data<sa_index_type> ad;
 
     size_t max_blind_sort_size;
+    omp_lock_t writelock;
 
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
@@ -158,8 +153,7 @@ private:
                 input_text.slice(b + common_prefix_length);
             return as < bs;
         };
-        util::sort::binary_introsort::sort(bucket,
-                                                         compare_suffix);
+        util::sort::binary_introsort::sort(bucket, compare_suffix);
         DCHECK(is_partially_suffix_sorted(bucket, input_text));
     }
 
@@ -169,7 +163,10 @@ private:
         for (const size_t& si : bucket) {
 
             // Check, if there is a suitable entry in anchor_data.
+            omp_set_lock(&writelock);
             const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
+            omp_unset_lock(&writelock);
+
             if (leftmost_suffix_opt.has_value()) {
 
                 // Test, if the suffix is in the valid range, that means
@@ -189,6 +186,7 @@ private:
 
                     // This is the position of the known sorted suffix in its
                     // bucket.
+                    omp_set_lock(&writelock);
                     const size_t sorted_bucket =
                         ad.get_position_in_suffixarray(si);
 
@@ -201,6 +199,7 @@ private:
                         input_text[leftmost_suffix],
                         input_text[leftmost_suffix +
                                    static_cast<sa_index_type>(1)]);
+                    omp_unset_lock(&writelock);
 
                     // Finde alle Elemente von sj zwischen
                     // left_bucket_bound und right_bucket_bound, beginnend mit
@@ -287,58 +286,85 @@ private:
         return false;
     }
 
+    inline void sort_bucket(const u_char alpha, const u_char beta) {
+
+        // Get bucket bounds.
+        omp_set_lock(&writelock);
+        const auto bucket_start = bd.start_of_bucket(alpha, beta);
+        const auto bucket_end = bd.end_of_bucket(alpha, beta);
+        omp_unset_lock(&writelock);
+
+        DCHECK_LT(bucket_start, bucket_end);
+
+        // Get slice of suffix array, which contains the elements of the
+        // bucket.
+        const span<sa_index_type> bucket =
+            suffix_array.slice(bucket_start, bucket_end);
+
+        if (bucket.size() <= 2) {
+            // Special case: use quicksort for small buckets
+            simple_sort(bucket, 2);
+        } else {
+            // Shallow sort it.
+            shallow_sort(bucket);
+        }
+
+        // Debug check: the bucket is correctly suffix sorted.
+        DCHECK(is_partially_suffix_sorted(bucket, input_text));
+
+        omp_set_lock(&writelock);
+        for (sa_index_type i = 0; i < bucket.size(); ++i) {
+            ad.update_anchor(bucket[i], bucket_start + i);
+        }
+        // Mark this bucket as sorted.
+        bd.mark_bucket_sorted(alpha, beta);
+        omp_unset_lock(&writelock);
+    }
+
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
-        while (bd.are_buckets_left()) {
-            // Find the smallest unsorted bucket.
-            const auto unsorted_bucket = bd.get_smallest_bucket();
-            const auto alpha = unsorted_bucket.first;
-            const auto beta = unsorted_bucket.second;
 
-            if (bd.size_of_bucket(alpha, beta) < 2) {
-                // Buckets with a size of 0 or 1 are already sorted.
-                // Do nothing.
-            } else {
-                // Get bucket bounds.
-                const auto bucket_start = bd.start_of_bucket(alpha, beta);
-                const auto bucket_end = bd.end_of_bucket(alpha, beta);
+        // Spawn a task pool to run the buckets in parallel
+        #pragma omp parallel
+        {
+            // Schedule the buckets in serial
+            #pragma omp single
+            while (bd.are_buckets_left()) {
 
-                DCHECK_LT(bucket_start, bucket_end);
+                // Find the smallest unsorted bucket.
+                const auto unsorted_bucket = bd.get_smallest_bucket();
+                const auto alpha = unsorted_bucket.first;
+                const auto beta = unsorted_bucket.second;
+                const size_t size_of_bucket = bd.size_of_bucket(alpha, beta);
 
-                // Get slice of suffix array, which contains the elements of the
-                // bucket.
-                const span<sa_index_type> bucket =
-                    suffix_array.slice(bucket_start, bucket_end);
-
-                if (bucket.size() <= 2) {
-                    simple_sort(bucket, 2);
+                if (size_of_bucket < 2) {
+                    // Buckets with a size of 0 or 1 are already sorted.
+                    // Do nothing.
                 } else {
-                    // Shallow sort it.
-                    shallow_sort(bucket);
+                    // Sort big buckets in parallel
+                    #pragma omp task
+                    {
+                        sort_bucket(alpha, beta);
+                    }
                 }
-
-                // Debug check: the bucket is correctly suffix sorted.
-                // FIXME: get rid of the obnoxious debug warning.
-                // DCHECK(is_partially_suffix_sorted(bucket, input_text));
-
-                for (sa_index_type i = 0; i < bucket.size(); ++i) {
-                    ad.update_anchor(bucket[i], bucket_start + i);
-                }
-
-                DCHECK(is_partially_suffix_sorted(bucket, input_text));
             }
 
-            // Mark this bucket as sorted.
-            bd.mark_bucket_sorted(alpha, beta);
+            // Start execution of buckets.
+            omp_unset_lock(&writelock);
         }
+
+        // At this point, all tasks are synced.
+        // We wait here until every bucket is sorted.
     }
 
 public:
-    inline saca_run(util::string_span text, size_t _alphabet_size,
+    inline parallel_saca_run(util::string_span text, size_t _alphabet_size,
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
-          bd(), ad(text.size()),
+          bd(_alphabet_size), ad(text.size()),
           max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
+
+        omp_init_lock(&writelock);
 
         // Fill sa with unsorted suffix array.
         for (size_t i = 0; i < sa.size(); ++i) {
@@ -356,6 +382,8 @@ public:
             // Sort all buckets iteratively.
             sort_all_buckets();
         }
+
+        omp_destroy_lock(&writelock);
     }
 };
 } // namespace sacabench::deep_shallow

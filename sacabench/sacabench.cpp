@@ -407,6 +407,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
         nlohmann::json stat_array = nlohmann::json::array();
 
+        size_t sanity_counter = 0;
         for (const auto& algo : saca_list) {
             if (!whitelist.empty()) {
                 if (std::find(whitelist.begin(), whitelist.end(),
@@ -421,6 +422,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             nlohmann::json alg_array = nlohmann::json::array();
 
             for (uint32_t i = 0; i < repetition_count; i++) {
+                sanity_counter++;
                 tdc::StatPhase root(algo->name().data());
                 {
                     std::cerr << "Running " << algo->name() << " (" << (i + 1)
@@ -468,6 +470,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                                  std::ios_base::trunc);
                 write_bench(benchmark_file);
             }
+        }
+
+        if (sanity_counter == 0) {
+            std::cerr << "ERROR: No Algorithm ran!\n";
+            return 1;
         }
     }
 
