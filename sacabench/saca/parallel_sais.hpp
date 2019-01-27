@@ -54,9 +54,12 @@ public:
     }
 
     template <typename T>
-    static void compute_types(std::vector<bool>& t, T s, span<size_t> thread_border, span<bool> thread_info, ssize part_length, ssize rest_length, size_t thread_count) {
+    static void compute_types(std::vector<bool>& t, T s, span<size_t> thread_border, span<bool> thread_info, size_t thread_count) {
 
         std::vector<std::thread> threads;
+        ssize part_length = s.size() / thread_count;
+        part_length -= part_length % (sizeof(char) * 8);
+        ssize rest_length = (s.size() - (thread_count - 1) * part_length);
         
         for (size_t i = 0; i < thread_border.size() - 1; i++) 
         { 
@@ -502,11 +505,11 @@ public:
 
         container<sa_index> buckets = make_container<sa_index>(K);
         std::vector<bool> t(s.size());
-        container<size_t> thread_border = make_container<size_t>(std::thread::hardware_concurrency());
-        container<bool> thread_info = make_container<bool>(std::thread::hardware_concurrency());
-        
+       
         // Prepare blocks for parallel computing
         size_t thread_count = std::thread::hardware_concurrency();
+        container<size_t> thread_border = make_container<size_t>(thread_count);
+        container<bool> thread_info = make_container<bool>(thread_count);
         thread_count = std::min(thread_count, s.size() - 1);
         // thread_count = 1;
         ssize part_length = s.size() / thread_count;
@@ -543,9 +546,9 @@ public:
             w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
         }
 
-        // compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
+        compute_types(t, s, thread_border, thread_info, thread_count);
 
-        compute_types_sequential(t, s);
+        //compute_types_sequential(t, s);
 
         // std::cout << "thread_count: " << thread_count << ", part_length: " << part_length << ", rest_length: " << rest_length << std::endl;
 
