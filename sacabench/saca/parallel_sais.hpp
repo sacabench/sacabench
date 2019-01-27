@@ -29,11 +29,19 @@ public:
     static constexpr char const* DESCRIPTION =
         "Suffix Array Induced Sorting by Nong, Zhang and Chan";    
     
-    static const bool L_Type = 0;
-    static const bool S_Type = 1;
+    static const int L_Type = 0;
+    static const int S_Type = 1;
 
-    static bool is_LMS(std::vector<bool>& t, ssize position) {
-        return (position > 0) && (t[position] == S_Type && t[position - 1] == L_Type);
+    static char getBit(std::vector<char>& t, int index) {
+        return (t[index/8] >> (7-(index & 0x7)) & 0x1);
+    }   
+
+    static void setBit(std::vector<char>& t, int index, int value) {
+        t[index/8] = t[index/8] | (value & 0x1) << (7-(index & 0x7));
+    }
+
+    static bool is_LMS(std::vector<char>& t, ssize position) {
+        return (position > 0) && (getBit(t, position) == S_Type && getBit(t, position - 1) == L_Type);
     }
 
     template <typename T>
@@ -54,9 +62,14 @@ public:
     }
 
     template <typename T>
-    static void compute_types(std::vector<bool>& t, T s, span<size_t> thread_border, span<bool> thread_info, ssize part_length, ssize rest_length, size_t thread_count) {
+    static void compute_types(std::vector<char>& t, T s, span<size_t> thread_border, span<bool> thread_info, size_t thread_count) {
 
         std::vector<std::thread> threads;
+        ssize part_length = s.size() / thread_count;
+        part_length -= part_length % (sizeof(char) * 8);
+        ssize rest_length = (s.size() - (thread_count - 1) * part_length);
+        
+        
         
         for (size_t i = 0; i < thread_border.size() - 1; i++) 
         { 
@@ -65,7 +78,7 @@ public:
 
         thread_border[thread_count - 1] = rest_length;
 
-        t[s.size() - 1] = S_Type;
+        setBit(t, s.size() - 1, S_Type);
 
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
@@ -81,7 +94,7 @@ public:
         }
 
         // if many threads were not able to classify, use the last thread that has borderinfo for all the others
-        for (ssize i = threads.size() - 1; i >= 0; i--) {
+        for (ssize i = threads.size() - 2; i >= 0; i--) {
             if (thread_border[i] == 0) {
                 thread_info[i] = thread_info[i + 1];
             }
@@ -105,20 +118,20 @@ public:
     }
     
     template <typename T>
-    static void compute_types_first_pass(std::vector<bool>& t, T s, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+    static void compute_types_first_pass(std::vector<char>& t, T s, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
         // first pass - classify all elements that are possible to be classified within the thread
         for (ssize i = len - 1; i >= 0; i--) {           
             if ((size_t)i + offset + 1 < s.size()) {
                 if (s[i + offset + 1] < s[i + offset]) {
-                    t[i + offset] = L_Type;
+                    setBit(t, i + offset, L_Type);
                 }
                 else if (s[i + offset + 1] > s[i + offset]) {
-                    t[i + offset] = S_Type;
+                    setBit(t, i + offset, S_Type);
                 }
                 else {
                 // do not use types from another thread as we do not know if they are already calculated
                     if (((size_t)i + 1 < len && thread_border[thread_id] != (size_t)i + 1) || (thread_id == thread_border.size() - 1)) {
-                        t[i + offset] = t[i + offset + 1];
+                        setBit(t, i + offset, getBit(t, i + offset + 1));
                     }
                     else {
                         thread_border[thread_id] = i;
@@ -128,15 +141,15 @@ public:
         }
 
         if (thread_border[thread_id] != 0) {
-            thread_info[thread_id] = t[offset];
+            thread_info[thread_id] = getBit(t, offset);
         }
     }
 
     template <typename T>
-    static void compute_types_second_pass(std::vector<bool>& t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+    static void compute_types_second_pass(std::vector<char>& t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
         // second pass - use info of threads what the type of their border character was
         for (size_t i = thread_border[thread_id]; i < len; i++) {
-            t[i + offset] = thread_info[thread_id + 1];
+            setBit(t, i + offset, thread_info[thread_id + 1]);
         }
     }    
     
@@ -163,7 +176,7 @@ public:
 
     template <typename T, typename sa_index>
     static void prepare_parallel(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r,
-                                 span<sa_index> SA, std::vector<bool>& t, bool suffix_type, size_t thread_count, size_t blocknum){
+                                 span<sa_index> SA, std::vector<char>& t, bool suffix_type, size_t thread_count, size_t blocknum){
 
         // overwrite readbuffer with NULLs
         for (ssize i = 0; i < (ssize)r.size(); i++) {
@@ -180,7 +193,7 @@ public:
     }
 
     template <typename T, typename sa_index>
-    static void prepare(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r, span<sa_index> SA, std::vector<bool>& t, bool suffix_type, size_t k, size_t i){
+    static void prepare(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r, span<sa_index> SA, std::vector<char>& t, bool suffix_type, size_t k, size_t i){
         // std::cout << "Started preparing " << i << std::endl;
 
         size_t j = 0;
@@ -191,7 +204,7 @@ public:
         // std::cout << "Prepare for pos j = " << j << std::endl;
         if(j < (size_t)SA.size() && SA[j]!= static_cast<sa_index>(-1)){
             pos = SA[j]-static_cast<sa_index>(1);
-            if(pos >=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && pos < t.size() && t[pos] == suffix_type){
+            if(pos >=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && pos < SA.size() && getBit(t, pos) == suffix_type){
                 chr = s[pos];
                 r[i] = std::make_pair(chr, pos);
                 // std::cout << "Write Tuple <" << (ssize)chr << ", " << (ssize)pos << "> to r, j = " << j << ", k = " << k << ", i = " << i << ", pl = " << part_length << std::endl;
@@ -235,7 +248,7 @@ public:
     // Induce L_Types for Block B_ks
     // k = blocknum
     template <typename T, typename sa_index>
-    static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<bool>& t, size_t blocknum,
+    static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<char>& t, size_t blocknum,
         span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length, size_t *w_count) {
 
         // translate: translates the position in the block to global pos
@@ -250,7 +263,7 @@ public:
             ssize pos = ((ssize)SA[i + translate] - 1);
             //std::cout << "i: " << (sa_index)i << ", pos: " << pos << ", i+trans: " << (i+translate) << std::endl;
 
-            if ((ssize)SA[(sa_index)i + translate] >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && t[pos] == L_Type)
+            if ((ssize)SA[(sa_index)i + translate] >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == L_Type)
             {
 
                 if (r[i].first == static_cast<sa_index>(0))
@@ -286,7 +299,7 @@ public:
     // Induce S Types for Block B_ks
     // k = blocknum
     template <typename T, typename sa_index>
-    static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<bool>& t, size_t blocknum,
+    static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<char>& t, size_t blocknum,
         span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length, size_t *w_count) {
 
         // translate: translates the position in the block to global pos
@@ -301,7 +314,7 @@ public:
             ssize pos = (ssize)SA[i + translate] - 1;
             // std::cout << "i: " << (sa_index)i << ", pos: " << pos << ", i+trans: " << (i+translate) << std::endl;
 
-            if ((ssize)SA[(sa_index)i + translate] >= (ssize)0 && pos >= (ssize)0 && pos < (ssize)SA.size() && t[pos] == S_Type)
+            if ((ssize)SA[(sa_index)i + translate] >= (ssize)0 && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == S_Type)
             {
 
                 if (r[i].first == (sa_index)0)
@@ -387,7 +400,7 @@ public:
     }*/
 
     template <typename T, typename sa_index>
-    static void pipelined_Inducing(T s, span<sa_index> SA, std::vector<bool>& t, span<sa_index> buckets, size_t K, size_t thread_count,
+    static void pipelined_Inducing(T s, span<sa_index> SA, std::vector<char>& t, span<sa_index> buckets, size_t K, size_t thread_count,
         span<std::pair<sa_index, sa_index>> r1, span<std::pair<sa_index, sa_index>> r2, span<std::pair<sa_index, sa_index>> w1, span<std::pair<sa_index, sa_index>> w2, ssize part_length, bool type) {
 
         generate_buckets<T, sa_index>(s, buckets, K, type);
@@ -493,16 +506,19 @@ public:
 
 
         container<sa_index> buckets = make_container<sa_index>(K);
-        std::vector<bool> t(s.size());
-        container<size_t> thread_border = make_container<size_t>(std::thread::hardware_concurrency());
-        container<bool> thread_info = make_container<bool>(std::thread::hardware_concurrency());
+        std::vector<char> t(s.size() / 8 + 1);
+        std::vector<bool> t2(s.size());
+        size_t thread_count = std::thread::hardware_concurrency();
+        container<size_t> thread_border = make_container<size_t>(thread_count);
+        container<bool> thread_info = make_container<bool>(thread_count);
         
         // Prepare blocks for parallel computing
-        size_t thread_count = std::thread::hardware_concurrency();
+
         thread_count = std::min(thread_count, s.size() - 1);
         // thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
+               
 
         // for very small inputs, so that we can always assure that rest_length <= part_length
         while (rest_length > part_length && thread_count > 1)
@@ -511,7 +527,7 @@ public:
             part_length = s.size() / thread_count;
             rest_length = (s.size() - (thread_count - 1) * part_length);
         }
-
+       
         // Read/Write Buffer for the pipeline, one single buffer cut into 4 seperate ones, each with length "part_length + 1"
         container<std::pair<sa_index, sa_index>> buffers;
         span<std::pair<sa_index, sa_index>> r1;
@@ -537,8 +553,48 @@ public:
 
         // compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
 
-        compute_types_sequential(t, s);
-
+        compute_types_sequential(t2, s);
+        compute_types(t, s, thread_border, thread_info, thread_count);
+        
+        
+        
+        bool error = false;
+        std::string hw = "hello worldddasdfasdfgasgd";
+        for (size_t i = 0; i < t.size(); i++) { 
+            if (getBit(t, i) != t2[i]) {
+                error = true;
+            } 
+        }
+        
+        if (error) {
+            std::cout<<"part_length: " << part_length<<std::endl;
+            std::cout<<"rest_length: " << rest_length<<std::endl;
+            std::cout<<"thread_count: " << thread_count<<std::endl;
+            std::cout<<"type arrays: " <<std::endl;
+            for (size_t i = 0; i < s.size(); i++) {
+                std::cout<<i<< " ";
+            }
+            std::cout<<std::endl;
+            for (size_t i = 0; i < s.size(); i++) {
+                std::cout<<hw[i]<< " ";
+            }
+            std::cout<<std::endl;
+            for (size_t i = 0; i < t.size(); i++) {
+                std::cout<<getBit(t, i)<< " ";
+            }
+            std::cout<<std::endl;
+            
+            for (size_t i = 0; i < t.size(); i++) {
+                std::cout<<t2[i]<< " ";
+            }
+            
+         std::string test;
+         std::cin>>test;
+        }
+        
+        
+        
+        
         // std::cout << "thread_count: " << thread_count << ", part_length: " << part_length << ", rest_length: " << rest_length << std::endl;
 
         // First Induction ###################################################
@@ -592,7 +648,7 @@ public:
             for (size_t j = 0; j < s.size(); j++) {
                 if (previous_LMS == -1 ||
                     s.at(current_LMS + j) != s.at(previous_LMS + j) ||
-                    t[current_LMS + j] != t[previous_LMS + j]) {
+                    getBit(t, current_LMS + j) != getBit(t, previous_LMS + j)) {
                     diff = true;
                     break;
                 } else if (j > 0 &&
