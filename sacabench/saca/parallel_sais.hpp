@@ -69,10 +69,10 @@ public:
 
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
-                threads.push_back(std::thread(compute_types_first_pass<T>, std::ref(t), s, i * part_length, part_length, i, thread_border, thread_info));
+                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, part_length, i, thread_border, thread_info));
             }
             else {
-                threads.push_back(std::thread(compute_types_first_pass<T>, std::ref(t), s, i * part_length, rest_length, i, thread_border, thread_info));
+                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, rest_length, i, thread_border, thread_info));
             }
         }
 
@@ -171,15 +171,12 @@ public:
             r[i].second = static_cast<sa_index>(-1);
         }
 
-            std::vector<std::thread> threads;
-
         for (size_t i = 0; i < r.size() && i < thread_count - 1; i++) {
-                threads.push_back(std::thread(prepare<T,sa_index>, s, part_length, r, SA, std::ref(t), suffix_type, blocknum, i));
+            #pragma omp task
+            prepare<T,sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
         }
 
-        for (auto& t : threads) {
-            t.join();
-        }
+        #pragma omp taskwait
     }
 
     template <typename T, typename sa_index>
@@ -368,15 +365,13 @@ public:
     static void update_parallel(size_t thread_count, ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
 
         // std::cout << "At the beginning of Updating w_count is " << (*w_count) << std::endl;
-        std::vector<std::thread> threads;
 
-            for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
-                threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA, i, w_count));
-            }
+        for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
+            #pragma omp task
+            update_SA<sa_index>(part_length, w, SA, i, w_count);
+        }
 
-            for (auto& t : threads) {
-                t.join();
-            }
+        #pragma omp taskwait
 
         *w_count = 0;
     }
@@ -432,7 +427,6 @@ public:
                 updating_block++;
             }
 
-
             if (updating_block >= (ssize)0) {
                 ssize cur_update_block = ((type == L_Type) ? updating_block : (thread_count - updating_block));
                 // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
@@ -446,7 +440,8 @@ public:
 
             if (inducing_block >= (ssize)0) {
 
-                if (type == L_Type) {
+                if (type == L_Type)
+                {
                     auto& r = inducing_block % 2 == 0 ? r1 : r2;
                     auto& w = inducing_block % 2 == 0 ? w1 : w2;
                     size_t& write_amount = inducing_block % 2 == 0 ? write_amount_1 : write_amount_2;
@@ -478,11 +473,8 @@ public:
             }
 
             blocknum++;
-
         }
-
     }
-
 
     template <typename T, typename sa_index>
     static void run_saca(T s, span<sa_index> SA, size_t K, container<std::pair<sa_index, sa_index>> &buff) {
@@ -710,6 +702,8 @@ public:
         // std::cout << std::endl << std::endl;
         container<std::pair<sa_index, sa_index>> buffers = make_container<std::pair<sa_index, sa_index>>(0);
         if (text.size() > 1) {
+            #pragma omp parallel
+            #pragma omp master
             run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel(), buffers);
         }
     }
