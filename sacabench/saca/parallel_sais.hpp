@@ -64,12 +64,9 @@ public:
     template <typename T>
     static void compute_types(std::vector<char>& t, T s, span<size_t> thread_border, span<bool> thread_info, size_t thread_count) {
 
-        std::vector<std::thread> threads;
         ssize part_length = s.size() / thread_count;
         part_length -= part_length % (sizeof(char) * 8);
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
-        
-        
         
         for (size_t i = 0; i < thread_border.size() - 1; i++) 
         { 
@@ -82,39 +79,36 @@ public:
 
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
-                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, part_length, i, thread_border, thread_info));
+                #pragma omp task
+                compute_types_first_pass<T>(t, s, i * part_length, part_length, i, thread_border, thread_info);
             }
             else {
-                threads.push_back(std::thread(compute_types_first_pass<T>, t, s, i * part_length, rest_length, i, thread_border, thread_info));
+                #pragma omp task
+                compute_types_first_pass<T>(t, s, i * part_length, rest_length, i, thread_border, thread_info);
             }
         }
 
-        for (auto& t : threads) {
-            t.join();
-        }
+        #pragma omp taskwait
 
         // if many threads were not able to classify, use the last thread that has borderinfo for all the others
-        for (ssize i = threads.size() - 2; i >= 0; i--) {
+        for (ssize i = thread_count - 2; i >= 0; i--) {
             if (thread_border[i] == 0) {
                 thread_info[i] = thread_info[i + 1];
             }
         }
 
-        threads.clear();
-
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
-                threads.push_back(std::thread(compute_types_second_pass<T>, std::ref(t), i * part_length, part_length, i, thread_border, thread_info));
+                #pragma omp task
+                compute_types_second_pass<T>(t, i * part_length, part_length, i, thread_border, thread_info);
             }
             else {
-                threads.push_back(std::thread(compute_types_second_pass<T>, std::ref(t), i * part_length, rest_length, i, thread_border, thread_info));
+                #pragma omp task
+                compute_types_second_pass<T>(t, i * part_length, rest_length, i, thread_border, thread_info);
             }
         }
         
-
-        for (auto& t : threads) {
-            t.join();
-        }
+        #pragma omp taskwait
     }
     
     template <typename T>
@@ -555,8 +549,6 @@ public:
 
         compute_types_sequential(t2, s);
         compute_types(t, s, thread_border, thread_info, thread_count);
-        
-        
         
         bool error = false;
         std::string hw = "hello worldddasdfasdfgasgd";
