@@ -187,25 +187,6 @@ void initialize_sa_gpu(size_t size, uint64_t* sa) {
     initialize_sa_gpu_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(size, sa);
     //cudaDeviceSynchronize();
 }
-/*
-    Calculates inclusive prefix sum on GPU using the provided CUB Method
-*/
-template <typename OP, typename sa_index>
-void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
-{
-
-    // Determine temporary device storage requirements
-    void     *d_temp_storage = NULL;
-    size_t   temp_storage_bytes = 0;
-
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, array,op, n);
-    // Allocate temporary storage
-    cudaMalloc(&d_temp_storage, temp_storage_bytes);
-    // Run exclusive prefix sum
-    cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, array,op, n);
-
-    //cudaDeviceSynchronize();
-}
 
 
 /*
