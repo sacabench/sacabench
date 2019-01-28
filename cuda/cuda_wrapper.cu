@@ -35,7 +35,7 @@ static void prefix_sum(size_type* d_in,
     // Run prefix sum
     Sum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
 
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 
     free_cuda_buffer(d_temp_storage);
 }
@@ -53,7 +53,7 @@ static void exclusive_sum_generic(size_type* d_in, size_t num_items) {
     // Run prefix sum
     cub::DeviceScan::ExclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
 
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 
     free_cuda_buffer(d_temp_storage);
 }
@@ -71,7 +71,7 @@ static void inclusive_sum_generic(size_type* d_in, size_t num_items) {
     // Run prefix sum
     cub::DeviceScan::InclusiveSum(d_temp_storage, temp_storage_bytes, d_in, d_in, num_items);
 
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 
     free_cuda_buffer(d_temp_storage);
 }
@@ -101,7 +101,7 @@ void inclusive_scan_generic(size_type* d_in, OP op,
     cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, d_in,
                 d_in, op, num_items);
 
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 
     free_cuda_buffer(d_temp_storage);
     //copy_to_array<<<NUM_BLOCKS,NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
@@ -250,7 +250,7 @@ void radix_sort_cub(size_type* d_in1, size_type* d_in2, size_type* aux1,
     d_temp_storage = allocate_cuda_buffer(temp_storage_bytes);
     cuda_check(cub::DeviceRadixSort::SortPairs(d_temp_storage, temp_storage_bytes, d_in1,
                 aux1, d_in2, aux2, num_items));
-    cuda_check(cudaDeviceSynchronize());
+    //cuda_check(cudaDeviceSynchronize());
     free_cuda_buffer(d_temp_storage);
 }
 
