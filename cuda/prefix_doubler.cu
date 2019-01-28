@@ -6,6 +6,8 @@
 #include "cuda_util.cuh"
 
 #include "prefix_doubler_interface.hpp"
+#include <omp.h>
+
 
 #define NUM_THREADS_PER_BLOCK 1024
 #define NUM_BLOCKS(x) ((x + NUM_THREADS_PER_BLOCK - 1) / NUM_THREADS_PER_BLOCK)
@@ -38,6 +40,7 @@ void word_packing_generic(const uint8_t* chars, sa_index* result, size_t n) {
 
     typedef unsigned char u8;
     if(n>3) {
+    #pragma omp parallel for
     for(size_t i = 0; i<n-3 ;++i) {
         result[i] = ((u8)chars[i] << 24) | ((u8)chars[i+1] << 16) | ((u8)chars[i+2] << 8) | (u8)chars[i+3];
     }
@@ -58,6 +61,7 @@ void word_packing_generic(const uint8_t* chars, sa_index* result, size_t n) {
 // uint64_t
 void word_packing_64(const char* chars, uint64_t* result, size_t n) {
 
+    #pragma omp parallel for
     for(size_t i = 0; i<n-7 ;++i) {
         result[i] = ((uint64_t)chars[i] << 56) | ((uint64_t)chars[i+1] << 48) | ((uint64_t)chars[i+2] << 40) | ((uint64_t)chars[i+3] << 32) |
                     ((uint64_t)chars[i] << 24) | ((uint64_t)chars[i+1] << 16) | ((uint64_t)chars[i+2] << 8) | (uint64_t)chars[i+3];
