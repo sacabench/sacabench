@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "cub-1.8.0/cub/cub.cuh"
+#include "../external/cub/cub/cub.cuh"
 
 #include "cuda_wrapper_interface.hpp"
 #include "cuda_util.cuh"
