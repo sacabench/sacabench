@@ -44,7 +44,7 @@ private:
     size_t max_blind_sort_size;
 
     omp_lock_t writelock;
-    omp_lock_t inducing_lock;
+    // omp_lock_t inducing_lock;
 
     size_t tasks, tasks_done;
 
@@ -460,7 +460,7 @@ public:
           max_blind_sort_size(text.size() / BLIND_SORT_RATIO), tasks(0), tasks_done(0) {
 
         omp_init_lock(&writelock);
-        omp_init_lock(&inducing_lock);
+        // omp_init_lock(&inducing_lock);
 
         // std::cout << "start" << std::endl;
         // // Fill sa with unsorted suffix array.
@@ -495,7 +495,7 @@ public:
         }
 
         omp_destroy_lock(&writelock);
-        omp_destroy_lock(&inducing_lock);
+        // omp_destroy_lock(&inducing_lock);
     }
 };
 } // namespace sacabench::deep_shallow
