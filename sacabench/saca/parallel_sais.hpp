@@ -194,12 +194,13 @@ public:
             r[i].second = static_cast<sa_index>(-1);
         }
 
-        for (size_t i = 0; i < r.size() && i < thread_count - 1; i++) {
-            #pragma omp task
-            prepare<T,sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
+        #pragma omp taskgroup
+        {
+            for (size_t i = 0; i < r.size() && i < thread_count - 1; i++) {
+                #pragma omp task
+                prepare<T,sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
+            }
         }
-
-        #pragma omp taskwait
     }
 
     template <typename T, typename sa_index>
@@ -389,12 +390,13 @@ public:
 
         // std::cout << "At the beginning of Updating w_count is " << (*w_count) << std::endl;
 
-        for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
-            #pragma omp task
-            update_SA<sa_index>(part_length, w, SA, i, w_count);
+        #pragma omp taskgroup
+        {
+            for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
+                #pragma omp task
+                update_SA<sa_index>(part_length, w, SA, i, w_count);
+            }
         }
-
-        #pragma omp taskwait
 
         *w_count = 0;
     }
@@ -450,49 +452,65 @@ public:
                 updating_block++;
             }
 
-            if (updating_block >= (ssize)0) {
-                ssize cur_update_block = ((type == L_Type) ? updating_block : (thread_count - updating_block));
-                // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
+            #pragma omp taskgroup
+            {
+                if (updating_block >= (ssize)0) {
+                    ssize cur_update_block = ((type == L_Type) ? updating_block : (thread_count - updating_block));
+                    // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
 
-                auto& w = cur_update_block % 2 == 0 ? w1 : w2;
-                size_t& write_amount = cur_update_block % 2 == 0 ? write_amount_1 : write_amount_2;
+                    auto& w = cur_update_block % 2 == 0 ? w1 : w2;
+                    size_t& write_amount = cur_update_block % 2 == 0 ? write_amount_1 : write_amount_2;
 
-                // std::cout << "Upda for block" << cur_update_block << " in iteration " << cur_blocknum << std::endl;
-                update_parallel<sa_index>(thread_count, part_length, w, SA, &write_amount);
-            }
+                    // std::cout << "Iteration: " << blocknum << ", updating using W = " << (cur_update_block % 2 == 0 ? 1 : 2) << std::endl;
 
-            if (inducing_block >= (ssize)0) {
-
-                if (type == L_Type)
-                {
-                    auto& r = inducing_block % 2 == 0 ? r1 : r2;
-                    auto& w = inducing_block % 2 == 0 ? w1 : w2;
-                    size_t& write_amount = inducing_block % 2 == 0 ? write_amount_1 : write_amount_2;
-
-                    // std::cout << "L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
-                    induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length, &write_amount);
-                }
-                else
-                {
-                    auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;  
-                    auto& w = (thread_count - inducing_block) % 2 == 0 ? w1 : w2;
-                    size_t& write_amount = (thread_count - inducing_block) % 2 == 0 ? write_amount_1 : write_amount_2;
-
-                    // std::cout << "S-In for block" << (thread_count - inducing_block) << " in iteration " << (thread_count - blocknum)+2 << std::endl;
-                    induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, (thread_count - inducing_block), r, w, part_length, &write_amount);
+                    // std::cout << "Upda for block" << cur_update_block << " in iteration " << cur_blocknum << std::endl;
+                    #pragma omp task default(shared)
+                    update_parallel<sa_index>(thread_count, part_length, w, SA, &write_amount);
                 }
 
-                // std::cout << "write_1: " << write_amount_1 << ", write_2: " << write_amount_2 << std::endl;
-            }
+                if (inducing_block >= (ssize)0) {
 
-            if (preparing_block >= (ssize)0) {
-                ssize cur_prepare_block = ((type == L_Type) ? preparing_block : (thread_count - preparing_block));
-                // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
+                    if (type == L_Type)
+                    {
+                        auto& r = inducing_block % 2 == 0 ? r1 : r2;
+                        auto& w = inducing_block % 2 == 0 ? w1 : w2;
+                        size_t& write_amount = inducing_block % 2 == 0 ? write_amount_1 : write_amount_2;
 
-                auto& r = cur_prepare_block % 2 == 0 ? r1 : r2;
+                        // std::cout << "Iteration: " << blocknum << ", L-inducing using R/W = " << (inducing_block % 2 == 0 ? 1 : 2) << std::endl;
 
-                // std::cout << "Prep for block" << cur_prepare_block << " in iteration " << cur_blocknum << std::endl;
-                prepare_parallel<T, sa_index>(s, part_length, r, SA, t, type, thread_count, cur_prepare_block);
+                        // std::cout << "L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
+                        #pragma omp task default(shared)
+                        induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length, &write_amount);
+                    }
+                    else
+                    {
+                        auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;  
+                        auto& w = (thread_count - inducing_block) % 2 == 0 ? w1 : w2;
+                        size_t& write_amount = (thread_count - inducing_block) % 2 == 0 ? write_amount_1 : write_amount_2;
+
+                        // std::cout << "Iteration: " << blocknum << ", S-inducing using R/W = " << ((thread_count - inducing_block) % 2 == 0 ? 1 : 2) << std::endl;
+
+                        // std::cout << "S-In for block" << (thread_count - inducing_block) << " in iteration " << (thread_count - blocknum)+2 << std::endl;
+                        #pragma omp taskwait
+                        #pragma omp task default(shared)
+                        induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, (thread_count - inducing_block), r, w, part_length, &write_amount);
+                    }
+
+                    // std::cout << "write_1: " << write_amount_1 << ", write_2: " << write_amount_2 << std::endl;
+                }
+
+                if (preparing_block >= (ssize)0) {
+                    ssize cur_prepare_block = ((type == L_Type) ? preparing_block : (thread_count - preparing_block));
+                    // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
+
+                    auto& r = cur_prepare_block % 2 == 0 ? r1 : r2;
+
+                    // std::cout << "Iteration: " << blocknum << ", prepare using R = " << (cur_prepare_block % 2 == 0 ? 1 : 2) << std::endl;
+
+                    // std::cout << "Prep for block" << cur_prepare_block << " in iteration " << cur_blocknum << std::endl;
+                    #pragma omp task default(shared)
+                    prepare_parallel<T, sa_index>(s, part_length, r, SA, t, type, thread_count, cur_prepare_block);
+                }
             }
 
             blocknum++;
