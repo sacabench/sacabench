@@ -1,0 +1,303 @@
+\documentclass[landscape]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{fullpage}
+\usepackage{verbatim}
+
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+
+% ------------------------------------------------------------------------------
+% PgfPlots with TikZ
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.12}
+
+\usepgfplotslibrary{groupplots}
+
+% space instead of thousand separator comma
+\pgfkeys{/pgf/number format/.cd,1000 sep={\,}}
+
+% another ylabel on the right:
+\pgfplotsset{
+    ylabel right/.style={
+        after end axis/.append code={
+            \node [rotate=270, anchor=south, yshift=3pt] at (rel axis cs:1,0.5) {#1};
+        }
+    }
+}
+
+\pgfplotsset{
+    log x ticks with fixed point/.style={
+        xticklabel={
+            \pgfkeys{/pgf/fpu=true}
+            \pgfmathparse{exp(\tick)}%
+            \pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
+            \pgfkeys{/pgf/fpu=false}
+        }
+    },
+    log y ticks with fixed point/.style={
+        yticklabel={
+            \pgfkeys{/pgf/fpu=true}
+            \pgfmathparse{exp(\tick)}%
+            \pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
+            \pgfkeys{/pgf/fpu=false}
+        }
+    }
+}
+
+\pgfplotsset{
+    grid,
+    major grid style={thin,dotted,color=black!50},
+    minor grid style={thin,dotted,color=black!50},
+    legend cell align=left,
+    cycle list name={exotic},
+    every axis/.append style={
+        line width=0.5pt,
+        tick style={
+            line cap=round,
+            thin,
+            major tick length=4pt,
+            minor tick length=2pt,
+        },
+    },
+    legend style={
+        /tikz/every even column/.append style={column sep=3mm,black},
+        /tikz/every odd column/.append style={black},
+    },
+    % move title closer
+    title style={yshift=-2pt},
+    % less space on left and right
+    enlarge x limits=0.04,
+    every tick label/.append style={font=\small},
+    %every axis label/.append style={font=\small},
+    every axis y label/.append style={yshift=-1ex},
+    xlabel near ticks,
+    ylabel near ticks,
+    legend columns=1,
+    legend pos=north east,
+}
+
+\pgfplotsset{
+    landscapePlot/.style={
+        ybar,
+        bar width= \VAR{config.bar_width}pt,
+        xtick=data,
+        width=110mm,height=105mm,
+        nodes near coords,
+        nodes near coords align={vertical},
+        enlarge y limits={upper,value=0.2},
+        ymin=0,
+        enlarge x limits=0.5,
+    },
+    batchTimePlot/.style={
+        landscapePlot,
+        title={Runtime},
+        ylabel={SA construction time [s]},
+        every axis y label/.style={at={(0,0.5)},xshift=-25pt,rotate=90},
+    },
+    batchMemPlot/.style={
+        landscapePlot,
+        title={Memory Utilization},
+        ylabel={Extra Memory [MB]},
+        every axis y label/.style={at={(0,0.5)},xshift=-34pt,rotate=90},
+    },
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\pgfplotscreateplotcyclelist{exotic}{%
+    {fill=teal!50!white},
+    {fill=orange!80!white},
+    {fill=cyan!80!white},
+    {fill=lime!80!white},
+    {fill=red!80!white},
+    {fill=yellow!80!white},
+    {fill=black!60!white},
+    {fill=blue!80!white},
+    {fill=teal!80!white, postaction={pattern=north east lines}},
+    {fill=orange!80!white, postaction={pattern=north east lines}},
+    {fill=cyan!80!white, postaction={pattern=north east lines}},
+    {fill=lime!80!white, postaction={pattern=north east lines}},
+    {fill=red!80!white, postaction={pattern=north east lines}},
+    {fill=yellow!80!white, postaction={pattern=north east lines}},
+    {fill=black!30!white, postaction={pattern=north east lines}},
+    {fill=blue!80!white, postaction={pattern=north east lines}},
+    {fill=teal!80!white, postaction={pattern=north west lines}},
+    {fill=orange!80!white, postaction={pattern=north west lines}},
+    {fill=cyan!80!white, postaction={pattern=north west lines}},
+    {fill=lime!80!white, postaction={pattern=north west lines}},
+    {fill=red!80!white, postaction={pattern=north west lines}},
+    {fill=yellow!80!white, postaction={pattern=north west lines}},
+    {fill=black!30!white, postaction={pattern=north west lines}},
+    {fill=blue!80!white, postaction={pattern=north west lines}},
+    {fill=teal!80!white, postaction={pattern=horizontal lines}},
+    {fill=orange!80!white, postaction={pattern=horizontal lines}},
+    {fill=cyan!80!white, postaction={pattern=horizontal lines}},
+    {fill=lime!80!white, postaction={pattern=horizontal lines}},
+    {fill=red!80!white, postaction={pattern=horizontal lines}},
+    {fill=yellow!80!white, postaction={pattern=horizontal lines}},
+    {fill=black!30!white, postaction={pattern=horizontal lines}},
+    {fill=blue!80!white, postaction={pattern=horizontal lines}},
+    {fill=teal!80!white, postaction={pattern=crosshatch}},
+    {fill=orange!80!white, postaction={pattern=crosshatch}},
+    {fill=cyan!80!white, postaction={pattern=crosshatch}},
+    {fill=lime!80!white, postaction={pattern=crosshatch}},
+    {fill=red!80!white, postaction={pattern=crosshatch}},
+    {fill=yellow!80!white, postaction={pattern=crosshatch}},
+    {fill=black!30!white, postaction={pattern=crosshatch}},
+    {fill=blue!80!white, postaction={pattern=crosshatch}},
+    {fill=teal!80!white, postaction={pattern=crosshatch dots}},
+    {fill=orange!80!white, postaction={pattern=crosshatch dots}},
+    {fill=cyan!80!white, postaction={pattern=crosshatch dots}},
+    {fill=lime!80!white, postaction={pattern=crosshatch dots}},
+    {fill=red!80!white, postaction={pattern=crosshatch dots}},
+    {fill=yellow!80!white, postaction={pattern=crosshatch dots}},
+    {fill=black!30!white, postaction={pattern=crosshatch dots}},
+    {fill=blue!80!white, postaction={pattern=crosshatch dots}},
+    {fill=teal!80!white, postaction={pattern=fivepointed stars}},
+    {fill=orange!80!white, postaction={pattern=fivepointed stars}},
+    {fill=cyan!80!white, postaction={pattern=fivepointed stars}},
+    {fill=lime!80!white, postaction={pattern=fivepointed stars}},
+    {fill=red!80!white, postaction={pattern=fivepointed stars}},
+    {fill=yellow!80!white, postaction={pattern=fivepointed stars}},
+    {fill=black!30!white, postaction={pattern=fivepointed stars}},
+    {fill=blue!80!white, postaction={pattern=fivepointed stars}},
+    }
+
+% IMPORT-DATA stats result/result_algorithm.txt
+
+\begin{figure}
+    \textbf{Configuration} \hfill Prefix size: \VAR{config.prefix} \hfill Model name: \VAR{config.cpu} \hfill Repetitions: \VAR{config.repetition_count}
+    \centering\small
+
+    \begin{tikzpicture}
+        \begin{axis}[batchTimePlot,
+                cycle list name={exotic},
+                legend to name=legend0,
+                legend style={
+                    /tikz/every even column/.append style={column sep=0.5cm,black},
+                    /tikz/every even column/.append style={black},
+                },
+                legend columns=4,
+                symbolic x coords={ \VAR{config.escaped_input_file} },
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+        \end{axis}
+    \end{tikzpicture}
+    \hfill
+    \begin{tikzpicture}
+        \begin{axis}[batchMemPlot,
+                symbolic x coords={ {\VAR{config.escaped_input_file}} },
+                cycle list name={exotic},
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY algo
+            \legend{}
+        \end{axis}
+    \end{tikzpicture}
+
+    \medskip
+    \ref{legend0}
+\end{figure}
+
+\begin{figure}
+    \centering\small
+
+    \begin{tikzpicture}
+        \begin{axis}[batchTimePlot,
+                cycle list name={exotic},
+                legend to name=legend1,
+                legend style={
+                    /tikz/every even column/.append style={column sep=0.5cm,black},
+                    /tikz/every even column/.append style={black},
+                },
+                legend columns=4,
+                symbolic x coords={ {\VAR{config.escaped_input_file}} },
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY time
+        \end{axis}
+    \end{tikzpicture}
+    \hfill
+    \begin{tikzpicture}
+        \begin{axis}[batchMemPlot,
+                symbolic x coords={ {\VAR{config.escaped_input_file}} },
+                cycle list name={exotic},
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY time
+            \legend{}
+        \end{axis}
+    \end{tikzpicture}
+
+    \medskip
+    \ref{legend1}
+\end{figure}
+
+\begin{figure}
+    \centering\small
+
+    \begin{tikzpicture}
+        \begin{axis}[batchTimePlot,
+                cycle list name={exotic},
+                legend to name=legend2,
+                legend style={
+                    /tikz/every even column/.append style={column sep=0.5cm,black},
+                    /tikz/every even column/.append style={black},
+                },
+                legend columns=4,
+                symbolic x coords={ {\VAR{config.escaped_input_file}} },
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, time/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY memPeak
+        \end{axis}
+    \end{tikzpicture}
+    \hfill
+    \begin{tikzpicture}
+        \begin{axis}[batchMemPlot,
+                symbolic x coords={ {\VAR{config.escaped_input_file}} },
+                cycle list name={exotic},
+                every node near coord/.append style={color=black, rotate=90, anchor=west},
+            ]
+
+            %% MULTIPLOT(algo) SELECT algo, REPLACE(input, "_", "\_") AS x, memPeak/1000/1000 AS y
+            %% FROM ( 
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep_id, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep_id
+            %% ) WHERE input="\VAR{config.input_file}" AND rep_id=1 GROUP BY MULTIPLOT,x ORDER BY memPeak
+            \legend{}
+        \end{axis}
+    \end{tikzpicture}
+
+    \medskip
+    \ref{legend2}
+\end{figure}
+
+\end{document}
+

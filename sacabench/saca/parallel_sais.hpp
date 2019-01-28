@@ -32,15 +32,15 @@ public:
     static const int L_Type = 0;
     static const int S_Type = 1;
 
-    static char getBit(std::vector<char>& t, int index) {
+    static uint8_t getBit(std::vector<uint8_t>& t, int index) {
         return (t[index/8] >> (7-(index & 0x7)) & 0x1);
     }   
 
-    static void setBit(std::vector<char>& t, int index, int value) {
+    static void setBit(std::vector<uint8_t>& t, int index, int value) {
         t[index/8] = t[index/8] | (value & 0x1) << (7-(index & 0x7));
     }
 
-    static bool is_LMS(std::vector<char>& t, ssize position) {
+    static bool is_LMS(std::vector<uint8_t>& t, ssize position) {
         return (position > 0) && (getBit(t, position) == S_Type && getBit(t, position - 1) == L_Type);
     }
 
@@ -62,15 +62,16 @@ public:
     }
 
     template <typename T>
-    static void compute_types(std::vector<char>& t, T s, span<size_t> thread_border, span<bool> thread_info, size_t thread_count) {
+    static void compute_types(std::vector<uint8_t>& t, T s, span<size_t> thread_border, span<bool> thread_info, size_t thread_count) {
 
-        std::vector<std::thread> threads;
         ssize part_length = s.size() / thread_count;
-        part_length -= part_length % (sizeof(char) * 8);
+        part_length -= part_length % (sizeof(uint8_t) * 8);
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
         
-        
-        
+        // std::cout << "pl" << part_length << std::endl;
+        // std::cout << "rl" << rest_length << std::endl;
+        DCHECK_EQ(part_length % 8, 0);
+
         for (size_t i = 0; i < thread_border.size() - 1; i++) 
         { 
             thread_border[i] = part_length; 
@@ -82,55 +83,63 @@ public:
 
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
-                threads.push_back(std::thread(compute_types_first_pass<T>, std::ref(t), s, i * part_length, part_length, i, thread_border, thread_info));
+                #pragma omp task shared(t)
+                compute_types_first_pass<T>(t, s, i * part_length, part_length, i, thread_border, thread_info);
             }
             else {
-                threads.push_back(std::thread(compute_types_first_pass<T>, std::ref(t), s, i * part_length, rest_length, i, thread_border, thread_info));
+                #pragma omp task shared(t)
+                compute_types_first_pass<T>(t, s, i * part_length, rest_length, i, thread_border, thread_info);
             }
         }
 
-        for (auto& t : threads) {
-            t.join();
-        }
+        #pragma omp taskwait
+
+        // std::cout << "after first pass ";
+        // for (size_t i = 0; i < s.size(); i++) {
+        //     std::cout << (getBit(t, i) == L_Type ? "L" : "S");
+        // }
+        // std::cout << std::endl;
 
         // if many threads were not able to classify, use the last thread that has borderinfo for all the others
-        for (ssize i = threads.size() - 2; i >= 0; i--) {
+        for (ssize i = thread_count - 2; i >= 0; i--) {
             if (thread_border[i] == 0) {
                 thread_info[i] = thread_info[i + 1];
             }
         }
 
-        threads.clear();
-
         for (size_t i = 0; i < thread_count; i++) {
             if (i < thread_count - 1) {
-                threads.push_back(std::thread(compute_types_second_pass<T>, std::ref(t), i * part_length, part_length, i, thread_border, thread_info));
+                #pragma omp task shared(t)
+                compute_types_second_pass<T>(t, i * part_length, part_length, i, thread_border, thread_info);
             }
             else {
-                threads.push_back(std::thread(compute_types_second_pass<T>, std::ref(t), i * part_length, rest_length, i, thread_border, thread_info));
+                #pragma omp task shared(t)
+                compute_types_second_pass<T>(t, i * part_length, rest_length, i, thread_border, thread_info);
             }
         }
         
-
-        for (auto& t : threads) {
-            t.join();
-        }
+        #pragma omp taskwait
     }
     
     template <typename T>
-    static void compute_types_first_pass(std::vector<char>& t, T s, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+    static void compute_types_first_pass(std::vector<uint8_t>& t, T s, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+        // std::cout << "running " << omp_get_thread_num() << std::endl;
+
         // first pass - classify all elements that are possible to be classified within the thread
         for (ssize i = len - 1; i >= 0; i--) {           
             if ((size_t)i + offset + 1 < s.size()) {
                 if (s[i + offset + 1] < s[i + offset]) {
+                    // std::cout << omp_get_thread_num() << " set " << ( i + offset ) << " to L" << std::endl;
                     setBit(t, i + offset, L_Type);
                 }
                 else if (s[i + offset + 1] > s[i + offset]) {
+                    // std::cout << omp_get_thread_num() << " set " << ( i + offset ) << " to S" << std::endl;
                     setBit(t, i + offset, S_Type);
                 }
                 else {
-                // do not use types from another thread as we do not know if they are already calculated
+                    // do not use types from another thread as we do not know if they are already calculated
                     if (((size_t)i + 1 < len && thread_border[thread_id] != (size_t)i + 1) || (thread_id == thread_border.size() - 1)) {
+                        // std::cout << omp_get_thread_num() << " set " << ( i + offset ) << " to a copy of " << (getBit(t, i + offset + 1) == L_Type ? "L" : "S") << std::endl;
                         setBit(t, i + offset, getBit(t, i + offset + 1));
                     }
                     else {
@@ -146,8 +155,9 @@ public:
     }
 
     template <typename T>
-    static void compute_types_second_pass(std::vector<char>& t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
+    static void compute_types_second_pass(std::vector<uint8_t>& t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
         // second pass - use info of threads what the type of their border character was
+        // std::cout << "running " << omp_get_thread_num() << std::endl;
         for (size_t i = thread_border[thread_id]; i < len; i++) {
             setBit(t, i + offset, thread_info[thread_id + 1]);
         }
@@ -176,7 +186,7 @@ public:
 
     template <typename T, typename sa_index>
     static void prepare_parallel(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r,
-                                 span<sa_index> SA, std::vector<char>& t, bool suffix_type, size_t thread_count, size_t blocknum){
+                                 span<sa_index> SA, std::vector<uint8_t>& t, bool suffix_type, size_t thread_count, size_t blocknum){
 
         // overwrite readbuffer with NULLs
         for (ssize i = 0; i < (ssize)r.size(); i++) {
@@ -184,19 +194,16 @@ public:
             r[i].second = static_cast<sa_index>(-1);
         }
 
-            std::vector<std::thread> threads;
-
         for (size_t i = 0; i < r.size() && i < thread_count - 1; i++) {
-                threads.push_back(std::thread(prepare<T,sa_index>, s, part_length, r, SA, std::ref(t), suffix_type, blocknum, i));
+            #pragma omp task
+            prepare<T,sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
         }
 
-        for (auto& t : threads) {
-            t.join();
-        }
+        #pragma omp taskwait
     }
 
     template <typename T, typename sa_index>
-    static void prepare(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r, span<sa_index> SA, std::vector<char>& t, bool suffix_type, size_t k, size_t i){
+    static void prepare(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r, span<sa_index> SA, std::vector<uint8_t>& t, bool suffix_type, size_t k, size_t i){
         // std::cout << "Started preparing " << i << std::endl;
 
         size_t j = 0;
@@ -251,7 +258,7 @@ public:
     // Induce L_Types for Block B_ks
     // k = blocknum
     template <typename T, typename sa_index>
-    static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<char>& t, size_t blocknum,
+    static void induce_L_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<uint8_t>& t, size_t blocknum,
         span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length, size_t *w_count) {
 
         // translate: translates the position in the block to global pos
@@ -302,7 +309,7 @@ public:
     // Induce S Types for Block B_ks
     // k = blocknum
     template <typename T, typename sa_index>
-    static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<char>& t, size_t blocknum,
+    static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<uint8_t>& t, size_t blocknum,
         span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length, size_t *w_count) {
 
         // translate: translates the position in the block to global pos
@@ -381,15 +388,13 @@ public:
     static void update_parallel(size_t thread_count, ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
 
         // std::cout << "At the beginning of Updating w_count is " << (*w_count) << std::endl;
-        std::vector<std::thread> threads;
 
-            for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
-                threads.push_back(std::thread(update_SA<sa_index>, part_length, w, SA, i, w_count));
-            }
+        for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
+            #pragma omp task
+            update_SA<sa_index>(part_length, w, SA, i, w_count);
+        }
 
-            for (auto& t : threads) {
-                t.join();
-            }
+        #pragma omp taskwait
 
         *w_count = 0;
     }
@@ -405,7 +410,7 @@ public:
     }*/
 
     template <typename T, typename sa_index>
-    static void pipelined_Inducing(T s, span<sa_index> SA, std::vector<char>& t, span<sa_index> buckets, size_t K, size_t thread_count,
+    static void pipelined_Inducing(T s, span<sa_index> SA, std::vector<uint8_t>& t, span<sa_index> buckets, size_t K, size_t thread_count,
         span<std::pair<sa_index, sa_index>> r1, span<std::pair<sa_index, sa_index>> r2, span<std::pair<sa_index, sa_index>> w1, span<std::pair<sa_index, sa_index>> w2, ssize part_length, bool type) {
 
         generate_buckets<T, sa_index>(s, buckets, K, type);
@@ -445,7 +450,6 @@ public:
                 updating_block++;
             }
 
-
             if (updating_block >= (ssize)0) {
                 ssize cur_update_block = ((type == L_Type) ? updating_block : (thread_count - updating_block));
                 // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
@@ -459,7 +463,8 @@ public:
 
             if (inducing_block >= (ssize)0) {
 
-                if (type == L_Type) {
+                if (type == L_Type)
+                {
                     auto& r = inducing_block % 2 == 0 ? r1 : r2;
                     auto& w = inducing_block % 2 == 0 ? w1 : w2;
                     size_t& write_amount = inducing_block % 2 == 0 ? write_amount_1 : write_amount_2;
@@ -491,11 +496,8 @@ public:
             }
 
             blocknum++;
-
         }
-
     }
-
 
     template <typename T, typename sa_index>
     static void run_saca(T s, span<sa_index> SA, size_t K, container<std::pair<sa_index, sa_index>> &buff) {
@@ -514,7 +516,7 @@ public:
 
 
         container<sa_index> buckets = make_container<sa_index>(K);
-        std::vector<char> t(s.size() / 8 + 1);
+        std::vector<uint8_t> t(s.size() / 8 + 1);
         std::vector<bool> t2(s.size());
         size_t thread_count = std::thread::hardware_concurrency();
         container<size_t> thread_border = make_container<size_t>(thread_count);
@@ -563,46 +565,24 @@ public:
 
         compute_types_sequential(t2, s);
         compute_types(t, s, thread_border, thread_info, thread_count);
-        
-        
-        
-        bool error = false;
-        std::string hw = "hello worldddasdfasdfgasgd";
-        for (size_t i = 0; i < t.size(); i++) { 
-            if (getBit(t, i) != t2[i]) {
-                error = true;
-            } 
+               
+        // std::cout << "t1 (par) ";
+        // for (size_t i = 0; i < t2.size(); i++) {
+        //     std::cout << (getBit(t, i) == L_Type ? "L" : "S");
+        // }
+        // std::cout << std::endl;
+
+        // std::cout << "t2 (seq) ";
+        // for (size_t i = 0; i < t2.size(); i++) {
+        //     std::cout << (t2[i] == L_Type ? "L" : "S");
+        // }
+        // std::cout << std::endl;
+
+        for (size_t i = 0; i < t2.size(); i++) {
+            DCHECK_EQ((size_t) getBit(t, i), (size_t) t2[i]);
         }
-        
-        if (error) {
-            std::cout<<"part_length: " << part_length<<std::endl;
-            std::cout<<"rest_length: " << rest_length<<std::endl;
-            std::cout<<"thread_count: " << thread_count<<std::endl;
-            std::cout<<"type arrays: " <<std::endl;
-            for (size_t i = 0; i < s.size(); i++) {
-                std::cout<<i<< " ";
-            }
-            std::cout<<std::endl;
-            for (size_t i = 0; i < s.size(); i++) {
-                std::cout<<hw[i]<< " ";
-            }
-            std::cout<<std::endl;
-            for (size_t i = 0; i < t.size(); i++) {
-                std::cout<<getBit(t, i)<< " ";
-            }
-            std::cout<<std::endl;
-            
-            for (size_t i = 0; i < t.size(); i++) {
-                std::cout<<t2[i]<< " ";
-            }
-            
-         std::string test;
-         std::cin>>test;
-        }
-        
-        
-        
-        
+
+
         // std::cout << "thread_count: " << thread_count << ", part_length: " << part_length << ", rest_length: " << rest_length << std::endl;
 
         // First Induction ###################################################
@@ -685,7 +665,6 @@ public:
             }
         }
 
-
         span<sa_index> s1 = SA.slice(s.size() - n1, s.size());
         span<sa_index> sa_ = SA.slice(0, n1);
 
@@ -766,6 +745,8 @@ public:
         // std::cout << std::endl << std::endl;
         container<std::pair<sa_index, sa_index>> buffers = make_container<std::pair<sa_index, sa_index>>(0);
         if (text.size() > 1) {
+            #pragma omp parallel
+            #pragma omp master
             run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel(), buffers);
         }
     }
