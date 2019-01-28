@@ -108,6 +108,9 @@ SACA_REGISTER("saca/naive.hpp"
 SACA_REGISTER("saca/naive.hpp"
     sacabench::naive::naive_ips4o_parallel)
 
+SACA_REGISTER("saca/naive.hpp"
+    sacabench::naive::naive_parallel)
+
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
 

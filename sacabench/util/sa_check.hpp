@@ -88,6 +88,35 @@ sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
 }
 
 template <typename sa_index_type>
+sa_check_result sa_check_naive_parallel(span<sa_index_type> sa, string_span text) {
+    DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
+
+    if (sa.size() != text.size()) {
+        return sa_check_result::wrong_length;
+    }
+    size_t const N = text.size();
+
+    // Create an container of every index positions.
+    auto naive = util::make_container<sa_index_type>(N);
+    for (size_t i = 0; i < N; i++) {
+        naive[i] = i;
+    }
+
+    // Construct a SA by sorting according
+    // to the suffix starting at that index.
+    sort::std_par_stable_sort(naive,
+                              util::compare_key([&](size_t i) { return text.slice(i); }));
+
+    for (size_t i = 0; i < N; i++) {
+        if (naive[i] != sa[i]) {
+            return sa_check_result::not_suffix_sorted;
+        }
+    }
+
+    return sa_check_result::ok;
+}
+
+template <typename sa_index_type>
 sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
     // Check for size + 1 because the algorithm
     // calculates maxvalue + 1 at one point.
@@ -152,4 +181,13 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
 
     return sa_check_result::ok;
 }
+
+template <typename sa_index_type>
+sa_check_result sa_check_dispatch(span<sa_index_type> sa, string_span text, bool fast) {
+    if (fast) {
+        return sa_check_naive_parallel(sa, text);
+    }
+    return sa_check(sa, text);
+}
+
 } // namespace sacabench::util
