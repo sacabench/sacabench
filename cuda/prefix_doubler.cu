@@ -101,12 +101,6 @@ static void set_flags_kernel(size_t size, sa_index* sa, sa_index* isa,
     size_t index = blockIdx.x * blockDim.x + threadIdx.x;
     size_t stride = blockDim.x * gridDim.x;
 
-    /*
-    // Set values in aux to 0 (except first value)
-    for(size_t i=index+10; i < size; i+=stride) {
-        aux[i] = 0;
-    }*/
-
     if(index == 0) {
         // First index has no predecessor -> mark as true by default
         aux[0] = 1;
@@ -199,12 +193,6 @@ void initialize_sa_gpu(size_t size, uint64_t* sa) {
 template <typename OP, typename sa_index>
 void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
 {
-    //TODO: submit allocated memory instead of allocating new array
-    //Indices
-    //sa_index  *values_out;   // e.g., [        ...        ]
-
-    // Allocate Unified Memory – accessible from CPU or GPU
-    //cudaMallocManaged(&values_out, n*sizeof(sa_index));
 
     // Determine temporary device storage requirements
     void     *d_temp_storage = NULL;
@@ -217,13 +205,6 @@ void prefix_sum_cub_inclusive_kernel(sa_index* array, OP op, size_t n)
     cub::DeviceScan::InclusiveScan(d_temp_storage, temp_storage_bytes, array, array,op, n);
 
     //cudaDeviceSynchronize();
-
-    //copy_to_array<<<NUM_BLOCKS(size),NUM_THREADS_PER_BLOCK>>>(array,values_out,n);
-
-    //cudaMemcpy(array, values_out, n*sizeof(sa_index), cudaMemcpyDeviceToDevice);
-
-    //cudaFree(values_out);
-
 }
 
 
@@ -306,7 +287,6 @@ void update_ranks_build_aux_kernel(sa_index* h_ranks, sa_index* aux, size_t n) {
         aux[i] = (h_ranks[i-1]!=h_ranks[i]) * i;
     }
 }
-//HIER
 
 void update_ranks_build_aux(uint32_t* h_ranks, uint32_t* aux, size_t size) {
     update_ranks_build_aux_kernel<<<NUM_BLOCKS(size), NUM_THREADS_PER_BLOCK>>>(
@@ -510,199 +490,3 @@ void generate_two_h_rank(size_t size, size_t h, uint64_t* sa,
     //cudaDeviceSynchronize();
 }
 
-
-/*
-    Copies one array size_to another by using GPU threads
-    Maybe use memcpy? http://horacio9573.no-ip.org/cuda/group__CUDART__MEMORY_g48efa06b81cc031b2aa6fdc2e9930741.html
-*/
-/*
-__global__
-static void copy_to_array(size_t* in, size_t* out, size_t n) {
-
-    size_t index = blockIdx.x * blockDim.x + threadIdx.x;
-    size_t stride = blockDim.x * gridDim.x;
-    for (size_t i = index; i < n; i+=stride) {
-        in[i] = out[i];
-    }
-
-}
-
-
-*/
-
-/*
-template <typename sa_index, class osipov_impl>
-static void prefix_doubling_gpu(sa_index* gpu_text, sa_index* out_sa,
-            osipov_impl& osipov) {
-
-    size_t size = osipov.get_size();
-    size_t n = size;
-    //Fill SA
-    osipov.initialize_sa();
-    cudaDeviceSynchronize();
-
-    //Sort by four characters
-    osipov.inital_sort();
-    cudaDeviceSynchronize();
-    auto sa = osipov.get_sa();
-    std::cout<<"SA: ";
-    for(size_t i = 0; i<size; ++i) {
-        std::cout<<sa[i]<<", ";
-    }
-    std::cout<<std::endl;
-
-    //Init ISA with group numbers according to initial sorting
-    osipov.initialize_isa();
-    cudaDeviceSynchronize();
-
-    auto isa = osipov.get_isa();
-
-    std::cout<<std::endl;
-    std::cout<<"ISA: ";
-    for(size_t i = 0 ; i< size ; ++i) {
-        std::cout<<isa[sa[i]]<<", ";
-    }
-    std::cout<<std::endl;
-
-    osipov.mark_singletons();
-
-    auto aux = osipov.get_aux();
-
-    std::cout << "Flags: ";
-    for(size_t i = 0; i<size; ++i) {
-        std::cout<<aux[i]<<", ";
-    }
-    std::cout<<std::endl;
-
-    std::cout<<"ISA (with singletons): ";
-    for(size_t i = 0 ; i< size ; ++i) {
-        std::cout<<isa[sa[i]]<<", ";
-    }
-    std::cout<<std::endl;
-    size_t h = 4;
-    size_t s;
-
-    auto h_rank = osipov.get_rank();
-    auto two_h_rank = osipov.get_two_rank();
-
-    while(size > 0) {
-        osipov.slice_container(size);
-
-        s = osipov.create_tuples(size, h);
-
-        std::cout << "Tuples: ";
-        for(size_t i=0; i < s; ++i) {
-            std::cout << "<" << sa[i] << "," << h_rank[i] << ">, ";
-        }
-        std::cout << std::endl;
-
-        // Continue iteration as usual only if there are elements left
-        // (i.e. s>0)
-        if(s>0) {
-            osipov.slice_container(s);
-            osipov.stable_sort();
-            cudaDeviceSynchronize();
-
-            std::cout << "Tuples after sorting: ";
-            for(size_t i=0; i < s; ++i) {
-                std::cout << "<" << sa[i] << "," << h_rank[i] <<">, ";
-            }
-            std::cout << std::endl;
-
-            osipov.update_ranks(h);
-
-            std::cout << "Updated h_rank: ";
-            for(size_t i=0; i < s; ++i) {
-                std::cout << "<" << sa[i] << "," << aux[i] << ">, ";
-            }
-            osipov.update_container(s);
-            std::cout << std::endl;
-            // TODO: UPDATE SA!
-            osipov.mark_singletons();
-        }
-        // End of iteration; update size and h.
-        size = s;
-        h = 2*h;
-    }
-    osipov.finalize(n);
-    std::cout<<"Result:"<<std::endl;
-    for(int i = 0; i < n; ++i) {
-        std::cout<<(sa[i])<<", ";
-    }
-    std::cout<<std::endl;
-}
-
-TODO: Move to osipov_gpu.hpp
-int main()
-{
-    std::string text_str = "trhsrznttstrhrhvsrthsrcadcvsdnvsvoisemvosdinvaofmafvnsodivjasifn";
-    const char* text = text_str.c_str();
-    size_t n = text_str.size()+1;
-    std::cout<<"n: "<<n<<std::endl;
-
-
-    uint32_t* packed_text;
-    packed_text = (uint32_t *) malloc(n*sizeof(uint32_t));
-    //Pack text, so you can compare four chars at once
-    word_packing(text, packed_text, n);
-
-    //GPU arrays
-    uint32_t* gpu_text;
-    uint32_t* out_sa;
-    gpu_text = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    //Copy text to GPU
-    memset(gpu_text, 0, n*sizeof(uint32_t));
-    cuda_check(cudaMemcpy(gpu_text, packed_text, n*sizeof(uint32_t), cudaMemcpyHostToDevice));
-    out_sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
-
-    //additional arrays
-    uint32_t* sa;
-    uint32_t* isa;
-    uint32_t* aux;
-
-    uint32_t* h_rank;
-    uint32_t* two_h_rank;
-    //allocate additional arrays directly on GPU
-    sa = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    isa = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    aux = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
-    two_h_rank = allocate_managed_cuda_buffer_of<uint32_t>(n);
-
-    cuda_check(cudaDeviceSynchronize());
-
-
-    auto osipov = osipov_gpu<uint32_t>(n, gpu_text, sa, isa, aux, h_rank, two_h_rank);
-
-    prefix_doubling_gpu<uint32_t, osipov_gpu<uint32_t>>(gpu_text, out_sa, osipov);
-
-    return 0;
-}
-
-*/
-/*
-int main()
-{
-    std::string text_str = "caabaccaabacaa";
-    const char* text = text_str.c_str();
-    size_t n = text_str.size()+1;
-    std::cout<<"n: "<<n<<std::endl;
-
-    uint64_t* packed_text;
-    packed_text = (uint64_t *) malloc(n*sizeof(uint64_t));
-    for(int i = 0; i<n; ++i) {
-        std::cout<<packed_text[i]<<",";
-    }
-    std::cout<<std::endl;
-
-    //Pack text, so you can compare four chars at once
-    word_packing_64(text, packed_text, n);
-
-    for(int i = 0; i<n; ++i) {
-        std::cout<<packed_text[i]<<",";
-    }
-    std::cout<<std::endl;
-
-    return 0;
-}
-*/

@@ -22,10 +22,10 @@ class osipov_gpu_main {
 private:
     //TODO: Wrapper for creation of cmp-function!
     // Three base arrays
+    size_t size;
     sa_index* sa;
     sa_index* isa;
     sa_index* aux;
-    size_t size;
 
     // Arrays for tuples (use sa for tuple_index)
     // "Inducing reference" (third component in tuple)
