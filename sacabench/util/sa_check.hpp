@@ -12,6 +12,7 @@
 #include <util/assertions.hpp>
 #include <util/compare.hpp>
 #include <util/sort/std_sort.hpp>
+#include <util/sort/ips4o.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 
@@ -58,66 +59,44 @@ private:
     cases value;
 };
 
+template <typename sa_index_type, typename sorter_type>
+sa_check_result sa_check_naive_sorter(span<sa_index_type> sa, string_span text, sorter_type sorter) {
+    DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
+
+    if (sa.size() != text.size()) {
+        return sa_check_result::wrong_length;
+    }
+    size_t const N = text.size();
+
+    // Create an container of every index positions.
+    auto naive = util::make_container<sa_index_type>(N);
+    for (size_t i = 0; i < N; i++) {
+        naive[i] = i;
+    }
+
+    // Construct a SA by sorting according
+    // to the suffix starting at that index.
+    sorter(naive,
+           util::compare_key([&](size_t i) { return text.slice(i); }));
+
+    for (size_t i = 0; i < N; i++) {
+        if (naive[i] != sa[i]) {
+            return sa_check_result::not_suffix_sorted;
+        }
+    }
+
+    return sa_check_result::ok;
+}
+
 template <typename sa_index_type>
 sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
-    DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
-
-    if (sa.size() != text.size()) {
-        return sa_check_result::wrong_length;
-    }
-    size_t const N = text.size();
-
-    // Create an container of every index positions.
-    auto naive = util::make_container<sa_index_type>(N);
-    for (size_t i = 0; i < N; i++) {
-        naive[i] = i;
-    }
-
-    // Construct a SA by sorting according
-    // to the suffix starting at that index.
-    sort::std_sort(naive,
-                   util::compare_key([&](size_t i) { return text.slice(i); }));
-
-    for (size_t i = 0; i < N; i++) {
-        if (naive[i] != sa[i]) {
-            return sa_check_result::not_suffix_sorted;
-        }
-    }
-
-    return sa_check_result::ok;
+    return sa_check_naive_sorter<sa_index_type>(sa, text, [](auto... args) {
+        sort::std_sort(args...);
+    });
 }
 
-template <typename sa_index_type>
-sa_check_result sa_check_naive_parallel(span<sa_index_type> sa, string_span text) {
-    DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
-
-    if (sa.size() != text.size()) {
-        return sa_check_result::wrong_length;
-    }
-    size_t const N = text.size();
-
-    // Create an container of every index positions.
-    auto naive = util::make_container<sa_index_type>(N);
-    for (size_t i = 0; i < N; i++) {
-        naive[i] = i;
-    }
-
-    // Construct a SA by sorting according
-    // to the suffix starting at that index.
-    sort::std_par_stable_sort(naive,
-                              util::compare_key([&](size_t i) { return text.slice(i); }));
-
-    for (size_t i = 0; i < N; i++) {
-        if (naive[i] != sa[i]) {
-            return sa_check_result::not_suffix_sorted;
-        }
-    }
-
-    return sa_check_result::ok;
-}
-
-template <typename sa_index_type>
-sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
+template <typename sa_index_type, typename sorter_type>
+sa_check_result sa_check_sorter(span<sa_index_type> sa, string_span text, sorter_type sorter) {
     // Check for size + 1 because the algorithm
     // calculates maxvalue + 1 at one point.
     DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
@@ -137,7 +116,7 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
         P[i] = pair{sa[i], sa_index_type(i + 1)};
     }
 
-    sort::std_sort(P, [](auto const& lhs, auto const& rhs) {
+    sorter(P, [](auto const& lhs, auto const& rhs) {
         return lhs.text_pos < rhs.text_pos;
     });
 
@@ -166,7 +145,7 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
         S[i] = tripple{r1, text[i], r2};
     }
 
-    sort::std_sort(S, [](auto const& lhs, auto const& rhs) {
+    sorter(S, [](auto const& lhs, auto const& rhs) {
         return lhs.sa_pos < rhs.sa_pos;
     });
 
@@ -183,9 +162,18 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
 }
 
 template <typename sa_index_type>
+sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
+    return sa_check_sorter<sa_index_type>(sa, text, [](auto... args) {
+        sort::std_sort(args...);
+    });
+}
+
+template <typename sa_index_type>
 sa_check_result sa_check_dispatch(span<sa_index_type> sa, string_span text, bool fast) {
     if (fast) {
-        return sa_check_naive_parallel(sa, text);
+        return sa_check_sorter(sa, text, [](auto... args) {
+            sort::ips4o_sort_parallel(args...);
+        });
     }
     return sa_check(sa, text);
 }
