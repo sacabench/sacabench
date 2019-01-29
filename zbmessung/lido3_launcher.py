@@ -157,6 +157,7 @@ if args.launch:
     PREFIX=10
     THREADS=[None]
     WEAK_SCALE = False
+    CHECK = False
     CLUSTER_CONFIG = cluster_config_default
     if args.launch_config:
         j = load_json(args.launch_config)
@@ -168,6 +169,8 @@ if args.launch:
             THREADS=j["launch"]["threads"]
         if "weak_scale" in j["launch"]:
             WEAK_SCALE = j["launch"]["weak_scale"]
+        if "check" in j["launch"]:
+            CHECK = j["launch"]["check"]
         if "cluster_config" in j["launch"]:
             CLUSTER_CONFIG = j["launch"]["cluster_config"]
 
@@ -202,13 +205,17 @@ if args.launch:
                 if omp_threads and WEAK_SCALE:
                     local_prefix *= omp_threads
                 local_prefix = "{}M".format(local_prefix)
+                maybe_check = ""
+                if CHECK:
+                    maybe_check = "-q"
 
-                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
+                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check}".format(
                     bench_out=batch_output,
                     prefix=local_prefix,
                     rep=N,
                     algo=algo,
-                    input_path=input_path
+                    input_path=input_path,
+                    maybe_check=maybe_check
                 )
 
                 jobid = launch_job(cwd, cmd, output, omp_threads, cluster_configs[CLUSTER_CONFIG])
@@ -224,6 +231,7 @@ if args.launch:
                     "jobid": jobid,
                     "threads": omp_threads,
                     "is_weak": bool(WEAK_SCALE),
+                    "checked": bool(CHECK),
                 })
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)

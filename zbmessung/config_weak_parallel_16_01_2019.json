@@ -7,9 +7,11 @@
             "Osipov_parallel_wp",
             "Discarding4Parallel",
             "NaivIps4oParallel",
+            "NaivParallel",
             "BPR_par",
             "GSACA_parallel",
-            "Deep-Shallow_par"
+            "Deep-Shallow_par",
+            "PARALLEL_SAIS"
         ],
         "input": [
             "$WORK/large_datasets/commoncrawl.txt",
@@ -21,6 +23,7 @@
         "threads": [
             1, 2, 4, 8, 12, 16, 20
         ],
-        "weak_scale": true
+        "weak_scale": true,
+        "check": true
     }
 }
