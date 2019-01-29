@@ -1,4 +1,4 @@
-/build/**
+/build*/**
 .kdev/
 sacabench.kdev4
 **/*.kate-swp

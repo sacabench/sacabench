@@ -435,7 +435,7 @@ private:
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {
-                tasks++;
+                // tasks++;
 
                 // Sort big buckets in parallel
                 #pragma omp task
@@ -479,10 +479,10 @@ public:
             simple_sort(sa, 0);
         } else {
             // Spawn a task pool to run the buckets in parallel
-            #pragma omp parallel
-            {
-                #pragma omp master
-                {
+            // #pragma omp parallel
+            // {
+            //     #pragma omp master
+            //     {
                     // Use bucket sort to sort `sa` by the first two characters.
                     bucket_sort();
 
@@ -490,8 +490,8 @@ public:
 
                     // Sort all buckets iteratively.
                     sort_all_buckets();
-                }
-            }
+            //     }
+            // }
         }
 
         omp_destroy_lock(&writelock);
