@@ -434,6 +434,8 @@ private:
             const auto beta = unsorted_bucket.second;
             const size_t size_of_bucket = bd.size_of_bucket(alpha, beta);
 
+            omp_unset_lock(&writelock);
+
             if (size_of_bucket < 2) {
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
@@ -446,9 +448,10 @@ private:
                     sort_bucket(alpha, beta);
                 }
             }
+
+            omp_set_lock(&writelock);
         }
 
-        // Start execution of buckets.
         omp_unset_lock(&writelock);
 
         // At this point, all tasks are synced.
