@@ -54,7 +54,7 @@ struct naive_ips4o {
     static constexpr char const* NAME = "NaivIps4o";
     static constexpr char const* DESCRIPTION =
         "Naiver Algorithmus. Sortiert Suffixe durch paarweise "
-        "Stringvergleiche.";
+        "Stringvergleiche. Nutzt Ips4o als Sortieralgorithmus.";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -79,7 +79,7 @@ struct naive_ips4o_parallel {
     static constexpr char const* NAME = "NaivIps4oParallel";
     static constexpr char const* DESCRIPTION =
         "Naiver Algorithmus. Sortiert Suffixe durch paarweise "
-        "Stringvergleiche.";
+        "Stringvergleiche. Nutzt parallel Ips4o als Sortieralgorithmus.";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text,
@@ -95,6 +95,31 @@ struct naive_ips4o_parallel {
         // Construct a SA by sorting according
         // to the suffix starting at that index.
         util::sort::ips4o_sort_parallel(
+            out_sa, util::compare_key([&](size_t i) { return text.slice(i); }));
+    }
+}; // struct prefix_doubling_discarding
+
+struct naive_parallel {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "NaivParallel";
+    static constexpr char const* DESCRIPTION =
+        "Naiver Algorithmus. Sortiert Suffixe durch paarweise "
+        "Stringvergleiche. Nutzt paralell std::sort als Sortieralgorithmus.";
+
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& /*alphabet_size*/,
+                             util::span<sa_index> out_sa) {
+        DCHECK_EQ(text.size(), out_sa.size());
+
+        // Fill SA with all index positions
+        for (size_t i = 0; i < out_sa.size(); i++) {
+            out_sa[i] = i;
+        }
+
+        // Construct a SA by sorting according
+        // to the suffix starting at that index.
+        util::sort::std_par_stable_sort(
             out_sa, util::compare_key([&](size_t i) { return text.slice(i); }));
     }
 }; // struct prefix_doubling_discarding

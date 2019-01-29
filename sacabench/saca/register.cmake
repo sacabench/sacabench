@@ -6,7 +6,7 @@ SACA_REGISTER("saca/external/deep_shallow.hpp"
 
 SACA_REGISTER("saca/external/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
-    
+
 SACA_REGISTER("saca/external/parallel_divsufsort/parallel_divsufsort.hpp"
     sacabench::reference_sacas::parallel_div_suf_sort)
 
@@ -63,6 +63,21 @@ SACA_REGISTER("saca/external/bucket_pointer_refinement/bucket_pointer_refinement
 SACA_REGISTER("saca/m_suf_sort.hpp"
     sacabench::m_suf_sort::m_suf_sort2)
 
+SACA_REGISTER("saca/m_suf_sort_scan.hpp"
+    sacabench::m_suf_sort_scan::m_suf_sort_scan2)
+
+SACA_REGISTER("saca/m_suf_sort_v2.hpp"
+    sacabench::m_suf_sort::m_suf_sort3)
+
+SACA_REGISTER("saca/m_suf_sort_par.hpp"
+    sacabench::m_suf_sort::m_suf_sort_par)
+
+SACA_REGISTER("saca/m_suf_sort_scan_par.hpp"
+    sacabench::m_suf_sort_scan::m_suf_sort_scan_par)
+
+SACA_REGISTER("saca/m_suf_sort_v2_par.hpp"
+    sacabench::m_suf_sort::m_suf_sort_v2_par)
+
 SACA_REGISTER("saca/prefix_doubling.hpp"
     sacabench::prefix_doubling::prefix_doubling)
 
@@ -77,10 +92,10 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
-    
+
 SACA_REGISTER("saca/parallel_sais.hpp"
     sacabench::parallel_sais::parallel_sais)
-    
+
 SACA_REGISTER("saca/sads.hpp"
     sacabench::sads::sads)
 
@@ -108,6 +123,9 @@ SACA_REGISTER("saca/naive.hpp"
 SACA_REGISTER("saca/naive.hpp"
     sacabench::naive::naive_ips4o_parallel)
 
+SACA_REGISTER("saca/naive.hpp"
+    sacabench::naive::naive_parallel)
+
 SACA_REGISTER("saca/sacak.hpp"
     sacabench::sacak::sacak)
 
@@ -122,10 +140,10 @@ SACA_REGISTER("saca/nzSufSort.hpp"
 
 SACA_REGISTER("saca/dc3_lite.hpp"
     sacabench::dc3_lite::dc3_lite)
-    
+
 SACA_REGISTER("saca/dc3_par.hpp"
     sacabench::dc3_par::dc3_par)
-    
+
 SACA_REGISTER("saca/dc3_par2.hpp"
     sacabench::dc3_par2::dc3_par2)
 
@@ -140,4 +158,3 @@ SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
 
 SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
     sacabench::osipov::osipov_parallel_wp)
-

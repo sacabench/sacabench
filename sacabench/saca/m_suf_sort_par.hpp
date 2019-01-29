@@ -14,10 +14,16 @@
 #include <util/kd_array.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/sort/introsort.hpp>
+#include <util/sort/ips4o.hpp>
 #include <util/sort/stable_sort.hpp>
+#include <util/sort/pss.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
+// logger includes
+#include <util/bucket_size.hpp>
+#include <fstream>
+#include <iostream>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
@@ -219,11 +225,11 @@ struct m_suf_sort_attr {
         : isa(isa_to_be), m_list(alphabet_size), text(input_text) {}
 };
 
-struct m_suf_sort2 {
+struct m_suf_sort_par {
 public:
     static constexpr size_t EXTRA_SENTINELS = 1;
-    static constexpr char const* NAME = "mSufSort";
-    static constexpr char const* DESCRIPTION = "mSufSort (v2) as described by MICHAEL A. MANISCALCO and SIMON J. PUGLISI";
+    static constexpr char const* NAME = "mSufSort_par";
+    static constexpr char const* DESCRIPTION = "mSufSort (v2) as described by MICHAEL A. MANISCALCO and SIMON J. PUGLISI + parallel sort";
 
     template <typename sa_index>
     static inline void construct_sa(util::string_span text,
@@ -291,13 +297,19 @@ public:
         }
 
         // initialize last chain character value
-        // TODO: optimization: only rank necessary type l lists, not all
-        // util::character last_char = 0;
+        util::character last_char = 0;
 
         // vectors for suffixes to be refined and
         // for suffixes to be sorted by induction
         std::vector<sa_index> to_be_refined_;
         std::vector<pair_si<sa_index>> sorting_induced_;
+
+        // for statistics about uchain refinement
+        size_t singleton_count = 0;
+        size_t singleton_per_char = 0;
+        auto bucket_sizes = util::get_bucket_sizes(text, alphabet);
+        util::container<double> singleton_percentage = util::make_container<double>(alphabet.size_with_sentinel());
+        size_t max_chain_len = 0;
 
         // begin main loop:
         while (attr.chain_stack.size() > 0) {
@@ -318,16 +330,32 @@ public:
 
             // before anything happens with type s u-Chain elements, rank type l
             // suffixes for same character (or smaller)
-            for (size_t i = 0; i <= current_char; i++) {
+            for (size_t i = last_char; i <= current_char; i++) {
                 for (size_t j = 0; j <= i; j++) {
                     while (attr.m_list.exists(i, j)) {
                         rank_type_l_list(i, j, attr);
                     }
                 }
             }
+            // is this a completely new uChain? (with lcp=0 to last uChain)
+            // then store statistics for last character!
+            if(length == sa_index(1)) {
+                if(size_t(current_char) != 0) {
+                    std::cout << "max uchain length: " << max_chain_len << std::endl;
+                    std::cout << "spc: " << singleton_per_char << std::endl;
+                    std::cout << "bucket size: " << bucket_sizes[size_t(current_char)-1] << std::endl;
+                    singleton_percentage[size_t(current_char)-1] = double(singleton_per_char) / double(bucket_sizes[size_t(current_char)-1]);
+                    std::cout << "s_percentage: " << singleton_percentage[size_t(current_char)-1] << std::endl;
+                }
+                singleton_per_char = 0;
+                max_chain_len = 0;
+            }
+
 
             // if u-Chain is singleton rank it!
             if (attr.isa.is_END(chain_index)) {
+                singleton_count++;
+                singleton_per_char++;
                 assign_rank(chain_index, false, attr);
                 continue;
             }
@@ -348,6 +376,7 @@ public:
                     sorting_induced_.push_back(new_sort_pair);
                 }
                 if (attr.isa.is_END(chain_index)) {
+                    if(max_chain_len < length) max_chain_len = length;
                     break;
                 }
                 // update chain index by following the chain links
@@ -366,9 +395,11 @@ public:
             }
 
             // set last character to current
-            // TODO: see other todo...
-            // last_char = current_char;
+            last_char = current_char;
         }
+
+        // after uchain refinement is done, store statistics for last char:
+        singleton_percentage[last_char] = singleton_per_char / singleton_percentage[last_char];
 
         // After chain_stack is empty, rank all remaining type-l-lists:
         size_t max_char = alphabet.max_character_value();
@@ -397,6 +428,16 @@ public:
             // Debug information: global_rank at text.size()? (Next rank would be invalid)
             std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
         #endif
+
+        //logger for statistics
+        std::ofstream myfile;
+        myfile.open("most_recent.log", std::fstream::out | std::fstream::trunc);
+        for(size_t i = 0; i < alphabet.max_character_value(); i++) {
+            myfile << singleton_percentage[i] << "\n";
+        }
+        myfile << "Total Singleton Percentage: " << (double(singleton_count) / double(text.size())) << "%";
+        myfile.close();
+
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
         // (try 2 other options)
@@ -494,7 +535,7 @@ template <typename sa_index>
 struct compare_sortkey {
 public:
     // Function for comparisons within introsort
-    compare_sortkey(const util::string_span text) : input_text(text) {}
+    compare_sortkey() {}
 
     bool operator()(const pair_si<sa_index> pair_a,
                     const pair_si<sa_index> pair_b) const {
@@ -504,9 +545,6 @@ public:
 
         return sortkey_a < sortkey_b;
     }
-
-private:
-    const util::string_span input_text;
 };
 
 // function that sorts new_chain_IDs and then re-links new uChains in isa and
@@ -516,7 +554,7 @@ inline void refine_uChain(m_suf_sort_attr<sa_index>& attr,
                    util::span<sa_index> new_chain_IDs, sa_index length) {
 
     compare_uChain_elements_unstable comparator(length, attr.text);
-    util::sort::stable_sort(new_chain_IDs, comparator);
+    util::sort::parallel_stable(new_chain_IDs, comparator);
 
     // last index that is to be linked
     sa_index last_ID = END<sa_index>;
@@ -562,8 +600,8 @@ template <typename sa_index>
 inline void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
                        util::span<pair_si<sa_index>> to_be_ranked) {
     // sort elements after their sortkey:
-    compare_sortkey<sa_index> comparator(attr.text);
-    util::sort::introsort(to_be_ranked, comparator);
+    compare_sortkey<sa_index> comparator;
+    util::sort::ips4o_sort_parallel(to_be_ranked, comparator);
 
     // rank all elements in sorted order:
     for (const auto current_index : to_be_ranked) {
