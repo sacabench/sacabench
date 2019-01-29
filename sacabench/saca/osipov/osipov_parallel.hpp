@@ -1,10 +1,10 @@
 #pragma once
 
 #include <algorithm>
-#include <byteswap.h>
 #include <omp.h>
 #include <tudocomp_stat/StatPhase.hpp>
 #include <tuple>
+#include <util/macros.hpp>
 #include <util/alphabet.hpp>
 #include <util/assertions.hpp>
 #include <util/bits.hpp>
@@ -15,110 +15,90 @@
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <saca/osipov/osipov.hpp>
+#include <util/uint_types.hpp>
 
 namespace sacabench::osipov {
-template <bool wordpacking_4_sort>
-class osipov_impl_par {
-public:
-    template <typename sa_index>
-    static void construct_sa(util::string_span text,
-                             util::span<sa_index> out_sa) {
-        // Pretend we never even had the 8 extra bytes to begin with
-        DCHECK_EQ(text.size(), out_sa.size());
-        text = text.slice(0, text.size() - 8);
-        out_sa = out_sa.slice(8, out_sa.size());
 
-        if (text.size() > 1) {
-            prefix_doubling_parallel(text, out_sa);
-        } else {
-            out_sa[0] = 0;
+
+/*
+    \brief Parallel implementation of the osipov algorithm used in class
+    osipov (see osipov.hpp).
+*/
+template <bool wordpacking_4_sort, typename sa_index>
+class osipov_par {
+private:
+    using aux_elem = util::next_primitive<sa_index>;
+
+    osipov_spans<wordpacking_4_sort, sa_index> spans;
+    util::span<aux_elem> aux;
+
+public:
+    /*
+        Constructor for class osipov_par. Directly creates a osipov_spans
+        instance within instantiation list (otherwise default constructor for
+        osipov_spans is needed) and initializes aux.
+
+        @param out_sa Span for the final sa.
+        @param isa Span for the isa.
+        @param tuples Span for the tuples.
+        @param aux Span for auxiliary array.
+    */
+    inline osipov_par(util::span<sa_index> out_sa, util::span<sa_index> isa,
+            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
+            util::span<aux_elem> aux, util::string_span text) :
+            spans(osipov_spans<wordpacking_4_sort, sa_index>(out_sa, isa, tuples, text)), aux(aux){}
+
+    // Returns the tuple span (needed for tuple comparison function)
+    util::span<std::tuple<sa_index, sa_index, sa_index>> get_tuples() {
+        return spans.tuples;
+    }
+
+    // Slices the tuples and aux span to length end
+    void slice_container(size_t end) {
+        spans.slice_tuples(end);
+        aux = aux.slice(0, end);
+    }
+
+    /*
+        \brief Updates the values for sa and isa given the values in tuples
+        (called at end of iteration) in parallel.
+
+        @param s The new size for the next iteration
+    */
+    void update_container(size_t s) {
+        // Update SA
+        #pragma omp parallel for if (s < 100)
+        for (size_t i = 0; i < s; ++i) {
+            spans.sa[i] = std::get<0>(spans.tuples[i]);
+        }
+
+        // Update ISA
+        #pragma omp parallel for if (s < 100)
+        for (size_t i = 0; i < s; ++i) {
+            spans.isa[std::get<0>(spans.tuples[i])] =
+                aux[i];
         }
     }
 
-private:
-    template <typename sa_index>
-    struct utils {
-        static constexpr sa_index NEGATIVE_MASK = size_t(1)
-                                                  << (sizeof(sa_index) * 8 - 1);
-    };
+    /*
+        \brief Slices sa from 0 to end.
+    */
+    void slice_sa(size_t end) {spans.sa = spans.sa.slice(0, end);}
 
-    struct compare_first_char {
-    public:
-        inline compare_first_char(const util::string_span text) : text(text) {}
+    /*
+        \brief Writes final suffix array into out_sa.
+    */
+    void finalize(util::span<sa_index> out_sa) {spans.finalize(out_sa);}
 
-        // elem and compare_to need to be smaller than input.size()
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
-            return text[elem] < text[compare_to];
-        }
-
-    private:
-        const util::string_span text;
-    };
-
-    struct compare_first_four_chars {
-    public:
-        inline compare_first_four_chars(const util::string_span text)
-            : text(text) {}
-
-        inline bool operator()(const size_t& elem,
-                               const size_t& compare_to) const {
-
-            if constexpr (wordpacking_4_sort) {
-                auto elem_wp = *((uint32_t const*)&text[elem]);
-                auto compare_to_wp = *((uint32_t const*)&text[compare_to]);
-                elem_wp = bswap_32(elem_wp);
-                compare_to_wp = bswap_32(compare_to_wp);
-
-                return elem_wp < compare_to_wp;
-            } else {
-                // max_length computation to ensure fail-safety (although should
-                // never be exceeded due to sentinel as last char)
-                size_t max_elem_length =
-                    std::min(text.size() - elem, size_t(4));
-                size_t max_compare_to_length =
-                    std::min(text.size() - compare_to, size_t(4));
-                size_t max_length =
-                    std::min(max_elem_length, max_compare_to_length);
-                for (size_t i = 0; i < max_length; ++i) {
-                    if (text[elem + i] != text[compare_to + i]) {
-                        // Chars differ -> either elem is smaller or not
-                        return (text[elem + i] < text[compare_to + i]);
-                    }
-                }
-
-                // suffixes didn't differ within their first 4 chars.
-                return false;
-            }
-        }
-
-    private:
-        const util::string_span text;
-    };
-
-    template <typename sa_index>
-    struct compare_tuples {
-    public:
-        inline compare_tuples(
-            util::span<std::tuple<sa_index, sa_index, sa_index>>& tuples)
-            : tuples(tuples) {}
-
-        // Empty constructor used for temporary creation of compare function
-        inline compare_tuples() {}
-
-        inline bool operator()(
-            const std::tuple<sa_index, sa_index, sa_index>& elem,
-            const std::tuple<sa_index, sa_index, sa_index>& compare_to) const {
-            return std::get<1>(elem) < std::get<1>(compare_to);
-        }
-
-    private:
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-    };
-
-    template <typename sa_index>
-    static void mark_singletons(util::span<sa_index> sa,
-                                util::span<sa_index> isa) {
+    /*
+        \brief Parallel version for marking singleton h-groups, i.e. inverting
+        their ranks using aux for flags to reduce memory usage.
+        Parallelized via https://nvlabs.github.io/cub/classcub_1_1_block_discontinuity.html
+    */
+    void mark_singletons() {
+        auto sa = spans.sa;
+        auto isa = spans.isa;
         if (sa.size() > 0) {
             util::container<bool> flags = util::make_container<bool>(sa.size());
             flags[0] = true;
@@ -148,11 +128,16 @@ private:
         }
     }
 
-    template <typename sa_index, typename compare_func>
-    static void initialize_isa(util::span<sa_index> sa,
-                               util::span<sa_index> isa,
-                               util::span<sa_index> aux, compare_func cmp) {
+    /*
+        \brief Parallely initializes the isa.
 
+        @param cmp The initial compare function (most probably
+        compare_first_four_chars)
+    */
+    void initialize_isa() {
+        auto sa = spans.sa;
+        auto isa = spans.isa;
+        auto cmp = spans.cmp_init;
         // Sentinel has lowest rank
         isa[sa[0]] = aux[0] = static_cast<sa_index>(0);
 
@@ -163,24 +148,16 @@ private:
             //     aux[i] = 0;
             // else
             //     aux[i] = 1;
-            aux[i] = static_cast<sa_index>(i) *
-                     ((cmp(sa[i - 1], sa[i]) | cmp(sa[i - 1], sa[i])) != 0);
+            aux[i] = static_cast<sa_index>(i) * (cmp(sa[i - 1], sa[i]) != 0);
         }
 
         for (size_t i = 1; i < sa.size(); ++i) {
-            isa[sa[i]] = util::max(aux[i], isa[sa[i - 1]]);
+            isa[sa[i]] = util::max<uint64_t>(aux[i], isa[sa[i - 1]]);
         }
     }
 
-    // Fill sa with initial indices
-    template <typename sa_index>
-    static void initialize_sa(size_t text_length, util::span<sa_index> sa) {
-        for (size_t i = 0; i < text_length; ++i) {
-            sa[i] = i;
-        }
-    }
-    template <typename sa_index, typename Op>
-    static void prefix_sum(util::span<sa_index> array, Op op) {
+    template <typename elem_type, typename Op>
+    void prefix_sum(util::span<elem_type> array, Op op) {
         // TODO replace with parallel
         for (size_t index = 1; index < array.size(); ++index) {
             array[index] = op(array[index], array[index - 1]);
@@ -195,161 +172,130 @@ private:
         */
     }
 
-    template <typename sa_index>
-    static size_t
-    create_tuples(util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
-                  size_t size, sa_index h, util::span<sa_index> sa,
-                  util::span<sa_index> isa) {
-        size_t s = 0;
-        size_t index;
-        // std::cout << "Creating tuple." << std::endl;
-        for (size_t i = 0; i < size; ++i) {
-            // equals sa[i] - h >= 0
-            if (sa[i] >= h) {
-                index = sa[i] - h;
-                // std::cout << "sa["<<i<<"]-h=" << index << std::endl;
-                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
-                     sa_index(0))) {
-                    // std::cout << "Adding " << index << " to tuples." <<
-                    // std::endl;
-                    tuples[s++] =
-                        std::make_tuple(index, isa[index], isa[sa[i]]);
-                    /*std::cout << "(" << index << "|" << isa[index] << "|"
-                    << isa[sa[i]] << ")" << std::endl;*/
-                }
-            }
-            index = sa[i];
-            // std::cout << "sa["<<i<<"]:" << index << std::endl;
-            if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) > sa_index(0)) &&
-                index >= 2 * h &&
-                ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
-                 sa_index(0))) {
-                // std::cout << "Second condition met. Adding " << index <<
-                // std::endl;
-                tuples[s++] = std::make_tuple(
-                    index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
-                    isa[index]);
-                /*std::cout << "(" << index << "|"
-                << (isa[index] ^ utils<sa_index>::NEGATIVE_MASK) << "|"
-                << isa[index] << ")" << std::endl;*/
-            }
-        }
-        return s;
+    /*
+        \brief Uses parallel ips4o as initial sorting function.
+
+        @param cmp_init The compare function to sort by (most probably
+        compare_first_four_chars)
+    */
+    void initial_sort() {
+        util::sort::ips4o_sort_parallel(spans.sa, spans.cmp_init);
     }
 
-    template <typename sa_index>
-    static size_t create_tuples_parallel(
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
-        size_t size, sa_index h, util::span<sa_index> sa,
-        util::span<sa_index> isa, util::span<sa_index> aux) {
+    /*
+        \brief Uses std::par_stable_sort as stable sorting method of tuples span
+        in each iteration.
+
+        @param cmp The compare function to sort the tuples.
+    */
+    void stable_sort() {
+        util::sort::std_par_stable_sort(spans.tuples, spans.cmp_tuples);
+    }
+
+    /*
+        \brief Generates tuples which are needed for current iteration.
+
+        Generates tuples for suffixes still considered in this iteration as
+        (suffix-index|h-rank|2h-rank) for suffixes which still need to be
+        induced and as (suffix-index|h-rank|-h-rank) for suffixes which are
+        already correctly sorted but are needed to induce other suffixes
+        (because prefix of length h has already been considered for sorting).
+
+        The parallel version first computes the positions parallely by setting
+        values for the amount of created tuples (either 0, 1 or 2) in an
+        auxiliary array aux and then computing the exclusive prefix sum over
+        aux. After that the tuples can be created in parallel by using the
+        computed values in aux (containing the position in the tuples array).
+
+        @param size The currently computed max size.
+        @param h The depth of this iteration.
+    */
+    size_t create_tuples(size_t size, sa_index h) {
         size_t s = 0;
         size_t index;
-
         #pragma omp parallel shared(aux) private(index)
         {
-
+            // First pass: Set values in aux.
             #pragma omp for reduction(+ : s)
             for (size_t i = 0; i < size; ++i) {
                 // Reset each value in aux to 0 (if tuples created: will be
                 // increased)
                 aux[i] = 0;
-                /*#pragma omp critical (aux)
-                {
-                    std::cout << "aux[" << i << "]: " << aux[i] << std::endl;
-                }*/
-                if (sa[i] >= h) {
-                    index = sa[i] - h;
-                    if ((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
+                if (spans.sa[i] >= h) {
+                    index = spans.sa[i] - h;
+                    if ((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                         sa_index(0)) {
                         // Critical environment because indexing doesn't
                         // work correctly otherwise (producing strange
                         // values in aux)
 
-                        #pragma omp critical(aux)
-                        {
-                            ++aux[i];
-                            // std::cout << "aux[" << i << "] increased to : "
-                            // << aux[i] << std::endl;
-                        }
+                        aux[i] = 1;
                     }
                 }
-                index = sa[i];
-                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) >
+                index = spans.sa[i];
+                if (((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) >
                      sa_index(0)) &&
                     index >= 2 * h &&
-                    ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
+                    ((spans.isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
                      sa_index(0))) {
                     // Second condition met (i.e. another tuple) ->
                     // increase value of aux
                     // Critical environment: same as above
 
-                    #pragma omp critical(aux)
-                    {
-                        ++aux[i];
-                        // std::cout << "aux[" << i << "] increased to : " <<
-                        // aux[i] << std::endl;
-                    }
+                    auto& data = aux[i];
+
+                    #pragma omp atomic update
+                    ++data;
                 }
                 s += aux[i];
-                /*#pragma omp critical (output)
-                {
-                    std::cout << "s increased by aux[" << i << "]=" << aux[i] <<
-                " to " << s << std::endl;
-                }*/
             }
-            // aux has been set, compute prefix left_sum
 
+            // aux has been set, compute prefix sum
             #pragma omp single
             {
-                // Last value gets overwritten (exclusive prefix sum) ->
-                // save value in s.
-                // s = aux[aux.size()-1];
-
-                // std::cout << "Aux without prefix sum: " << aux << std::endl;
-                util::seq_prefix_sum<sa_index, util::sum_fct<sa_index>>(
-                    aux, aux, false, util::sum_fct<sa_index>(), 0);
-                // std::cout << "Aux with prefix sum: " << aux << std::endl;
-
+                util::seq_prefix_sum<aux_elem, util::sum_fct<aux_elem>>(
+                    aux, aux, false, util::sum_fct<aux_elem>(), 0);
                 // Contains position for first tuple created due to index at
-                // pos. sa[aux.size()-1]
-                // s += aux[aux.size()-1];
+                // position sa[aux.size()-1]
             }
 
+            // Create tuples in parallel using positions computed in aux.
             #pragma omp for
             for (size_t i = 0; i < size; ++i) {
-                if (sa[i] >= h) {
-                    index = sa[i] - h;
-                    if ((isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
+                // Create tuple using first condition and value in aux (increase
+                // aux in case that second condition is met for i aswell)
+                if (spans.sa[i] >= h) {
+                    index = spans.sa[i] - h;
+                    if ((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) ==
                         sa_index(0)) {
-                        tuples[aux[i]++] =
-                            std::make_tuple(index, isa[index], isa[sa[i]]);
-                        /*std::cout << "(" << index << "|" << isa[index] << "|"
-                        << isa[sa[i]] << ")" << std::endl;*/
+                        spans.tuples[aux[i]++] =
+                            std::make_tuple(index, spans.isa[index], spans.isa[spans.sa[i]]);
                     }
                 }
-                index = sa[i];
-                if (((isa[index] & utils<sa_index>::NEGATIVE_MASK) >
+                index = spans.sa[i];
+                // Create tuple using second condition and value in aux
+                if (((spans.isa[index] & utils<sa_index>::NEGATIVE_MASK) >
                      sa_index(0)) &&
                     index >= 2 * h &&
-                    ((isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
+                    ((spans.isa[index - 2 * h] & utils<sa_index>::NEGATIVE_MASK) ==
                      sa_index(0))) {
-                    tuples[aux[i]] = std::make_tuple(
-                        index, isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
-                        isa[index]);
-                    /*std::cout << "(" << index << "|"
-                    << (isa[index] ^ utils<sa_index>::NEGATIVE_MASK) << "|"
-                    << isa[index] << ")" << std::endl;*/
+                    spans.tuples[aux[i]] = std::make_tuple(
+                        index, spans.isa[index] ^ utils<sa_index>::NEGATIVE_MASK,
+                        spans.isa[index]);
                 }
             }
         }
+        spans.set_cmp_tuples(spans.tuples);
         return s;
     }
 
-    template <typename sa_index>
-    static void update_ranks_prefixsum(
-        util::span<std::tuple<sa_index, sa_index, sa_index>> sorted_tuples,
-        util::span<sa_index> aux) {
+    /*
+        \brief Update rank of each tuple after tuples have been sorted.
 
+        Parallel version of updating each rank using prefix sums.
+    */
+    void update_ranks(size_t) {
+        auto sorted_tuples = spans.tuples;
         aux[0] = 0;
 
         #pragma omp parallel for
@@ -360,7 +306,7 @@ private:
         }
 
         // Maybe TODO: replace with parallel
-        prefix_sum(aux, [](sa_index a, sa_index b) { return util::max(a, b); });
+        prefix_sum(aux, [](auto a, auto b) { return util::max(a, b); });
 
         aux[0] = std::get<1>(sorted_tuples[0]);
 
@@ -372,122 +318,59 @@ private:
                               std::get<2>(sorted_tuples[index - sa_index(1)]) !=
                                   std::get<2>(sorted_tuples[index]));
             aux[index] = new_group * ((std::get<1>(sorted_tuples[index])) +
-                                      index - aux[index]);
+                                      index - sa_index(aux[index]));
         }
         // Maybe TODO: replace with parallel
-        prefix_sum(aux, [](sa_index a, sa_index b) { return util::max(a, b); });
+        prefix_sum(aux, [](auto a, auto b) { return util::max(a, b); });
     }
 
-    template <typename sa_index>
-    static void prefix_doubling_parallel(util::string_span text,
-                                         util::span<sa_index> out_sa) {
-        tdc::StatPhase phase("Initialization");
+};
 
-        // std::cout << "Starting Osipov parallel." << std::endl;
-        // Check if enough bits free for negation.
-        DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
+/*
+    \brief Wrapper for calling parallel version of osipov (cpu).
 
-        // std::cout << "Creating initial container." << std::endl;
-        util::span<sa_index> sa = out_sa;
-        auto isa_container = util::make_container<sa_index>(out_sa.size());
-        auto aux_container = util::make_container<sa_index>(out_sa.size());
+    Wrapper class for calling the parallel version of the osipov algorithm on
+    the cpu which creates a valid osipov_par instance and then calls the main
+    osipov method. Template parameter wordpacking_4_sort specifies wether
+    wordpacking is used while sa_index specifies the used type for suffix
+    indices.
+*/
+template <bool wordpacking_4_sort, typename sa_index>
+class osipov_impl_par {
+    using aux_elem = util::next_primitive<sa_index>;
+public:
+    static void construct_sa(util::string_span text,
+                             util::span<sa_index> out_sa) {
+        // Pretend we never even had the 8 extra bytes to begin with
+        DCHECK_EQ(text.size(), out_sa.size());
+        text = text.slice(0, text.size() - 8);
+        out_sa = out_sa.slice(8, out_sa.size());
 
-        util::span<sa_index> isa = util::span<sa_index>(isa_container);
-        util::span<sa_index> aux = util::span<sa_index>(aux_container);
-        initialize_sa<sa_index>(text.size(), sa);
+        if (text.size() > 1) {
+            // Create spans needed for computation (i.e. isa, tuples, aux).
+            auto isa_container = util::make_container<sa_index>(out_sa.size());
+            auto tuple_container = util::make_container<std::tuple<sa_index,
+                    sa_index, sa_index>>(out_sa.size());
+            auto aux_container = util::make_container<aux_elem>(out_sa.size());
 
-        sa_index h = 4;
-        // Sort by h characters
-        compare_first_four_chars cmp_init = compare_first_four_chars(text);
-        phase.split("Initial 4-Sort");
-        util::sort::ips4o_sort_parallel(sa, cmp_init);
-        phase.split("Initialize ISA");
-        initialize_isa<sa_index, compare_first_four_chars>(sa, isa, aux,
-                                                           cmp_init);
-        phase.split("Mark singletons");
-        mark_singletons(sa, isa);
-        phase.split("Loop Initialization");
-
-        // std::cout << "isa: " << isa << std::endl;
-        size_t size = sa.size();
-        size_t s = 0;
-
-        auto tuple_container =
-            util::make_container<std::tuple<sa_index, sa_index, sa_index>>(
-                size);
-        util::span<std::tuple<sa_index, sa_index, sa_index>> tuples;
-        compare_tuples<sa_index> cmp;
-        while (size > 0) {
-            phase.split("Iteration");
-            aux = util::span<sa_index>(aux_container).slice(0, size);
-            tuples = tuple_container.slice(0, size);
-
-            // s = create_tuples<sa_index>(tuples.slice(0, size), size, h, sa,
-            // isa);
-            s = create_tuples_parallel<sa_index>(tuples.slice(0, size), size, h,
-                                                 sa, isa, aux);
-            // std::cout << "Elements left: " << size << std::endl;
-
-            // std::cout << "Next size: " << s << std::endl;
-            // Skip all operations till size gets its new size, if this
-            // iteration contains no tuples
-            if (s > 0) {
-                tuples = tuples.slice(0, s);
-                aux = util::span<sa_index>(aux).slice(0, s);
-                // std::cout << "Sorting tuples." << std::endl;
-                cmp = compare_tuples<sa_index>(tuples);
-                util::sort::std_par_stable_sort(tuples, cmp);
-                sa = sa.slice(0, s);
-                update_ranks_prefixsum(tuples, aux);
-                // std::cout << "Writing new order to sa." << std::endl;
-
-                #pragma omp parallel for if (s < 100)
-                for (size_t i = 0; i < s; ++i) {
-                    sa[i] = std::get<0>(tuples[i]);
-                }
-                // std::cout << "Refreshing ranks for tuples" << std::endl;
-
-                /*
-                sa_index head = 0;
-                for (size_t i = 1; i < s; ++i) {
-                    if (std::get<1>(tuples[i]) > std::get<1>(tuples[head])) {
-                        head = i;
-                    } else if (std::get<2>(tuples[i]) !=
-                            std::get<2>(tuples[head])) {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                                                    std::get<1>(tuples[head]) +
-                                                        sa_index(i) - head,
-                                                    std::get<2>(tuples[i]));
-                        head = i;
-                    } else {
-                        tuples[i] = std::make_tuple(std::get<0>(tuples[i]),
-                                                    std::get<1>(tuples[head]),
-                                                    std::get<2>(tuples[i]));
-                    }
-                }*/
-                // std::cout << "Setting new ranks in isa" << std::endl;
-
-                #pragma omp parallel for if (s < 100)
-                for (size_t i = 0; i < s; ++i) {
-                    // std::cout << "Assigning suffix " <<
-                    // std::get<0>(tuples[i])
-                    //<< " rank " << std::get<1>(tuples[i]) << std::endl;
-                    isa[std::get<0>(tuples[i])] =
-                        aux[i]; // std::get<1>(tuples[i]);
-                }
-                // std::cout << "marking singleton groups." << std::endl;
-                mark_singletons(sa, isa);
-            }
-            size = s;
-            h = 2 * h;
-        }
-        phase.split("Write out SA");
-        // std::cout << "Writing suffixes to out_sa. isa: " << isa << std::endl;
-        for (size_t i = 0; i < out_sa.size(); ++i) {
-            out_sa[isa[i] ^ utils<sa_index>::NEGATIVE_MASK] = i;
+            auto isa = isa_container.slice();
+            auto tuples = tuple_container.slice();
+            auto aux = aux_container.slice();
+            // Create instance of parallel osipov implementation.
+            auto impl = osipov_par<wordpacking_4_sort, sa_index>(out_sa, isa,
+                tuples, aux, text);
+            // Call main osipov function.
+            osipov<sa_index>::prefix_doubling(text, out_sa, impl);
+        } else {
+            out_sa[0] = 0;
         }
     }
 };
+
+/*
+    \brief Wrapper for calling parallel version of osipov (cpu) without
+    wordpacking within framework.
+*/
 struct osipov_parallel {
     static constexpr size_t EXTRA_SENTINELS =
         1 + 8; // extra 8 to allow buffer overread during sorting
@@ -499,21 +382,26 @@ struct osipov_parallel {
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl_par<false>::construct_sa(text, out_sa);
+        osipov_impl_par<false, sa_index>::construct_sa(text, out_sa);
     }
 };
+
+/*
+    \brief Wrapper for calling parallel version of osipov (cpu) with
+    wordpacking within framework.
+*/
 struct osipov_parallel_wp {
     static constexpr size_t EXTRA_SENTINELS =
         1 + 8; // extra 8 to allow buffer overread during sorting
     static constexpr char const* NAME = "Osipov_parallel_wp";
     static constexpr char const* DESCRIPTION =
         "Prefix Doubling approach for parallel gpu computation as parallel "
-        "approach";
+        "approach on cpu";
 
     template <typename sa_index>
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
-        osipov_impl_par<true>::construct_sa(text, out_sa);
+        osipov_impl_par<true, sa_index>::construct_sa(text, out_sa);
     }
 };
 } // namespace sacabench::osipov

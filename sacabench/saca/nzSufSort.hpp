@@ -39,6 +39,9 @@ namespace sacabench::nzsufsort {
                                      util::span<sa_index> out_sa) {
                 tdc::StatPhase phase("Count s-type-positions");
                 
+                std::cout << "text.size: " << text.size() << std::endl;
+                std::cout << "out_sa.size: " << out_sa.size() << std::endl;
+                
                 // count number of s-type-positions in text
                 size_t count_s_type_pos = 1;
                 bool s_type = true;
@@ -736,7 +739,7 @@ namespace sacabench::nzsufsort {
                     }
                     last_char = text[i-1];
                 }
-
+                
                 /* move l-type-positions to the end of out_sa */
                 size_t counter = text.size()-1;
                 last_char = util::SENTINEL;
@@ -757,7 +760,6 @@ namespace sacabench::nzsufsort {
                 for (size_t i = text.size()-1; i > text.size()-size_t_1-size_t_2-1; --i) {
                     out_sa[text.size()-(i+1)] = out_sa[i];
                 }
-                
                 
                 /* revert t_1 and t_2 */
                 util::span<sa_index> t_1 = out_sa.slice(0, size_t_1);
@@ -871,7 +873,7 @@ namespace sacabench::nzsufsort {
                     }
                     last_char = text[i-1];
                 }
-
+                
                 /* move l-type-positions to the end of out_sa */
                 size_t counter = text.size()-1;
                 last_char = util::SENTINEL;

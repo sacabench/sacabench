@@ -7,6 +7,7 @@
 #pragma once
 
 #include <optional>
+#include <omp.h>
 
 #include <util/is_sorted.hpp>
 #include <util/sort/bucketsort.hpp>
@@ -42,6 +43,11 @@ private:
 
     size_t max_blind_sort_size;
 
+    omp_lock_t writelock;
+    // omp_lock_t inducing_lock;
+
+    size_t tasks, tasks_done;
+
     /// \brief Sorts the suffix arrays in suffix_array by the first two
     ///        characters. Then saves the bucket bounds to `bd`.
     inline void bucket_sort() {
@@ -58,8 +64,93 @@ private:
         logger::get() << "bucket sorting phase done\n";
     }
 
+    /// \brief Sorts the suffix arrays in suffix_array by the first two
+    ///        characters. Then saves the bucket bounds to `bd`.
+    // inline void parallel_bucket_sort() {
+    //     // Create bucket_data_container object with the right size.
+    //     bd = bucket_data_container<sa_index_type>(alphabet_size);
+
+    //     // size_t counts[256 * 256] = { 0 };
+    //     size_t global_counts[256 * 256] = { 0 };
+
+    //     #pragma omp parallel for schedule(static, 256)
+    //     for(size_t i = 0; i < input_text.size() - 1; ++i) {
+    //         const u_char alpha = input_text[i];
+    //         const u_char beta = input_text[i + 1];
+
+    //         // Index counts by [ alpha | beta ]
+    //         #pragma omp critical
+    //         ++global_counts[ uint16_t(alpha) << 8 | beta ];
+    //     }
+        
+    //     // std::cout << span<size_t>(counts, 256*256) << std::endl;
+
+    //     // #pragma omp critical
+    //     // {
+    //     //     for(size_t i = 0; i < 256 * 256; ++i) {
+    //     //         global_counts[i] += counts[i];
+    //     //     }
+    //     // }
+
+    //     // #pragma omp barrier
+
+    //     // std::cout << span<size_t>(global_counts, 256*256) << std::endl;
+
+    //     // for(uint16_t alpha = 0; alpha < (uint16_t) 256; ++alpha) {
+    //     //     for(uint16_t beta = 0; beta < (uint16_t) 256; ++beta) {
+
+    //     //         size_t count = 0;
+
+    //     //         for(size_t i = 0; i < input_text.size() - 1; ++i) {
+    //     //             if (input_text[i] == alpha && input_text[i + 1] == beta) {
+    //     //                 ++count;
+    //     //             }
+    //     //         }
+
+    //     //         std::cout << (size_t) alpha << "x" << (size_t) beta << std::endl;
+    //     //         DCHECK_EQ(count, global_counts[ size_t(alpha) << 8 | size_t(beta) ]);
+    //     //         std::cout << " ok" << std::endl;
+    //     //     }
+    //     // }
+
+    //     // Overwrite global counts with prefix sum / bucket starts
+    //     size_t sum = 0;
+    //     for(size_t i = 0; i < 256 * 256; ++i) {
+    //         size_t sum2 = sum;
+    //         sum += global_counts[i];
+    //         global_counts[i] = sum2;
+    //     }
+
+    //     // Print counts array
+    //     util::kd_array<bucket_information<sa_index_type>, 2> bounds({alphabet_size + 1, alphabet_size + 1});
+
+    //     for(u_char alpha = 0; alpha < alphabet_size + 1; ++alpha) {
+    //         for(u_char beta = 0; beta < alphabet_size + 1; ++beta) {
+    //             bounds[{alpha, beta}].starting_position = global_counts[ uint16_t(alpha) << 8 | beta ];
+    //             bounds[{alpha, beta}].is_sorted = false;
+    //         }
+    //     }
+
+    //     bd.set_bucket_bounds(std::move(bounds), input_text.size());
+
+    //     for(size_t i = 0; i < input_text.size() - 1; ++i) {
+    //         const u_char alpha = input_text[i];
+    //         const u_char beta = input_text[i + 1];
+    //         const size_t bucket = global_counts[ uint16_t(alpha) << 8 | beta ] ++;
+    //         std::cout << "i = " << i << ", bucket = " << bucket << std::endl;
+    //         suffix_array[ bucket + 1 ] = i;
+    //     }
+
+    //     suffix_array[0] = input_text.size() - 1;
+
+    //     std::cout << "SA:" << suffix_array << std::endl;
+
+    //     logger::get() << "parallel bucket sorting phase done\n";
+    // }
+
     /// \brief Use Multikey-Quicksort to sort the bucket.
     inline void shallow_sort(const span<sa_index_type> bucket) {
+
         // We use multikey quicksort. Abort at depth DEEP_SORT_DEPTH.
         logger::get() << "using shallow sort on " << bucket.size()
                       << " elements.\n";
@@ -155,135 +246,149 @@ private:
         DCHECK(is_partially_suffix_sorted(bucket, input_text));
     }
 
-    inline bool try_induced_sort(const span<sa_index_type> bucket,
-                                 const sa_index_type common_prefix_length) {
-        // Try every suffix index, which is to be sorted
-        for (const size_t& si : bucket) {
+    inline bool try_induced_sort(const span<sa_index_type> /*bucket*/,
+                                 const sa_index_type /*common_prefix_length*/) {
 
-            // Check, if there is a suitable entry in anchor_data.
-            const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
-            if (leftmost_suffix_opt.has_value()) {
+        // omp_set_lock(&inducing_lock);
 
-                // Test, if the suffix is in the valid range, that means
-                // entry_in_offset \in [leftmost_suffix, leftmost_suffix +
-                // common_prefix_length]
-                const size_t leftmost_suffix = leftmost_suffix_opt.value();
-                if (si < leftmost_suffix &&
-                    leftmost_suffix < si + common_prefix_length) {
+        // // Try every suffix index, which is to be sorted
+        // for (const size_t& si : bucket) {
 
-                    // This is the position the found bucket starts in si.
-                    const size_t relation = leftmost_suffix - si;
+        //     // Check, if there is a suitable entry in anchor_data.
+        //     omp_set_lock(&writelock);
+        //     const auto leftmost_suffix_opt = ad.get_leftmost_position(si);
+        //     omp_unset_lock(&writelock);
 
-                    // Use suffix array with front bit as tag.
-                    auto tagged_sa =
-                        util::cast_to_tagged_numbers<sa_index_type, 1>(
-                            suffix_array);
+        //     if (leftmost_suffix_opt.has_value()) {
 
-                    // This is the position of the known sorted suffix in its
-                    // bucket.
-                    const size_t sorted_bucket =
-                        ad.get_position_in_suffixarray(si);
+        //         // Test, if the suffix is in the valid range, that means
+        //         // entry_in_offset \in [leftmost_suffix, leftmost_suffix +
+        //         // common_prefix_length]
+        //         const size_t leftmost_suffix = leftmost_suffix_opt.value();
+        //         if (si < leftmost_suffix &&
+        //             leftmost_suffix < si + common_prefix_length) {
 
-                    // Get the bucket bounds for the already sorted suffix.
-                    const auto left_bucket_bound = bd.start_of_bucket(
-                        input_text[leftmost_suffix],
-                        input_text[leftmost_suffix +
-                                   static_cast<sa_index_type>(1)]);
-                    const auto right_bucket_bound = bd.end_of_bucket(
-                        input_text[leftmost_suffix],
-                        input_text[leftmost_suffix +
-                                   static_cast<sa_index_type>(1)]);
+        //             // This is the position the found bucket starts in si.
+        //             const size_t relation = leftmost_suffix - si;
 
-                    // Finde alle Elemente von sj zwischen
-                    // left_bucket_bound und right_bucket_bound, beginnend mit
-                    // der Suche um sorted_bucket.
+        //             // Use suffix array with front bit as tag.
+        //             auto tagged_sa =
+        //                 util::cast_to_tagged_numbers<sa_index_type, 1>(
+        //                     suffix_array);
 
-                    // This function returns true, if `to_find` is a member of
-                    // the bucket to be sorted.
-                    const auto contains = [&](const sa_index_type to_find) {
-                        for (const size_t& bsi : bucket) {
-                            if (to_find == bsi + relation) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    };
+        //             // This is the position of the known sorted suffix in its
+        //             // bucket.
+        //             omp_set_lock(&writelock);
 
-                    // We already found the first element, because it is stored
-                    // in anchor_data.
-                    tagged_sa[sorted_bucket].template set<0>(true);
-                    size_t tagged = 1;
+        //             const size_t sorted_bucket =
+        //                 ad.get_position_in_suffixarray(si);
 
-                    size_t leftmost = sorted_bucket;
+        //             // Get the bucket bounds for the already sorted suffix.
+        //             const auto left_bucket_bound = bd.start_of_bucket(
+        //                 input_text[leftmost_suffix],
+        //                 input_text[leftmost_suffix +
+        //                            static_cast<sa_index_type>(1)]);
+        //             const auto right_bucket_bound = bd.end_of_bucket(
+        //                 input_text[leftmost_suffix],
+        //                 input_text[leftmost_suffix +
+        //                            static_cast<sa_index_type>(1)]);
+        //             omp_unset_lock(&writelock);
 
-                    // This function checks the suffixes at a given distance
-                    // from the pointer into the bucket. If the suffix is one
-                    // we're looking for, then add it to the ringbuffer at the
-                    // correct location.
-                    const auto look_at = [&](const size_t dist) {
-                        const size_t left = sorted_bucket - dist;
-                        const size_t right = sorted_bucket + dist;
+        //             // Finde alle Elemente von sj zwischen
+        //             // left_bucket_bound und right_bucket_bound, beginnend mit
+        //             // der Suche um sorted_bucket.
 
-                        // Check if `left` overflowed.
-                        if (sorted_bucket >= dist) {
-                            // Check, if `left` is still in the bucket we're
-                            // searching.
-                            if (left >= left_bucket_bound) {
-                                if (contains(suffix_array[left])) {
-                                    leftmost = left;
-                                    tagged_sa[left].template set<0>(true);
-                                    ++tagged;
-                                }
-                            }
-                        }
+        //             // This function returns true, if `to_find` is a member of
+        //             // the bucket to be sorted.
+        //             const auto contains = [&](const sa_index_type to_find) {
+        //                 for (const size_t& bsi : bucket) {
+        //                     if (to_find == bsi + relation) {
+        //                         return true;
+        //                     }
+        //                 }
+        //                 return false;
+        //             };
 
-                        if (right < right_bucket_bound) {
-                            if (contains(suffix_array[right])) {
-                                tagged_sa[right].template set<0>(true);
-                                ++tagged;
-                            }
-                        }
-                    };
+        //             // We already found the first element, because it is stored
+        //             // in anchor_data.
+        //             tagged_sa[sorted_bucket].template set<0>(true);
+        //             size_t tagged = 1;
 
-                    // Look at increasing distance to `sorted_bucket`.
-                    size_t i = 0;
-                    while (tagged != bucket.size()) {
-                        ++i;
-                        look_at(i);
-                    }
+        //             size_t leftmost = sorted_bucket;
 
-                    // Traverse marked elements in-order and remove tag.
-                    for (size_t i = 0; i < tagged; ++i) {
-                        // Ignore untagged entries in the sorted bucket.
-                        while (tagged_sa[leftmost].template get<0>() == false) {
-                            ++leftmost;
-                        }
+        //             // This function checks the suffixes at a given distance
+        //             // from the pointer into the bucket. If the suffix is one
+        //             // we're looking for, then add it to the ringbuffer at the
+        //             // correct location.
+        //             const auto look_at = [&](const size_t dist) {
+        //                 const size_t left = sorted_bucket - dist;
+        //                 const size_t right = sorted_bucket + dist;
 
-                        // Insert the correct index into the to-be-sorted
-                        // bucket.
-                        bucket[i] =
-                            size_t(tagged_sa[leftmost].number()) - relation;
+        //                 // Check if `left` overflowed.
+        //                 if (sorted_bucket >= dist) {
+        //                     // Check, if `left` is still in the bucket we're
+        //                     // searching.
+        //                     if (left >= left_bucket_bound) {
+        //                         if (contains(suffix_array[left])) {
+        //                             leftmost = left;
+        //                             tagged_sa[left].template set<0>(true);
+        //                             ++tagged;
+        //                         }
+        //                     }
+        //                 }
 
-                        // Un-tag the number, so that the SA is valid again.
-                        tagged_sa[leftmost].template set<0>(false);
-                    }
+        //                 if (right < right_bucket_bound) {
+        //                     if (contains(suffix_array[right])) {
+        //                         tagged_sa[right].template set<0>(true);
+        //                         ++tagged;
+        //                     }
+        //                 }
+        //             };
 
-                    DCHECK(is_partially_suffix_sorted(bucket, input_text));
+        //             // Look at increasing distance to `sorted_bucket`.
+        //             size_t i = 0;
+        //             while (tagged != bucket.size()) {
+        //                 ++i;
+        //                 look_at(i);
+        //             }
 
-                    // The bucket has been sorted with induced sorting.
-                    return true;
-                }
-            }
-        }
+        //             // Traverse marked elements in-order and remove tag.
+        //             for (size_t i = 0; i < tagged; ++i) {
+        //                 // Ignore untagged entries in the sorted bucket.
+        //                 while (tagged_sa[leftmost].template get<0>() == false) {
+        //                     ++leftmost;
+        //                 }
+
+        //                 // Insert the correct index into the to-be-sorted
+        //                 // bucket.
+        //                 bucket[i] =
+        //                     size_t(tagged_sa[leftmost].number()) - relation;
+
+        //                 // Un-tag the number, so that the SA is valid again.
+        //                 tagged_sa[leftmost].template set<0>(false);
+        //             }
+
+        //             omp_unset_lock(&inducing_lock);
+
+        //             DCHECK(is_partially_suffix_sorted(bucket, input_text));
+
+        //             // The bucket has been sorted with induced sorting.
+        //             return true;
+        //         }
+        //     }
+        // }
+
+        // omp_unset_lock(&inducing_lock);
 
         return false;
     }
 
     inline void sort_bucket(const u_char alpha, const u_char beta) {
-
         // Get bucket bounds.
+        omp_set_lock(&writelock);
         const auto bucket_start = bd.start_of_bucket(alpha, beta);
         const auto bucket_end = bd.end_of_bucket(alpha, beta);
+        omp_unset_lock(&writelock);
 
         DCHECK_LT(bucket_start, bucket_end);
 
@@ -303,54 +408,55 @@ private:
         // Debug check: the bucket is correctly suffix sorted.
         DCHECK(is_partially_suffix_sorted(bucket, input_text));
 
-        #pragma omp critical
-        {
-            for (sa_index_type i = 0; i < bucket.size(); ++i) {
-                ad.update_anchor(bucket[i], bucket_start + i);
-            }
-            // Mark this bucket as sorted.
-            bd.mark_bucket_sorted(alpha, beta);
+        omp_set_lock(&writelock);
+        for (sa_index_type i = 0; i < bucket.size(); ++i) {
+            ad.update_anchor(bucket[i], bucket_start + i);
         }
+        // Mark this bucket as sorted.
+        // bd.mark_bucket_sorted(alpha, beta);
+        omp_unset_lock(&writelock);
+
+        // #pragma omp critical
+        // std::cout << ++tasks_done << "/" << tasks << ": " << bucket.size() << " elements, thread id was " << omp_get_thread_num() << std::endl;
     }
 
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
 
-        // Spawn a task pool to run the buckets in parallel
-        //#pragma omp parallel
-        {
-            // Schedule the buckets in serial
-            //#pragma omp single
-            while (bd.are_buckets_left()) {
+        omp_set_lock(&writelock);
 
-                // Find the smallest unsorted bucket.
-                const auto unsorted_bucket = bd.get_smallest_bucket();
-                const auto alpha = unsorted_bucket.first;
-                const auto beta = unsorted_bucket.second;
-                const size_t size_of_bucket = bd.size_of_bucket(alpha, beta);
+        // Schedule the buckets in serial
+        while (bd.are_buckets_left()) {
 
-                if (size_of_bucket < 2) {
-                    // Buckets with a size of 0 or 1 are already sorted.
-                    // Do nothing.
-                } else if (size_of_bucket > 10) {
-                    // Sort big buckets in parallel
-                    #pragma omp task
-                    {
-                        sort_bucket(alpha, beta);
-                    }
-                } else {
-                    // Sort small buckets in serial
+            // Find the smallest unsorted bucket.
+            const auto unsorted_bucket = bd.get_smallest_bucket();
+            const auto alpha = unsorted_bucket.first;
+            const auto beta = unsorted_bucket.second;
+            const size_t size_of_bucket = bd.size_of_bucket(alpha, beta);
+
+            omp_unset_lock(&writelock);
+
+            if (size_of_bucket < 2) {
+                // Buckets with a size of 0 or 1 are already sorted.
+                // Do nothing.
+            } else {
+                tasks++;
+
+                // Sort big buckets in parallel
+                #pragma omp task
+                {
                     sort_bucket(alpha, beta);
                 }
-
-                #pragma omp critical
-                // Mark this bucket as sorted.
-                bd.mark_bucket_sorted(alpha, beta);
             }
+
+            omp_set_lock(&writelock);
         }
+
+        omp_unset_lock(&writelock);
 
         // At this point, all tasks are synced.
         // We wait here until every bucket is sorted.
+        #pragma omp taskwait
     }
 
 public:
@@ -358,9 +464,10 @@ public:
                     span<sa_index_type> sa)
         : input_text(text), alphabet_size(_alphabet_size), suffix_array(sa),
           bd(_alphabet_size), ad(text.size()),
-          max_blind_sort_size(text.size() / BLIND_SORT_RATIO) {
+          max_blind_sort_size(text.size() / BLIND_SORT_RATIO), tasks(0), tasks_done(0) {
 
-        // Fill sa with unsorted suffix array.
+        omp_init_lock(&writelock);
+
         for (size_t i = 0; i < sa.size(); ++i) {
             sa[i] = i;
         }
@@ -370,12 +477,21 @@ public:
             // Use Quicksort.
             simple_sort(sa, 0);
         } else {
-            // Use bucket sort to sort `sa` by the first two characters.
-            bucket_sort();
+            // Spawn a task pool to run the buckets in parallel
+            #pragma omp parallel
+            {
+                #pragma omp master
+                {
+                    // Use bucket sort to sort `sa` by the first two characters.
+                    bucket_sort();
 
-            // Sort all buckets iteratively.
-            sort_all_buckets();
+                    // Sort all buckets iteratively.
+                    sort_all_buckets();
+                }
+            }
         }
+
+        omp_destroy_lock(&writelock);
     }
 };
 } // namespace sacabench::deep_shallow
