@@ -453,6 +453,7 @@ private:
 
         // At this point, all tasks are synced.
         // We wait here until every bucket is sorted.
+        #pragma omp taskwait
     }
 
 public:
