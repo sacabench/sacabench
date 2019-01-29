@@ -1,8 +1,8 @@
 [
     {
-        "input": "pc_english.200MB",
+        "input": "english.200MB",
         "model_name": 0,
-        "prefix": 1048576,
-        "repetitions": 2
+        "prefix": 1024,
+        "repetitions": 1
     }
 ]

@@ -1,0 +1,1442 @@
+RESULT	id=2	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31635.913314819336	
+RESULT	id=2	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=0	memOff=1118481084	memPeak=2187865700	time=107859.80191135406	
+RESULT	id=2	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118481084	memPeak=1118481072	time=14174.497615814209	
+RESULT	id=2	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398101352	memPeak=0	time=19607.829473495483	
+RESULT	id=3	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.007195949554443359	
+RESULT	id=3	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=0	memOff=4194304020	memPeak=2142288	time=8009.894814014435	
+RESULT	id=3	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=192	memOff=4194304020	memPeak=1752	time=5917.969181060791	
+RESULT	id=3	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194304212	memPeak=209716761	time=2565.951280593872	
+RESULT	id=3	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194304212	memPeak=0	time=0.000141143798828125	
+RESULT	id=3	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2516469300	time=35165.59580993652	
+RESULT	id=3	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2512528884	time=37039.35163593292	
+RESULT	id=3	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2446154304	time=40762.067680835724	
+RESULT	id=3	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2011340064	time=37051.726221084595	
+RESULT	id=3	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1015054620	time=22230.727818965912	
+RESULT	id=3	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=134762568	time=6465.333703041077	
+RESULT	id=3	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=951840	time=619.997251033783	
+RESULT	id=3	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=67836	time=1.6983213424682617	
+RESULT	id=3	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1682	time=0.05563497543334961	
+RESULT	id=3	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1560	time=0.0029458999633789062	
+RESULT	id=3	rep_id=1	phase_id=16	phase_name=Write out SA	memFinal=0	memOff=4194304212	memPeak=0	time=2161.7321639060974	
+RESULT	id=4	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194304000	memOff=0	memPeak=4196452160	time=59027.735834121704	
+RESULT	id=4	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=69411.81413841248	
+RESULT	id=4	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=27900.860062599182	
+RESULT	id=4	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=3910.2879819869995	
+RESULT	id=4	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=3.1799449920654297	
+RESULT	id=4	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=0	time=0.011799812316894531	
+RESULT	id=4	rep_id=1	phase_id=7	phase_name=Write out result	memFinal=-4194304000	memOff=4194304000	memPeak=2148160	time=14392.36356639862	
+RESULT	id=5	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1192978364	memOff=0	memPeak=1901214184	time=12614.790484428406	
+RESULT	id=5	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=1192978364	memPeak=2142304	time=15497.531067848206	
+RESULT	id=5	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-1192977964	memOff=1192978364	memPeak=14754864	time=11929.940035820007	
+RESULT	id=6	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355443408	memOff=0	memPeak=3355445744	time=4173.239345550537	
+RESULT	id=6	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355443408	memPeak=0	time=62612.47789478302	
+RESULT	id=6	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355443408	memPeak=0	time=22642.36190891266	
+RESULT	id=9	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31628.02588367462	
+RESULT	id=9	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2187865700	time=98961.76936626434	
+RESULT	id=9	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14210.245406150818	
+RESULT	id=9	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=526	time=14235.92568397522	
+RESULT	id=10	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.0072078704833984375	
+RESULT	id=10	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=2584	memOff=4194304020	memPeak=4368872	time=4695.417267799377	
+RESULT	id=10	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194306604	memPeak=0	time=5620.955121040344	
+RESULT	id=10	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194306604	memPeak=209715201	time=1988.0147066116333	
+RESULT	id=10	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194306604	memPeak=0	time=0.00010776519775390625	
+RESULT	id=10	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=32	memOff=4194306604	memPeak=5032938792	time=24326.001101493835	
+RESULT	id=10	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=5025057960	time=26413.213952064514	
+RESULT	id=10	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=32	memOff=4194306636	memPeak=4892308800	time=30685.0591506958	
+RESULT	id=10	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194306668	memPeak=4022680320	time=28008.136209487915	
+RESULT	id=10	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=32	memOff=4194306668	memPeak=2030109432	time=17025.392930030823	
+RESULT	id=10	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194306700	memPeak=269525328	time=5124.788239479065	
+RESULT	id=10	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194306700	memPeak=1903872	time=504.55385398864746	
+RESULT	id=10	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-32	memOff=4194306700	memPeak=135864	time=1.2436647415161133	
+RESULT	id=10	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194306668	memPeak=1560	time=0.05671405792236328	
+RESULT	id=10	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194306668	memPeak=0	time=0.0052967071533203125	
+RESULT	id=10	rep_id=1	phase_id=16	phase_name=Write out SA	memFinal=0	memOff=4194306668	memPeak=0	time=2686.2195615768433	
+RESULT	id=11	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194306584	memOff=0	memPeak=4198692808	time=32152.508350372314	
+RESULT	id=11	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=37639.85943031311	
+RESULT	id=11	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=16107.919626235962	
+RESULT	id=11	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=2453.188977241516	
+RESULT	id=11	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4379312	time=2.2041358947753906	
+RESULT	id=11	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=0	time=0.011883735656738281	
+RESULT	id=11	rep_id=1	phase_id=7	phase_name=Write out result	memFinal=-4194304000	memOff=4194306584	memPeak=4386224	time=8231.56462097168	
+RESULT	id=12	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1192980756	memOff=0	memPeak=2609449272	time=7927.13263130188	
+RESULT	id=12	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=1192980756	memPeak=2142304	time=15442.429281234741	
+RESULT	id=12	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-1192977964	memOff=1192980756	memPeak=14754864	time=7975.592776298523	
+RESULT	id=13	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355445800	memOff=0	memPeak=3355448904	time=4212.458452224731	
+RESULT	id=13	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355445800	memPeak=0	time=62382.73498249054	
+RESULT	id=13	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355445800	memPeak=0	time=22357.170860290527	
+RESULT	id=16	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31640.617297172546	
+RESULT	id=16	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2187865700	time=98943.6652507782	
+RESULT	id=16	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14218.171790122986	
+RESULT	id=16	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=4698	time=14289.86148071289	
+RESULT	id=17	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006587982177734375	
+RESULT	id=17	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=4216	memOff=4194304020	memPeak=8646936	time=2446.158473968506	
+RESULT	id=17	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194308236	memPeak=0	time=4759.037040710449	
+RESULT	id=17	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194308236	memPeak=209715201	time=1081.1051092147827	
+RESULT	id=17	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194308236	memPeak=0	time=0.00013065338134765625	
+RESULT	id=17	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=928	memOff=4194308236	memPeak=5032939104	time=14996.066573143005	
+RESULT	id=17	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=792	memOff=4194309164	memPeak=5025058272	time=17110.72550678253	
+RESULT	id=17	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=232	memOff=4194309956	memPeak=4892309112	time=17035.4961977005	
+RESULT	id=17	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=264	memOff=4194310188	memPeak=4022680632	time=16591.834966659546	
+RESULT	id=17	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-253762256	memOff=4194310452	memPeak=1776346080	time=9339.40228843689	
+RESULT	id=17	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=456	memOff=3940548196	memPeak=269525640	time=2804.2149200439453	
+RESULT	id=17	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=237612	memOff=3940548652	memPeak=1904184	time=257.2110719680786	
+RESULT	id=17	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-8	memOff=3940786264	memPeak=136176	time=0.7963571548461914	
+RESULT	id=17	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=3940786256	memPeak=1560	time=0.055693626403808594	
+RESULT	id=17	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=3940786256	memPeak=0	time=0.0061016082763671875	
+RESULT	id=17	rep_id=1	phase_id=16	phase_name=Write out SA	memFinal=0	memOff=3940786256	memPeak=0	time=2273.0446634292603	
+RESULT	id=18	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194308216	memOff=0	memPeak=4202982616	time=18529.88911819458	
+RESULT	id=18	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=20906.722702026367	
+RESULT	id=18	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=9643.675856590271	
+RESULT	id=18	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=1558.9368124008179	
+RESULT	id=18	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8667488	time=1.3597955703735352	
+RESULT	id=18	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=0	time=0.011822700500488281	
+RESULT	id=18	rep_id=1	phase_id=7	phase_name=Write out result	memFinal=-4194304000	memOff=4194308216	memPeak=8674400	time=4524.486949920654	
+RESULT	id=19	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1192982388	memOff=0	memPeak=4025919416	time=6076.799600601196	
+RESULT	id=19	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=1192982388	memPeak=2142304	time=15473.155546188354	
+RESULT	id=19	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-1192977964	memOff=1192982388	memPeak=14754864	time=7947.94237613678	
+RESULT	id=20	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355447432	memOff=0	memPeak=3355452088	time=4228.106002807617	
+RESULT	id=20	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355447432	memPeak=0	time=62745.35162258148	
+RESULT	id=20	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355447432	memPeak=0	time=22655.19713973999	
+RESULT	id=23	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31609.41972732544	
+RESULT	id=23	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2187865700	time=98887.76814651489	
+RESULT	id=23	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14196.462947845459	
+RESULT	id=23	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=8870	time=14112.566662788391	
+RESULT	id=24	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.007117748260498047	
+RESULT	id=24	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=7480	memOff=4194304020	memPeak=17203064	time=1268.0173606872559	
+RESULT	id=24	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194311500	memPeak=0	time=4343.214227676392	
+RESULT	id=24	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194311500	memPeak=209715201	time=659.5992579460144	
+RESULT	id=24	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194311500	memPeak=0	time=0.00022220611572265625	
+RESULT	id=24	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=4120	memOff=4194311500	memPeak=5032940112	time=11645.940618991852	
+RESULT	id=24	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=628131824	memOff=4194315620	memPeak=5025059280	time=11003.297199249268	
+RESULT	id=24	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=305768772	memOff=4822447444	memPeak=4892310120	time=11474.208168029785	
+RESULT	id=24	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-251413504	memOff=5128216216	memPeak=3771264120	time=10419.527890205383	
+RESULT	id=24	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=1712	memOff=4876802712	memPeak=2030110752	time=6259.44934463501	
+RESULT	id=24	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=-1024	memOff=4876804424	memPeak=252681312	time=1642.1594438552856	
+RESULT	id=24	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=356992	memOff=4876803400	memPeak=1667208	time=146.129292011261	
+RESULT	id=24	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-14628	memOff=4877160392	memPeak=86280	time=0.5849752426147461	
+RESULT	id=24	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4877145764	memPeak=1560	time=0.052381038665771484	
+RESULT	id=24	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4877145764	memPeak=0	time=0.010951995849609375	
+RESULT	id=24	rep_id=1	phase_id=16	phase_name=Write out SA	memFinal=0	memOff=4877145764	memPeak=0	time=2272.6603841781616	
+RESULT	id=25	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194311480	memOff=0	memPeak=4211562232	time=11667.384517669678	
+RESULT	id=25	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=12567.123854637146	
+RESULT	id=25	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=6377.650897979736	
+RESULT	id=25	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=1123.468698501587	
+RESULT	id=25	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-140736	memOff=4194311480	memPeak=17103104	time=0.9807586669921875	
+RESULT	id=25	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194170744	memPeak=0	time=0.011295318603515625	
+RESULT	id=25	rep_id=1	phase_id=7	phase_name=Write out result	memFinal=-4194491648	memOff=4194170744	memPeak=17063104	time=2582.039969444275	
+RESULT	id=26	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1192985652	memOff=0	memPeak=6858859704	time=6813.29469871521	
+RESULT	id=26	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=1192985652	memPeak=2142304	time=15444.33817577362	
+RESULT	id=26	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-1192977964	memOff=1192985652	memPeak=14754864	time=7987.005703926086	
+RESULT	id=27	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355450696	memOff=0	memPeak=3355458456	time=4219.286584854126	
+RESULT	id=27	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355450696	memPeak=0	time=62520.64608860016	
+RESULT	id=27	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355450696	memPeak=0	time=22566.502546310425	
+RESULT	id=30	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31610.978902816772	
+RESULT	id=30	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2187865700	time=98343.94977092743	
+RESULT	id=30	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14194.52536392212	
+RESULT	id=30	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=13042	time=14052.67984867096	
+RESULT	id=31	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.007266044616699219	
+RESULT	id=31	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=10744	memOff=4194304020	memPeak=25759192	time=905.7963781356812	
+RESULT	id=31	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194314764	memPeak=0	time=4239.312387466431	
+RESULT	id=31	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194314764	memPeak=209715201	time=554.6020774841309	
+RESULT	id=31	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194314764	memPeak=0	time=0.00019550323486328125	
+RESULT	id=31	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=2616	memOff=4194314764	memPeak=5032941632	time=9375.932939529419	
+RESULT	id=31	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-209371180	memOff=4194317380	memPeak=4815683372	time=9559.687167167664	
+RESULT	id=31	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=888	memOff=3984946200	memPeak=4892311640	time=12016.71710395813	
+RESULT	id=31	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=167623840	memOff=3984947088	memPeak=4022683160	time=8878.728734016418	
+RESULT	id=31	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=84589148	memOff=4152570928	memPeak=2030112272	time=5367.250526428223	
+RESULT	id=31	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=56159076	memOff=4237160076	memPeak=258297944	time=1409.263765335083	
+RESULT	id=31	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=317176	memOff=4293319152	memPeak=1668716	time=108.57330322265625	
+RESULT	id=31	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=8584	memOff=4293636328	memPeak=110384	time=0.6032466888427734	
+RESULT	id=31	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4293644912	memPeak=1560	time=0.05422687530517578	
+RESULT	id=31	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4293644912	memPeak=0	time=0.011698722839355469	
+RESULT	id=31	rep_id=1	phase_id=16	phase_name=Write out SA	memFinal=0	memOff=4293644912	memPeak=0	time=2695.5361137390137	
+RESULT	id=32	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194267832	memOff=0	memPeak=4220094936	time=9398.329594612122	
+RESULT	id=32	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194267832	memPeak=25827104	time=9832.565020561218	
+RESULT	id=32	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194267832	memPeak=25827104	time=5339.895624160767	
+RESULT	id=32	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194267832	memPeak=25827104	time=991.3114404678345	
+RESULT	id=32	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-281472	memOff=4194267832	memPeak=25538720	time=0.8845529556274414	
+RESULT	id=32	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4193986360	memPeak=0	time=0.011249542236328125	
+RESULT	id=32	rep_id=1	phase_id=7	phase_name=Write out result	memFinal=-4194679296	memOff=4193986360	memPeak=25451808	time=1991.3774509429932	
+RESULT	id=33	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1192988916	memOff=0	memPeak=9691799992	time=8571.197987556458	
+RESULT	id=33	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=1192988916	memPeak=2142304	time=15503.072523117065	
+RESULT	id=33	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-1192977964	memOff=1192988916	memPeak=14754864	time=8013.304267883301	
+RESULT	id=34	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355453960	memOff=0	memPeak=3355464824	time=4164.017532348633	
+RESULT	id=34	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355453960	memPeak=0	time=62630.281576156616	
+RESULT	id=34	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355453960	memPeak=0	time=22649.46596813202	
+RESULT	id=37	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31633.23138809204	
+RESULT	id=37	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2187865700	time=98450.61446857452	
+RESULT	id=37	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14219.90454673767	
+RESULT	id=37	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=13042	time=14068.597713470459	
+RESULT	id=38	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.00714874267578125	
+RESULT	id=38	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=14008	memOff=4194304020	memPeak=34315320	time=742.0739212036133	
+RESULT	id=38	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194318028	memPeak=0	time=4216.602705001831	
+RESULT	id=38	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194318028	memPeak=209715201	time=523.8005151748657	
+RESULT	id=38	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194318028	memPeak=0	time=0.00015926361083984375	
+RESULT	id=38	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=157284864	memOff=4194318028	memPeak=5032943664	time=8603.054258346558	
+RESULT	id=38	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=11992	memOff=4351602892	memPeak=5025062832	time=8890.586784362793	
+RESULT	id=38	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=3480	memOff=4351614884	memPeak=4892313672	time=9427.760036468506	
+RESULT	id=38	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=4232	memOff=4351618364	memPeak=4022685192	time=8483.512581825256	
+RESULT	id=38	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=126897496	memOff=4351622596	memPeak=1966673376	time=4991.4313888549805	
+RESULT	id=38	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=84232352	memOff=4478520092	memPeak=269530200	time=1230.1644468307495	
+RESULT	id=38	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=126832	memOff=4562752444	memPeak=1373244	time=98.09852027893066	
+RESULT	id=38	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=1432	memOff=4562879276	memPeak=72720	time=0.6211223602294922	
+RESULT	id=38	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4562880708	memPeak=1560	time=0.05886554718017578	
+RESULT	id=38	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4562880708	memPeak=0	time=0.014010429382324219	
+RESULT	id=38	rep_id=1	phase_id=16	phase_name=Write out SA	memFinal=0	memOff=4562880708	memPeak=0	time=2269.50337600708	
+RESULT	id=39	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194318008	memOff=0	memPeak=4228721464	time=8364.960971832275	
+RESULT	id=39	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=8510.252692222595	
+RESULT	id=39	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=4859.680775642395	
+RESULT	id=39	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=937.35901927948	
+RESULT	id=39	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-375296	memOff=4194318008	memPeak=34021248	time=0.8025531768798828	
+RESULT	id=39	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4193942712	memPeak=0	time=0.011007308959960938	
+RESULT	id=39	rep_id=1	phase_id=7	phase_name=Write out result	memFinal=-4194773120	memOff=4193942712	memPeak=33934336	time=1732.9238605499268	
+RESULT	id=40	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1192992180	memOff=0	memPeak=12524740280	time=10775.44909954071	
+RESULT	id=40	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=1192992180	memPeak=2142304	time=15420.44910621643	
+RESULT	id=40	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-1192977964	memOff=1192992180	memPeak=14754864	time=7939.41886138916	
+RESULT	id=41	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355457224	memOff=0	memPeak=3355471192	time=4142.634902954102	
+RESULT	id=41	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355457224	memPeak=0	time=62162.07510662079	
+RESULT	id=41	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355457224	memPeak=0	time=22564.156985282898	
+RESULT	id=44	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32487.877952575684	
+RESULT	id=44	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2187865700	time=100960.84205532074	
+RESULT	id=44	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15274.28362941742	
+RESULT	id=44	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=17214	time=12949.098170280457	
+RESULT	id=45	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006805419921875	
+RESULT	id=45	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=17272	memOff=4194304020	memPeak=42871448	time=704.847333908081	
+RESULT	id=45	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194321292	memPeak=0	time=4216.676325798035	
+RESULT	id=45	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194321292	memPeak=209715201	time=524.281849861145	
+RESULT	id=45	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194321292	memPeak=0	time=0.000102996826171875	
+RESULT	id=45	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=125809664	memOff=4194321292	memPeak=5032946208	time=8468.082326889038	
+RESULT	id=45	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-125627244	memOff=4320130956	memPeak=4773812472	time=8743.72004032135	
+RESULT	id=45	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=12576	memOff=4194503712	memPeak=4892316216	time=9129.607275009155	
+RESULT	id=45	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=4568	memOff=4194516288	memPeak=3922120716	time=8115.957362174988	
+RESULT	id=45	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=50736916	memOff=4194520856	memPeak=2030116848	time=4807.786858558655	
+RESULT	id=45	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=101071712	memOff=4245257772	memPeak=262794600	time=1215.8726835250854	
+RESULT	id=45	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=54916	memOff=4346329484	memPeak=1244856	time=89.97923278808594	
+RESULT	id=45	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-3436	memOff=4346384400	memPeak=71892	time=0.7329797744750977	
+RESULT	id=45	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4346380964	memPeak=1560	time=0.06742668151855469	
+RESULT	id=45	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4346380964	memPeak=0	time=0.02328968048095703	
+RESULT	id=45	rep_id=1	phase_id=16	phase_name=Write out SA	memFinal=0	memOff=4346380964	memPeak=0	time=2272.932816505432	
+RESULT	id=46	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194321272	memOff=0	memPeak=4237301080	time=7650.9112849235535	
+RESULT	id=46	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=7738.380585670471	
+RESULT	id=46	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=4602.444577217102	
+RESULT	id=46	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=918.3133549690247	
+RESULT	id=46	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-750592	memOff=4194321272	memPeak=42222304	time=0.8542160987854004	
+RESULT	id=46	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4193570680	memPeak=0	time=0.010994911193847656	
+RESULT	id=46	rep_id=1	phase_id=7	phase_name=Write out result	memFinal=-4195007680	memOff=4193570680	memPeak=42276128	time=1625.762963294983	
+RESULT	id=47	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1192995444	memOff=0	memPeak=15357680568	time=12769.023490905762	
+RESULT	id=47	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=1192995444	memPeak=2142304	time=15463.124103546143	
+RESULT	id=47	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-1192977964	memOff=1192995444	memPeak=14754864	time=7968.637044906616	
+RESULT	id=48	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355460488	memOff=0	memPeak=3355477560	time=4064.179268836975	
+RESULT	id=48	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355460488	memPeak=0	time=62510.68812274933	
+RESULT	id=48	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355460488	memPeak=0	time=22746.611024856567	
+RESULT	id=51	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=30411.87891292572	
+RESULT	id=51	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=0	memOff=1118481084	memPeak=2227264272	time=118183.73782634735	
+RESULT	id=51	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118481084	memPeak=1118481072	time=15189.178663253784	
+RESULT	id=51	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398101352	memPeak=0	time=22522.26141643524	
+RESULT	id=53	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.008355140686035156	
+RESULT	id=53	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=0	memOff=4194304020	memPeak=2142288	time=3580.820044517517	
+RESULT	id=53	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=192	memOff=4194304020	memPeak=1752	time=5439.10297870636	
+RESULT	id=53	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194304212	memPeak=209716761	time=2303.8320922851562	
+RESULT	id=53	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194304212	memPeak=0	time=0.00012874603271484375	
+RESULT	id=53	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2516581764	time=39218.97179889679	
+RESULT	id=53	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2516567868	time=48754.61553478241	
+RESULT	id=53	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1245496656	time=33424.444341659546	
+RESULT	id=53	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=318562152	time=11491.946216583252	
+RESULT	id=53	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=103421172	time=2888.1437978744507	
+RESULT	id=53	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=55639944	time=1015.3584957122803	
+RESULT	id=53	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=40267920	time=554.1159420013428	
+RESULT	id=53	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=33032472	time=412.45008659362793	
+RESULT	id=53	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=26483820	time=319.1983184814453	
+RESULT	id=53	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=19954476	time=233.43207263946533	
+RESULT	id=53	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=13596816	time=156.6032838821411	
+RESULT	id=53	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=6782052	time=78.20900821685791	
+RESULT	id=53	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2912700	time=33.258460998535156	
+RESULT	id=53	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2344248	time=20.87693214416504	
+RESULT	id=53	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=778656	time=8.891742706298828	
+RESULT	id=53	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1560	time=0.8490200042724609	
+RESULT	id=53	rep_id=1	phase_id=22	phase_name=Write out SA	memFinal=0	memOff=4194304212	memPeak=0	time=3407.1394233703613	
+RESULT	id=54	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194304000	memOff=0	memPeak=4196452160	time=76598.13916492462	
+RESULT	id=54	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=36075.97568035126	
+RESULT	id=54	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=6917.067161560059	
+RESULT	id=54	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=1098.4638118743896	
+RESULT	id=54	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=576.8218746185303	
+RESULT	id=54	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=283.3099136352539	
+RESULT	id=54	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=83.66547107696533	
+RESULT	id=54	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=20.20670795440674	
+RESULT	id=54	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=2.973116874694824	
+RESULT	id=54	rep_id=1	phase_id=10	phase_name=Write out result	memFinal=-4194304000	memOff=4194304000	memPeak=2148160	time=14545.092535972595	
+RESULT	id=55	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=935411532	memOff=0	memPeak=1128513658	time=9074.982406616211	
+RESULT	id=55	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=935411532	memPeak=2142304	time=10920.572222709656	
+RESULT	id=55	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-935411132	memOff=935411532	memPeak=83504	time=14915.353667259216	
+RESULT	id=56	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355443408	memOff=0	memPeak=3355445104	time=2777.593719482422	
+RESULT	id=56	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355443408	memPeak=0	time=55541.739753723145	
+RESULT	id=56	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355443408	memPeak=0	time=29193.189025878906	
+RESULT	id=59	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=30457.53140449524	
+RESULT	id=59	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2227264272	time=107205.16199207306	
+RESULT	id=59	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15171.619709014893	
+RESULT	id=59	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=526	time=15358.193242073059	
+RESULT	id=61	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.010833740234375	
+RESULT	id=61	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=2584	memOff=4194304020	memPeak=4364264	time=2011.1672639846802	
+RESULT	id=61	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194306604	memPeak=0	time=5313.799964904785	
+RESULT	id=61	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194306604	memPeak=209715201	time=1969.048659324646	
+RESULT	id=61	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194306604	memPeak=0	time=0.00014019012451171875	
+RESULT	id=61	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=16	memOff=4194306604	memPeak=5033163720	time=28330.360864639282	
+RESULT	id=61	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306620	memPeak=5033135928	time=34384.83813381195	
+RESULT	id=61	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194306620	memPeak=2490993504	time=23687.728289604187	
+RESULT	id=61	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=16	memOff=4194306620	memPeak=637124496	time=8630.011281013489	
+RESULT	id=61	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=48	memOff=4194306636	memPeak=206842536	time=2141.7354106903076	
+RESULT	id=61	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=16	memOff=4194306684	memPeak=111280080	time=661.9800872802734	
+RESULT	id=61	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194306700	memPeak=80536032	time=342.23871421813965	
+RESULT	id=61	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=48	memOff=4194306700	memPeak=66065136	time=248.7377519607544	
+RESULT	id=61	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194306748	memPeak=52967832	time=196.53076076507568	
+RESULT	id=61	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=16	memOff=4194306748	memPeak=39909144	time=143.50328826904297	
+RESULT	id=61	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194306764	memPeak=27193824	time=94.3433723449707	
+RESULT	id=61	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=-16	memOff=4194306764	memPeak=13564296	time=47.59494876861572	
+RESULT	id=61	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=-16	memOff=4194306748	memPeak=5825592	time=19.94602108001709	
+RESULT	id=61	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=16	memOff=4194306732	memPeak=4688688	time=13.742091178894043	
+RESULT	id=61	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=16	memOff=4194306748	memPeak=1557504	time=5.58735466003418	
+RESULT	id=61	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4194306764	memPeak=0	time=0.5858402252197266	
+RESULT	id=61	rep_id=1	phase_id=22	phase_name=Write out SA	memFinal=0	memOff=4194306764	memPeak=0	time=4294.373635292053	
+RESULT	id=62	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194306584	memOff=0	memPeak=4198692808	time=41392.893637657166	
+RESULT	id=62	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=20457.029333114624	
+RESULT	id=62	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=4211.952916145325	
+RESULT	id=62	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=644.4872970581055	
+RESULT	id=62	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=331.0597791671753	
+RESULT	id=62	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=164.5573034286499	
+RESULT	id=62	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=50.790053367614746	
+RESULT	id=62	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4381616	time=12.503633499145508	
+RESULT	id=62	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4379312	time=2.00238037109375	
+RESULT	id=62	rep_id=1	phase_id=10	phase_name=Write out result	memFinal=-4194304000	memOff=4194306584	memPeak=4386224	time=8306.220936775208	
+RESULT	id=63	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=935413924	memOff=0	memPeak=1321615050	time=5641.322016716003	
+RESULT	id=63	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=935413924	memPeak=2142304	time=10908.002080917358	
+RESULT	id=63	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-935411132	memOff=935413924	memPeak=83504	time=14936.573081970215	
+RESULT	id=64	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355445800	memOff=0	memPeak=3355446344	time=2687.071720123291	
+RESULT	id=64	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355445800	memPeak=0	time=55725.34463310242	
+RESULT	id=64	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355445800	memPeak=0	time=29639.615263938904	
+RESULT	id=67	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=30396.663990974426	
+RESULT	id=67	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2227264272	time=107317.14716720581	
+RESULT	id=67	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15194.713130950928	
+RESULT	id=67	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=4698	time=15778.134536743164	
+RESULT	id=69	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.008601188659667969	
+RESULT	id=69	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=4216	memOff=4194304020	memPeak=8642328	time=985.5940456390381	
+RESULT	id=69	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194308236	memPeak=0	time=4414.636026382446	
+RESULT	id=69	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194308236	memPeak=209715201	time=1083.4012479782104	
+RESULT	id=69	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194308236	memPeak=0	time=0.00023365020751953125	
+RESULT	id=69	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-629145272	memOff=4194308236	memPeak=4404018576	time=16470.86015033722	
+RESULT	id=69	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=336	memOff=3565162964	memPeak=5033136240	time=19819.226194381714	
+RESULT	id=69	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=240	memOff=3565163300	memPeak=2490993816	time=13463.855425834656	
+RESULT	id=69	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=752	memOff=3565163540	memPeak=637124808	time=4828.393505096436	
+RESULT	id=69	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=336	memOff=3565164292	memPeak=206842848	time=1184.3396797180176	
+RESULT	id=69	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=-13909896	memOff=3565164628	memPeak=97370400	time=399.04719734191895	
+RESULT	id=69	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=10067696	memOff=3551254732	memPeak=80536344	time=203.9443244934082	
+RESULT	id=69	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=8258800	memOff=3561322428	memPeak=66065448	time=151.69439792633057	
+RESULT	id=69	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=-6620892	memOff=3569581228	memPeak=46347180	time=119.79354667663574	
+RESULT	id=69	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=1104	memOff=3562960336	memPeak=39909456	time=88.7251501083374	
+RESULT	id=69	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=520	memOff=3562961440	memPeak=27194136	time=59.190372467041016	
+RESULT	id=69	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=280	memOff=3562961960	memPeak=13564608	time=29.417396545410156	
+RESULT	id=69	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=729080	memOff=3562962240	memPeak=5825904	time=12.575132369995117	
+RESULT	id=69	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=896	memOff=3563691320	memPeak=4689000	time=8.781426429748535	
+RESULT	id=69	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=216	memOff=3563692216	memPeak=1557816	time=3.581684112548828	
+RESULT	id=69	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=3563692432	memPeak=0	time=0.3154134750366211	
+RESULT	id=69	rep_id=1	phase_id=22	phase_name=Write out SA	memFinal=0	memOff=3563692432	memPeak=0	time=3538.806403160095	
+RESULT	id=70	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194308216	memOff=0	memPeak=4202982616	time=23195.048314094543	
+RESULT	id=70	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=11795.184906959534	
+RESULT	id=70	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=2577.4737882614136	
+RESULT	id=70	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=-46912	memOff=4194308216	memPeak=8627488	time=379.86354064941406	
+RESULT	id=70	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194261304	memPeak=8674400	time=192.86906623840332	
+RESULT	id=70	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194261304	memPeak=8674400	time=96.63300228118896	
+RESULT	id=70	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194261304	memPeak=8674400	time=30.534363746643066	
+RESULT	id=70	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-187648	memOff=4194261304	memPeak=8622880	time=7.431652069091797	
+RESULT	id=70	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194073656	memPeak=8667488	time=1.2204875946044922	
+RESULT	id=70	rep_id=1	phase_id=10	phase_name=Write out result	memFinal=-4194350912	memOff=4194073656	memPeak=8627488	time=4555.648856163025	
+RESULT	id=71	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=935415556	memOff=0	memPeak=1707817802	time=3529.852738380432	
+RESULT	id=71	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=935415556	memPeak=2142304	time=10906.315695762634	
+RESULT	id=71	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-935411132	memOff=935415556	memPeak=83504	time=15007.672412872314	
+RESULT	id=72	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355447432	memOff=0	memPeak=3355448248	time=2831.800184249878	
+RESULT	id=72	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355447432	memPeak=0	time=55758.928789138794	
+RESULT	id=72	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355447432	memPeak=0	time=29390.202902793884	
+RESULT	id=75	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=30379.303034305573	
+RESULT	id=75	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2227264272	time=107570.1564040184	
+RESULT	id=75	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15192.322862625122	
+RESULT	id=75	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=8870	time=15079.484225273132	
+RESULT	id=77	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.008291244506835938	
+RESULT	id=77	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=7480	memOff=4194304020	memPeak=17198456	time=511.83590030670166	
+RESULT	id=77	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194311500	memPeak=0	time=4203.160834312439	
+RESULT	id=77	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194311500	memPeak=209715201	time=706.4341287612915	
+RESULT	id=77	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194311500	memPeak=0	time=0.00011444091796875	
+RESULT	id=77	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=4672	memOff=4194311500	memPeak=5033165040	time=11755.483044624329	
+RESULT	id=77	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-314566732	memOff=4194316172	memPeak=4403995248	time=13263.769339561462	
+RESULT	id=77	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-155683816	memOff=3879749440	memPeak=2335307736	time=8938.100286483765	
+RESULT	id=77	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=159281168	memOff=3724065624	memPeak=637125816	time=3076.975235939026	
+RESULT	id=77	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=51712644	memOff=3883346792	memPeak=206843856	time=749.9610557556152	
+RESULT	id=77	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=6955664	memOff=3935059436	memPeak=104326392	time=251.23901176452637	
+RESULT	id=77	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=15103392	memOff=3942015100	memPeak=80537352	time=136.9867343902588	
+RESULT	id=77	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=8260872	memOff=3957118492	memPeak=61937388	time=102.94845199584961	
+RESULT	id=77	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=2800	memOff=3965379364	memPeak=46348176	time=80.30158805847168	
+RESULT	id=77	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=2497368	memOff=3965382164	memPeak=37416144	time=58.58104228973389	
+RESULT	id=77	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=6798680	memOff=3967879532	memPeak=27195144	time=39.05160045623779	
+RESULT	id=77	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=4243448	memOff=3974678212	memPeak=13565616	time=20.02182960510254	
+RESULT	id=77	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=1459408	memOff=3978921660	memPeak=5826912	time=8.653542518615723	
+RESULT	id=77	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=1466568	memOff=3980381068	memPeak=4690008	time=6.362443923950195	
+RESULT	id=77	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=293584	memOff=3981847636	memPeak=1558824	time=2.4645376205444336	
+RESULT	id=77	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=3982141220	memPeak=0	time=0.19689178466796875	
+RESULT	id=77	rep_id=1	phase_id=22	phase_name=Write out SA	memFinal=0	memOff=3982141220	memPeak=0	time=3536.8679609298706	
+RESULT	id=78	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194311480	memOff=0	memPeak=4211562232	time=14022.134793758392	
+RESULT	id=78	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=7387.210461616516	
+RESULT	id=78	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=1781.945110797882	
+RESULT	id=78	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=-46912	memOff=4194311480	memPeak=17203840	time=246.2114028930664	
+RESULT	id=78	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=123.46160125732422	
+RESULT	id=78	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=62.758052825927734	
+RESULT	id=78	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-93824	memOff=4194264568	memPeak=17203840	time=20.297746658325195	
+RESULT	id=78	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-187648	memOff=4194170744	memPeak=17246144	time=4.9142045974731445	
+RESULT	id=78	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-234560	memOff=4193983096	memPeak=17009280	time=0.873507022857666	
+RESULT	id=78	rep_id=1	phase_id=10	phase_name=Write out result	memFinal=-4194444736	memOff=4193748536	memPeak=17110016	time=2617.7974429130554	
+RESULT	id=79	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=935418820	memOff=0	memPeak=2480223306	time=2966.7681884765625	
+RESULT	id=79	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=935418820	memPeak=2142304	time=10868.176215171814	
+RESULT	id=79	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-935411132	memOff=935418820	memPeak=83504	time=15203.189357757568	
+RESULT	id=80	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355450696	memOff=0	memPeak=3355452056	time=2622.9964418411255	
+RESULT	id=80	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355450696	memPeak=0	time=55900.49081134796	
+RESULT	id=80	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355450696	memPeak=0	time=29600.939658164978	
+RESULT	id=83	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=30399.271456718445	
+RESULT	id=83	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2058	memOff=1118481084	memPeak=2227264272	time=106752.40998125076	
+RESULT	id=83	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483142	memPeak=1118481072	time=15207.15298128128	
+RESULT	id=83	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103410	memPeak=13042	time=15046.82299232483	
+RESULT	id=85	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006743431091308594	
+RESULT	id=85	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=10744	memOff=4194304020	memPeak=25754584	time=354.99950790405273	
+RESULT	id=85	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194314764	memPeak=0	time=4071.0304861068726	
+RESULT	id=85	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194314764	memPeak=209715201	time=539.5638446807861	
+RESULT	id=85	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194314764	memPeak=0	time=0.00014209747314453125	
+RESULT	id=85	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=629148728	memOff=4194314764	memPeak=5033166560	time=11182.448225975037	
+RESULT	id=85	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=209720748	memOff=4823463492	memPeak=5033138768	time=11059.84342098236	
+RESULT	id=85	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=2032	memOff=5033184240	memPeak=2490996344	time=7299.530854225159	
+RESULT	id=85	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=132737096	memOff=5033186272	memPeak=637127336	time=2384.3434619903564	
+RESULT	id=85	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=60328716	memOff=5165923368	memPeak=206845376	time=585.5925960540771	
+RESULT	id=85	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=23188352	memOff=5226252084	memPeak=111282920	time=203.32888793945312	
+RESULT	id=85	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=16789668	memOff=5249440436	memPeak=77183192	time=115.04002475738525	
+RESULT	id=85	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=13761536	memOff=5266230104	memPeak=66067976	time=86.98000907897949	
+RESULT	id=85	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=19870072	memOff=5279991640	memPeak=52970672	time=67.31002712249756	
+RESULT	id=85	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=8319640	memOff=5299861712	memPeak=39911984	time=49.415974617004395	
+RESULT	id=85	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=9066632	memOff=5308181352	memPeak=27196664	time=32.888750076293945	
+RESULT	id=85	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=3951584	memOff=5317247984	memPeak=13001960	time=16.9025821685791	
+RESULT	id=85	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=1701056	memOff=5321199568	memPeak=5828432	time=7.554591178894043	
+RESULT	id=85	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=1560548	memOff=5322900624	memPeak=4691528	time=5.8325700759887695	
+RESULT	id=85	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=331144	memOff=5324461172	memPeak=1495448	time=2.127213478088379	
+RESULT	id=85	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=5324792316	memPeak=0	time=0.15451526641845703	
+RESULT	id=85	rep_id=1	phase_id=22	phase_name=Write out SA	memFinal=0	memOff=5324792316	memPeak=0	time=3566.304986000061	
+RESULT	id=86	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194314744	memOff=0	memPeak=4220141848	time=11015.729053497314	
+RESULT	id=86	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=5966.668761253357	
+RESULT	id=86	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=1525.198353767395	
+RESULT	id=86	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=203.0626049041748	
+RESULT	id=86	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-140736	memOff=4194314744	memPeak=25827104	time=100.76517009735107	
+RESULT	id=86	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194174008	memPeak=25827104	time=51.75265598297119	
+RESULT	id=86	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194174008	memPeak=25827104	time=17.005045890808105	
+RESULT	id=86	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-375296	memOff=4194174008	memPeak=25822496	time=4.100419044494629	
+RESULT	id=86	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-234560	memOff=4193798712	memPeak=25585632	time=0.7694568634033203	
+RESULT	id=86	rep_id=1	phase_id=10	phase_name=Write out result	memFinal=-4194632384	memOff=4193564152	memPeak=25498720	time=2011.0431747436523	
+RESULT	id=87	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=935422084	memOff=0	memPeak=3252628810	time=3146.9682216644287	
+RESULT	id=87	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=935422084	memPeak=2142304	time=11003.615975379944	
+RESULT	id=87	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-935411132	memOff=935422084	memPeak=83504	time=14998.94715976715	
+RESULT	id=88	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355453960	memOff=0	memPeak=3355455864	time=2621.0568952560425	
+RESULT	id=88	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355453960	memPeak=0	time=55866.329933166504	
+RESULT	id=88	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355453960	memPeak=0	time=29444.827256202698	
+RESULT	id=91	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=30407.98061275482	
+RESULT	id=91	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2058	memOff=1118481084	memPeak=2227264272	time=106668.40075969696	
+RESULT	id=91	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483142	memPeak=1118481072	time=15205.019122123718	
+RESULT	id=91	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103410	memPeak=13042	time=15018.405839920044	
+RESULT	id=93	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.005940437316894531	
+RESULT	id=93	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=14008	memOff=4194304020	memPeak=34310712	time=370.2954387664795	
+RESULT	id=93	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194318028	memPeak=0	time=4056.3605308532715	
+RESULT	id=93	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194318028	memPeak=209715201	time=520.8705348968506	
+RESULT	id=93	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194318028	memPeak=0	time=0.00018024444580078125	
+RESULT	id=93	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=157289088	memOff=4194318028	memPeak=4718595864	time=9190.788780212402	
+RESULT	id=93	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=157289656	memOff=4351607116	memPeak=4718569800	time=9972.872024536133	
+RESULT	id=93	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-2512	memOff=4508896772	memPeak=2413154820	time=6642.513016700745	
+RESULT	id=93	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=139367060	memOff=4508894260	memPeak=637129368	time=2158.1107902526855	
+RESULT	id=93	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=58173116	memOff=4648261320	memPeak=200383572	time=540.3185472488403	
+RESULT	id=93	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=38252808	memOff=4706434436	memPeak=111284952	time=184.8762435913086	
+RESULT	id=93	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=22654144	memOff=4744687244	memPeak=75507396	time=102.54336357116699	
+RESULT	id=93	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=18576496	memOff=4767341388	memPeak=64005456	time=77.93502616882324	
+RESULT	id=93	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=18209788	memOff=4785917884	memPeak=52972704	time=60.70197868347168	
+RESULT	id=93	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=9974436	memOff=4804127672	memPeak=39914016	time=44.44600296020508	
+RESULT	id=93	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=11902968	memOff=4814102108	memPeak=27198696	time=29.84650230407715	
+RESULT	id=93	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=4657248	memOff=4826005076	memPeak=13569168	time=15.419694900512695	
+RESULT	id=93	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=2548396	memOff=4830662324	memPeak=5648412	time=7.31120491027832	
+RESULT	id=93	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=872136	memOff=4833210720	memPeak=3814392	time=5.278969764709473	
+RESULT	id=93	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=-4440	memOff=4834082856	memPeak=978312	time=1.9271087646484375	
+RESULT	id=93	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4834078416	memPeak=0	time=0.13658809661865234	
+RESULT	id=93	rep_id=1	phase_id=22	phase_name=Write out SA	memFinal=0	memOff=4834078416	memPeak=0	time=3548.500449180603	
+RESULT	id=94	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194318008	memOff=0	memPeak=4228721464	time=9524.591911792755	
+RESULT	id=94	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=5329.9722809791565	
+RESULT	id=94	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=1433.6412420272827	
+RESULT	id=94	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=-46912	memOff=4194318008	memPeak=34403456	time=183.69107723236084	
+RESULT	id=94	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-46912	memOff=4194271096	memPeak=34403456	time=90.15921926498413	
+RESULT	id=94	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=46.363693714141846	
+RESULT	id=94	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=15.413460731506348	
+RESULT	id=94	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-656768	memOff=4194224184	memPeak=34351936	time=3.8077516555786133	
+RESULT	id=94	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-469120	memOff=4193567416	memPeak=33927424	time=0.6911859512329102	
+RESULT	id=94	rep_id=1	phase_id=10	phase_name=Write out result	memFinal=-4194866944	memOff=4193098296	memPeak=33840512	time=1768.26162815094	
+RESULT	id=95	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=935425348	memOff=0	memPeak=4025034314	time=3573.3537616729736	
+RESULT	id=95	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=935425348	memPeak=2142304	time=10900.246624946594	
+RESULT	id=95	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-935411132	memOff=935425348	memPeak=83504	time=15039.441033363342	
+RESULT	id=96	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355457224	memOff=0	memPeak=3355459672	time=2546.771174430847	
+RESULT	id=96	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355457224	memPeak=0	time=55894.32117843628	
+RESULT	id=96	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355457224	memPeak=0	time=29498.509512901306	
+RESULT	id=99	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=30725.932467460632	
+RESULT	id=99	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2058	memOff=1118481084	memPeak=2227264272	time=107151.75148582458	
+RESULT	id=99	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483142	memPeak=1118481072	time=15205.920414924622	
+RESULT	id=99	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103410	memPeak=17214	time=13940.202813148499	
+RESULT	id=101	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.009033203125	
+RESULT	id=101	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=17272	memOff=4194304020	memPeak=42866840	time=310.18213653564453	
+RESULT	id=101	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194321292	memPeak=0	time=4168.905035018921	
+RESULT	id=101	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194321292	memPeak=209715201	time=564.6653833389282	
+RESULT	id=101	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194321292	memPeak=0	time=6.389617919921875e-05	
+RESULT	id=101	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-4064	memOff=4194321292	memPeak=5033171136	time=9600.844100952148	
+RESULT	id=101	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=377464872	memOff=4194317228	memPeak=4907314932	time=10117.659217834473	
+RESULT	id=101	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=2080	memOff=4571782100	memPeak=2491000920	time=7453.676386833191	
+RESULT	id=101	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=207065756	memOff=4571784180	memPeak=637131912	time=2369.2656421661377	
+RESULT	id=101	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=72420892	memOff=4778849936	memPeak=206849952	time=584.8270168304443	
+RESULT	id=101	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=38919144	memOff=4851270828	memPeak=111287496	time=190.68197345733643	
+RESULT	id=101	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=16090960	memOff=4890189972	memPeak=78530040	time=103.49900531768799	
+RESULT	id=101	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=21453856	memOff=4906280932	memPeak=62769264	time=78.69361877441406	
+RESULT	id=101	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=18520628	memOff=4927734788	memPeak=52975248	time=61.94452667236328	
+RESULT	id=101	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=12966416	memOff=4946255416	memPeak=39916560	time=45.2246675491333	
+RESULT	id=101	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=9511472	memOff=4959221832	memPeak=27201240	time=29.97025203704834	
+RESULT	id=101	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=4399412	memOff=4968733304	memPeak=13571712	time=15.474320411682129	
+RESULT	id=101	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=429996	memOff=4973132716	memPeak=3793968	time=6.941913604736328	
+RESULT	id=101	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=-120584	memOff=4973562712	memPeak=2937756	time=4.665401458740234	
+RESULT	id=101	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=-19552	memOff=4973442128	memPeak=786084	time=2.041921615600586	
+RESULT	id=101	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4973422576	memPeak=0	time=0.13523197174072266	
+RESULT	id=101	rep_id=1	phase_id=22	phase_name=Write out SA	memFinal=0	memOff=4973422576	memPeak=0	time=4304.892766952515	
+RESULT	id=102	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194321272	memOff=0	memPeak=4237301080	time=8737.204033851624	
+RESULT	id=102	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=4963.079239845276	
+RESULT	id=102	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=1375.0993738174438	
+RESULT	id=102	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=-46912	memOff=4194321272	memPeak=42932896	time=173.30405521392822	
+RESULT	id=102	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-140736	memOff=4194274360	memPeak=42885984	time=84.01718711853027	
+RESULT	id=102	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-46912	memOff=4194133624	memPeak=42932896	time=43.632896423339844	
+RESULT	id=102	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-46912	memOff=4194086712	memPeak=42979808	time=14.648682594299316	
+RESULT	id=102	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-609856	memOff=4194039800	memPeak=42928288	time=3.590799331665039	
+RESULT	id=102	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-656768	memOff=4193429944	memPeak=42316128	time=0.6813058853149414	
+RESULT	id=102	rep_id=1	phase_id=10	phase_name=Write out result	memFinal=-4194913856	memOff=4192773176	memPeak=42369952	time=1622.7320499420166	
+RESULT	id=103	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=935428612	memOff=0	memPeak=4797439818	time=4193.499821662903	
+RESULT	id=103	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=935428612	memPeak=2142304	time=10923.806489944458	
+RESULT	id=103	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-935411132	memOff=935428612	memPeak=83504	time=15012.887475013733	
+RESULT	id=104	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355460488	memOff=0	memPeak=3355463480	time=2545.2546815872192	
+RESULT	id=104	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355460488	memPeak=0	time=55749.88973617554	
+RESULT	id=104	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355460488	memPeak=0	time=29549.414092063904	
+RESULT	id=107	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32427.825221061707	
+RESULT	id=107	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=0	memOff=1118481084	memPeak=2232652132	time=117255.95540237427	
+RESULT	id=107	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118481084	memPeak=1118481072	time=15201.717396736145	
+RESULT	id=107	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398101352	memPeak=0	time=21605.660837173462	
+RESULT	id=109	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006731986999511719	
+RESULT	id=109	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=0	memOff=4194304020	memPeak=2142288	time=8888.061506271362	
+RESULT	id=109	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=192	memOff=4194304020	memPeak=1752	time=6346.588865280151	
+RESULT	id=109	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194304212	memPeak=209716761	time=2812.303381919861	
+RESULT	id=109	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194304212	memPeak=0	time=6.389617919921875e-05	
+RESULT	id=109	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2516501460	time=40972.979681015015	
+RESULT	id=109	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2501757276	time=45537.455008506775	
+RESULT	id=109	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1691355756	time=38264.13001823425	
+RESULT	id=109	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1055948304	time=22536.939834594727	
+RESULT	id=109	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1016480880	time=17677.299207687378	
+RESULT	id=109	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=994271952	time=17084.80663871765	
+RESULT	id=109	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=968922048	time=16760.082880973816	
+RESULT	id=109	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=931304568	time=16325.914047241211	
+RESULT	id=109	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=879647772	time=15804.641380310059	
+RESULT	id=109	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=806117820	time=14817.185041427612	
+RESULT	id=109	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=701566344	time=13152.647102355957	
+RESULT	id=109	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=555182004	time=11050.499255180359	
+RESULT	id=109	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=392044656	time=8212.354326248169	
+RESULT	id=109	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=252777120	time=5369.555748939514	
+RESULT	id=109	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=174088188	time=3363.104577064514	
+RESULT	id=109	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=130823796	time=2346.107714653015	
+RESULT	id=109	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=76514904	time=1466.4611024856567	
+RESULT	id=109	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=15005232	time=472.24981594085693	
+RESULT	id=109	rep_id=1	phase_id=24	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1560	time=30.538844108581543	
+RESULT	id=109	rep_id=1	phase_id=25	phase_name=Write out SA	memFinal=0	memOff=4194304212	memPeak=0	time=3226.7847356796265	
+RESULT	id=110	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194304000	memOff=0	memPeak=4196452160	time=75912.86708068848	
+RESULT	id=110	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=49395.99994468689	
+RESULT	id=110	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=30816.860427856445	
+RESULT	id=110	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=26274.473861694336	
+RESULT	id=110	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=23166.45099258423	
+RESULT	id=110	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=17824.319069862366	
+RESULT	id=110	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=10420.85713005066	
+RESULT	id=110	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=4839.0451736450195	
+RESULT	id=110	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=1987.7589073181152	
+RESULT	id=110	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=360.47057056427	
+RESULT	id=110	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4194304000	memPeak=2148160	time=15557.138017654419	
+RESULT	id=111	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=885033936	memOff=0	memPeak=977380915	time=8351.681210517883	
+RESULT	id=111	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=885033936	memPeak=2142304	time=15024.093200683594	
+RESULT	id=111	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-885033536	memOff=885033936	memPeak=185511648	time=11627.832334518433	
+RESULT	id=112	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355443408	memOff=0	memPeak=3355448832	time=3089.986488342285	
+RESULT	id=112	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355443408	memPeak=0	time=68553.85368919373	
+RESULT	id=112	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355443408	memPeak=0	time=28723.132033348083	
+RESULT	id=115	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32424.78969478607	
+RESULT	id=115	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2232652132	time=106829.00386810303	
+RESULT	id=115	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15228.969334602356	
+RESULT	id=115	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=526	time=15281.096955299377	
+RESULT	id=117	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006290912628173828	
+RESULT	id=117	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=2584	memOff=4194304020	memPeak=4368872	time=5371.0768303871155	
+RESULT	id=117	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194306604	memPeak=0	time=6055.6467461586	
+RESULT	id=117	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194306604	memPeak=209715201	time=2123.620671749115	
+RESULT	id=117	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194306604	memPeak=0	time=6.198883056640625e-05	
+RESULT	id=117	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=5033003112	time=27961.54292488098	
+RESULT	id=117	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=5003514744	time=30975.404375076294	
+RESULT	id=117	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=3382711704	time=26251.4302110672	
+RESULT	id=117	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=2111896800	time=15609.336938858032	
+RESULT	id=117	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=2032961952	time=12125.801975727081	
+RESULT	id=117	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=1988544096	time=11748.523681163788	
+RESULT	id=117	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=1937844288	time=11499.171963214874	
+RESULT	id=117	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=1862609328	time=11128.990077018738	
+RESULT	id=117	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=1759295736	time=10700.648946762085	
+RESULT	id=117	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=1612235832	time=10012.605482578278	
+RESULT	id=117	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=1403132880	time=9002.941888809204	
+RESULT	id=117	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=1110364200	time=7525.08722782135	
+RESULT	id=117	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=784089504	time=5553.777100086212	
+RESULT	id=117	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=505554432	time=3590.4278860092163	
+RESULT	id=117	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=348176568	time=2288.4142060279846	
+RESULT	id=117	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=261647784	time=1578.8896389007568	
+RESULT	id=117	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=153030000	time=942.898410320282	
+RESULT	id=117	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=30010656	time=314.9518280029297	
+RESULT	id=117	rep_id=1	phase_id=24	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=0	time=18.694010257720947	
+RESULT	id=117	rep_id=1	phase_id=25	phase_name=Write out SA	memFinal=0	memOff=4194306604	memPeak=0	time=3378.5071959495544	
+RESULT	id=118	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194306584	memOff=0	memPeak=4198692808	time=41270.66895008087	
+RESULT	id=118	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=26750.047367095947	
+RESULT	id=118	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=16720.146574020386	
+RESULT	id=118	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=14169.809010505676	
+RESULT	id=118	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=12546.993877410889	
+RESULT	id=118	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=9736.393884658813	
+RESULT	id=118	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=5724.763605117798	
+RESULT	id=118	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=2676.1035413742065	
+RESULT	id=118	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=1101.6338367462158	
+RESULT	id=118	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=209.20829486846924	
+RESULT	id=118	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4194306584	memPeak=4386224	time=8307.45514011383	
+RESULT	id=119	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=885036328	memOff=0	memPeak=1069727163	time=5142.466371059418	
+RESULT	id=119	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=885036328	memPeak=2142304	time=15029.907479286194	
+RESULT	id=119	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-885033536	memOff=885036328	memPeak=185511648	time=11650.165621757507	
+RESULT	id=120	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355445800	memOff=0	memPeak=3355453032	time=3001.2474966049194	
+RESULT	id=120	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355445800	memPeak=0	time=68633.01759243011	
+RESULT	id=120	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355445800	memPeak=0	time=28640.307101249695	
+RESULT	id=123	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32417.00875377655	
+RESULT	id=123	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2232652132	time=106729.54633617401	
+RESULT	id=123	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15254.865782737732	
+RESULT	id=123	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=4698	time=15261.466962814331	
+RESULT	id=125	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006595611572265625	
+RESULT	id=125	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=4216	memOff=4194304020	memPeak=8646936	time=2775.726534843445	
+RESULT	id=125	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194308236	memPeak=0	time=4989.871059417725	
+RESULT	id=125	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194308236	memPeak=209715201	time=1150.7763385772705	
+RESULT	id=125	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194308236	memPeak=0	time=0.0001430511474609375	
+RESULT	id=125	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=840	memOff=4194308236	memPeak=5033003424	time=16570.475757598877	
+RESULT	id=125	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-625439120	memOff=4194309076	memPeak=4378075728	time=19509.09451007843	
+RESULT	id=125	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=1160	memOff=3568869956	memPeak=3382712016	time=15972.356562614441	
+RESULT	id=125	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=3568871116	memPeak=2111897112	time=9085.644361495972	
+RESULT	id=125	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=128	memOff=3568871116	memPeak=2032962264	time=7412.322318077087	
+RESULT	id=125	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=568	memOff=3568871244	memPeak=1988544408	time=6983.17546749115	
+RESULT	id=125	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=992	memOff=3568871812	memPeak=1937844600	time=6884.911770820618	
+RESULT	id=125	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=608	memOff=3568872804	memPeak=1862609640	time=7095.106795310974	
+RESULT	id=125	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=576	memOff=3568873412	memPeak=1759296048	time=6381.234183311462	
+RESULT	id=125	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=640	memOff=3568873988	memPeak=1612236144	time=6290.6372327804565	
+RESULT	id=125	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=-175391272	memOff=3568874628	memPeak=1227741600	time=5374.282485961914	
+RESULT	id=125	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=552	memOff=3393483356	memPeak=1110364512	time=4388.140480995178	
+RESULT	id=125	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=88	memOff=3393483908	memPeak=784089816	time=3372.754066467285	
+RESULT	id=125	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=200	memOff=3393483996	memPeak=505554744	time=2194.371778488159	
+RESULT	id=125	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=112	memOff=3393484196	memPeak=348176880	time=1405.685336112976	
+RESULT	id=125	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=496	memOff=3393484308	memPeak=261648096	time=979.0911798477173	
+RESULT	id=125	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=19129108	memOff=3393484804	memPeak=153030312	time=581.0913772583008	
+RESULT	id=125	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=3751776	memOff=3412613912	memPeak=30010968	time=172.77643203735352	
+RESULT	id=125	rep_id=1	phase_id=24	phase_name=Iteration	memFinal=0	memOff=3416365688	memPeak=0	time=9.836140632629395	
+RESULT	id=125	rep_id=1	phase_id=25	phase_name=Write out SA	memFinal=0	memOff=3416365688	memPeak=0	time=4022.8009119033813	
+RESULT	id=126	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194308216	memOff=0	memPeak=4202982616	time=23268.49094581604	
+RESULT	id=126	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=15172.469237327576	
+RESULT	id=126	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=9411.712911605835	
+RESULT	id=126	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=7895.281553268433	
+RESULT	id=126	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=7043.439756393433	
+RESULT	id=126	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=5591.028318405151	
+RESULT	id=126	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=3316.003454208374	
+RESULT	id=126	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=1563.188744544983	
+RESULT	id=126	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=645.577470779419	
+RESULT	id=126	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=133.6193904876709	
+RESULT	id=126	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4194308216	memPeak=8674400	time=4560.918529510498	
+RESULT	id=127	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=885037960	memOff=0	memPeak=1254419627	time=3015.168433189392	
+RESULT	id=127	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=885037960	memPeak=2142304	time=15014.230651855469	
+RESULT	id=127	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-885033536	memOff=885037960	memPeak=185511648	time=11493.604131698608	
+RESULT	id=128	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355447432	memOff=0	memPeak=3355458280	time=2948.9186067581177	
+RESULT	id=128	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355447432	memPeak=0	time=68434.12729263306	
+RESULT	id=128	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355447432	memPeak=0	time=28531.01510810852	
+RESULT	id=131	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32455.208493232727	
+RESULT	id=131	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2232652132	time=107069.87693881989	
+RESULT	id=131	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15259.387491226196	
+RESULT	id=131	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=8870	time=14970.768115997314	
+RESULT	id=133	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006049633026123047	
+RESULT	id=133	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=7480	memOff=4194304020	memPeak=17203064	time=1411.7365946769714	
+RESULT	id=133	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194311500	memPeak=0	time=4527.945440292358	
+RESULT	id=133	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194311500	memPeak=209715201	time=688.4954147338867	
+RESULT	id=133	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194311500	memPeak=0	time=0.00015497207641601562	
+RESULT	id=133	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=5048	memOff=4194311500	memPeak=5033004432	time=12098.777044296265	
+RESULT	id=133	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=4664	memOff=4194316548	memPeak=5003516064	time=12715.823741436005	
+RESULT	id=133	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-211416584	memOff=4194321212	memPeak=3171293544	time=10079.66075181961	
+RESULT	id=133	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=131995248	memOff=3982904628	memPeak=2111898120	time=6553.11357831955	
+RESULT	id=133	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=2568	memOff=4114899876	memPeak=2032963272	time=5439.290586948395	
+RESULT	id=133	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=-248563804	memOff=4114902444	memPeak=1739977404	time=4658.811786174774	
+RESULT	id=133	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=-121112748	memOff=3866338640	memPeak=1816730340	time=4611.87978219986	
+RESULT	id=133	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=4456	memOff=3745225892	memPeak=1746197568	time=4494.963568687439	
+RESULT	id=133	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=-109952404	memOff=3745230348	memPeak=1649341068	time=4646.134448051453	
+RESULT	id=133	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=-201528956	memOff=3635277944	memPeak=1309942932	time=4340.173651218414	
+RESULT	id=133	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=175388752	memOff=3433748988	memPeak=1403134200	time=3557.713177204132	
+RESULT	id=133	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=69399060	memOff=3609137740	memPeak=1110365520	time=3148.68195104599	
+RESULT	id=133	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=196021784	memOff=3678536800	memPeak=784090824	time=2080.6791229248047	
+RESULT	id=133	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=94791208	memOff=3874558584	memPeak=442361448	time=1332.8113360404968	
+RESULT	id=133	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=2696	memOff=3969349792	memPeak=326416848	time=865.6458439826965	
+RESULT	id=133	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=32709140	memOff=3969352488	memPeak=245296116	time=607.9213547706604	
+RESULT	id=133	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=19128280	memOff=4002061628	memPeak=153031320	time=357.6505699157715	
+RESULT	id=133	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=5624548	memOff=4021189908	memPeak=30011976	time=101.11244678497314	
+RESULT	id=133	rep_id=1	phase_id=24	phase_name=Iteration	memFinal=0	memOff=4026814456	memPeak=0	time=5.892348289489746	
+RESULT	id=133	rep_id=1	phase_id=25	phase_name=Write out SA	memFinal=0	memOff=4026814456	memPeak=0	time=3371.053587913513	
+RESULT	id=134	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194311480	memOff=0	memPeak=4211562232	time=14291.061394691467	
+RESULT	id=134	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=-46912	memOff=4194311480	memPeak=17250752	time=9393.93058013916	
+RESULT	id=134	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=5829.697136878967	
+RESULT	id=134	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=4804.135787010193	
+RESULT	id=134	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=4364.563589096069	
+RESULT	id=134	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=3558.665385246277	
+RESULT	id=134	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=2134.7057638168335	
+RESULT	id=134	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=1017.8623704910278	
+RESULT	id=134	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=420.69389057159424	
+RESULT	id=134	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-46912	memOff=4194264568	memPeak=17203840	time=96.78507614135742	
+RESULT	id=134	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194397824	memOff=4194217656	memPeak=17156928	time=2703.5424699783325	
+RESULT	id=135	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=885041224	memOff=0	memPeak=1623804555	time=2243.7429571151733	
+RESULT	id=135	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=885041224	memPeak=2142304	time=15051.09110546112	
+RESULT	id=135	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-885033536	memOff=885041224	memPeak=185511648	time=11482.841257095337	
+RESULT	id=136	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355450696	memOff=0	memPeak=3355468776	time=2982.04923248291	
+RESULT	id=136	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355450696	memPeak=0	time=68558.25618362427	
+RESULT	id=136	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355450696	memPeak=0	time=28633.556572914124	
+RESULT	id=139	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32483.726099014282	
+RESULT	id=139	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2321	memOff=1118481084	memPeak=2232652132	time=106324.2996339798	
+RESULT	id=139	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483405	memPeak=1118481072	time=15269.454107284546	
+RESULT	id=139	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103673	memPeak=13042	time=15034.14400100708	
+RESULT	id=141	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.007420539855957031	
+RESULT	id=141	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=10744	memOff=4194304020	memPeak=25759192	time=1064.3863554000854	
+RESULT	id=141	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194314764	memPeak=0	time=4387.082988739014	
+RESULT	id=141	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194314764	memPeak=209715201	time=573.296971321106	
+RESULT	id=141	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194314764	memPeak=0	time=0.00010585784912109375	
+RESULT	id=141	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-209701388	memOff=4194314764	memPeak=4823297492	time=10077.281384468079	
+RESULT	id=141	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-1216	memOff=3984613376	memPeak=5003517584	time=11760.06392288208	
+RESULT	id=141	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-140932756	memOff=3984612160	memPeak=3241768220	time=8222.124813079834	
+RESULT	id=141	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=88000156	memOff=3843679404	memPeak=2023903928	time=5092.134053230286	
+RESULT	id=141	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=254131560	memOff=3931679560	memPeak=2032964792	time=4157.343602180481	
+RESULT	id=141	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=165722824	memOff=4185811120	memPeak=1905690932	time=4072.51708316803	
+RESULT	id=141	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=161491228	memOff=4351533944	memPeak=1857103604	time=3967.0615615844727	
+RESULT	id=141	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=77604220	memOff=4513025172	memPeak=1785003440	time=3843.346776008606	
+RESULT	id=141	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=73311760	memOff=4590629392	memPeak=1759298576	time=3692.938777923584	
+RESULT	id=141	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=201525896	memOff=4663941152	memPeak=1545062180	time=3407.696654319763	
+RESULT	id=141	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=116939476	memOff=4865467048	memPeak=1344671852	time=3337.3375158309937	
+RESULT	id=141	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=46270036	memOff=4982406524	memPeak=1110367040	time=2473.01056098938	
+RESULT	id=141	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=65343284	memOff=5028676560	memPeak=784092344	time=1750.0779266357422	
+RESULT	id=141	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=126385244	memOff=5094019844	memPeak=505557272	time=1114.4113149642944	
+RESULT	id=141	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=101556992	memOff=5220405088	memPeak=348179408	time=722.5019216537476	
+RESULT	id=141	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=76313564	memOff=5321962080	memPeak=261650624	time=505.29325675964355	
+RESULT	id=141	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=25511252	memOff=5398275644	memPeak=146656580	time=295.8288412094116	
+RESULT	id=141	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=10004312	memOff=5423786896	memPeak=30013496	time=77.81718730926514	
+RESULT	id=141	rep_id=1	phase_id=24	phase_name=Iteration	memFinal=0	memOff=5433791208	memPeak=0	time=4.116406440734863	
+RESULT	id=141	rep_id=1	phase_id=25	phase_name=Write out SA	memFinal=0	memOff=5433791208	memPeak=0	time=3381.4222984313965	
+RESULT	id=142	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194314744	memOff=0	memPeak=4220141848	time=11225.883823394775	
+RESULT	id=142	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=-93824	memOff=4194314744	memPeak=25827104	time=7378.711582183838	
+RESULT	id=142	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194220920	memPeak=25827104	time=4567.331837654114	
+RESULT	id=142	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=-93824	memOff=4194220920	memPeak=25733280	time=3756.4757652282715	
+RESULT	id=142	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=-46912	memOff=4194127096	memPeak=25780192	time=3448.841582298279	
+RESULT	id=142	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194080184	memPeak=25827104	time=2863.4452362060547	
+RESULT	id=142	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194080184	memPeak=25827104	time=1721.6919965744019	
+RESULT	id=142	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-140736	memOff=4194080184	memPeak=25733280	time=821.4314813613892	
+RESULT	id=142	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4193939448	memPeak=25827104	time=341.58165168762207	
+RESULT	id=142	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-93824	memOff=4193939448	memPeak=25733280	time=82.50899314880371	
+RESULT	id=142	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4193845624	memPeak=25827104	time=1997.9546060562134	
+RESULT	id=143	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=885044488	memOff=0	memPeak=1993189483	time=2169.8809700012207	
+RESULT	id=143	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=885044488	memPeak=2142304	time=15049.15926361084	
+RESULT	id=143	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-885033536	memOff=885044488	memPeak=185511648	time=11604.720691680908	
+RESULT	id=144	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355453960	memOff=0	memPeak=3355479272	time=2921.623927116394	
+RESULT	id=144	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355453960	memPeak=0	time=68631.77914237976	
+RESULT	id=144	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355453960	memPeak=0	time=28440.955335617065	
+RESULT	id=147	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32437.44616794586	
+RESULT	id=147	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2232652132	time=106158.88686275482	
+RESULT	id=147	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15247.08062839508	
+RESULT	id=147	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=13042	time=15076.058776855469	
+RESULT	id=149	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006960868835449219	
+RESULT	id=149	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=14008	memOff=4194304020	memPeak=34315320	time=867.1339588165283	
+RESULT	id=149	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194318028	memPeak=0	time=4328.398010253906	
+RESULT	id=149	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194318028	memPeak=209715201	time=527.8784475326538	
+RESULT	id=149	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194318028	memPeak=0	time=0.00025653839111328125	
+RESULT	id=149	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=157298508	memOff=4194318028	memPeak=5033007984	time=9280.916100502014	
+RESULT	id=149	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-3148	memOff=4351616536	memPeak=4847159784	time=9799.657552719116	
+RESULT	id=149	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-211408244	memOff=4351613388	memPeak=3171297084	time=7860.806221961975	
+RESULT	id=149	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=197990536	memOff=4140205144	memPeak=2045904888	time=4710.284120559692	
+RESULT	id=149	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=254123896	memOff=4338195680	memPeak=1969436760	time=3868.5877265930176	
+RESULT	id=149	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=392	memOff=4592319576	memPeak=1864264956	time=3761.635313987732	
+RESULT	id=149	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=423910736	memOff=4592319968	memPeak=1937849160	time=3677.100499153137	
+RESULT	id=149	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=232828992	memOff=5016230704	memPeak=1804407648	time=3549.334072113037	
+RESULT	id=149	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=439819000	memOff=5249059696	memPeak=1759300608	time=3360.6995525360107	
+RESULT	id=149	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=251913612	memOff=5688878696	memPeak=1561858320	time=3125.4352703094482	
+RESULT	id=149	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=394638464	memOff=5940792308	memPeak=1359289848	time=2751.140892982483	
+RESULT	id=149	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=277603520	memOff=6335430772	memPeak=1110369072	time=2231.715117454529	
+RESULT	id=149	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=196027136	memOff=6613034292	memPeak=784094376	time=1617.3923416137695	
+RESULT	id=149	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=110586904	memOff=6809061428	memPeak=473962140	time=1037.606855392456	
+RESULT	id=149	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=87044164	memOff=6919648332	memPeak=348181440	time=661.4482984542847	
+RESULT	id=149	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=65416356	memOff=7006692496	memPeak=261652656	time=471.52227783203125	
+RESULT	id=149	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=52598796	memOff=7072108852	memPeak=153034872	time=271.1041145324707	
+RESULT	id=149	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=8433868	memOff=7124707648	memPeak=30015528	time=67.55085563659668	
+RESULT	id=149	rep_id=1	phase_id=24	phase_name=Iteration	memFinal=0	memOff=7133141516	memPeak=0	time=3.415903091430664	
+RESULT	id=149	rep_id=1	phase_id=25	phase_name=Write out SA	memFinal=0	memOff=7133141516	memPeak=0	time=3380.451512336731	
+RESULT	id=150	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194318008	memOff=0	memPeak=4228721464	time=9854.197821617126	
+RESULT	id=150	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=-93824	memOff=4194318008	memPeak=34403456	time=6714.034079551697	
+RESULT	id=150	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=4141.71516418457	
+RESULT	id=150	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=3357.208055496216	
+RESULT	id=150	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=3111.5596532821655	
+RESULT	id=150	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=2642.089220046997	
+RESULT	id=150	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=1606.0812940597534	
+RESULT	id=150	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194224184	memPeak=34403456	time=768.3091955184937	
+RESULT	id=150	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-46912	memOff=4194224184	memPeak=34356544	time=317.3864459991455	
+RESULT	id=150	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194177272	memPeak=34403456	time=81.41849136352539	
+RESULT	id=150	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4194177272	memPeak=34403456	time=1909.3632650375366	
+RESULT	id=151	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=885047752	memOff=0	memPeak=2362574411	time=2325.0978384017944	
+RESULT	id=151	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=885047752	memPeak=2142304	time=15030.1455078125	
+RESULT	id=151	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-885033536	memOff=885047752	memPeak=185511648	time=11482.896390914917	
+RESULT	id=152	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355457224	memOff=0	memPeak=3355489768	time=3008.1939792633057	
+RESULT	id=152	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355457224	memPeak=0	time=68654.95690631866	
+RESULT	id=152	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355457224	memPeak=0	time=28346.110641479492	
+RESULT	id=155	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32441.75576210022	
+RESULT	id=155	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=1795	memOff=1118481084	memPeak=2232652132	time=106621.2870311737	
+RESULT	id=155	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118482879	memPeak=1118481072	time=15254.756036758423	
+RESULT	id=155	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103147	memPeak=17214	time=14992.499592781067	
+RESULT	id=157	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.0062732696533203125	
+RESULT	id=157	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=17272	memOff=4194304020	memPeak=42871448	time=761.3468904495239	
+RESULT	id=157	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194321292	memPeak=0	time=4314.492210388184	
+RESULT	id=157	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194321292	memPeak=209715201	time=523.6206207275391	
+RESULT	id=157	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194321292	memPeak=0	time=0.00020885467529296875	
+RESULT	id=157	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=14232	memOff=4194321292	memPeak=5033010528	time=10143.295321464539	
+RESULT	id=157	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-7360	memOff=4194335524	memPeak=5003522160	time=9471.369570732117	
+RESULT	id=157	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-84584728	memOff=4194328164	memPeak=3298151328	time=7567.1308517456055	
+RESULT	id=157	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-22048	memOff=4109743436	memPeak=2111904216	time=4632.502757072449	
+RESULT	id=157	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=457414560	memOff=4109721388	memPeak=2032969368	time=3743.8380823135376	
+RESULT	id=157	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=99412716	memOff=4567135948	memPeak=1988551512	time=3684.9404706954956	
+RESULT	id=157	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=-96908740	memOff=4666548664	memPeak=1840959468	time=3590.474730491638	
+RESULT	id=157	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-1560	memOff=4569639924	memPeak=1862616744	time=3457.507122039795	
+RESULT	id=157	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=944	memOff=4569638364	memPeak=1759303152	time=3273.8846139907837	
+RESULT	id=157	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=483669664	memOff=4569639308	memPeak=1612243248	time=3014.899125099182	
+RESULT	id=157	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=491088872	memOff=5053308972	memPeak=1403140296	time=2689.6334714889526	
+RESULT	id=157	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=360881356	memOff=5544397844	memPeak=1110371616	time=2449.2765522003174	
+RESULT	id=157	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=274439912	memOff=5905279200	memPeak=764494668	time=1756.911208152771	
+RESULT	id=157	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=176944072	memOff=6179719112	memPeak=492922980	time=1127.6451959609985	
+RESULT	id=157	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=113156108	memOff=6356663184	memPeak=339479568	time=652.7084674835205	
+RESULT	id=157	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=85020352	memOff=6469819292	memPeak=261655200	time=454.78731060028076	
+RESULT	id=157	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=57369576	memOff=6554839644	memPeak=153037416	time=262.29658126831055	
+RESULT	id=157	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=12017560	memOff=6612209220	memPeak=29267796	time=63.22737503051758	
+RESULT	id=157	rep_id=1	phase_id=24	phase_name=Iteration	memFinal=0	memOff=6624226780	memPeak=0	time=3.01938533782959	
+RESULT	id=157	rep_id=1	phase_id=25	phase_name=Write out SA	memFinal=0	memOff=6624226780	memPeak=0	time=3385.889175415039	
+RESULT	id=158	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194321272	memOff=0	memPeak=4237301080	time=8923.087439060211	
+RESULT	id=158	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=6032.448872089386	
+RESULT	id=158	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=3719.24786901474	
+RESULT	id=158	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=3009.1380200386047	
+RESULT	id=158	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=2804.117154121399	
+RESULT	id=158	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=2397.1521129608154	
+RESULT	id=158	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=1462.0840792655945	
+RESULT	id=158	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=697.7684397697449	
+RESULT	id=158	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=288.5734362602234	
+RESULT	id=158	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=74.93678617477417	
+RESULT	id=158	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4194321272	memPeak=42979808	time=1631.0289196968079	
+RESULT	id=159	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=885051016	memOff=0	memPeak=2731959339	time=2524.1102657318115	
+RESULT	id=159	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=885051016	memPeak=2142304	time=15048.813968658447	
+RESULT	id=159	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-885033536	memOff=885051016	memPeak=185511648	time=11542.101839065552	
+RESULT	id=160	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355460488	memOff=0	memPeak=3355500264	time=2972.0528049468994	
+RESULT	id=160	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355460488	memPeak=0	time=68622.10460186005	
+RESULT	id=160	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355460488	memPeak=0	time=28614.010761260986	
+RESULT	id=163	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32853.281478881836	
+RESULT	id=163	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=0	memOff=1118481084	memPeak=2222415208	time=114298.73593425751	
+RESULT	id=163	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118481084	memPeak=1118481072	time=15058.443054199219	
+RESULT	id=163	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398101352	memPeak=0	time=20049.911248207092	
+RESULT	id=165	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.00714874267578125	
+RESULT	id=165	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=0	memOff=4194304020	memPeak=2142288	time=11857.079949378967	
+RESULT	id=165	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=192	memOff=4194304020	memPeak=1752	time=6522.443824768066	
+RESULT	id=165	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194304212	memPeak=209716761	time=3017.478078842163	
+RESULT	id=165	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194304212	memPeak=0	time=0.00026798248291015625	
+RESULT	id=165	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2516580612	time=45675.91792964935	
+RESULT	id=165	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1675607496	time=31974.506793022156	
+RESULT	id=165	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1422812916	time=25254.70769882202	
+RESULT	id=165	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1291176720	time=22378.869362831116	
+RESULT	id=165	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1155025248	time=20366.582403182983	
+RESULT	id=165	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=958581936	time=17747.510184288025	
+RESULT	id=165	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=675955896	time=13252.378551483154	
+RESULT	id=165	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=411310272	time=8525.82029056549	
+RESULT	id=165	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=249904452	time=5088.211601257324	
+RESULT	id=165	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=144325248	time=2833.0915327072144	
+RESULT	id=165	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=69038100	time=1354.027274131775	
+RESULT	id=165	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=23168712	time=426.59021949768066	
+RESULT	id=165	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=5437896	time=82.95070934295654	
+RESULT	id=165	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=802428	time=12.504894256591797	
+RESULT	id=165	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1560	time=0.859044075012207	
+RESULT	id=165	rep_id=1	phase_id=21	phase_name=Write out SA	memFinal=0	memOff=4194304212	memPeak=0	time=3006.205005645752	
+RESULT	id=166	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194304000	memOff=0	memPeak=4196452160	time=64537.91469955444	
+RESULT	id=166	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=45466.7310667038	
+RESULT	id=166	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=30954.69444847107	
+RESULT	id=166	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=18604.45766735077	
+RESULT	id=166	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=7676.053102493286	
+RESULT	id=166	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=2191.3303413391113	
+RESULT	id=166	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=359.69872188568115	
+RESULT	id=166	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=18.10564136505127	
+RESULT	id=166	rep_id=1	phase_id=9	phase_name=Write out result	memFinal=-4194304000	memOff=4194304000	memPeak=2148160	time=14526.64047241211	
+RESULT	id=167	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=886386752	memOff=0	memPeak=981439333	time=29101.64702796936	
+RESULT	id=167	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=886386752	memPeak=2142304	time=11176.268466949463	
+RESULT	id=167	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-886386352	memOff=886386752	memPeak=292448	time=10446.347564697266	
+RESULT	id=168	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355443408	memOff=0	memPeak=3355445176	time=2769.3958349227905	
+RESULT	id=168	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355443408	memPeak=0	time=71564.6893415451	
+RESULT	id=168	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355443408	memPeak=0	time=26033.63168334961	
+RESULT	id=171	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32872.46393585205	
+RESULT	id=171	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2222415208	time=104307.24495601654	
+RESULT	id=171	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15108.932538986206	
+RESULT	id=171	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=526	time=14879.989790916443	
+RESULT	id=173	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.0067005157470703125	
+RESULT	id=173	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=2584	memOff=4194304020	memPeak=4368872	time=7025.481355667114	
+RESULT	id=173	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194306604	memPeak=0	time=6012.89787197113	
+RESULT	id=173	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194306604	memPeak=209715201	time=2161.258418083191	
+RESULT	id=173	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194306604	memPeak=0	time=0.00020599365234375	
+RESULT	id=173	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=5033161416	time=30405.556241989136	
+RESULT	id=173	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=3351215184	time=22037.216806411743	
+RESULT	id=173	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=2845626024	time=17715.886028289795	
+RESULT	id=173	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=2582353632	time=15437.802001953125	
+RESULT	id=173	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=32	memOff=4194306604	memPeak=2310050688	time=14049.645170211792	
+RESULT	id=173	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=1917164064	time=12175.363353729248	
+RESULT	id=173	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=1351911984	time=9294.532316207886	
+RESULT	id=173	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=32	memOff=4194306636	memPeak=822620736	time=5990.359560012817	
+RESULT	id=173	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=-16	memOff=4194306668	memPeak=499809096	time=3483.588041305542	
+RESULT	id=173	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194306652	memPeak=288650688	time=1958.896339416504	
+RESULT	id=173	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194306652	memPeak=138076392	time=904.8380651473999	
+RESULT	id=173	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=0	memOff=4194306652	memPeak=46337616	time=276.1222219467163	
+RESULT	id=173	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=0	memOff=4194306652	memPeak=10875984	time=51.61281871795654	
+RESULT	id=173	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=-16	memOff=4194306652	memPeak=1605048	time=8.252717018127441	
+RESULT	id=173	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=0	time=0.5841474533081055	
+RESULT	id=173	rep_id=1	phase_id=21	phase_name=Write out SA	memFinal=0	memOff=4194306636	memPeak=0	time=3142.542737007141	
+RESULT	id=174	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194306584	memOff=0	memPeak=4198692808	time=35443.38584566116	
+RESULT	id=174	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=25314.602067947388	
+RESULT	id=174	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=17263.941035747528	
+RESULT	id=174	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=10610.833265304565	
+RESULT	id=174	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=4487.466547012329	
+RESULT	id=174	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=1304.4440188407898	
+RESULT	id=174	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=226.2252550125122	
+RESULT	id=174	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4381616	time=11.61335277557373	
+RESULT	id=174	rep_id=1	phase_id=9	phase_name=Write out result	memFinal=-4194304000	memOff=4194306584	memPeak=4386224	time=8323.896960735321	
+RESULT	id=175	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=886389144	memOff=0	memPeak=1076491181	time=19238.354939460754	
+RESULT	id=175	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=886389144	memPeak=2142304	time=11187.92672920227	
+RESULT	id=175	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-886386352	memOff=886389144	memPeak=292448	time=10458.911237716675	
+RESULT	id=176	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355445800	memOff=0	memPeak=3355446632	time=2946.170551300049	
+RESULT	id=176	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355445800	memPeak=0	time=70904.65822601318	
+RESULT	id=176	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355445800	memPeak=0	time=25501.57206249237	
+RESULT	id=179	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32918.31864261627	
+RESULT	id=179	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2222415208	time=104124.61272621155	
+RESULT	id=179	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15111.346338272095	
+RESULT	id=179	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=4698	time=14894.141910552979	
+RESULT	id=181	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.008457183837890625	
+RESULT	id=181	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=4216	memOff=4194304020	memPeak=8646936	time=3672.0167331695557	
+RESULT	id=181	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194308236	memPeak=0	time=4975.678922653198	
+RESULT	id=181	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194308236	memPeak=209715201	time=1205.2194442749023	
+RESULT	id=181	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194308236	memPeak=0	time=0.00025844573974609375	
+RESULT	id=181	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=592	memOff=4194308236	memPeak=5033161728	time=18274.464736938477	
+RESULT	id=181	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-144	memOff=4194308828	memPeak=3351215496	time=13239.366804122925	
+RESULT	id=181	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=944	memOff=4194308684	memPeak=2845626336	time=10827.197556495667	
+RESULT	id=181	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=672	memOff=4194309628	memPeak=2582353944	time=9550.100004196167	
+RESULT	id=181	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=584	memOff=4194310300	memPeak=2310051000	time=8595.264043807983	
+RESULT	id=181	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=632	memOff=4194310884	memPeak=1917164376	time=7977.585879325867	
+RESULT	id=181	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=80	memOff=4194311516	memPeak=1351912296	time=5880.373291015625	
+RESULT	id=181	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=704	memOff=4194311596	memPeak=822621048	time=3785.6317319869995	
+RESULT	id=181	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=62477632	memOff=4194312300	memPeak=499809408	time=2308.2377347946167	
+RESULT	id=181	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=36081596	memOff=4256789932	memPeak=288651000	time=1208.3131074905396	
+RESULT	id=181	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=160	memOff=4292871528	memPeak=138076704	time=552.2401685714722	
+RESULT	id=181	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=5792384	memOff=4292871688	memPeak=46337928	time=165.60315895080566	
+RESULT	id=181	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=1360000	memOff=4298664072	memPeak=10876296	time=31.552422523498535	
+RESULT	id=181	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=200096	memOff=4300024072	memPeak=1605360	time=5.1239471435546875	
+RESULT	id=181	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4300224168	memPeak=0	time=0.33177757263183594	
+RESULT	id=181	rep_id=1	phase_id=21	phase_name=Write out SA	memFinal=0	memOff=4300224168	memPeak=0	time=3775.2868814468384	
+RESULT	id=182	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194308216	memOff=0	memPeak=4202982616	time=20308.7351770401	
+RESULT	id=182	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=14325.439490318298	
+RESULT	id=182	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=10145.702118873596	
+RESULT	id=182	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=6431.649720191956	
+RESULT	id=182	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=2785.2089643478394	
+RESULT	id=182	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=832.3624238967896	
+RESULT	id=182	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-46912	memOff=4194308216	memPeak=8674400	time=153.30792713165283	
+RESULT	id=182	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194261304	memPeak=8669792	time=7.242183685302734	
+RESULT	id=182	rep_id=1	phase_id=9	phase_name=Write out result	memFinal=-4194304000	memOff=4194261304	memPeak=8674400	time=4756.738715171814	
+RESULT	id=183	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=886390776	memOff=0	memPeak=1266594845	time=11008.776935577393	
+RESULT	id=183	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=886390776	memPeak=2142304	time=11158.992181777954	
+RESULT	id=183	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-886386352	memOff=886390776	memPeak=292448	time=10404.026626586914	
+RESULT	id=184	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355447432	memOff=0	memPeak=3355448680	time=2803.0517110824585	
+RESULT	id=184	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355447432	memPeak=0	time=71027.73031520844	
+RESULT	id=184	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355447432	memPeak=0	time=25502.439637184143	
+RESULT	id=186	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32862.7307434082	
+RESULT	id=186	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2222415208	time=104210.47720336914	
+RESULT	id=186	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15090.814625740051	
+RESULT	id=186	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=8870	time=14613.173321723938	
+RESULT	id=188	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.007296562194824219	
+RESULT	id=188	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=7480	memOff=4194304020	memPeak=17203064	time=1923.4352521896362	
+RESULT	id=188	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194311500	memPeak=0	time=4440.326810836792	
+RESULT	id=188	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194311500	memPeak=209715201	time=689.0876455307007	
+RESULT	id=188	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194311500	memPeak=0	time=0.00018310546875	
+RESULT	id=188	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-629140636	memOff=4194311500	memPeak=4404017556	time=11963.44647026062	
+RESULT	id=188	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-418898536	memOff=3565170864	memPeak=2932314600	time=8648.626881599426	
+RESULT	id=188	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=2936	memOff=3146272328	memPeak=2845627344	time=7297.109325408936	
+RESULT	id=188	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=2536	memOff=3146275264	memPeak=2582354952	time=6393.869077682495	
+RESULT	id=188	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=3840	memOff=3146277800	memPeak=2310052008	time=5609.820666313171	
+RESULT	id=188	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=-119817324	memOff=3146281640	memPeak=1797342636	time=4846.2525091171265	
+RESULT	id=188	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=-84488872	memOff=3026464316	memPeak=1267418808	time=3645.4915351867676	
+RESULT	id=188	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-51412612	memOff=2941975444	memPeak=771208260	time=2340.4360370635986	
+RESULT	id=188	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=3696	memOff=2890562832	memPeak=499810416	time=1312.894271850586	
+RESULT	id=188	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=36085096	memOff=2890566528	memPeak=270611340	time=737.8686542510986	
+RESULT	id=188	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=17261008	memOff=2926651624	memPeak=138077712	time=333.0316963195801	
+RESULT	id=188	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=5792612	memOff=2943912632	memPeak=46338936	time=100.14041900634766	
+RESULT	id=188	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=2718512	memOff=2949705244	memPeak=10877304	time=19.965996742248535	
+RESULT	id=188	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=401432	memOff=2952423756	memPeak=1506048	time=3.2669334411621094	
+RESULT	id=188	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=2952825188	memPeak=0	time=0.19714641571044922	
+RESULT	id=188	rep_id=1	phase_id=21	phase_name=Write out SA	memFinal=0	memOff=2952825188	memPeak=0	time=3136.812551498413	
+RESULT	id=189	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194311480	memOff=0	memPeak=4211562232	time=12667.170907974243	
+RESULT	id=189	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=8765.109470844269	
+RESULT	id=189	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=6192.21520280838	
+RESULT	id=189	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=4003.459321975708	
+RESULT	id=189	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=1756.0831928253174	
+RESULT	id=189	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-46912	memOff=4194311480	memPeak=17203840	time=518.5043559074402	
+RESULT	id=189	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-46912	memOff=4194264568	memPeak=17203840	time=97.14269208908081	
+RESULT	id=189	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-46912	memOff=4194217656	memPeak=17199232	time=4.899552822113037	
+RESULT	id=189	rep_id=1	phase_id=9	phase_name=Write out result	memFinal=-4194304000	memOff=4194170744	memPeak=17250752	time=2621.549318790436	
+RESULT	id=190	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=886394040	memOff=0	memPeak=1646802173	time=7414.379269599915	
+RESULT	id=190	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=886394040	memPeak=2142304	time=11227.742567062378	
+RESULT	id=190	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-886386352	memOff=886394040	memPeak=292448	time=10497.313530921936	
+RESULT	id=191	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355450696	memOff=0	memPeak=3355452776	time=2676.321601867676	
+RESULT	id=191	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355450696	memPeak=0	time=71028.15937709808	
+RESULT	id=191	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355450696	memPeak=0	time=25495.28106880188	
+RESULT	id=193	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32887.01218223572	
+RESULT	id=193	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2222415208	time=103449.61586093903	
+RESULT	id=193	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15102.681742668152	
+RESULT	id=193	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=13042	time=14700.189191818237	
+RESULT	id=195	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006569862365722656	
+RESULT	id=195	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=10744	memOff=4194304020	memPeak=25759192	time=1336.5922870635986	
+RESULT	id=195	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194314764	memPeak=0	time=4286.427175521851	
+RESULT	id=195	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194314764	memPeak=209715201	time=563.3652963638306	
+RESULT	id=195	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194314764	memPeak=0	time=0.000194549560546875	
+RESULT	id=195	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=14352	memOff=4194314764	memPeak=5033164256	time=10260.6868724823	
+RESULT	id=195	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-1800	memOff=4194329116	memPeak=3351218024	time=7392.665372848511	
+RESULT	id=195	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-118567256	memOff=4194327316	memPeak=2727061112	time=6668.819444656372	
+RESULT	id=195	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=10640	memOff=4075760060	memPeak=2582356472	time=6136.546863555908	
+RESULT	id=195	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-712	memOff=4075770700	memPeak=2310053528	time=4892.908993721008	
+RESULT	id=195	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=-79880968	memOff=4075769988	memPeak=1837285064	time=4189.50292301178	
+RESULT	id=195	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=-7596	memOff=3995889020	memPeak=1295585144	time=3106.963415145874	
+RESULT	id=195	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=1976	memOff=3995881424	memPeak=822623576	time=1880.1317720413208	
+RESULT	id=195	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=7688	memOff=3995883400	memPeak=499811936	time=1107.4048519134521	
+RESULT	id=195	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=12028640	memOff=3995891088	memPeak=288653528	time=619.3429746627808	
+RESULT	id=195	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=40273460	memOff=4007919728	memPeak=138079232	time=275.7264223098755	
+RESULT	id=195	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=9654724	memOff=4048193188	memPeak=46340456	time=81.02177619934082	
+RESULT	id=195	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=3623716	memOff=4057847912	memPeak=10878824	time=16.5638427734375	
+RESULT	id=195	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=330652	memOff=4061471628	memPeak=1474124	time=2.851168632507324	
+RESULT	id=195	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4061802280	memPeak=0	time=0.15944862365722656	
+RESULT	id=195	rep_id=1	phase_id=21	phase_name=Write out SA	memFinal=0	memOff=4061802280	memPeak=0	time=3142.362934112549	
+RESULT	id=196	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194314744	memOff=0	memPeak=4220141848	time=10233.565605163574	
+RESULT	id=196	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=-46912	memOff=4194314744	memPeak=25780192	time=6975.180439949036	
+RESULT	id=196	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194267832	memPeak=25827104	time=5020.337519645691	
+RESULT	id=196	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194267832	memPeak=25827104	time=3303.3578729629517	
+RESULT	id=196	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194267832	memPeak=25827104	time=1467.9607372283936	
+RESULT	id=196	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194267832	memPeak=25827104	time=434.8042879104614	
+RESULT	id=196	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-46912	memOff=4194267832	memPeak=25780192	time=83.39930248260498	
+RESULT	id=196	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194220920	memPeak=25822496	time=4.172914505004883	
+RESULT	id=196	rep_id=1	phase_id=9	phase_name=Write out result	memFinal=-4194304000	memOff=4194220920	memPeak=25827104	time=2010.6570539474487	
+RESULT	id=197	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=886397304	memOff=0	memPeak=2027009501	time=5971.906190872192	
+RESULT	id=197	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=886397304	memPeak=2142304	time=11235.650023460388	
+RESULT	id=197	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-886386352	memOff=886397304	memPeak=292448	time=10483.380108833313	
+RESULT	id=198	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355453960	memOff=0	memPeak=3355456872	time=2632.206495285034	
+RESULT	id=198	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355453960	memPeak=0	time=71252.47018241882	
+RESULT	id=198	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355453960	memPeak=0	time=25677.644338607788	
+RESULT	id=200	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32863.0416059494	
+RESULT	id=200	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2222415208	time=103417.8227109909	
+RESULT	id=200	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15111.089515686035	
+RESULT	id=200	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=13042	time=14612.219366073608	
+RESULT	id=202	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.00795745849609375	
+RESULT	id=202	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=14008	memOff=4194304020	memPeak=34315320	time=1145.5745067596436	
+RESULT	id=202	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194318028	memPeak=0	time=4235.993951797485	
+RESULT	id=202	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194318028	memPeak=209715201	time=520.8539962768555	
+RESULT	id=202	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194318028	memPeak=0	time=0.00019550323486328125	
+RESULT	id=202	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=157293332	memOff=4194318028	memPeak=5033166288	time=9475.923846244812	
+RESULT	id=202	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-104722564	memOff=4351611360	memPeak=3246494580	time=6983.204651832581	
+RESULT	id=202	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=88927600	memOff=4246888796	memPeak=2845630896	time=5672.885354042053	
+RESULT	id=202	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-80690320	memOff=4335816396	memPeak=2501659944	time=5078.322925567627	
+RESULT	id=202	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=72196060	memOff=4255126076	memPeak=2310055560	time=4574.5987548828125	
+RESULT	id=202	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=968	memOff=4327322136	memPeak=1917168936	time=3943.031665802002	
+RESULT	id=202	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=-42238300	memOff=4327323104	memPeak=1309669596	time=2855.9012956619263	
+RESULT	id=202	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-25701872	memOff=4285084804	memPeak=796918704	time=1769.121669769287	
+RESULT	id=202	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=-2640	memOff=4259382932	memPeak=484194936	time=1034.5427417755127	
+RESULT	id=202	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=90204552	memOff=4259380292	memPeak=279635220	time=568.8881721496582	
+RESULT	id=202	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=43154108	memOff=4349584844	memPeak=138081264	time=249.44511604309082	
+RESULT	id=202	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=8689100	memOff=4392738952	memPeak=46342488	time=70.83426856994629	
+RESULT	id=202	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=4752116	memOff=4401428052	memPeak=10880856	time=15.132323265075684	
+RESULT	id=202	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=557364	memOff=4406180168	memPeak=1509588	time=2.6579694747924805	
+RESULT	id=202	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4406737532	memPeak=0	time=0.14152240753173828	
+RESULT	id=202	rep_id=1	phase_id=21	phase_name=Write out SA	memFinal=0	memOff=4406737532	memPeak=0	time=3143.4655151367188	
+RESULT	id=203	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194318008	memOff=0	memPeak=4228721464	time=8916.975388526917	
+RESULT	id=203	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=6137.021364212036	
+RESULT	id=203	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=4431.979197502136	
+RESULT	id=203	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=2981.552763938904	
+RESULT	id=203	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=1334.3135871887207	
+RESULT	id=203	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-46912	memOff=4194318008	memPeak=34356544	time=396.19979763031006	
+RESULT	id=203	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194271096	memPeak=34403456	time=77.35143566131592	
+RESULT	id=203	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194271096	memPeak=34398848	time=3.905758857727051	
+RESULT	id=203	rep_id=1	phase_id=9	phase_name=Write out result	memFinal=-4194304000	memOff=4194271096	memPeak=34403456	time=1754.8731803894043	
+RESULT	id=204	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=886400568	memOff=0	memPeak=2407216829	time=5350.992435455322	
+RESULT	id=204	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=886400568	memPeak=2142304	time=11258.597249984741	
+RESULT	id=204	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-886386352	memOff=886400568	memPeak=292448	time=10574.501744270325	
+RESULT	id=205	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355457224	memOff=0	memPeak=3355460968	time=2617.5802669525146	
+RESULT	id=205	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355457224	memPeak=0	time=71248.65096473694	
+RESULT	id=205	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355457224	memPeak=0	time=25834.129549980164	
+RESULT	id=207	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=32844.57333087921	
+RESULT	id=207	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2222415208	time=103771.03802967072	
+RESULT	id=207	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=15087.518194198608	
+RESULT	id=207	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=17214	time=14603.074809074402	
+RESULT	id=209	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.007313728332519531	
+RESULT	id=209	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=17272	memOff=4194304020	memPeak=42871448	time=975.4924402236938	
+RESULT	id=209	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194321292	memPeak=0	time=4202.25452041626	
+RESULT	id=209	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194321292	memPeak=209715201	time=516.8363800048828	
+RESULT	id=209	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194321292	memPeak=0	time=0.00018310546875	
+RESULT	id=209	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=125821724	memOff=4194321292	memPeak=5033168832	time=10370.48254776001	
+RESULT	id=209	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-83776744	memOff=4320143016	memPeak=3267442224	time=7694.7978048324585	
+RESULT	id=209	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-71149384	memOff=4236366272	memPeak=2774492784	time=6298.211426734924	
+RESULT	id=209	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-11280	memOff=4165216888	memPeak=2582361048	time=5639.833863258362	
+RESULT	id=209	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=57749248	memOff=4165205608	memPeak=2310058104	time=5115.448139190674	
+RESULT	id=209	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=-1736	memOff=4222954856	memPeak=1917171480	time=4326.435334205627	
+RESULT	id=209	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=-33812840	memOff=4222953120	memPeak=1318121592	time=3112.4072132110596	
+RESULT	id=209	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=82263140	memOff=4189140280	memPeak=822628152	time=1924.49045753479	
+RESULT	id=209	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=37494676	memOff=4271403420	memPeak=499816512	time=1126.5094270706177	
+RESULT	id=209	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=93813724	memOff=4308898096	memPeak=281441832	time=617.3190212249756	
+RESULT	id=209	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=34514216	memOff=4402711820	memPeak=134631888	time=261.2634038925171	
+RESULT	id=209	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=18533012	memOff=4437226036	memPeak=46345032	time=70.90467357635498	
+RESULT	id=209	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=4348216	memOff=4455759048	memPeak=10611504	time=14.918217658996582	
+RESULT	id=209	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=300304	memOff=4460107264	memPeak=1170996	time=2.565397262573242	
+RESULT	id=209	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4460407568	memPeak=0	time=0.14118385314941406	
+RESULT	id=209	rep_id=1	phase_id=21	phase_name=Write out SA	memFinal=0	memOff=4460407568	memPeak=0	time=3725.715527534485	
+RESULT	id=210	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194321272	memOff=0	memPeak=4237301080	time=8322.794288635254	
+RESULT	id=210	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=-93824	memOff=4194321272	memPeak=42979808	time=5859.401403427124	
+RESULT	id=210	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194227448	memPeak=42979808	time=4250.761355400085	
+RESULT	id=210	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194227448	memPeak=42979808	time=2874.9598684310913	
+RESULT	id=210	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194227448	memPeak=42979808	time=1315.3885879516602	
+RESULT	id=210	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-46912	memOff=4194227448	memPeak=42932896	time=388.1383628845215	
+RESULT	id=210	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194180536	memPeak=42979808	time=77.16576099395752	
+RESULT	id=210	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194180536	memPeak=42975200	time=3.839715003967285	
+RESULT	id=210	rep_id=1	phase_id=9	phase_name=Write out result	memFinal=-4194304000	memOff=4194180536	memPeak=42979808	time=1814.1165609359741	
+RESULT	id=211	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=886403832	memOff=0	memPeak=2787424157	time=5345.725878715515	
+RESULT	id=211	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=886403832	memPeak=2142304	time=11194.736238479614	
+RESULT	id=211	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-886386352	memOff=886403832	memPeak=292448	time=10478.101402282715	
+RESULT	id=212	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355460488	memOff=0	memPeak=3355465064	time=2636.6751956939697	
+RESULT	id=212	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355460488	memPeak=0	time=71153.66258716583	
+RESULT	id=212	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355460488	memPeak=0	time=25610.616921424866	
+RESULT	id=214	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31276.910488128662	
+RESULT	id=214	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=0	memOff=1118481084	memPeak=2230496988	time=112583.01609802246	
+RESULT	id=214	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118481084	memPeak=1118481072	time=14337.186024665833	
+RESULT	id=214	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398101352	memPeak=0	time=17937.361682891846	
+RESULT	id=216	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.009001731872558594	
+RESULT	id=216	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=0	memOff=4194304020	memPeak=2142288	time=9711.821823120117	
+RESULT	id=216	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=192	memOff=4194304020	memPeak=1752	time=5828.746417999268	
+RESULT	id=216	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194304212	memPeak=209716761	time=2561.734049797058	
+RESULT	id=216	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194304212	memPeak=0	time=5.91278076171875e-05	
+RESULT	id=216	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2516400948	time=36811.916049957275	
+RESULT	id=216	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2490286716	time=39329.60608673096	
+RESULT	id=216	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=2056659708	time=38139.24025154114	
+RESULT	id=216	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1252781952	time=25766.097990989685	
+RESULT	id=216	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=730318332	time=14703.51672744751	
+RESULT	id=216	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=446572092	time=8276.801985740662	
+RESULT	id=216	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=290512020	time=5038.230674743652	
+RESULT	id=216	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=191905524	time=3194.457748413086	
+RESULT	id=216	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=91257276	time=1644.8028602600098	
+RESULT	id=216	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=34547616	time=592.16246509552	
+RESULT	id=216	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=22092624	time=222.66139221191406	
+RESULT	id=216	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=15646608	time=140.3335256576538	
+RESULT	id=216	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=11800080	time=101.5244026184082	
+RESULT	id=216	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=9499320	time=75.68759155273438	
+RESULT	id=216	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=7862892	time=64.81260776519775	
+RESULT	id=216	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=5341548	time=49.78805923461914	
+RESULT	id=216	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1097472	time=14.736833572387695	
+RESULT	id=216	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4194304212	memPeak=1560	time=1.3084001541137695	
+RESULT	id=216	rep_id=1	phase_id=24	phase_name=Write out SA	memFinal=0	memOff=4194304212	memPeak=0	time=2245.936752319336	
+RESULT	id=217	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194304000	memOff=0	memPeak=4196452160	time=67672.25838851929	
+RESULT	id=217	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=55123.72319126129	
+RESULT	id=217	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=22916.663630485535	
+RESULT	id=217	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=8356.537893295288	
+RESULT	id=217	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=2968.100311279297	
+RESULT	id=217	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=775.1792335510254	
+RESULT	id=217	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=274.6972379684448	
+RESULT	id=217	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=148.87655639648438	
+RESULT	id=217	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=42.30373668670654	
+RESULT	id=217	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194304000	memPeak=2148160	time=4.2090559005737305	
+RESULT	id=217	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4194304000	memPeak=2148160	time=14413.367129325867	
+RESULT	id=218	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=888166796	memOff=0	memPeak=986779495	time=8199.581941604614	
+RESULT	id=218	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=888166796	memPeak=2142304	time=12272.590880393982	
+RESULT	id=218	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-888166396	memOff=888166796	memPeak=198079728	time=7171.2378759384155	
+RESULT	id=219	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355443408	memOff=0	memPeak=3355448952	time=3999.4507761001587	
+RESULT	id=219	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355443408	memPeak=0	time=59683.669271469116	
+RESULT	id=219	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355443408	memPeak=0	time=19818.67771434784	
+RESULT	id=222	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31283.325492858887	
+RESULT	id=222	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2230496988	time=104569.23957824707	
+RESULT	id=222	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14387.39279460907	
+RESULT	id=222	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=526	time=13639.96535396576	
+RESULT	id=224	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.0071544647216796875	
+RESULT	id=224	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=2584	memOff=4194304020	memPeak=4368872	time=5598.744930267334	
+RESULT	id=224	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194306604	memPeak=0	time=5618.564561843872	
+RESULT	id=224	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194306604	memPeak=209715201	time=2033.2045011520386	
+RESULT	id=224	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194306604	memPeak=0	time=0.0001316070556640625	
+RESULT	id=224	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=5032802088	time=26777.804995536804	
+RESULT	id=224	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=4980573624	time=28172.504581451416	
+RESULT	id=224	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-16	memOff=4194306604	memPeak=4113319608	time=27171.694129943848	
+RESULT	id=224	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194306588	memPeak=2505564096	time=18247.441241264343	
+RESULT	id=224	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194306588	memPeak=1460636856	time=10551.419981956482	
+RESULT	id=224	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=16	memOff=4194306588	memPeak=893144376	time=6059.291748046875	
+RESULT	id=224	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=0	memOff=4194306604	memPeak=581024232	time=3634.698624610901	
+RESULT	id=224	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=32	memOff=4194306604	memPeak=383811240	time=2309.4112672805786	
+RESULT	id=224	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=182514744	time=1221.3340530395508	
+RESULT	id=224	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=69095424	time=401.2935152053833	
+RESULT	id=224	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=44185440	time=142.71427059173584	
+RESULT	id=224	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=31293408	time=90.75366306304932	
+RESULT	id=224	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=23600352	time=65.45003986358643	
+RESULT	id=224	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=18998832	time=51.62531661987305	
+RESULT	id=224	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=15725976	time=44.85334300994873	
+RESULT	id=224	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=10683288	time=31.570478439331055	
+RESULT	id=224	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=2195136	time=9.287860870361328	
+RESULT	id=224	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4194306636	memPeak=0	time=0.8339223861694336	
+RESULT	id=224	rep_id=1	phase_id=24	phase_name=Write out SA	memFinal=0	memOff=4194306636	memPeak=0	time=2396.9652099609375	
+RESULT	id=225	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194306584	memOff=0	memPeak=4198692808	time=37027.848969459534	
+RESULT	id=225	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=30676.748438835144	
+RESULT	id=225	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=13287.98350906372	
+RESULT	id=225	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=4823.910957336426	
+RESULT	id=225	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=1743.1363859176636	
+RESULT	id=225	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=459.86864852905273	
+RESULT	id=225	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=156.6727590560913	
+RESULT	id=225	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4386224	time=86.49686241149902	
+RESULT	id=225	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4381616	time=26.216317176818848	
+RESULT	id=225	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=0	memOff=4194306584	memPeak=4379312	time=2.7528486251831055	
+RESULT	id=225	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194304000	memOff=4194306584	memPeak=4386224	time=8259.229568481445	
+RESULT	id=226	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=888169188	memOff=0	memPeak=1085391463	time=5043.204604148865	
+RESULT	id=226	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=888169188	memPeak=2142304	time=12302.171648979187	
+RESULT	id=226	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-888166396	memOff=888169188	memPeak=198079728	time=7141.982308387756	
+RESULT	id=227	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355445800	memOff=0	memPeak=3355453192	time=3989.9352130889893	
+RESULT	id=227	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355445800	memPeak=0	time=59590.399415016174	
+RESULT	id=227	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355445800	memPeak=0	time=19538.338559150696	
+RESULT	id=230	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31269.103184700012	
+RESULT	id=230	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2230496988	time=103501.33840560913	
+RESULT	id=230	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14393.914457321167	
+RESULT	id=230	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=4698	time=13681.91201210022	
+RESULT	id=232	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006836891174316406	
+RESULT	id=232	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=4216	memOff=4194304020	memPeak=8646936	time=2883.4207096099854	
+RESULT	id=232	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194308236	memPeak=0	time=4726.524766921997	
+RESULT	id=232	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194308236	memPeak=209715201	time=1114.6437330245972	
+RESULT	id=232	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194308236	memPeak=0	time=0.0001049041748046875	
+RESULT	id=232	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=88	memOff=4194308236	memPeak=5032802400	time=16487.092467308044	
+RESULT	id=232	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=856	memOff=4194308324	memPeak=4980573936	time=17313.27050113678	
+RESULT	id=232	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=512	memOff=4194309180	memPeak=4113319920	time=16541.90599346161	
+RESULT	id=232	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=1152	memOff=4194309692	memPeak=2505564408	time=11080.923869132996	
+RESULT	id=232	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=664	memOff=4194310844	memPeak=1460637168	time=6421.694315910339	
+RESULT	id=232	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=1376	memOff=4194311508	memPeak=893144688	time=3656.328381538391	
+RESULT	id=232	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=248	memOff=4194312884	memPeak=581024544	time=2201.126533508301	
+RESULT	id=232	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=728	memOff=4194313132	memPeak=383811552	time=1386.188271522522	
+RESULT	id=232	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=22814440	memOff=4194313860	memPeak=182515056	time=666.7773571014404	
+RESULT	id=232	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=296	memOff=4217128300	memPeak=69095736	time=226.51858234405518	
+RESULT	id=232	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=120	memOff=4217128596	memPeak=44185752	time=91.80710124969482	
+RESULT	id=232	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=3912744	memOff=4217128716	memPeak=31293720	time=58.77726364135742	
+RESULT	id=232	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=1304	memOff=4221041460	memPeak=23600664	time=42.11124801635742	
+RESULT	id=232	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=-136	memOff=4221042764	memPeak=18999144	time=33.112643241882324	
+RESULT	id=232	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=1966004	memOff=4221042628	memPeak=15726288	time=28.645824432373047	
+RESULT	id=232	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=232	memOff=4223008632	memPeak=10683600	time=20.30374240875244	
+RESULT	id=232	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=344	memOff=4223008864	memPeak=2195448	time=5.707732200622559	
+RESULT	id=232	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4223009208	memPeak=0	time=0.4501781463623047	
+RESULT	id=232	rep_id=1	phase_id=24	phase_name=Write out SA	memFinal=0	memOff=4223009208	memPeak=0	time=2961.543613433838	
+RESULT	id=233	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194308216	memOff=0	memPeak=4202982616	time=21094.58881855011	
+RESULT	id=233	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=17457.625447273254	
+RESULT	id=233	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=8285.177164077759	
+RESULT	id=233	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=2986.02970123291	
+RESULT	id=233	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=1102.329342842102	
+RESULT	id=233	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=288.2905035018921	
+RESULT	id=233	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=93.4481725692749	
+RESULT	id=233	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8674400	time=50.490912437438965	
+RESULT	id=233	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194308216	memPeak=8669792	time=15.954373359680176	
+RESULT	id=233	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-46912	memOff=4194308216	memPeak=8620576	time=1.712080955505371	
+RESULT	id=233	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194397824	memOff=4194261304	memPeak=8580576	time=4725.965825080872	
+RESULT	id=234	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=888170820	memOff=0	memPeak=1282615367	time=2983.1943645477295	
+RESULT	id=234	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=888170820	memPeak=2142304	time=12329.603616714478	
+RESULT	id=234	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-888166396	memOff=888170820	memPeak=198079728	time=7144.850640296936	
+RESULT	id=235	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355447432	memOff=0	memPeak=3355458520	time=3965.0888776779175	
+RESULT	id=235	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355447432	memPeak=0	time=59797.2942237854	
+RESULT	id=235	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355447432	memPeak=0	time=19777.100247383118	
+RESULT	id=237	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31276.10552597046	
+RESULT	id=237	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2230496988	time=103380.07349395752	
+RESULT	id=237	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14358.410358428955	
+RESULT	id=237	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=8870	time=13477.029788970947	
+RESULT	id=239	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006016731262207031	
+RESULT	id=239	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=7480	memOff=4194304020	memPeak=17203064	time=1519.0088911056519	
+RESULT	id=239	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194311500	memPeak=0	time=4288.420414924622	
+RESULT	id=239	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194311500	memPeak=209715201	time=674.3964009284973	
+RESULT	id=239	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194311500	memPeak=0	time=0.00012826919555664062	
+RESULT	id=239	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-1168	memOff=4194311500	memPeak=5032803408	time=10720.803223133087	
+RESULT	id=239	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=3000	memOff=4194310332	memPeak=4980574944	time=11127.541180610657	
+RESULT	id=239	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=3640	memOff=4194313332	memPeak=4113320928	time=11663.725935935974	
+RESULT	id=239	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-156593116	memOff=4194316972	memPeak=2348967660	time=6907.662458896637	
+RESULT	id=239	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=3112	memOff=4037723856	memPeak=1460638176	time=4073.4470052719116	
+RESULT	id=239	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=2172	memOff=4037726968	memPeak=837324180	time=2363.473443031311	
+RESULT	id=239	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=36314824	memOff=4037729140	memPeak=581025552	time=1404.1432452201843	
+RESULT	id=239	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-592	memOff=4074043964	memPeak=311847948	time=905.0959730148315	
+RESULT	id=239	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=22815464	memOff=4074043372	memPeak=182516064	time=451.13060235977173	
+RESULT	id=239	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=4319560	memOff=4096858836	memPeak=60459816	time=154.9631781578064	
+RESULT	id=239	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=2762204	memOff=4101178396	memPeak=38663580	time=61.570899963378906	
+RESULT	id=239	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=5870972	memOff=4103940600	memPeak=27383040	time=40.40577220916748	
+RESULT	id=239	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=5898212	memOff=4109811572	memPeak=23601672	time=29.458082675933838	
+RESULT	id=239	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=5939220	memOff=4115709784	memPeak=19000152	time=23.336691856384277	
+RESULT	id=239	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=3932048	memOff=4121649004	memPeak=15727296	time=19.77588701248169	
+RESULT	id=239	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=3339708	memOff=4125581052	memPeak=10684608	time=13.807308197021484	
+RESULT	id=239	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=413252	memOff=4128920760	memPeak=2196456	time=3.913361072540283	
+RESULT	id=239	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4129334012	memPeak=0	time=0.2767367362976074	
+RESULT	id=239	rep_id=1	phase_id=24	phase_name=Write out SA	memFinal=0	memOff=4129334012	memPeak=0	time=2398.7903780937195	
+RESULT	id=240	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194311480	memOff=0	memPeak=4211562232	time=13032.80802822113	
+RESULT	id=240	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=10754.55281162262	
+RESULT	id=240	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=5187.40052318573	
+RESULT	id=240	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=1873.2428045272827	
+RESULT	id=240	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194311480	memPeak=17250752	time=698.8990564346313	
+RESULT	id=240	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-46912	memOff=4194311480	memPeak=17250752	time=176.94850826263428	
+RESULT	id=240	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=57.02259063720703	
+RESULT	id=240	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194264568	memPeak=17250752	time=31.741294860839844	
+RESULT	id=240	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-46912	memOff=4194264568	memPeak=17246144	time=10.625856399536133	
+RESULT	id=240	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-187648	memOff=4194217656	memPeak=17056192	time=1.2102222442626953	
+RESULT	id=240	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194538560	memOff=4194030008	memPeak=17016192	time=2597.6493854522705	
+RESULT	id=241	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=888174084	memOff=0	memPeak=1677063175	time=2275.8616094589233	
+RESULT	id=241	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=888174084	memPeak=2142304	time=12347.817068099976	
+RESULT	id=241	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-888166396	memOff=888174084	memPeak=198079728	time=7197.389446258545	
+RESULT	id=242	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355450696	memOff=0	memPeak=3355469176	time=3989.4407205581665	
+RESULT	id=242	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355450696	memPeak=0	time=59994.55696487427	
+RESULT	id=242	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355450696	memPeak=0	time=19632.767528533936	
+RESULT	id=244	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31278.72606754303	
+RESULT	id=244	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2584	memOff=1118481084	memPeak=2230496988	time=102885.61748313904	
+RESULT	id=244	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483668	memPeak=1118481072	time=14365.489130020142	
+RESULT	id=244	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103936	memPeak=13042	time=13484.643095970154	
+RESULT	id=246	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006890296936035156	
+RESULT	id=246	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=10744	memOff=4194304020	memPeak=25759192	time=1103.258041381836	
+RESULT	id=246	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194314764	memPeak=0	time=4168.727721214294	
+RESULT	id=246	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194314764	memPeak=209715201	time=556.8017101287842	
+RESULT	id=246	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194314764	memPeak=0	time=0.00029087066650390625	
+RESULT	id=246	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=2040	memOff=4194314764	memPeak=5032804928	time=10573.306352615356	
+RESULT	id=246	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=14720	memOff=4194316804	memPeak=4980576464	time=11062.554060935974	
+RESULT	id=246	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=171381392	memOff=4194331524	memPeak=4113322448	time=10060.648111343384	
+RESULT	id=246	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=8416	memOff=4365712916	memPeak=2505566936	time=6806.947157859802	
+RESULT	id=246	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=9368	memOff=4365721332	memPeak=1460639696	time=3607.200182914734	
+RESULT	id=246	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=111649384	memOff=4365730700	memPeak=893147216	time=1966.2918405532837	
+RESULT	id=246	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=12992	memOff=4477380084	memPeak=581027072	time=1201.6365041732788	
+RESULT	id=246	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=-31976580	memOff=4477393076	memPeak=335837660	time=838.8926429748535	
+RESULT	id=246	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=45634104	memOff=4445416496	memPeak=174912800	time=402.53417110443115	
+RESULT	id=246	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=11511544	memOff=4491050600	memPeak=66219284	time=129.54380798339844	
+RESULT	id=246	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=12889672	memOff=4502562144	memPeak=42347216	time=53.487850189208984	
+RESULT	id=246	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=10431624	memOff=4515451816	memPeak=31296248	time=35.8416805267334	
+RESULT	id=246	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=4913408	memOff=4525883440	memPeak=23603192	time=26.228404998779297	
+RESULT	id=246	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=5544640	memOff=4530796848	memPeak=19001672	time=20.235809326171875	
+RESULT	id=246	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=2622724	memOff=4536341488	memPeak=15073556	time=16.93779945373535	
+RESULT	id=246	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=3564136	memOff=4538964212	memPeak=10686128	time=12.260767936706543	
+RESULT	id=246	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=548796	memOff=4542528348	memPeak=2015048	time=3.391476631164551	
+RESULT	id=246	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4543077144	memPeak=0	time=0.23243999481201172	
+RESULT	id=246	rep_id=1	phase_id=24	phase_name=Write out SA	memFinal=0	memOff=4543077144	memPeak=0	time=2972.632137298584	
+RESULT	id=247	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194314744	memOff=0	memPeak=4220141848	time=10448.22227191925	
+RESULT	id=247	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=8582.061755180359	
+RESULT	id=247	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=4320.263949394226	
+RESULT	id=247	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=1563.8509550094604	
+RESULT	id=247	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=587.223388671875	
+RESULT	id=247	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=146.23449802398682	
+RESULT	id=247	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194314744	memPeak=25827104	time=46.1619815826416	
+RESULT	id=247	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=-46912	memOff=4194314744	memPeak=25827104	time=25.860358238220215	
+RESULT	id=247	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-46912	memOff=4194267832	memPeak=25822496	time=8.893874168395996	
+RESULT	id=247	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-422208	memOff=4194220920	memPeak=25397984	time=1.0096349716186523	
+RESULT	id=247	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194585472	memOff=4193798712	memPeak=25545632	time=1991.6353168487549	
+RESULT	id=248	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=888177348	memOff=0	memPeak=2071510983	time=2263.3904485702515	
+RESULT	id=248	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=888177348	memPeak=2142304	time=12270.590197563171	
+RESULT	id=248	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-888166396	memOff=888177348	memPeak=198079728	time=7120.090046882629	
+RESULT	id=249	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355453960	memOff=0	memPeak=3355479832	time=3913.5218744277954	
+RESULT	id=249	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355453960	memPeak=0	time=59678.4156999588	
+RESULT	id=249	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355453960	memPeak=0	time=19759.17031288147	
+RESULT	id=251	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31270.22593975067	
+RESULT	id=251	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=2321	memOff=1118481084	memPeak=2230496988	time=102964.15186882019	
+RESULT	id=251	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118483405	memPeak=1118481072	time=14358.238335609436	
+RESULT	id=251	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103673	memPeak=13042	time=13510.20483493805	
+RESULT	id=253	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006905555725097656	
+RESULT	id=253	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=14008	memOff=4194304020	memPeak=34315320	time=908.422830581665	
+RESULT	id=253	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194318028	memPeak=0	time=4106.3118324279785	
+RESULT	id=253	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194318028	memPeak=209715201	time=530.4785633087158	
+RESULT	id=253	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194318028	memPeak=0	time=0.00035190582275390625	
+RESULT	id=253	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=314554168	memOff=4194318028	memPeak=5032806960	time=8658.694033622742	
+RESULT	id=253	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=4144	memOff=4508872196	memPeak=4980578496	time=8990.958944320679	
+RESULT	id=253	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=2168	memOff=4508876340	memPeak=4113324480	time=8355.159341812134	
+RESULT	id=253	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=13032	memOff=4508878508	memPeak=2505568968	time=6242.539521217346	
+RESULT	id=253	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=45642640	memOff=4508891540	memPeak=1460641728	time=3626.4788360595703	
+RESULT	id=253	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=27919204	memOff=4554534180	memPeak=893149248	time=2053.100347518921	
+RESULT	id=253	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=3332	memOff=4582453384	memPeak=562872096	time=1239.6809997558594	
+RESULT	id=253	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=23995872	memOff=4582456716	memPeak=383816112	time=781.3728437423706	
+RESULT	id=253	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=68438556	memOff=4606452588	memPeak=182519616	time=363.46044063568115	
+RESULT	id=253	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=19432052	memOff=4674891144	memPeak=69100296	time=115.34569835662842	
+RESULT	id=253	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=16565568	memOff=4694323196	memPeak=44190312	time=49.15004348754883	
+RESULT	id=253	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=8807712	memOff=4710888764	memPeak=31298280	time=33.024539947509766	
+RESULT	id=253	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=6630596	memOff=4719696476	memPeak=23605224	time=23.885276794433594	
+RESULT	id=253	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=8305144	memOff=4726327072	memPeak=19003704	time=18.749330520629883	
+RESULT	id=253	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=5408096	memOff=4734632216	memPeak=15730848	time=15.745115280151367	
+RESULT	id=253	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=4670800	memOff=4740040312	memPeak=10688160	time=11.4962158203125	
+RESULT	id=253	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=479076	memOff=4744711112	memPeak=1857000	time=2.9628067016601562	
+RESULT	id=253	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4745190188	memPeak=0	time=0.19109249114990234	
+RESULT	id=253	rep_id=1	phase_id=24	phase_name=Write out SA	memFinal=0	memOff=4745190188	memPeak=0	time=2967.3642358779907	
+RESULT	id=254	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194318008	memOff=0	memPeak=4228721464	time=9200.974949836731	
+RESULT	id=254	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=7767.886723518372	
+RESULT	id=254	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=4082.8302297592163	
+RESULT	id=254	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=1469.3985452651978	
+RESULT	id=254	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=551.6090354919434	
+RESULT	id=254	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=136.21544361114502	
+RESULT	id=254	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=41.214335441589355	
+RESULT	id=254	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34403456	time=23.058480262756348	
+RESULT	id=254	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194318008	memPeak=34398848	time=8.181330680847168	
+RESULT	id=254	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-562944	memOff=4194318008	memPeak=33833600	time=0.9448966979980469	
+RESULT	id=254	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4194726208	memOff=4193755064	memPeak=33981248	time=1898.493950843811	
+RESULT	id=255	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=888180612	memOff=0	memPeak=2465958791	time=2353.0355072021484	
+RESULT	id=255	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=888180612	memPeak=2142304	time=12306.870178222656	
+RESULT	id=255	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-888166396	memOff=888180612	memPeak=198079728	time=7128.698476791382	
+RESULT	id=256	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355457224	memOff=0	memPeak=3355490488	time=4009.5110654830933	
+RESULT	id=256	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355457224	memPeak=0	time=59879.78972053528	
+RESULT	id=256	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355457224	memPeak=0	time=19650.814500808716	
+RESULT	id=258	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=1118481084	memOff=0	memPeak=1677721608	time=31301.925810813904	
+RESULT	id=258	rep_id=1	phase_id=2	phase_name=Rekursion	memFinal=1795	memOff=1118481084	memPeak=2230496988	time=103452.30804157257	
+RESULT	id=258	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=279620268	memOff=1118482879	memPeak=1118481072	time=14404.627067565918	
+RESULT	id=258	rep_id=1	phase_id=4	phase_name=Phase 3	memFinal=-1398101352	memOff=1398103147	memPeak=17214	time=13453.531566619873	
+RESULT	id=260	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=0	memOff=4194304020	memPeak=0	time=0.006228446960449219	
+RESULT	id=260	rep_id=1	phase_id=2	phase_name=Initial 4-Sort	memFinal=17272	memOff=4194304020	memPeak=42871448	time=800.4612617492676	
+RESULT	id=260	rep_id=1	phase_id=3	phase_name=Initialize ISA	memFinal=0	memOff=4194321292	memPeak=0	time=4096.745101928711	
+RESULT	id=260	rep_id=1	phase_id=4	phase_name=Mark singletons	memFinal=0	memOff=4194321292	memPeak=209715201	time=523.9591464996338	
+RESULT	id=260	rep_id=1	phase_id=5	phase_name=Loop Initialization	memFinal=0	memOff=4194321292	memPeak=0	time=0.0002079010009765625	
+RESULT	id=260	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-19984	memOff=4194321292	memPeak=5032809504	time=8479.299962043762	
+RESULT	id=260	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-124533680	memOff=4194301308	memPeak=4856066688	time=10011.615482330322	
+RESULT	id=260	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=5408	memOff=4069767628	memPeak=4113327024	time=9254.703615188599	
+RESULT	id=260	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=-19648	memOff=4069773036	memPeak=2505571512	time=6146.927502632141	
+RESULT	id=260	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-73055736	memOff=4069753388	memPeak=1387612416	time=3442.870327949524	
+RESULT	id=260	rep_id=1	phase_id=11	phase_name=Iteration	memFinal=44656672	memOff=3996697652	memPeak=893151792	time=1997.852484703064	
+RESULT	id=260	rep_id=1	phase_id=12	phase_name=Iteration	memFinal=29050328	memOff=4041354324	memPeak=566506032	time=1215.4075441360474	
+RESULT	id=260	rep_id=1	phase_id=13	phase_name=Iteration	memFinal=47971824	memOff=4070404652	memPeak=374223372	time=757.3660593032837	
+RESULT	id=260	rep_id=1	phase_id=14	phase_name=Iteration	memFinal=54731512	memOff=4118376476	memPeak=182522160	time=350.0556879043579	
+RESULT	id=260	rep_id=1	phase_id=15	phase_name=Iteration	memFinal=25900704	memOff=4173107988	memPeak=69102840	time=109.89325904846191	
+RESULT	id=260	rep_id=1	phase_id=16	phase_name=Iteration	memFinal=18761776	memOff=4199008692	memPeak=44192856	time=47.9647216796875	
+RESULT	id=260	rep_id=1	phase_id=17	phase_name=Iteration	memFinal=10951248	memOff=4217770468	memPeak=31300824	time=32.0873441696167	
+RESULT	id=260	rep_id=1	phase_id=18	phase_name=Iteration	memFinal=7659952	memOff=4228721716	memPeak=23607768	time=23.39922523498535	
+RESULT	id=260	rep_id=1	phase_id=19	phase_name=Iteration	memFinal=7585900	memOff=4236381668	memPeak=19006248	time=18.2561092376709	
+RESULT	id=260	rep_id=1	phase_id=20	phase_name=Iteration	memFinal=4322088	memOff=4243967568	memPeak=15733392	time=15.307260513305664	
+RESULT	id=260	rep_id=1	phase_id=21	phase_name=Iteration	memFinal=4005824	memOff=4248289656	memPeak=10423620	time=11.470379829406738	
+RESULT	id=260	rep_id=1	phase_id=22	phase_name=Iteration	memFinal=540224	memOff=4252295480	memPeak=1873248	time=2.8768129348754883	
+RESULT	id=260	rep_id=1	phase_id=23	phase_name=Iteration	memFinal=0	memOff=4252835704	memPeak=0	time=0.17600059509277344	
+RESULT	id=260	rep_id=1	phase_id=24	phase_name=Write out SA	memFinal=0	memOff=4252835704	memPeak=0	time=2963.217050552368	
+RESULT	id=261	rep_id=1	phase_id=1	phase_name=Initialization	memFinal=4194321272	memOff=0	memPeak=4237301080	time=8507.757005691528	
+RESULT	id=261	rep_id=1	phase_id=2	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=6975.8072118759155	
+RESULT	id=261	rep_id=1	phase_id=3	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=3723.897871017456	
+RESULT	id=261	rep_id=1	phase_id=4	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=1348.9919834136963	
+RESULT	id=261	rep_id=1	phase_id=5	phase_name=Iteration	memFinal=0	memOff=4194321272	memPeak=42979808	time=509.2404088973999	
+RESULT	id=261	rep_id=1	phase_id=6	phase_name=Iteration	memFinal=-46912	memOff=4194321272	memPeak=42979808	time=125.17649841308594	
+RESULT	id=261	rep_id=1	phase_id=7	phase_name=Iteration	memFinal=-46912	memOff=4194274360	memPeak=42932896	time=37.810773849487305	
+RESULT	id=261	rep_id=1	phase_id=8	phase_name=Iteration	memFinal=0	memOff=4194227448	memPeak=42979808	time=21.24171543121338	
+RESULT	id=261	rep_id=1	phase_id=9	phase_name=Iteration	memFinal=0	memOff=4194227448	memPeak=42975200	time=7.655278205871582	
+RESULT	id=261	rep_id=1	phase_id=10	phase_name=Iteration	memFinal=-750592	memOff=4194227448	memPeak=42222304	time=0.9166584014892578	
+RESULT	id=261	rep_id=1	phase_id=11	phase_name=Write out result	memFinal=-4195007680	memOff=4193476856	memPeak=42276128	time=1620.8124141693115	
+RESULT	id=262	rep_id=1	phase_id=1	phase_name=Phase 1	memFinal=888183876	memOff=0	memPeak=2860406599	time=2682.0191230773926	
+RESULT	id=262	rep_id=1	phase_id=2	phase_name=Phase 2	memFinal=0	memOff=888183876	memPeak=2142304	time=12320.414872169495	
+RESULT	id=262	rep_id=1	phase_id=3	phase_name=Phase 3	memFinal=-888166396	memOff=888183876	memPeak=198079728	time=7145.23007774353	
+RESULT	id=263	rep_id=1	phase_id=1	phase_name=Preparation	memFinal=3355460488	memOff=0	memPeak=3355501144	time=3973.9837617874146	
+RESULT	id=263	rep_id=1	phase_id=2	phase_name=Phase 1	memFinal=0	memOff=3355460488	memPeak=0	time=60016.263761520386	
+RESULT	id=263	rep_id=1	phase_id=3	phase_name=Phase 2	memFinal=-3355443216	memOff=3355460488	memPeak=0	time=19739.757871627808	
