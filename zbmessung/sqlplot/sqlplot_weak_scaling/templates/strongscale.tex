@@ -1,0 +1,84 @@
+\documentclass[landscape]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{fullpage}
+\usepackage{verbatim}
+
+\usepackage{tikz,pgfplots}
+
+\pgfplotsset{
+    width=160mm,height=150mm,
+    major grid style={thin,dotted,color=black!50},
+    minor grid style={thin,dotted,color=black!50},
+    grid,
+    every axis/.append style={
+        line width=0.5pt,
+        tick style={
+            line cap=round,
+            thin,
+            major tick length=4pt,
+            minor tick length=2pt,
+        },
+    },
+    legend cell align=left,
+    legend pos=north west,
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\section{Strong-Scaling}
+\textbf{Configuration} \hfill Prefix size: \VAR{config.prefix} \hfill Model name: \VAR{config.cpu}
+% IMPORT-DATA stats result/result_algorithm.txt
+
+\begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+                name=axis1,
+                width=0.5\textwidth,
+                height=90mm,
+                title={\VAR{config.escaped_input_file}},
+                xlabel={num Threads},
+                ylabel={SA construction time [s]},
+                legend columns=4,
+                legend to name=legend0,
+                legend style={
+                    /tikz/every even column/.append style={column sep=0.5cm,black},
+                    /tikz/every even column/.append style={black},
+                },
+            ]
+
+            %% MULTIPLOT(algo) SELECT thread_count AS x, time/1000 AS y, MULTIPLOT
+            %% FROM (
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+
+        \end{axis}
+        \begin{axis}[
+                at={(axis1.outer north east)},
+                anchor=outer north west,
+                name=axis2,
+                width=0.5\textwidth,
+                height=90mm,
+                title={\VAR{config.escaped_input_file}},
+                xlabel={num Threads},
+                ylabel={Extra Memory [MB]},
+            ]
+
+            %% MULTIPLOT(algo) SELECT thread_count AS x, memPeak/1000000 AS y, MULTIPLOT
+            %% FROM (
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+
+            \legend{}
+        \end{axis}
+    \end{tikzpicture}
+
+    \medskip
+    \ref{legend0}
+\end{center}
+\end{document}

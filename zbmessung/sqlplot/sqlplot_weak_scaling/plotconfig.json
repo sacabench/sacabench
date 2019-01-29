@@ -1,0 +1,14 @@
+[
+    {
+        "mode": "strong",
+        "input": "pc_dna.200MB",
+        "model_name": 0,
+        "prefix": 1000000000
+    },
+    {
+        "mode": "strong",
+        "input": "pc_english.200MB",
+        "model_name": 0,
+        "prefix": 1000000000
+    }
+]
