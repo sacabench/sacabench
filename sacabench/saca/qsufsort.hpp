@@ -11,6 +11,7 @@
 #include <util/assertions.hpp>
 #include <util/container.hpp>
 #include <util/sort/ternary_quicksort.hpp>
+#include <util/sort/ips4o.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/word_packing.hpp>
@@ -138,8 +139,7 @@ public:
 
         qss.split("First sorting");
         auto compare_packed = compare_word_packed(isa);
-        util::sort::ternary_quicksort::ternary_quicksort(out_sa,
-                                                         compare_packed);
+        util::sort::ips4o_sort(out_sa, compare_packed);
         qss.split("Init ISA");
         // Calculate length of equal groups into out_sa
         calculate_equal_length(out_sa, isa, compare_packed);

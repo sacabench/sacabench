@@ -1,5 +1,6 @@
 TEX = latexmk
 BENCHMARK = plots.json
+CONFIG = plotconfig.json
 
 .PHONY: all clean run
 
@@ -12,7 +13,7 @@ sqlplottools:
 
 json:
 	mkdir -p result
-	python json_to_result_converter.py $(BENCHMARK) result
+	python json_to_result_converter.py $(CONFIG) $(BENCHMARK) result
 
 sql: json sqlplottools
 	for file in $(shell ls *.tex); do \
@@ -31,3 +32,4 @@ run: main
 
 clean:
 	$(TEX) -C
+	rm *.tex
