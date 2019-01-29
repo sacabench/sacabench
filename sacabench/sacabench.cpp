@@ -105,6 +105,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             1);
 
         construct.add_flag("-z,--plot", plot, "Plot measurements.");
+        construct.add_flag("--automation", automation, "Automatic generation of pdf report.");
     }
 
     CLI::App& demo =
@@ -380,6 +381,15 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                                      std::ios_base::trunc);
                     write_bench(benchmark_file);
                 }
+            }
+        }
+
+        if (automation) {
+            std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
+            std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
+            int exit_status = system(command.c_str());
+            if (exit_status < 0) {
+                std::cerr << "error thrown while running plot automation script." << std::endl;
             }
         }
     }
