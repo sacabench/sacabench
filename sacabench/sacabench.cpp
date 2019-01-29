@@ -55,6 +55,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     uint32_t repetition_count = 1;
     bool plot = false;
     bool automation = false;
+    bool fast_check = false;
     {
         construct.set_config("--config", "",
                              "Read an config file for CLI args");
@@ -65,6 +66,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Path to input file, or - for STDIN.")
             ->required();
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
+        construct.add_flag("-q,--fastcheck", fast_check, "Check the constructed SA with a faster, parallel algorithm.");
         construct.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes path "
                              "to output file, or - for STDOUT");
@@ -120,6 +122,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Path to input file, or - for STDIN.")
             ->required();
         batch.add_flag("-c,--check", check_sa, "Check the constructed SA.");
+        batch.add_flag("-q,--fastcheck", fast_check, "Check the constructed SA with a faster, parallel algorithm.");
         auto b_opt =
             batch.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes path "
@@ -329,7 +332,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                 sa->write_binary(stream, out_fixed_bits);
                             });
                     }
-                    if (check_sa) {
+                    if (check_sa || fast_check) {
                         tdc::StatPhase check_sa_phase("SA Checker");
 
                         // Read the string in again
@@ -338,7 +341,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         text->initializer(s);
 
                         // Run the SA checker, and print the result
-                        auto res = sa->check(s);
+                        auto res = sa->check(s, fast_check);
                         check_sa_phase.log("check_result", res);
                         if (res != util::sa_check_result::ok) {
                             std::cerr << "ERROR: SA check failed" << std::endl;
@@ -444,7 +447,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
                     auto sa = algo->construct_sa(*text, sa_minimum_bits);
 
-                    if (check_sa) {
+                    if (check_sa || fast_check) {
                         tdc::StatPhase check_sa_phase("SA Checker");
 
                         // Read the string in again
@@ -453,7 +456,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         text->initializer(s);
 
                         // Run the SA checker, and print the result
-                        auto res = sa->check(s);
+                        auto res = sa->check(s, fast_check);
                         check_sa_phase.log("check_result", res);
                         if (res != util::sa_check_result::ok) {
                             std::cerr << "ERROR: SA check failed" << std::endl;
