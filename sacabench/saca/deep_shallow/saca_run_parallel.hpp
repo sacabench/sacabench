@@ -422,6 +422,9 @@ private:
 
     /// \brief Iteratively sort all buckets.
     inline void sort_all_buckets() {
+
+        omp_set_lock(&writelock);
+
         // Schedule the buckets in serial
         while (bd.are_buckets_left()) {
 
@@ -438,10 +441,10 @@ private:
                 tasks++;
 
                 // Sort big buckets in parallel
-                // #pragma omp task
-                // {
+                #pragma omp task
+                {
                     sort_bucket(alpha, beta);
-                // }
+                }
             }
         }
 
