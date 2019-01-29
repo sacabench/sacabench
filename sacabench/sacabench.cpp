@@ -54,6 +54,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
     bool plot = false;
+    bool automation = false;
     bool fast_check = false;
     {
         construct.set_config("--config", "",
@@ -146,6 +147,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Blacklist algorithms from execution")
             ->excludes(wlist);
         batch.add_flag("-z,--plot", plot, "Plot measurements.")->needs(b_opt);
+        batch.add_flag("--automation", automation, "Automatic generation of pdf report.");
     }
 
     CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
@@ -349,7 +351,19 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         }
                     }
                 }
+
+                auto short_input_filename = input_filename;
+                auto last_pos = input_filename.rfind("/");
+                if (last_pos != std::string::npos) {
+                    short_input_filename = input_filename.substr(last_pos + 1);
+                }
+
                 root.log("algorithm_name", algo->name());
+                root.log("input_file", short_input_filename);
+                //root.log("repetitions", repetition_count);
+                root.log("thread_count", omp_get_max_threads());
+                root.log("prefix", prefix);
+
                 sum_array.push_back(root.to_json());
             }
 
@@ -410,6 +424,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
         nlohmann::json stat_array = nlohmann::json::array();
 
+        size_t sanity_counter = 0;
         for (const auto& algo : saca_list) {
             if (!whitelist.empty()) {
                 if (std::find(whitelist.begin(), whitelist.end(),
@@ -424,6 +439,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             nlohmann::json alg_array = nlohmann::json::array();
 
             for (uint32_t i = 0; i < repetition_count; i++) {
+                sanity_counter++;
                 tdc::StatPhase root(algo->name().data());
                 {
                     std::cerr << "Running " << algo->name() << " (" << (i + 1)
@@ -450,7 +466,19 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         }
                     }
                 }
+
+                auto short_input_filename = input_filename;
+                auto last_pos = input_filename.rfind("/");
+                if (last_pos != std::string::npos) {
+                    short_input_filename = input_filename.substr(last_pos + 1);
+                }
+
                 root.log("algorithm_name", algo->name());
+                root.log("input_file", short_input_filename);
+                //root.log("repetitions", repetition_count);
+                root.log("thread_count", omp_get_max_threads());
+                root.log("prefix", prefix);
+
                 alg_array.push_back(root.to_json());
             }
             stat_array.push_back(alg_array);
@@ -471,6 +499,52 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                                  std::ios_base::trunc);
                 write_bench(benchmark_file);
             }
+            
+            
+            // Create json file with config 
+            // file name, prefix size, amount of repetitions
+            nlohmann::json config_json = nlohmann::json::array();
+            
+            //TODO: model_name only returns exit status of command instead of model name
+            auto model_name = system("grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'");
+            
+            // input_filename contains full path to input file. For config_json file we only need the name.
+            auto filename_start_index = input_filename.find_last_of("\\/") + 1;
+            auto filename_end_index = input_filename.length();
+            auto corrected_input_filename = input_filename.substr(filename_start_index, filename_end_index);
+            nlohmann::json j = {
+                                    {"input", corrected_input_filename},
+                                    {"prefix", prefix},
+                                    {"repetitions", repetition_count},
+                                    {"model_name", model_name}
+                                };
+            
+            config_json.push_back(j);                   
+            
+            auto write_config = [&](std::ostream& out) {
+                // auto j = stat_array.to_json();
+                out << config_json.dump(4) << std::endl;
+            };
+            
+            std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
+                                             std::ios_base::out |
+                                                 std::ios_base::binary |
+                                                 std::ios_base::trunc);
+                write_config(config_file);
+        }
+
+        if (automation) {
+            std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
+            std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
+            int exit_status = system(command.c_str());
+            if (exit_status < 0) {
+                std::cerr << "error thrown while running plot automation script." << std::endl;
+            }
+        }
+
+        if (sanity_counter == 0) {
+            std::cerr << "ERROR: No Algorithm ran!\n";
+            return 1;
         }
     }
 
@@ -498,9 +572,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             std::cerr << "not able to plot." << std::endl;
             return;
         }
-        int i = system(r_command.c_str());
-        if (i) {
-            // TODO: Check return value
+        int exit_status = system(r_command.c_str());
+        if (exit_status < 0) {
+            std::cerr << "error thrown while running R-script." << std::endl;
         }
         std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
     };

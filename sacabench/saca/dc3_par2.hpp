@@ -19,6 +19,11 @@
 
 #include <tudocomp_stat/StatPhase.hpp>
 
+//parallel
+#include <omp.h>
+#include <thread>
+#include <util/sort/ips4o.hpp>
+
 namespace sacabench::dc3_par2 {
 
 class dc3_par2 {
@@ -78,10 +83,13 @@ private:
                                                   INPUT_STRING[i + two], i);
             }
         }
-
-        std::sort(triplets_12_to_be_sorted.begin(),
-                  triplets_12_to_be_sorted.end());
-
+        
+        //std::sort(triplets_12_to_be_sorted.begin(),
+        //          triplets_12_to_be_sorted.end());
+        
+        util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        
+        #pragma omp parallel for
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
             triplets_12[i] = std::get<3>(triplets_12_to_be_sorted[i]);
         }
@@ -140,7 +148,7 @@ private:
 
         DCHECK_MSG(isa_12.size() == t_12.size(),
                    "isa_12 must have the same length as t_12");
-
+        #pragma omp parallel for
         for (size_t i = 0; i < t_12.size(); ++i) {
             isa_12[t_12[i]] = i + 1;
         }
@@ -200,9 +208,11 @@ private:
 
             sa_index one = 1;
             // correct the order of sa_12 with result of recursion
+            #pragma omp parallel for
             for (size_t i = 0; i < end_of_mod_eq_1; ++i) {
                 triplets_12[span_t_12[i] - one] = 3 * i + 1;
             }
+            #pragma omp parallel for
             for (size_t i = end_of_mod_eq_1; i < triplets_12.size(); ++i) {
                 triplets_12[span_t_12[i] - one] = 3 * (i - end_of_mod_eq_1) + 2;
             }
@@ -442,20 +452,23 @@ private:
         // index of first rank for triplets beginning in i mod 3 = 2
         sa_index start_pos_mod_2 =
             isa_12.size() / 2 + ((isa_12.size() % 2) != 0);
-
-        sa_index counter = 0;
-        size_t i = 0;
-        for (i = 0; i < 3 * start_pos_mod_2; i += 3) {
-                sa_0_to_be_sorted[counter++] =
+        #pragma omp parallel for
+        for (size_t i = 0; i < 3 * start_pos_mod_2; i += 3) {
+                sa_0_to_be_sorted[i/3] =
                     (std::tuple<C, sa_index, sa_index>(text[i], isa_12[i / 3],
                                                        i));  
         }
-        for (i = 3 * start_pos_mod_2; i < text.size() - 2; i += 3) {
-                sa_0_to_be_sorted[counter++] =
+        #pragma omp parallel for
+        for (size_t i = 3 * start_pos_mod_2; i < text.size() - 2; i += 3) {
+                sa_0_to_be_sorted[i/3] =
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
 
-        std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
+                  
+        util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+
+        #pragma omp parallel for
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
             sa_0[i] = std::get<2>(sa_0_to_be_sorted[i]);
         }

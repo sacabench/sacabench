@@ -206,11 +206,13 @@ class osipov {
 */
 public:
     template <class osipov_impl>
-    static void prefix_doubling(util::string_span, util::span<sa_index> out_sa,
+    static void prefix_doubling(util::string_span text, util::span<sa_index> out_sa,
                 osipov_impl& osipov) {
         tdc::StatPhase phase("Initialization");
         // Check if enough bits free for negation.
         DCHECK(util::assert_text_length<sa_index>(out_sa.size(), 1u));
+        DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
+        (void) text;
 
         sa_index h = 4;
         // Sort by h characters

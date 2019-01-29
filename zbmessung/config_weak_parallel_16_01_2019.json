@@ -12,17 +12,15 @@
             "Deep-Shallow_par"
         ],
         "input": [
-            "pc_dblp.xml.200MB",
-            "pc_dna.200MB",
-            "pc_english.200MB",
-            "pc_proteins.200MB",
-            "pc_sources.200MB"
+            "$WORK/large_datasets/commoncrawl.txt",
+            "$WORK/large_datasets/dna.txt",
+            "$WORK/large_datasets/wiki.txt"
         ],
         "rep": 1,
-        "prefix": 200,
+        "prefix": 100,
         "threads": [
             1, 2, 4, 8, 12, 16, 20
         ],
-        "weak_scale": false
+        "weak_scale": true
     }
 }

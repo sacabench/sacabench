@@ -223,6 +223,7 @@ if args.launch:
                     "rep": N,
                     "jobid": jobid,
                     "threads": omp_threads,
+                    "is_weak": bool(WEAK_SCALE),
                 })
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)
@@ -248,17 +249,24 @@ def load_data(dir):
         prefix = output_file["prefix"]
         threads = output_file["threads"]
 
-        if not stat_output.is_file():
-            print("Missing data for {}, {}, {}, {} (no file {})".format(algo, input.name, prefix, threads, stat_output.name))
-            if output.is_file():
-                print("-output----------")
-                print(load_str(output))
-                print("-----------------")
-            continue
+        err_reason = ""
 
-        stats = load_json(stat_output)
-        assert len(stats) == 1
-        yield (output_file, stats[0])
+        if stat_output.is_file():
+            stats = load_json(stat_output)
+            if len(stats) == 1:
+                yield (output_file, stats[0])
+                continue
+            else:
+                err_reason = "empty json stats"
+        else:
+            err_reason = "no file {}".format(stat_output.name)
+
+        print("Missing data for {}, {}, {}, {} ({})".format(algo, input.name, prefix, threads, err_reason))
+        if output.is_file():
+            print("-output----------")
+            print(load_str(output))
+            print("-----------------")
+        continue
 
 def stat_nav_sub(stat, title):
     phase = stat["sub"]
@@ -299,9 +307,11 @@ def to_sqlplot(output_file, stats):
             "prefix": output_file["prefix"],
             "threads": output_file["threads"],
             "rep": output_file["rep"],
+            "is_weak": output_file["is_weak"],
             "rep_i": stati,
             **get_algo_stat(stat),
         }
+        #pprint(o)
 
         s = "RESULT"
         for k in sorted(o):
@@ -313,9 +323,40 @@ if args.combine:
     dir = Path(args.combine)
     sqlplot_out = ""
     file_map = {}
+
+    combined_json = []
     for (output_file, stats) in load_data(dir):
         threads = output_file["threads"]
         input = output_file["input"]
+
+        if False:
+            for entry in stats:
+                stat_list = entry["stats"]
+                stat_list.append({
+                    "key": "input_file",
+                    "value": input.name,
+                })
+                stat_list.append({
+                    "key": "thread_count",
+                    "value": threads,
+                })
+                stat_list.append({
+                    "key": "base_prefix_key",
+                    "value": str(output_file["prefix"]),
+                })
+                stat_list.append({
+                    "key": "actual_prefix_key",
+                    "value": str(output_file["actual_prefix"]),
+                })
+                stat_list.append({
+                    "key": "repetitions",
+                    "value": str(output_file["rep"]),
+                })
+                stat_list.append({
+                    "key": "is_weak",
+                    "value": output_file["is_weak"],
+                })
+
         sqlplot_out += to_sqlplot(output_file, stats)
 
         key = (input, str(threads))
@@ -326,7 +367,24 @@ if args.combine:
         (input, threads) = key
         op = dir / Path("results-{}-{}.json".format(input.name, threads))
         print("Writing data to {}".format(op))
+        #combined_json.append({
+        #    "threads": threads,
+        #    "input": input.name,
+        #    "stats": file_map[key],
+        #})
+        combined_json += file_map[key]
         write_json(op, file_map[key])
     op = dir / Path("sqlplot.txt")
     print("Writing data to {}".format(op))
     write_str(op, sqlplot_out)
+
+    op = dir / Path("results-combined.json")
+    print("Writing data to {}".format(op))
+    #write_json(op, {
+    #    "measures": combined_json,
+    #    "sqlplot": sqlplot_out,
+    #})
+    write_json(op, combined_json)
+
+    # input_file
+    # thread_count
