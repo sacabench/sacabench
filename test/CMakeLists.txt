@@ -71,4 +71,6 @@ run_test(pss_tests DEPS saca_bench_lib)
 run_test(naive_tests DEPS saca_bench_lib)
 run_test(osipov_tests DEPS saca_bench_lib)
 run_test(prefix_sum_tests DEPS saca_bench_lib)
+run_test(induce_parallel_tests DEPS saca_bench_lib)
+run_test(sais_wip_tests DEPS saca_bench_lib)
 

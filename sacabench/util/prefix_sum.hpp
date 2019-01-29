@@ -200,5 +200,52 @@ void par_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
         }
     }
 }
+
+template <typename Content, typename add_operator>
+void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
+        add_operator add, Content identity) {
+    if (in.size() < 10) {
+        seq_prefix_sum(in, out, inclusive, add, identity);
+        return;
+    }
+            
+    size_t number_of_even_idx = in.size()/2;
+    auto pair_sums_cont = util::make_container<Content>(number_of_even_idx);
+    util::span<Content> pair_sums = pair_sums_cont;
+    
+    #pragma omp parallel for
+    for (size_t i = 0; i < number_of_even_idx; ++i) {
+        pair_sums[i] = add(in[2*i], in[2*i+1]);
+    }
+    
+    par_prefix_sum_eff(pair_sums, pair_sums, true, add, identity);
+    
+    if (inclusive) {
+        out[0] = in[0];
+        out[1] = pair_sums[0];
+        #pragma omp parallel for
+        for (size_t i = 2; i < out.size(); ++i) {
+            if (i % 2 == 0) {
+                out[i] = add(in[i], pair_sums[(i-1)/2]);
+            }
+            else {
+                out[i] = pair_sums[i/2];
+            }
+        }
+    }
+    else {
+        out[0] = identity;
+        out[1] = in[0];
+        #pragma omp parallel for
+        for (size_t i = 2; i < out.size(); ++i) {
+            if (i % 2 == 0) {
+                out[i] = pair_sums[(i-1)/2];
+            }
+            else {
+                out[i] = add(in[i-1], pair_sums[(i-2)/2]);
+            }
+        }
+    }
+}
 // End Namespace
 }
