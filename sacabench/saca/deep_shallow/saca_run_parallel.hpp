@@ -435,13 +435,13 @@ private:
                 // Buckets with a size of 0 or 1 are already sorted.
                 // Do nothing.
             } else {
-                // tasks++;
+                tasks++;
 
                 // Sort big buckets in parallel
-                #pragma omp task
-                {
+                // #pragma omp task
+                // {
                     sort_bucket(alpha, beta);
-                }
+                // }
             }
         }
 
@@ -460,14 +460,6 @@ public:
           max_blind_sort_size(text.size() / BLIND_SORT_RATIO), tasks(0), tasks_done(0) {
 
         omp_init_lock(&writelock);
-        // omp_init_lock(&inducing_lock);
-
-        // std::cout << "start" << std::endl;
-        // // Fill sa with unsorted suffix array.
-        // for (size_t i = 0; i < sa.size(); ++i) {
-        //     sa[i] = 999;
-        // }
-        // std::cout << "mid" << std::endl;
 
         for (size_t i = 0; i < sa.size(); ++i) {
             sa[i] = i;
@@ -479,23 +471,20 @@ public:
             simple_sort(sa, 0);
         } else {
             // Spawn a task pool to run the buckets in parallel
-            // #pragma omp parallel
-            // {
-            //     #pragma omp master
-            //     {
+            #pragma omp parallel
+            {
+                #pragma omp master
+                {
                     // Use bucket sort to sort `sa` by the first two characters.
                     bucket_sort();
 
-                    // std::cout << "end" << std::endl;
-
                     // Sort all buckets iteratively.
                     sort_all_buckets();
-            //     }
-            // }
+                }
+            }
         }
 
         omp_destroy_lock(&writelock);
-        // omp_destroy_lock(&inducing_lock);
     }
 };
 } // namespace sacabench::deep_shallow
