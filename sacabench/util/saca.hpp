@@ -31,7 +31,7 @@ public:
     virtual ~abstract_sa() = default;
 
     /// Run the sa checker, and return its result.
-    virtual sa_check_result check(string_span text) = 0;
+    virtual sa_check_result check(string_span text, bool fast) = 0;
 
     /// Write the SA to the `ostream` as a JSON array.
     virtual void write_json(std::ostream& out) = 0;
@@ -66,8 +66,8 @@ public:
     /// Return original suffix array, with potential sentinel positions.
     inline span<sa_index> sa_with_sentinels() { return m_sa; }
 
-    inline virtual sa_check_result check(string_span text) override {
-        return sa_check<sa_index>(sa_without_sentinels(), text);
+    inline virtual sa_check_result check(string_span text, bool fast) override {
+        return sa_check_dispatch<sa_index>(sa_without_sentinels(), text, fast);
     }
 
     inline virtual void write_json(std::ostream& out) {
@@ -139,13 +139,13 @@ class text_initializer_from_span : public text_initializer {
     size_t prefix;
 
 public:
-    inline text_initializer_from_span(string_span text, size_t prefix_length = -1) : m_text(text), 
+    inline text_initializer_from_span(string_span text, size_t prefix_length = -1) : m_text(text),
         prefix(prefix_length) {}
-    
+
     virtual inline size_t prefix_size() const { return prefix; }
-    
+
     virtual inline size_t original_text_size() const { return m_text.size(); }
-    
+
     virtual inline size_t text_size() const override { return std::min(
         prefix_size(), original_text_size()); }
 
@@ -165,9 +165,9 @@ class text_initializer_from_file : public text_initializer {
 public:
     inline text_initializer_from_file(std::string const& file_path, size_t prefix_length = -1)
         : m_ctx(file_path), prefix(prefix_length) {}
-        
+
     virtual inline size_t prefix_size() const { return prefix; }
-    
+
     virtual inline size_t original_text_size() const { return m_ctx.size; };
 
     virtual inline size_t text_size() const override { return std::min(
