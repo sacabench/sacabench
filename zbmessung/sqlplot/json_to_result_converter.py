@@ -221,6 +221,39 @@ def extractPhaseDataFromDictionary(dict, algorithmID, repetitionID, phaseID):
 # PROCESS FILE
 ########################################
 
+def handleAlgorithm(dict, currentAlgorithmNumber, currentRepetitionNumber):
+
+    algorithmFileContent = ""
+    phasesFileContent = ""
+
+    repetitionCount = len(dict)
+
+    for repetition in dict:
+        # Increase id of current repetition when processing a new repetition of the current algorith.
+        currentRepetitionNumber += 1
+
+        # Set id of current phase to 0 when processing an new repititon.
+        currentPhaseNumber = 0
+
+        algorithmDataDict = extractAlgorithmDataFromDictionary(repetition, currentAlgorithmNumber, repetitionCount, currentRepetitionNumber)
+        algorithmFileContent += buildResultString(algorithmDataDict)
+
+        # List of sub contains only one element.
+        allPhases = repetition["sub"][0]["sub"]
+        for algorithmPhase in allPhases:
+            # An algorithm contains next to its normal phases also some preparation phases.
+            # Process only normal phases and ignore the preparation phases.
+            possiblePhases = algorithmPhase["sub"]
+            if len(possiblePhases) > 0:
+                for phase in possiblePhases:
+
+                    currentPhaseNumber += 1
+
+                    phaseDataDict = extractPhaseDataFromDictionary(phase, currentAlgorithmNumber, currentRepetitionNumber, currentPhaseNumber)
+                    phasesFileContent += buildResultString(phaseDataDict)
+
+    return (algorithmFileContent, phasesFileContent)
+                        
 def convertAndSaveData(dict, path):
     """
     Processes the given dictionary and saves the created files to the directory of the given path.
@@ -236,43 +269,27 @@ def convertAndSaveData(dict, path):
     algorithmFileContent = ""
     phasesFileContent = ""
 
-    currentrepetitionNumber = 0
+    currentRepetitionNumber = 0
     repetitionCount = 0
     currentAlgorithmNumber = 0
     currentPhaseNumber = 0
 
-    for algorithm in dict:
-        # Set id of current repetition to 0 when processing an new algorithm.
-        currentrepetitionNumber = 0
+    # mode construct
+    if type(dict[0]) == type({}):
+        algorithmFileContent, phasesFileContent = handleAlgorithm(dict, currentAlgorithmNumber, currentRepetitionNumber)
+    
+    # mode batch
+    if type(dict[0]) == type([]):
+        for algorithm in dict:
+            # Set id of current repetition to 0 when processing an new algorithm.
+            currentRepetitionNumber = 0
 
-        # Increase id of each algorithm.
-        currentAlgorithmNumber += 1
+            # Increase id of each algorithm.
+            currentAlgorithmNumber += 1
 
-        repetitionCount = len(algorithm)
-
-        for repetition in algorithm:
-            # Increase id of current repetition when processing a new repetition of the current algorith.
-            currentrepetitionNumber += 1
-
-            # Set id of current phase to 0 when processing an new repititon.
-            currentPhaseNumber = 0
-
-            algorithmDataDict = extractAlgorithmDataFromDictionary(repetition, currentAlgorithmNumber, repetitionCount, currentrepetitionNumber)
-            algorithmFileContent += buildResultString(algorithmDataDict)
-
-            # List of sub contains only one element.
-            allPhases = repetition["sub"][0]["sub"]
-            for algorithmPhase in allPhases:
-                # An algorithm contains next to its normal phases also some preparation phases.
-                # Process only normal phases and ignore the preparation phases.
-                possiblePhases = algorithmPhase["sub"]
-                if len(possiblePhases) > 0:
-                    for phase in possiblePhases:
-
-                        currentPhaseNumber += 1
-
-                        phaseDataDict = extractPhaseDataFromDictionary(phase, currentAlgorithmNumber, currentrepetitionNumber, currentPhaseNumber)
-                        phasesFileContent += buildResultString(phaseDataDict)
+            newAlgorithmFileContent, newPhasesFileContent = handleAlgorithm(algorithm, currentAlgorithmNumber, currentRepetitionNumber)
+            algorithmFileContent += newAlgorithmFileContent
+            phasesFileContent += newPhasesFileContent
 
     algorithmFilePath = "{}/result_algorithm.txt".format(path)
     writeFile(algorithmFilePath, algorithmFileContent)
