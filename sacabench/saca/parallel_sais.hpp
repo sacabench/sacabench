@@ -171,7 +171,6 @@ public:
     template <typename T>
     static void compute_types_second_pass(std::vector<uint8_t>& t, size_t offset, size_t len, size_t thread_id, span<size_t> thread_border, span<bool> thread_info) {
         // second pass - use info of threads what the type of their border character was
-        // std::cout << "running " << omp_get_thread_num() << std::endl;
         for (size_t i = thread_border[thread_id]; i < len; i++) {
             setBit(t, i + offset, thread_info[thread_id + 1]);
         }
@@ -219,55 +218,20 @@ public:
 
     template <typename T, typename sa_index>
     static void prepare(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r, span<sa_index> SA, std::vector<uint8_t>& t, bool suffix_type, size_t k, size_t i){
-        // std::cout << "Started preparing " << i << std::endl;
 
         size_t j = 0;
         sa_index pos;
         sa_index chr;
 
         j = (k*part_length)+i; 
-        // std::cout << "Prepare for pos j = " << j << std::endl;
         if(j < (size_t)SA.size() && SA[j]!= static_cast<sa_index>(-1)){
             pos = SA[j]-static_cast<sa_index>(1);
             if(pos >=static_cast<sa_index>(0) && pos!=static_cast<sa_index>(-1) && pos < SA.size() && getBit(t, pos) == suffix_type){
                 chr = s[pos];
                 r[i] = std::make_pair(chr, pos);
-                // std::cout << "Write Tuple <" << (ssize)chr << ", " << (ssize)pos << "> to r, j = " << j << ", k = " << k << ", i = " << i << ", pl = " << part_length << std::endl;
             }
         }
-
-        // std::cout << "Finished preparing " << i << std::endl;
-
     }
-
-    //template <typename T, typename sa_index>
-    //static void induce_L_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
-    //                           bool end, span<sa_index> SA) {
-    //    generate_buckets<T, sa_index>(s, buckets, K, end);
-    //    for (size_t i = 0; i < s.size(); i++) {
-    //        ssize pre_index =
-    //            SA[i] - (sa_index)1; // pre index of the ith suffix array position
-
-    //        if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 &&
-    //            t[pre_index] == L_Type) { // pre index is type L
-    //            SA[buckets[s.at(pre_index)]++] =
-    //                pre_index; // "sort" index in the bucket
-    //        }
-    //    }
-    //}
-
-        //template <typename T, typename sa_index>
-    //static void induce_S_Types(T s, span<sa_index> buckets, span<bool> t, size_t K,
-    //                           bool end, span<sa_index> SA) {
-    //    generate_buckets<T, sa_index>(s, buckets, K, end);
-    //    for (ssize i = s.size() - 1; i >= 0; i--) {
-    //        ssize pre_index = SA[i] - (sa_index)1;
-
-    //        if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 && t[pre_index] == S_Type) {
-    //            SA[--buckets[s.at(pre_index)]] = pre_index;
-    //        }
-    //    }
-    //}
 
 
     // Induce L_Types for Block B_ks
@@ -281,12 +245,9 @@ public:
         sa_index translate = (sa_index)(blocknum*part_length);
         sa_index chr;
 
-        // std::cout << "At the beginning of L Inducing w_count is " << *w_count << std::endl;
-
         for (ssize i = 0; i < (ssize)part_length && i+(ssize)translate < (ssize)SA.size(); i++)
         {
             ssize pos = ((ssize)SA[i + translate] - 1);
-            //std::cout << "i: " << (sa_index)i << ", pos: " << pos << ", i+trans: " << (i+translate) << std::endl;
 
             if ((ssize)SA[(sa_index)i + translate] >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == L_Type)
             {
@@ -296,27 +257,19 @@ public:
                 else
                     chr = (sa_index)r[i].first;
 
-                //std::cout << "chr: " << (sa_index)chr << std::endl;
-
                 sa_index idx = buckets[chr];
                 buckets[chr]++;
 
-                //std::cout << "idx: " << (sa_index)idx << std::endl;
-
                 // if idx is in Block k or Block k+1
                 if (translate <= idx && idx <= translate + (sa_index)(2 * part_length) && idx < SA.size()) {
-                    // std::cout << " L sa [ " << idx << " ] = " << pos << std::endl;
                     SA[idx] = (sa_index)pos;
                 }
                 else if (idx < SA.size()) {
-                    // std::cout << "BL sa [ " << idx << " ] = " << pos << std::endl;
                     w[(*w_count)++] = std::make_pair((sa_index)idx, (sa_index)pos);
                 }
 
             }
         }
-
-        // std::cout << "At the end of L Inducing w_count is " << *w_count << std::endl;
 
     }
 
@@ -338,8 +291,6 @@ public:
         for (ssize i = end; i >= 0; --i)
         {
             ssize pos = (ssize)SA[i + translate] - 1;
-            // std::cout << "SA " << SA << std::endl;
-            // std::cout << "i: " << (sa_index)i << ", pos: " << pos << ", i+trans: " << (i+translate) << std::endl;
 
             if ((ssize)SA[(sa_index)i + translate] >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == S_Type)
             {
@@ -348,26 +299,17 @@ public:
                 else
                     chr = r[i].first;
 
-                // std::cout << "chr: " << (sa_index)chr << std::endl;
-
                 sa_index idx = --buckets[chr];
-
-                // std::cout << "idx: " << (sa_index)idx << std::endl;
 
                 // if idx is in Block k-1 or Block k
                 if (ssize(translate) - 2 * part_length <= ssize(idx) && idx <= i + translate && idx >= size_t(0)) {
-//              if (translate <= idx && idx <= translate + (sa_index)(2 * part_length) && idx < SA.size()) {
-                    // std::cout << " S sa [ " << idx << " ] = " << pos << std::endl;
                     SA[idx] = (sa_index)pos;
                 }
                 else if (idx < SA.size()) {
-                    // std::cout << "BS sa [ " << idx << " ] = " << pos << std::endl;
                     w[(*w_count)++] = std::make_pair(idx, (sa_index)pos);
                 }
             }
         }
-
-        // std::cout << "write amount für rosi: " << *w_count << "." << std::endl;
     }
 
 
@@ -420,16 +362,6 @@ public:
         *w_count = 0;
     }
 
-    // Initialization of the Write Buffer, maybe can be put together with the Preparing-Phase later
-    /*template <typename sa_index>
-    static void init_Write_Buffer(span<std::pair<sa_index, sa_index>> w) {  
-        
-        for (ssize i = 0; i < (ssize)w.size(); i++) {
-            w[i].first = (sa_index)(0);
-            w[i].second = static_cast<sa_index>(-1);
-        }
-    }*/
-
     template <typename T, typename sa_index>
     static void pipelined_Inducing(T s, span<sa_index> SA, std::vector<uint8_t>& t, span<sa_index> buckets, size_t K, size_t thread_count,
         span<std::pair<sa_index, sa_index>> r1, span<std::pair<sa_index, sa_index>> r2, span<std::pair<sa_index, sa_index>> w1, span<std::pair<sa_index, sa_index>> w2, ssize part_length, bool type) {
@@ -471,19 +403,11 @@ public:
                 updating_block++;
             }
 
-            // std::cout << "w1 before: ";
-            // print(std::cout, w1) << std::endl;
-            // std::cout << "w2 before: ";
-            // print(std::cout, w2) << std::endl;
-
             #pragma omp taskgroup
             {
                 if (preparing_block >= (ssize)0) {
                     ssize cur_prepare_block = ((type == L_Type) ? preparing_block : (thread_count - preparing_block));
-                    // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
 
-                    // std::cout << "Iteration: " << blocknum << ", prepare using R = " << (cur_prepare_block % 2 == 0 ? 1 : 2) << std::endl;
-                    // std::cout << "Prep for block" << cur_prepare_block << " in iteration " << cur_blocknum << std::endl;                   
                     #pragma omp task default(shared)
                     {
                         auto& r = cur_prepare_block % 2 == 0 ? r1 : r2;
@@ -494,8 +418,6 @@ public:
                 if (inducing_block >= (ssize)0) {
                     if (type == L_Type)
                     {
-                        // std::cout << "Iteration: " << blocknum << ", L-inducing using R/W = " << (inducing_block % 2 == 0 ? 1 : 2) << std::endl;
-                        // std::cout << "L-In for block" << inducing_block << " in iteration " << blocknum << std::endl;
                         #pragma omp task default(shared)
                         {
                             auto& r = inducing_block % 2 == 0 ? r1 : r2;
@@ -506,16 +428,6 @@ public:
                     }
                     else
                     {
-                        // std::cout << "Iteration: " << blocknum << ", S-inducing using R/W = " << ((thread_count - inducing_block) % 2 == 0 ? 1 : 2) << std::endl;
-                        // std::cout << "S-In for block" << (thread_count - inducing_block) << " in iteration " << (thread_count - blocknum)+2 << std::endl;
-                        
-                        // std::cout << "w1 bevor: ";
-                        // print(std::cout, w1) << std::endl;
-                        // std::cout << "w2 bevor: ";
-                        // print(std::cout, w2) << std::endl;
-
-                        // std::cout << "write_1: " << write_amount_1 << ", write_2: " << write_amount_2 << std::endl;
-
                         #pragma omp task default(shared)
                         {
                             auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;
@@ -529,10 +441,7 @@ public:
 
                 if (updating_block >= (ssize)0) {
                     ssize cur_update_block = ((type == L_Type) ? updating_block : (thread_count - updating_block));
-                    // ssize cur_blocknum = ((type == L_Type) ? blocknum : (thread_count - blocknum + 2));
 
-                    // std::cout << "Iteration: " << blocknum << ", updating using W = " << (cur_update_block % 2 == 0 ? 1 : 2) << std::endl;
-                    // std::cout << "Upda for block" << cur_update_block << " in iteration " << cur_blocknum << std::endl;
                     #pragma omp task default(shared)
                     {
                         auto& w = cur_update_block % 2 == 0 ? w1 : w2;
@@ -609,29 +518,8 @@ public:
             w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
         }
 
-        // compute_types(t, s, thread_border, thread_info, part_length, rest_length, thread_count);
-
-        compute_types_sequential(t2, s);
+        // compute_types_sequential(t2, s);
         compute_types(t, s, thread_border, thread_info, thread_count);
-               
-        // std::cout << "t1 (par) ";
-        // for (size_t i = 0; i < t2.size(); i++) {
-        //     std::cout << (getBit(t, i) == L_Type ? "L" : "S");
-        // }
-        // std::cout << std::endl;
-
-        // std::cout << "t2 (seq) ";
-        // for (size_t i = 0; i < t2.size(); i++) {
-        //     std::cout << (t2[i] == L_Type ? "L" : "S");
-        // }
-        // std::cout << std::endl;
-
-        for (size_t i = 0; i < t2.size(); i++) {
-            DCHECK_EQ((size_t) getBit(t, i), (size_t) t2[i]);
-        }
-
-
-        // std::cout << "thread_count: " << thread_count << ", part_length: " << part_length << ", rest_length: " << rest_length << std::endl;
 
         // First Induction ###################################################
 
@@ -654,14 +542,12 @@ public:
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, L_Type);
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, S_Type);
 
-        // std::cout << "SA " << SA << std::endl;
-
-        for(const auto& idx: SA) {
+        /*for(const auto& idx: SA) {
             
             (void) idx;
 
             DCHECK_NE(idx, sa_index(-1));
-        }
+        }*/
 
         // Recursion Call #############################################################
         
@@ -733,13 +619,11 @@ public:
             }
         }
 
-        // std::cout << "start final inducing..." << std::endl;
-
         // FINAL INDUCING ##########################################################
 
         // induce the final SA
         generate_buckets<T, sa_index>(s, buckets, K, true);
-        // std::cout << "buckets generated" << std::endl;
+
         size_t j;
         for (size_t i = 1, j = 0; i < s.size(); i++) {
             if (is_LMS(t, i)) {
@@ -747,50 +631,24 @@ public:
             }
 
         }
-        // std::cout << "start final inducing1..." << std::endl;
+
         for (ssize i = 0; i < n1; i++) {
             SA[i] = s1[SA[i]];
         }
-        // std::cout << "start final inducing2..." << std::endl;
+
         for (size_t i = n1; i < s.size(); i++) {
             SA[i] = (sa_index)-1;
         }
-        // std::cout << "start final inducing3..." << std::endl;
+
         for (ssize i = n1 - 1; i >= 0; i--) {
             j = SA[i];
             SA[i] = (sa_index)-1;
             SA[--buckets[s.at(j)]] = j;
         }
 
-        // std::cout << "finished inducing LMS..." << std::endl;
-
         
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, L_Type);
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, S_Type);
-
-        // generate_buckets<T, sa_index>(s, buckets, K, true);
-
-        // // Main Loop for each block, need to add shifted parallelization for blocks later
-        //for (ssize blocknum = thread_count; blocknum >= 0; blocknum--)
-        //{
-        //    // Parallel Preparation Phase
-        //    prepare_parallel<T, sa_index>(s, part_length, &r1, SA, t, S_Type, thread_count, blocknum);
-        //    induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, blocknum, r1, w1, part_length);
-
-        //    // Parallel Updating Phase
-        //    update_parallel<sa_index>(thread_count, part_length, &w1, SA);
-        //}
-
-        /*for (sa_index i = 0; i < s.size(); i++)
-        {
-            if (i == (sa_index)0)
-                std::cout << "SA after final Inducing FIN :   [ ";
-
-            std::cout << (ssize)SA[i] << " ";
-
-            if (i == (sa_index)SA.size() - (sa_index)1)
-                std::cout << "]" << std::endl;
-        }*/
     }
 
     template <typename sa_index>
