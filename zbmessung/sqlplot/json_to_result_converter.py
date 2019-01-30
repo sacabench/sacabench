@@ -243,6 +243,14 @@ def handleAlgorithm(dict, currentAlgorithmNumber, currentRepetitionNumber):
                     phasesFileContent += buildResultString(phaseDataDict)
 
     return (algorithmFileContent, phasesFileContent)
+
+def get_mode_from_dict(dict):
+    # mode construct
+    if type(dict[0]) == type({}):
+        return "construct"
+    # mode batch
+    if type(dict[0]) == type([]):
+        return "batch"
                         
 def convertAndSaveData(dict, path):
     """
@@ -264,12 +272,12 @@ def convertAndSaveData(dict, path):
     currentAlgorithmNumber = 0
     currentPhaseNumber = 0
 
-    # mode construct
-    if type(dict[0]) == type({}):
+    mode = get_mode_from_dict(dict)
+
+    if mode == "construct":
         algorithmFileContent, phasesFileContent = handleAlgorithm(dict, currentAlgorithmNumber, currentRepetitionNumber)
     
-    # mode batch
-    if type(dict[0]) == type([]):
+    if mode == "batch":
         for algorithm in dict:
             # Set id of current repetition to 0 when processing an new algorithm.
             currentRepetitionNumber = 0
@@ -321,11 +329,18 @@ def generate_tex(config_dict, input_dict):
             trim_blocks = True,
             autoescape = False,
             loader = file_loader)
-    template = env.get_template('batch.tex')
-
+            
+    mode = get_mode_from_dict(input_dict)
     for count, configuration in enumerate(config_dict):
+        if mode == "batch":
+            template = env.get_template('batch.tex')
+            output_name = 'batch-{}.tex'.format(count)
+        else:
+            template = env.get_template('construct.tex')
+            output_name = 'construct-{}.tex'.format(count)
+
         config = Config(configuration, input_dict)
-        output_file = open('batch-{}.tex'.format(count), 'w')
+        output_file = open(output_name, 'w')
         output_file.write(template.render(config=config))
 
 ########################################
