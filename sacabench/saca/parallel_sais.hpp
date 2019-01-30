@@ -201,18 +201,12 @@ public:
         #pragma omp taskgroup
         {
 
-            #pragma omp parallel for schedule(static, 102400)
+            #pragma omp parallel for schedule(static, 102400) shared(t)
             for (size_t i = 0; i < r.size(); i++)
                 {
                     prepare<T, sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
                 }
         }
-
-        /*std::cout << "r after preparing is [ ";
-        for (ssize i = 0; i < (ssize)r.size(); i++) {
-            std::cout << "<" << (ssize)r[i].first << "," << (ssize)(r[i].second) << "> ";
-        }
-        std::cout << "]" << std::endl;*/
     }
 
     template <typename T, typename sa_index>
@@ -490,7 +484,6 @@ public:
         container<sa_index> buckets = make_container<sa_index>(K);
         std::vector<uint8_t> t(s.size() / 8 + 1);
         size_t thread_count = std::thread::hardware_concurrency();
-        // size_t thread_count = (size_t)(s.size()/ beta);
 
         container<size_t> thread_border = make_container<size_t>(thread_count);
         container<bool> thread_info = make_container<bool>(thread_count);
@@ -501,7 +494,7 @@ public:
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
 
-        std::cout << "Blocksize is " << part_length << std::endl;
+        // std::cout << "Blocksize is " << part_length << std::endl;
                
 
         // for very small inputs, so that we can always assure that rest_length <= part_length
