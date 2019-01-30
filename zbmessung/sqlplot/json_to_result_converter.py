@@ -131,13 +131,11 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionCount, repet
     data[ResultKeys.rep] = repititionCount
     data[ResultKeys.rep_id] = repetitionID
 
-    data[ResultKeys.algo] = dict["title"]
-    data[ResultKeys.memFinal] = dict["memFinal"]
-    data[ResultKeys.memOff] = dict["memOff"]
-    data[ResultKeys.memPeak] = dict["memPeak"]
-
     stats = dict["stats"]
     for statsDict in stats:
+        if statsDict["key"] == "algorithm_name":
+            data[ResultKeys.algorithm_name] = statsDict["value"]
+            data[ResultKeys.algo] = statsDict["value"]
         if statsDict["key"] == "input_file":
             fullInputPath = statsDict["value"]
             data[ResultKeys.input] = os.path.basename(fullInputPath)
@@ -158,12 +156,16 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionCount, repet
         if statsDict["key"] == "text_size":
             data[ResultKeys.text_size] = statsDict["value"]
     
-    timeDict = dict["sub"][0]["sub"]
-    for timeEntry in timeDict:
-        if timeEntry["title"] == "Algorithm":
-            timeEnd = timeEntry["timeEnd"]
-            timeStart = timeEntry["timeStart"]
+    algorithmDataDict = dict["sub"][0]["sub"]
+    for algorithmEntry in algorithmDataDict:
+        if algorithmEntry["title"] == "Algorithm":
+            # We found values for algorithm!
+            timeEnd = algorithmEntry["timeEnd"]
+            timeStart = algorithmEntry["timeStart"]
             data[ResultKeys.time] = timeEnd - timeStart
+            data[ResultKeys.memFinal] = algorithmEntry["memFinal"]
+            data[ResultKeys.memOff] = algorithmEntry["memOff"]
+            data[ResultKeys.memPeak] = algorithmEntry["memPeak"]
 
     numberOfPhases = 0
     allPhases = dict["sub"][0]["sub"]
