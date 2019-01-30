@@ -48,18 +48,6 @@ def writeFile(filepath, content):
     textFile = open(filepath, "w")
     textFile.write(content)
     textFile.close()
-    
-    
-def get_processor_info():
-    if platform.system() == "Windows":
-        family = platform.processor()
-        name = subprocess.check_output(["wmic","cpu","get", "name"]).strip().decode().split("\n")[1]
-        return ' '.join([name, family])
-    elif platform.system() == "Linux":
-        command = "grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'"
-        name = subprocess.check_output(command, shell=True).strip().decode().split("\n")[1]
-        return name
-    return ""
 
 class ResultKeys:
     algo = "algo"
@@ -313,8 +301,8 @@ class Config:
             self.repetition_count = config_dict["repetitions"]
         if config_dict["prefix"]:
             self.prefix = config_dict["prefix"]
-        if get_processor_info():
-            self.cpu = get_processor_info()
+        if config_dict["model_name"]:
+            self.cpu = config_dict["model_name"]
         if config_dict["input"]:
             self.input_file = config_dict["input"]
             self.escaped_input_file = config_dict["input"].replace("_", "\_")
@@ -359,10 +347,7 @@ def main(plotConfigPath, sourceFilePath, destinationFilePath):
     destinationFilePath : str
         The directory to which the two result files will be saved to.
     """
-    
-    processor_info = get_processor_info()
-    print(processor_info)
-    
+
     configDict = readJSON(plotConfigPath)
     inputDataDict = readJSON(sourceFilePath)
     convertAndSaveData(inputDataDict, destinationFilePath)
