@@ -157,7 +157,7 @@ public:
 template <typename Fn>
 inline double duration(Fn fn) {
     fn();
-    return 0;
+    return 42;
 }
 
 #endif
