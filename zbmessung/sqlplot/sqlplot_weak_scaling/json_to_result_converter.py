@@ -304,10 +304,10 @@ class Config:
 
         print(config_dict)
         
-        if config_dict["repetitions"]:
-            self.repetition_count = config_dict["repetitions"]
+        #if config_dict["repetitions"]:
+        #    self.repetition_count = config_dict["repetitions"]
         if config_dict["prefix"]:
-            self.prefix = config_dict["prefix"]
+            self.prefix = "{} MiB".format(config_dict["prefix"] / 1024 / 1024)
         if config_dict["mode"]:
             self.mode = config_dict["mode"]
         if config_dict["model_name"]:
