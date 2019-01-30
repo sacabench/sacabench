@@ -48,24 +48,53 @@ def writeFile(filepath, content):
     textFile = open(filepath, "w")
     textFile.write(content)
     textFile.close()
-    
-    
-def get_processor_info():
-    if platform.system() == "Windows":
-        family = platform.processor()
-        name = subprocess.check_output(["wmic","cpu","get", "name"]).strip().decode().split("\n")[1]
-        return ' '.join([name, family])
-    elif platform.system() == "Linux":
-        command = "grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'"
-        name = subprocess.check_output(command, shell=True).strip().decode().split("\n")[1]
-        return name
-    return ""
+
+class ResultKeys:
+    algo = "algo"
+    algorithm_name = "algorithm_name"
+    id = "id"
+    rep = "rep"
+    rep_id = "rep_id"
+    phases = "phases"
+    phase_id = "phase_id"
+    phase_name = "phase_name"
+    extra_sentinels = "extra_sentinels"
+    input = "input"
+    prefix = "prefix"
+    thread_count = "thread_count"
+    sa_index_bit_size = "sa_index_bit_size"
+    text_size = "text_size"
+    memOff = "memOff"
+    memFinal = "memFinal"
+    memPeak = "memPeak"
+    threads = "threads"
+    time = "time"	
+
+def buildResultString(data):
+    """
+    Creates a line for the algorithm result text file.
+
+    Parameters
+    ----------
+    dict : dictionary
+        The dictionary which contains the data for a repititon of an algorithm.
+
+    Returns
+    ----------
+        A string which represents one line of the algorithm result text file.
+    """
+
+    content = "RESULT\t"
+    for key, value in data.items():
+        content += "{}={}\t".format(key, value)
+    content += "\n"
+    return content
 
 ########################################
 # PROCESSING ALGORITHM DATA
 ########################################
 
-def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):    
+def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionCount, repetitionID):    
     """
     Processes the given dictionary and returns a new dictionary.
     This new dicitionary contains the extracted data needed to create a line in the algorithm result file.
@@ -86,23 +115,22 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
     
     data = {}
     
-    data["algorithmID"] = algorithmID
-    data["repetitionID"] = repetitionID
-
-    data["title"] = dict["title"]
-    data["memFinal"] = dict["memFinal"]
-    data["memOff"] = dict["memOff"]
-    data["memPeak"] = dict["memPeak"]
+    data[ResultKeys.id] = algorithmID
+    data[ResultKeys.rep] = repititionCount
+    data[ResultKeys.rep_id] = repetitionID
 
     stats = dict["stats"]
     for statsDict in stats:
+        if statsDict["key"] == "algorithm_name":
+            data[ResultKeys.algorithm_name] = statsDict["value"]
+            data[ResultKeys.algo] = statsDict["value"]
         if statsDict["key"] == "input_file":
             fullInputPath = statsDict["value"]
-            data["inputFile"] = os.path.basename(fullInputPath)
+            data[ResultKeys.input] = os.path.basename(fullInputPath)
         if statsDict["key"] == "prefix":
-            data["prefix"] = statsDict["value"]
+            data[ResultKeys.prefix] = statsDict["value"]
         if statsDict["key"] == "thread_count":
-            data["thread_count"] = statsDict["value"]
+            data[ResultKeys.thread_count] = statsDict["value"]
 
     # Access first item in list of subs to get needed values. 
     # Every item of sub list contains these values.
@@ -110,18 +138,22 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
     exampleStats = exampleSub["stats"]
     for statsDict in exampleStats:
         if statsDict["key"] == "extra_sentinels":
-            data["extraSentinels"] = statsDict["value"]
+            data[ResultKeys.extra_sentinels] = statsDict["value"]
         if statsDict["key"] == "sa_index_bit_size":
-            data["saIndexBitSize"] = statsDict["value"]
+            data[ResultKeys.sa_index_bit_size] = statsDict["value"]
         if statsDict["key"] == "text_size":
-            data["textSize"] = statsDict["value"]
+            data[ResultKeys.text_size] = statsDict["value"]
     
-    timeDict = dict["sub"][0]["sub"]
-    for timeEntry in timeDict:
-        if timeEntry["title"] == "Algorithm":
-            timeEnd = timeEntry["timeEnd"]
-            timeStart = timeEntry["timeStart"]
-            data["time"] = timeEnd - timeStart
+    algorithmDataDict = dict["sub"][0]["sub"]
+    for algorithmEntry in algorithmDataDict:
+        if algorithmEntry["title"] == "Algorithm":
+            # We found values for algorithm!
+            timeEnd = algorithmEntry["timeEnd"]
+            timeStart = algorithmEntry["timeStart"]
+            data[ResultKeys.time] = timeEnd - timeStart
+            data[ResultKeys.memFinal] = algorithmEntry["memFinal"]
+            data[ResultKeys.memOff] = algorithmEntry["memOff"]
+            data[ResultKeys.memPeak] = algorithmEntry["memPeak"]
 
     numberOfPhases = 0
     allPhases = dict["sub"][0]["sub"]
@@ -130,45 +162,9 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
         if len(phases["sub"]) > 0:
             algorithmPhases = phases["sub"]
             numberOfPhases = len(algorithmPhases)
-    data["numberOfPhases"] = numberOfPhases
+    data[ResultKeys.phases] = numberOfPhases
 
     return data
-            
-def buildAlgorithmResultString(data):
-    """
-    Creates a line for the algorithm result text file.
-
-    Parameters
-    ----------
-    dict : dictionary
-        The dictionary which contains the data for a repititon of an algorithm.
-
-    Returns
-    ----------
-        A string which represents one line of the algorithm result text file.
-    """
-
-    content = "RESULT\t"
-    content += "algo={}\t".format(data["title"])
-    content += "algorithm_name={}\t".format(data["title"])
-    content += "id={}\t".format(data["algorithmID"])
-    content += "rep={}\t".format(data["repetitionCount"])
-    content += "rep_id={}\t".format(data["repetitionID"])
-    content += "phases={}\t".format(data["numberOfPhases"])
-    content += "extra_sentinels={}\t".format(data["extraSentinels"])
-    content += "input={}\t".format(data["inputFile"])
-    content += "prefix={}\t".format(data["prefix"])
-    content += "thread_count={}\t".format(data["thread_count"])
-    content += "sa_index_bit_size={}\t".format(data["saIndexBitSize"])
-    content += "text_size={}\t".format(data["textSize"])
-    content += "memOff={}\t".format(data["memOff"])
-    content += "memFinal={}\t".format(data["memFinal"])
-    content += "memPeak={}\t".format(data["memPeak"])
-    # TODO: Number of threads is currently not included in input JSON. 
-    content += "threads=1\t" 
-    content += "time={}\n".format(data["time"])
-
-    return content	
 
 ########################################
 # PROCESSING PHASES DATA
@@ -196,18 +192,18 @@ def extractPhaseDataFromDictionary(dict, algorithmID, repetitionID, phaseID):
     """
     
     data = {}
-    data["algorithmID"] = algorithmID
-    data["repetitionID"] = repetitionID
-    data["phaseID"] = phaseID
+    data[ResultKeys.id] = algorithmID
+    data[ResultKeys.rep_id] = repetitionID
+    data[ResultKeys.phase_id] = phaseID
 
-    data["title"] = dict["title"]
-    data["memFinal"] = dict["memFinal"]
-    data["memOff"] = dict["memOff"]
-    data["memPeak"] = dict["memPeak"]
+    data[ResultKeys.phase_name] = dict["title"]
+    data[ResultKeys.memFinal] = dict["memFinal"]
+    data[ResultKeys.memOff] = dict["memOff"]
+    data[ResultKeys.memPeak] = dict["memPeak"]
 
     timeEnd = dict["timeEnd"]
     timeStart = dict["timeStart"]
-    data["time"] = timeEnd - timeStart
+    data[ResultKeys.time] = timeEnd - timeStart
 
     return data	
 
