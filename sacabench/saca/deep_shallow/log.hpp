@@ -7,7 +7,7 @@
 #ifdef SB_DSLOG
 
 // Print warning such that the master/pipeline doesnt break.
-#pragma GCC warning Deep-Shallow Logger is active on the pipeline! DO NOT MERGE. The DS-Logger is not thread-safe and __will__ crash if used with multiple threads.
+#pragma GCC warning "Deep-Shallow Logger is active on the pipeline! DO NOT MERGE. The DS-Logger is not thread-safe and __will__ crash if used with multiple threads."
 
 #include <chrono>
 #include <fstream>
