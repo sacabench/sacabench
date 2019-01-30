@@ -211,8 +211,8 @@ public:
         #pragma omp taskgroup
         {
             for (size_t i = 0; i < r.size() && i < thread_count - 1; i++) {
-                #pragma omp task
-                prepare<T,sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
+                #pragma omp task shared(t)
+                prepare<T, sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
             }
         }
     }
