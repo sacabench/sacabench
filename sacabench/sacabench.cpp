@@ -16,11 +16,71 @@
 #include "util/container.hpp"
 #include "util/saca.hpp"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 bool file_exist_check(std::string const& path) {
     std::ifstream f(path.c_str());
     bool res = f.good();
     return res;
 }
+
+std::string get_output_from_cmd(std::string cmd) {
+
+    std::string data;
+    std::FILE * stream;
+    const int max_buffer = 256;
+    char buffer[max_buffer];
+    cmd.append(" 2>&1");
+
+    stream = popen(cmd.c_str(), "r");
+    if (stream) {
+    while (!std::feof(stream))
+    if (std::fgets(buffer, max_buffer, stream) != NULL) data.append(buffer);
+    pclose(stream);
+    }
+    return data;
+}
+
+nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::string input_filename){
+    // Create json file with config 
+    // file name, prefix size, amount of repetitions
+    nlohmann::json config_json = nlohmann::json::array();
+            
+    auto cmd_operating_system = "uname";
+    auto cmd_model_name = "lscpu | grep 'Model name' | cut -f 2 -d ':'| awk '{$1=$1}1'";
+    auto cmd_amount_cpus = "grep -c ^processor /proc/cpuinfo";
+    auto cmd_threads_per_socket = "lscpu | grep 'Thread(s)' | cut -f 2 -d ':'| awk '{$1=$1}1'";
+           
+                       
+    auto operating_system = get_output_from_cmd(cmd_operating_system);
+    auto model_name = get_output_from_cmd(cmd_model_name);
+    auto amount_cpus = get_output_from_cmd(cmd_amount_cpus);
+    auto threads_per_socket = get_output_from_cmd(cmd_threads_per_socket);
+    
+    operating_system.erase(std::remove(operating_system.begin(), operating_system.end(), '\n'), operating_system.end());
+    model_name.erase(std::remove(model_name.begin(), model_name.end(), '\n'), model_name.end());
+    amount_cpus.erase(std::remove(amount_cpus.begin(), amount_cpus.end(), '\n'), amount_cpus.end());
+    threads_per_socket.erase(std::remove(threads_per_socket.begin(), threads_per_socket.end(), '\n'), threads_per_socket.end());
+            
+    // input_filename contains full path to input file. For config_json file we only need the name.
+    auto filename_start_index = input_filename.find_last_of("\\/") + 1;
+    auto filename_end_index = input_filename.length();
+    auto corrected_input_filename = input_filename.substr(filename_start_index, filename_end_index);
+    nlohmann::json j = {
+        {"input", corrected_input_filename},
+        {"prefix", prefix},
+        {"repetitions", repetition_count},
+        {"operating_system", operating_system},
+        {"model_name", model_name},
+        {"amount_cpus", amount_cpus},
+        {"threads_per_socket", threads_per_socket}
+    };
+            
+    config_json.push_back(j);
+    return config_json;
+}
+
 
 std::int32_t main(std::int32_t argc, char const** argv) {
     int late_fail = 0;
@@ -388,8 +448,23 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
 
         if (automation) {
+            // Create json file with config 
+            // file name, prefix size, amount of repetitions
+            nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
+            
+            auto write_config = [&](std::ostream& out) {
+                out << config_json.dump(4) << std::endl;
+            };
+            
+            std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
+                                             std::ios_base::out |
+                                                 std::ios_base::binary |
+                                                 std::ios_base::trunc);
+            write_config(config_file);
+            
             std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
             std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
+            std::cout << command << std::endl;
             int exit_status = system(command.c_str());
             if (exit_status < 0) {
                 std::cerr << "error thrown while running plot automation script." << std::endl;
@@ -509,30 +584,14 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                                  std::ios_base::trunc);
                 write_bench(benchmark_file);
             }
-            
-            
+        }
+
+        if (automation) {
             // Create json file with config 
             // file name, prefix size, amount of repetitions
-            nlohmann::json config_json = nlohmann::json::array();
-            
-            //TODO: model_name only returns exit status of command instead of model name
-            auto model_name = system("grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'");
-            
-            // input_filename contains full path to input file. For config_json file we only need the name.
-            auto filename_start_index = input_filename.find_last_of("\\/") + 1;
-            auto filename_end_index = input_filename.length();
-            auto corrected_input_filename = input_filename.substr(filename_start_index, filename_end_index);
-            nlohmann::json j = {
-                                    {"input", corrected_input_filename},
-                                    {"prefix", prefix},
-                                    {"repetitions", repetition_count},
-                                    {"model_name", model_name}
-                                };
-            
-            config_json.push_back(j);                   
+            nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
             
             auto write_config = [&](std::ostream& out) {
-                // auto j = stat_array.to_json();
                 out << config_json.dump(4) << std::endl;
             };
             
@@ -540,12 +599,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                              std::ios_base::out |
                                                  std::ios_base::binary |
                                                  std::ios_base::trunc);
-                write_config(config_file);
-        }
-
-        if (automation) {
+            write_config(config_file);
+            
             std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
             std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
+            std::cout << command << std::endl;
             int exit_status = system(command.c_str());
             if (exit_status < 0) {
                 std::cerr << "error thrown while running plot automation script." << std::endl;
