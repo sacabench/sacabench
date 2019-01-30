@@ -1,4 +1,5 @@
 /*******************************************************************************
+ * Copyright (C) 2018 Jonas Bode <jonas.bode@tu-dortmund.de>
  * Copyright (C) 2018 Christopher Poeplau <christopher.poeplau@tu-dortmund.de>
  * Copyright (C) 2018 Janina Michaelis <janina.michaelis@tu-dortmund.de>
  * Copyright (C) 2018 Rosa Pink <rosa.pink@tu-dortmund.de>
@@ -107,12 +108,6 @@ public:
         }
 
         #pragma omp taskwait
-
-        // std::cout << "after first pass ";
-        // for (size_t i = 0; i < s.size(); i++) {
-        //     std::cout << (getBit(t, i) == L_Type ? "L" : "S");
-        // }
-        // std::cout << std::endl;
 
         // if many threads were not able to classify, use the last thread that has borderinfo for all the others
         for (ssize i = thread_count - 2; i >= 0; i--) {
@@ -245,13 +240,12 @@ public:
         sa_index translate = (sa_index)(blocknum*part_length);
         sa_index chr;
 
-        for (ssize i = 0; i < (ssize)part_length && i+(ssize)translate < (ssize)SA.size(); i++)
+        for (ssize i = 0; i < (ssize)part_length && (size_t)i+translate < SA.size(); i++)
         {
-            ssize pos = ((ssize)SA[i + translate] - 1);
+            ssize pos = ((ssize)SA[(sa_index)i + translate] - 1);
 
-            if ((ssize)SA[(sa_index)i + translate] >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == L_Type)
+            if ((pos+1) >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == L_Type)
             {
-
                 if (r[i].first == static_cast<sa_index>(0))
                     chr = (sa_index)s[(sa_index)pos];
                 else
@@ -279,8 +273,6 @@ public:
     static void induce_S_Types_Pipelined(T s, span<sa_index> SA, span<sa_index> buckets, std::vector<uint8_t>& t, size_t blocknum,
         span<std::pair<sa_index, sa_index>> r, span<std::pair<sa_index, sa_index>> w, ssize part_length, size_t *w_count) {
 
-        // std::cout << "bla" << std::endl;
-
         // translate: translates the position in the block to global pos
         // w_count: pointer for the next free entry in write-buffer w
         sa_index translate = (sa_index)(blocknum*part_length);
@@ -292,7 +284,7 @@ public:
         {
             ssize pos = (ssize)SA[i + translate] - 1;
 
-            if ((ssize)SA[(sa_index)i + translate] >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == S_Type)
+            if (pos+1 >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == S_Type)
             {
                 if (r[i].first == (sa_index)0)
                     chr = (sa_index)s[(sa_index)pos];
@@ -317,39 +309,25 @@ public:
     template <typename sa_index>
     static void update_SA(ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t thread_id, size_t *w_count) {
         
-        // std::cout << "Started updating " << thread_id << std::endl;
         ssize offset = thread_id * part_length;
 
         for (ssize i = offset; i < part_length + offset; i++) {
 
-            // std::cout << " Update for pos i = " << i << " " << std::endl;
             if ((size_t)i > *w_count)
                 break;
 
             if (i < (ssize)w.size() && w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1)) {
 
-                if((size_t)w[i].first < SA.size())
-                {
-                    SA[w[i].first] = w[i].second;
-                }
-                else
-                {
-                    std::cout << "### ERROR IN W-BUFFER ###" << std::endl;
-                }
-
+                SA[w[i].first] = w[i].second;
 
                 w[i].first = (sa_index)(0);
                 w[i].second = (sa_index)(-1);
             }
         }
-
-        // std::cout << "Finished updating " << thread_id << std::endl;
     }
 
     template <typename sa_index>
     static void update_parallel(size_t thread_count, ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
-
-        // std::cout << "At the beginning of Updating w_count is " << (*w_count) << std::endl;
 
         #pragma omp taskgroup
         {
