@@ -21,21 +21,17 @@
 #include<string.h>
 #include<sstream>
 
+#include <util/saca.hpp>
+#include "saca/sais.hpp"
+
+#include <chrono>
+
 #include <tudocomp_stat/StatPhase.hpp>
 
 namespace sacabench::parallel_sais {
 
 using namespace sacabench::util;
-
-// template<typename U, typename V>
-// std::ostream& print(std::ostream& out, const span<std::pair<U, V>> data) {
-//     out << "[ ";
-//     for(const auto& p : data) {
-//         const auto& t = p.second == V(-1) ? -1 : ssize(p.second);
-//         out << "(" << p.first << ", " << t << "), ";
-//     }
-//     return out << " ]";
-// }
+using std::chrono::steady_clock;
 
 class parallel_sais {
 public:
@@ -194,21 +190,29 @@ public:
 
     template <typename T, typename sa_index>
     static void prepare_parallel(T s, ssize part_length, span<std::pair<sa_index, sa_index>> r,
-                                 span<sa_index> SA, std::vector<uint8_t>& t, bool suffix_type, size_t thread_count, size_t blocknum){
+                                 span<sa_index> SA, std::vector<uint8_t>& t, bool suffix_type, size_t blocknum){
 
         // overwrite readbuffer with NULLs
         for (ssize i = 0; i < (ssize)r.size(); i++) {
             r[i].first = (sa_index)(0);
-            r[i].second = static_cast<sa_index>(-1);
+            r[i].second = (sa_index)(-1);
         }
 
         #pragma omp taskgroup
         {
-            for (size_t i = 0; i < r.size() && i < thread_count - 1; i++) {
-                #pragma omp task
-                prepare<T,sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
-            }
+
+            #pragma omp parallel for schedule(static, 102400)
+            for (size_t i = 0; i < r.size(); i++)
+                {
+                    prepare<T, sa_index>(s, part_length, r, SA, t, suffix_type, blocknum, i);
+                }
         }
+
+        /*std::cout << "r after preparing is [ ";
+        for (ssize i = 0; i < (ssize)r.size(); i++) {
+            std::cout << "<" << (ssize)r[i].first << "," << (ssize)(r[i].second) << "> ";
+        }
+        std::cout << "]" << std::endl;*/
     }
 
     template <typename T, typename sa_index>
@@ -246,7 +250,7 @@ public:
 
             if ((pos+1) >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == L_Type)
             {
-                if (r[i].first == static_cast<sa_index>(0))
+                if (r[i].first == (sa_index)(0))
                     chr = (sa_index)s[(sa_index)pos];
                 else
                     chr = (sa_index)r[i].first;
@@ -255,10 +259,10 @@ public:
                 buckets[chr]++;
 
                 // if idx is in Block k or Block k+1
-                if (translate <= idx && idx <= translate + (sa_index)(2 * part_length) && idx < SA.size()) {
+                if (translate <= idx && idx <= translate + (sa_index)(2 * part_length)) {
                     SA[idx] = (sa_index)pos;
                 }
-                else if (idx < SA.size()) {
+                else {
                     w[(*w_count)++] = std::make_pair((sa_index)idx, (sa_index)pos);
                 }
 
@@ -294,10 +298,10 @@ public:
                 sa_index idx = --buckets[chr];
 
                 // if idx is in Block k-1 or Block k
-                if (ssize(translate) - 2 * part_length <= ssize(idx) && idx <= i + translate && idx >= size_t(0)) {
+                if (ssize(translate) - 2 * part_length <= ssize(idx) && idx <= i + translate) {
                     SA[idx] = (sa_index)pos;
                 }
-                else if (idx < SA.size()) {
+                else {
                     w[(*w_count)++] = std::make_pair(idx, (sa_index)pos);
                 }
             }
@@ -327,13 +331,18 @@ public:
     }
 
     template <typename sa_index>
-    static void update_parallel(size_t thread_count, ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
+    static void update_parallel(ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
+
+        size_t max = *w_count;
 
         #pragma omp taskgroup
         {
-            for (size_t i = 0; i < thread_count && (size_t)(i*part_length) < *w_count; i++) {
-                #pragma omp task
-                update_SA<sa_index>(part_length, w, SA, i, w_count);
+            #pragma omp parallel for schedule(static, 102400)
+            for (size_t i = 0; i < w.size(); i++) {
+                if ((i*part_length) > max)
+                    i = w.size();
+                else
+                    update_SA<sa_index>(part_length, w, SA, i, w_count);
             }
         }
 
@@ -354,6 +363,11 @@ public:
 
         size_t write_amount_1 = 0;
         size_t write_amount_2 = 0;
+
+        double timePreparing = 0;
+        double timeInducing = 0;
+        double timeUpdating = 0;
+
 
         // To differentiate the L-Type-Inducing from the S-Type-Inducing we just invert the blocknumber we are currently handling when methods are being called
         // (Since the only difference between L- and S-Type inducing is basically in which order the text is being read and which types to look for while reading)
@@ -388,8 +402,15 @@ public:
 
                     #pragma omp task default(shared)
                     {
+                        auto start = steady_clock::now();
+
                         auto& r = cur_prepare_block % 2 == 0 ? r1 : r2;
-                        prepare_parallel<T, sa_index>(s, part_length, r, SA, t, type, thread_count, cur_prepare_block);
+                        prepare_parallel<T, sa_index>(s, part_length, r, SA, t, type, cur_prepare_block);
+
+                        auto end = steady_clock::now();
+                        double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                        timePreparing += timeAddition;
+                        // std::cout << "prep: " << timeAddition * 1000 << std::endl;
                     }
                 }
 
@@ -398,21 +419,34 @@ public:
                     {
                         #pragma omp task default(shared)
                         {
+                            auto start = steady_clock::now();
+
                             auto& r = inducing_block % 2 == 0 ? r1 : r2;
                             auto& w = inducing_block % 2 == 0 ? w1 : w2;
                             size_t* write_amount = inducing_block % 2 == 0 ? &write_amount_1 : &write_amount_2;
                             induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length, write_amount);
+                        
+                            auto end = steady_clock::now();
+                            double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                            timeInducing += timeAddition;
+                            // std::cout << "indu: " << timeAddition * 1000 << std::endl;
                         }
                     }
                     else
                     {
                         #pragma omp task default(shared)
                         {
+                            auto start = steady_clock::now();
+
                             auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;
                             auto& w = (thread_count - inducing_block) % 2 == 0 ? w1 : w2;
                             size_t* write_amount = (thread_count - inducing_block) % 2 == 0 ? &write_amount_1 : &write_amount_2;
-
                             induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, (thread_count - inducing_block), r, w, part_length, write_amount);
+                        
+                            auto end = steady_clock::now();
+                            double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                            timeInducing += timeAddition;
+                            // std::cout << "indu: " << timeAddition * 1000 << std::endl;
                         }
                     }
                 }
@@ -422,47 +456,52 @@ public:
 
                     #pragma omp task default(shared)
                     {
+                        auto start = steady_clock::now();
+
                         auto& w = cur_update_block % 2 == 0 ? w1 : w2;
                         size_t* write_amount = cur_update_block % 2 == 0 ? &write_amount_1 : &write_amount_2;
+                        update_parallel<sa_index>(part_length, w, SA, write_amount);
 
-                        update_parallel<sa_index>(thread_count, part_length, w, SA, write_amount);
+                        auto end = steady_clock::now();
+                        double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                        timeUpdating += timeAddition;
+                        // std::cout << "upda: " << timeAddition * 1000 << std::endl;
                     }
                 }
             }
 
             blocknum++;
         }
+
+       //  std::cout << "Time Preparing: " << timePreparing*1000 << ", Time Inducing: " << timeInducing * 1000 << ", Time Updating: " << timeUpdating * 1000 << std::endl;
     }
 
     template <typename T, typename sa_index>
     static void run_saca(T s, span<sa_index> SA, size_t K, container<std::pair<sa_index, sa_index>> &buff) {
 
-        /*for (size_t i = 0; i < s.size(); i++)
+        size_t beta = 100000;
+
+        if (beta > s.size())
         {
-            if (i == 0)
-                std::cout << "    Text : ";
-
-            std::cout << (ssize)(s[i]) << " ";
+            sacabench::sais::sais::run_saca<T, sa_index>(s, SA, K);
+            return;
         }
-
-        std::cout << std::endl;
-
-        std::cout << "s.size : " << s.size() << std::endl;*/
-
 
         container<sa_index> buckets = make_container<sa_index>(K);
         std::vector<uint8_t> t(s.size() / 8 + 1);
-        std::vector<bool> t2(s.size());
         size_t thread_count = std::thread::hardware_concurrency();
+        // size_t thread_count = (size_t)(s.size()/ beta);
+
         container<size_t> thread_border = make_container<size_t>(thread_count);
         container<bool> thread_info = make_container<bool>(thread_count);
         
         // Prepare blocks for parallel computing
 
         thread_count = std::min(thread_count, s.size() - 1);
-        // thread_count = 1;
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
+
+        std::cout << "Blocksize is " << part_length << std::endl;
                
 
         // for very small inputs, so that we can always assure that rest_length <= part_length
@@ -496,7 +535,6 @@ public:
             w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
         }
 
-        // compute_types_sequential(t2, s);
         compute_types(t, s, thread_border, thread_info, thread_count);
 
         // First Induction ###################################################
