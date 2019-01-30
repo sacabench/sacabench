@@ -1,7 +1,7 @@
 #pragma once
 
 // Uncomment to activate logging
-#define SB_DSLOG
+// #define SB_DSLOG
 
 // Include headers
 #ifdef SB_DSLOG
