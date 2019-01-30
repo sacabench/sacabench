@@ -336,7 +336,7 @@ def generate_tex(config_dict, input_dict):
         if config.mode == "weak":
             template = env.get_template('weakscale.tex')
         else:
-            template = env.get_template('weakscale.tex')
+            template = env.get_template('strongscale.tex')
         output_file = open('{}-{}.tex'.format(config.mode, count), 'w')
         output_file.write(template.render(config=config))
 
