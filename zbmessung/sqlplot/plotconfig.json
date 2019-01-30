@@ -1,8 +1,0 @@
-[
-    {
-        "input": "english.200MB",
-        "model_name": 0,
-        "prefix": 1024,
-        "repetitions": 1
-    }
-]
