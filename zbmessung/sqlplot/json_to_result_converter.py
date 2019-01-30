@@ -299,16 +299,24 @@ def convertAndSaveData(dict, path):
 # GENERATE TEX SOURCE CODE
 ########################################
 class Config:
-    def __init__(self, config_dict, input_dict):
-        algo_count = len(input_dict)
-        self.bar_width = 160 / algo_count
+    def __init__(self, config_dict, input_dict):#
+
+        if scaling:
+            self.mode = "weak"
+            if config_dict["prefix"]:
+                self.prefix = "{} MiB".format(config_dict["prefix"] / 1024 / 1024)
+            if config_dict["mode"]:
+                self.mode = config_dict["mode"]
+        else:
+            algo_count = len(input_dict)
+            self.bar_width = 160 / algo_count
+            if config_dict["repetitions"]:
+                self.repetition_count = config_dict["repetitions"]
+            if config_dict["prefix"]:
+                self.prefix = config_dict["prefix"]
 
         print(config_dict)
         
-        if config_dict["repetitions"]:
-            self.repetition_count = config_dict["repetitions"]
-        if config_dict["prefix"]:
-            self.prefix = config_dict["prefix"]
         if config_dict["model_name"]:
             self.cpu = config_dict["model_name"]
         if config_dict["input"]:
@@ -330,18 +338,28 @@ def generate_tex(config_dict, input_dict):
             autoescape = False,
             loader = file_loader)
             
-    mode = get_mode_from_dict(input_dict)
-    for count, configuration in enumerate(config_dict):
-        if mode == "batch":
-            template = env.get_template('batch.tex')
-            output_name = 'batch-{}.tex'.format(count)
-        else:
-            template = env.get_template('construct.tex')
-            output_name = 'construct-{}.tex'.format(count)
+    if scaling:
+        for count, configuration in enumerate(config_dict):
+            config = Config(configuration, input_dict)
+            if config.mode == "weak":
+                template = env.get_template('weakscale.tex')
+            else:
+                template = env.get_template('strongscale.tex')
+            output_file = open('{}-{}.tex'.format(config.mode, count), 'w')
+            output_file.write(template.render(config=config))
+    else:
+        mode = get_mode_from_dict(input_dict)
+        for count, configuration in enumerate(config_dict):
+            if mode == "batch":
+                template = env.get_template('batch.tex')
+                output_name = 'batch-{}.tex'.format(count)
+            else:
+                template = env.get_template('construct.tex')
+                output_name = 'construct-{}.tex'.format(count)
 
-        config = Config(configuration, input_dict)
-        output_file = open(output_name, 'w')
-        output_file.write(template.render(config=config))
+            config = Config(configuration, input_dict)
+            output_file = open(output_name, 'w')
+            output_file.write(template.render(config=config))
 
 ########################################
 # MAIN
@@ -374,6 +392,13 @@ if __name__ == "__main__":
     plotConfigPath = sys.argv[1]
     sourceFilePath = sys.argv[2]
     destinationFilePath = sys.argv[3]
+
+    global scaling
+    scaling = False
+
+    if len(sys.argv) > 4:
+        # We asume that if there are more then 4 arguments, scaling is enabled.
+        scaling = True
 
     # start main function
     main(plotConfigPath, sourceFilePath, destinationFilePath)
