@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2018 Nico Bertram <nico.bertram@tu-dortmund.de>
+ * Copyright (C) 2019 Nico Bertram <nico.bertram@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -17,121 +17,48 @@
 
 #pragma once
 namespace sacabench::util {
-    
-    //TODO: Use parallelized prefix_sum
     template <typename Array>
     void prefix_sum(Array& array) {
         auto add = [&](size_t a, size_t b) {
             return a + b;
         };
         util::par_prefix_sum_eff(array, array, true, add, (size_t)0);
-            /*
-            for (size_t i = 1; i < array.size(); ++i) {
-                array[i] += array[i-1];
-            }*/
     }
     
-    /**\brief Merge two suffix array with the difference cover idea.
+    /**\brief Parallel version of S-Type-Inducing
      * \tparam T input string
-     * \tparam C input characters
-     * \tparam I ISA
-     * \tparam S SA
+     * \tparam sa_index content of SA
      * \param t input text
-     * \param sa_0 calculated SA for triplets beginning in i mod 3 = 0
-     * \param sa_12 calculated SA for triplets beginning in i mod 3 != 0
-     * \param isa_12 calculated ISA for triplets beginning in i mod 3 != 0
-     * \param sa memory block for merged SA
-     * \param comp function which compares for strings a and b if a is
-     *        lexicographically smaller than b
-     * \param get_substring function which expects a string t, an index i and an
-     *        integer n and returns a substring of t beginning in i where n
-     *        equally calculated substrings are concatenated
+     * \param sa SA after L-Type-Inducing
+     * \param max_character Value of the largest character in effective alphabet
      *
-     * bolobolo
+     * Parallel version of S-Type-Inducing by Labeit. Takes the input string t,
+     * the SA after L-Type-Inducing and the value of the largest character in the
+     * effective alphabet as parameter. After calling this function sa contains the 
+     * correct Suffixarray of t.
      */
     template <typename T, typename sa_index>
     void induce_type_s_parallel(const T& t, util::span<sa_index> sa, const size_t max_character) {
-
-        DCHECK_MSG(sa.size() == t.size(),
-                   "sa must be initialised and must have the same length as t.");
-
-        // TODO: generate Buckets
-        
-        for (size_t c = max_character+1; c > 0; --c) {
-            size_t curr_char = c-1;
-            
-            induce_repititions_parallel(t, sa, curr_char);
-            
-        }
-    }
-    
-    template <typename T, typename sa_index>
-    void induce_type_s_repititions_parallel(const T& t, util::span<sa_index> sa, const size_t curr_char) {
-        size_t s = 0;
-        size_t e = 1;
-        util::span<sa_index> interval = sa.slice(s, e); // TODO: get Interval of initialized SA entrys with first character curr_char
-            
-        while (interval.size() != 0) {
-            // count number of positions which have curr_char before the first character in interval
-            size_t count = 0;
-            #pragma omp parallel for reduction(+:count)
-            for (size_t i = 0; i < interval.size(); ++i)  {
-                if (sa[i] > 0 && t[sa[i]-1] = curr_char) {
-                    count += 1;
-                }
-            }
-            
-            //TODO: Reihenfolge ist hier nicht korrekt, Verwirrung wegen A, B und B* Suffixen
-            
-            // copy entries which have curr_char before the first character to new_interval
-            util::span<sa_index> new_interval = sa.slice(s-count, s);
-            auto has_same_prev_char = [&](sa_index a) {
-                return curr_char == t[a-1];
-            };
-            filter(interval, new_interval, has_same_prev_char);
-            
-            // correct the new entries in sa
-            interval = new_interval;
-            #pragma omp parallel for
-            for (size_t i = 0; i < interval.size(); ++i) {
-                new_interval[i]--;
-            }
-        }
-    }
-    
-    template <typename T, typename sa_index>
-    void induce_type_l_parallel(const T& t, util::span<sa_index> sa, const size_t max_character) {
 
         //TODO
         /*DCHECK_MSG(sa.size() == t.size(),
                    "sa must be initialised and must have the same length as t.");*/
 
-        tdc::StatPhase induce("Generate Buckets");
+        //tdc::StatPhase induce("Generate Buckets");
         
         auto buckets_cont = util::container<size_t>(max_character+1);
         util::span<size_t> buckets = buckets_cont;
         generate_buckets_parallel(t, buckets);
-        auto l_buckets_cont = util::container<size_t>(max_character+1);
-        util::span<size_t> l_buckets = l_buckets_cont;
-        std::copy(buckets.begin(), buckets.end(), l_buckets.begin());
+        auto s_buckets_cont = util::container<size_t>(max_character+1);
+        util::span<size_t> s_buckets = s_buckets_cont;
+        #pragma omp parallel for
+        for (size_t i = 0; i < s_buckets.size(); ++i) {
+            if (i < s_buckets.size()-1) { s_buckets[i] = buckets[i+1]-1; }
+            else { s_buckets[i] = sa.size()-1; }
+        }
         
-        //std::cout << "text: " << t << std::endl;
-        //std::cout << "a" << std::endl;
-        
-        for (size_t c = 0; c <= max_character; ++c) {
-            induce.split("Induce Repetitions");
-            //std::cout << "sa_begin: " << sa << std::endl;
-            
-            size_t curr_char = c;
-            
-            //std::cout << "b" << std::endl;
-            
-            induce_type_l_repititions_parallel(t, sa, curr_char, buckets, l_buckets);
-            //std::cout << "sa_after_repitition: " << sa << std::endl;
-            
-            if (c == max_character) { break; } //TODO: unschön
-            
-            //std::cout << "bb" << std::endl;
+        for (size_t c = max_character+1; c > 0; --c) {
+            size_t curr_char = c-1;
             
             // get Interval of bucket with first character curr_char
             size_t s = buckets[curr_char];
@@ -142,16 +69,29 @@ namespace sacabench::util {
             else {
                 e = sa.size();
             }
-            //std::cout << "curr_char: " << curr_char << ", s: " << s << ", e: " << e << std::endl;
             util::span<sa_index> interval = sa.slice(s, e);
             
-            //std::cout << "c" << std::endl;
+            //induce.split("Sequential");
+            if (interval.size() < 100) {
+                induce_type_s_interval_seq(t, interval, s, sa, s_buckets);
+                continue;
+            }
             
-            induce.split("Initialize bucket_sums");
+            //induce.split("Induce Repetitions");
+            
+            induce_type_s_repititions_parallel(t, sa, curr_char, buckets, s_buckets);
+            
+            if (curr_char == 0) { break; } //TODO: unschön
+            
+            //induce.split("Initialize bucket_sums");
             
             // bucket_sums[d][i] = 1 if position i in interval writes to bucket d
-            // TODO (possible optimization): Since we can write only in greater buckets, we can reduce the array size
-            auto bucket_sums = util::array2d<size_t>({max_character+1, interval.size()});
+            //size_t n = std::max((size_t)2, interval.size());
+            size_t n = t.size();
+            size_t block_size = log2(n)*(max_character+1); // blocks of size sigma*logn
+            size_t block_count = interval.size()/block_size + (interval.size() % block_size != 0);
+            auto bucket_sums = util::array2d<size_t>({max_character+1, block_count});
+            
             // initialize bucket_sums with 0
             /*#pragma omp parallel for
             for (size_t k = 0; k < (max_character+1)*interval.size(); ++k) {
@@ -160,28 +100,43 @@ namespace sacabench::util {
                 bucket_sums[first][second] = 0;
             }*/
             
-            induce.split("fill bucket_sums");
-            //std::cout << "cc" << std::endl;
+            //induce.split("fill bucket_sums");
             #pragma omp parallel for
-            for (size_t i = 0; i < interval.size(); ++i) {
-                if (interval[i] != (sa_index)-1 && interval[i] != (sa_index)0) { 
-                    sa_index pre_index = interval[i]-(sa_index)1;
-                    if (is_l_type(t, l_buckets, interval[i], s+i)
-                            && t[pre_index] != t[interval[i]]) { // To ensure repititions are only calculated once
-                        bucket_sums[t[pre_index]][i] = 1;
+            for (size_t i = 0; i < block_count; ++i) {
+                // get current block
+                util::span<sa_index> block = interval.slice(0); // Dummy
+                auto offset = i*block_size;
+                if (interval.size() >= offset+block_size) {
+                    block = interval.slice(interval.size()-(offset+block_size), 
+                                    interval.size()-(offset));
+                }
+                else {
+                    block = interval.slice(0, interval.size()-offset);
+                }
+                
+                // fill bucket_sums
+                for (size_t j = block.size(); j > 0; --j) {
+                    auto curr_j = j-1;
+                    auto elem = block[curr_j];
+                    if (elem != (sa_index)-1 && elem != (sa_index)0) { 
+                        sa_index pre_index = elem-(sa_index)1;
+                        auto pre_char = t[pre_index];
+                        size_t curr_pos_in_sa = e-offset+curr_j;
+                        if (pre_char != curr_char // To ensure repititions are only calculated once
+                                && is_s_type(t, s_buckets, elem, curr_pos_in_sa, pre_char)) {
+                            bucket_sums[pre_char][i]++;
+                        }
                     }
                 }
             }
-            
-            //std::cout << "d" << std::endl;
         
-            induce.split("perform prefix sums on bucket_sums");
+            //induce.split("perform prefix sums on bucket_sums");
             
             // perform prefix sums on each bucket_sum array
             #pragma omp parallel for
             for (size_t d = 0; d <= max_character; ++d) {
                 //TODO: workaround to access 1d-array bucket_sums[d]: copy elements to new container
-                auto bucket_sums_1d_cont = util::container<size_t>(interval.size());
+                auto bucket_sums_1d_cont = util::container<size_t>(block_count);
                 util::span<size_t> bucket_sums_1d = bucket_sums_1d_cont;
                 #pragma omp parallel for
                 for (size_t i = 0; i < bucket_sums_1d.size(); ++i) {
@@ -197,52 +152,62 @@ namespace sacabench::util {
                 } 
             }
             
-            //std::cout << "e" << std::endl;
-            
-            induce.split("induce not repetitions");
+            //induce.split("induce not repetitions");
             
             // initialize new entries
             #pragma omp parallel for
-            for (size_t i = 0; i < interval.size(); ++i) {
-                //std::cout << "ea" << std::endl;
-                if (interval[i] != (sa_index)-1 && interval[i] != (sa_index)0) { 
-                    sa_index pre_index = interval[i]-(sa_index)1;
-            //std::cout << "eb" << std::endl;
-                    auto pre_char = t[pre_index];
-            //std::cout << "ec" << std::endl;
-                    if (is_l_type(t, l_buckets, interval[i], s+i)
-                            && t[pre_index] != t[interval[i]]) { // To ensure repititions are only calculated once
-            //std::cout << "ed" << std::endl;
-                        sa[l_buckets[pre_char]+bucket_sums[pre_char][i]-1] = pre_index;
-            //std::cout << "ee" << std::endl;
+            for (size_t i = 0; i < block_count; ++i) {
+                // get current block
+                util::span<sa_index> block = interval.slice(0); // Dummy
+                auto offset = i*block_size;
+                if (interval.size() >= offset+block_size) {
+                    block = interval.slice(interval.size()-(offset+block_size), 
+                                    interval.size()-(offset));
+                }
+                else {
+                    block = interval.slice(0, interval.size()-offset);
+                }
+                
+                // array for count of bucket writes in current block
+                auto bucket_writes = util::container<size_t>(max_character+1);
+                
+                for (size_t j = block.size(); j > 0; --j) {
+                    auto curr_j = j-1;
+                    auto elem = block[curr_j];
+                    if (elem != (sa_index)-1 && elem != (sa_index)0) { 
+                        sa_index pre_index = elem-(sa_index)1;
+                        auto pre_char = t[pre_index];
+                        size_t curr_pos_in_sa = e-offset+curr_j;
+                        if (pre_char != curr_char // To ensure repititions are only calculated once
+                                && is_s_type(t, s_buckets, elem, curr_pos_in_sa, pre_char)) { 
+                            auto s_bucket_last = s_buckets[pre_char];
+                            auto bucket_write_count_prev = i == 0 ? 0 : bucket_sums[pre_char][i-1];
+                            auto bucket_write_count_block = bucket_writes[pre_char]++;
+                            sa[s_bucket_last-bucket_write_count_prev-bucket_write_count_block] = pre_index;
+                        }
                     }
                 }
             }
             
-            //std::cout << "f" << std::endl;
+            //induce.split("Update bucket pointers");
             
-            induce.split("Increase bucket pointers");
-            
-            // increase bucket pointers
+            // update bucket pointers
             #pragma omp parallel for
-            for (size_t d = 0; d < l_buckets.size(); ++d) {
-                l_buckets[d] += bucket_sums[d][interval.size()-1];
+            for (size_t d = 0; d < s_buckets.size(); ++d) {
+                s_buckets[d] -= bucket_sums[d][block_count-1];
             }
-            
-            //std::cout << "sa_end: " << sa << std::endl;
         }
-        //std::cout << "Ende: " << std::endl;
     }
     
+    /* This function induces all S-Type suffixes which have multiple occurences 
+       of curr_char at the beginning of the suffix. */
     template <typename T, typename sa_index, typename B>
-    void induce_type_l_repititions_parallel(const T& t, util::span<sa_index> sa, const size_t curr_char, 
-                const B& buckets, B& l_buckets) {
-        // get Interval of initialized type-L SA entrys with first character curr_char
-        size_t s = buckets[curr_char];
-        size_t e = l_buckets[curr_char];
+    void induce_type_s_repititions_parallel(const T& t, util::span<sa_index> sa, const size_t curr_char, 
+                const B& buckets, B& s_buckets) {
+        // get Interval of initialized type-S SA entrys with first character curr_char
+        size_t s = s_buckets[curr_char]+1;
+        size_t e = curr_char != buckets.size()-1 ? buckets[curr_char+1] : sa.size();
         util::span<sa_index> interval = sa.slice(s, e);
-        
-        //std::cout << "s: " << s << ", e: " << e << std::endl;
             
         while (interval.size() != 0) {
             // count number of positions which have curr_char before the first character in interval
@@ -256,7 +221,242 @@ namespace sacabench::util {
                 }
             }
             
-            //std::cout << "count: " << count << std::endl;
+            // copy entries which have curr_char before the first character to new_interval
+            util::span<sa_index> new_interval = sa.slice(s-count, s);
+            auto has_same_prev_char = [&](sa_index a) {
+                if (a > (sa_index)0) {
+                    return curr_char == t[a-(sa_index)1];
+                }
+                else { return false; }
+            };
+            filter(interval, new_interval, has_same_prev_char);
+            
+            // correct the new entries in sa
+            e = s;
+            s -= count;
+            interval = sa.slice(s, e);
+            #pragma omp parallel for
+            for (size_t i = 0; i < interval.size(); ++i) {
+                new_interval[i]--;
+            }
+            
+            // update bucket pointer
+            s_buckets[curr_char] -= count;
+        }
+    }
+    
+    /* This function induces all S-Type suffixes sequentially in an interval of sa.*/
+    template <typename T, typename sa_index, typename B>
+    void induce_type_s_interval_seq(const T& t, const util::span<sa_index> interval, const size_t s, 
+            util::span<sa_index> sa, B& s_buckets) {
+        for (size_t i = interval.size(); i > 0; --i) {
+            auto curr_i = i-1;
+            auto elem = interval[curr_i];
+            if (elem != (sa_index)-1 && elem != (sa_index)0) {
+                sa_index pre_index = elem-(sa_index)1;
+                auto pre_char = t[pre_index];
+                if (is_s_type(t, s_buckets, elem, s+curr_i, pre_char)) {
+                    sa[s_buckets[pre_char]--] = pre_index;
+                }
+            }
+        }
+    }
+    
+    /* This function checks if the position in t before curr_pos_in_t is of type S. */
+    template <typename T, typename B, typename sa_index>
+    bool is_s_type(T& t, B& s_buckets, sa_index curr_pos_in_t, size_t curr_pos_in_sa, size_t prev_char) {
+        auto curr_char = t[curr_pos_in_t];
+        bool curr_pos_is_s_type = (curr_pos_in_sa > s_buckets[curr_char]); // bucket pointer points at s-type-positions 
+        return prev_char < curr_char || (prev_char == curr_char && curr_pos_is_s_type);
+    }
+    
+    /**\brief Parallel version of L-Type-Inducing
+     * \tparam T input string
+     * \tparam sa_index content of SA
+     * \param t input text
+     * \param sa SA after placing the LMS-Suffixes in their buckets
+     * \param max_character Value of the largest character in effective alphabet
+     *
+     * Parallel version of L-Type-Inducing by Labeit. Takes the input string t,
+     * the SA after after placing the LMS-Suffixes in their buckets and the value of 
+     * the largest character in the effective alphabet as parameter. After calling 
+     * this function sa contains the correct order of the L-Type Suffixes of t.
+     */
+    template <typename T, typename sa_index>
+    void induce_type_l_parallel(const T& t, util::span<sa_index> sa, const size_t max_character) {
+
+        //TODO
+        /*DCHECK_MSG(sa.size() == t.size(),
+                   "sa must be initialised and must have the same length as t.");*/
+
+        //tdc::StatPhase induce("Generate Buckets");
+        
+        auto buckets_cont = util::container<size_t>(max_character+1);
+        util::span<size_t> buckets = buckets_cont;
+        generate_buckets_parallel(t, buckets);
+        auto l_buckets_cont = util::container<size_t>(max_character+1);
+        util::span<size_t> l_buckets = l_buckets_cont;
+        std::copy(buckets.begin(), buckets.end(), l_buckets.begin());
+        
+        for (size_t c = 0; c <= max_character; ++c) {
+            size_t curr_char = c;
+            
+            // get Interval of bucket with first character curr_char
+            size_t s = buckets[curr_char];
+            size_t e = 0;
+            if (curr_char < max_character) {
+                e = buckets[curr_char+1];
+            }
+            else {
+                e = sa.size();
+            }
+            util::span<sa_index> interval = sa.slice(s, e);
+            
+            //induce.split("Sequential");
+            if (interval.size() < 100) {
+                induce_type_l_interval_seq(t, interval, s, sa, l_buckets);
+                continue;
+            }
+            
+            //induce.split("Induce Repetitions");
+            
+            induce_type_l_repititions_parallel(t, sa, curr_char, buckets, l_buckets);
+            
+            if (curr_char == max_character) { break; } //TODO: unschön
+            
+            //induce.split("Initialize bucket_sums");
+            
+            // bucket_sums[d][i] = 1 if position i in interval writes to bucket d
+            //size_t n = std::max((size_t)2, interval.size());
+            size_t n = t.size();
+            size_t block_size = log2(n)*(max_character+1); // blocks of size sigma*logn
+            size_t block_count = interval.size()/block_size + (interval.size() % block_size != 0);
+            auto bucket_sums = util::array2d<size_t>({max_character+1, block_count});
+            
+            // initialize bucket_sums with 0
+            /*#pragma omp parallel for
+            for (size_t k = 0; k < (max_character+1)*interval.size(); ++k) {
+                size_t first = k/interval.size();
+                size_t second = k % interval.size();
+                bucket_sums[first][second] = 0;
+            }*/
+            
+            //induce.split("fill bucket_sums");
+            #pragma omp parallel for
+            for (size_t i = 0; i < block_count; ++i) {
+                // get current block
+                util::span<sa_index> block = interval.slice(0); // Dummy
+                auto offset = i*block_size;
+                if (offset+block_size <= interval.size()) {
+                    block = interval.slice(offset, offset+block_size);
+                }
+                else {
+                    block = interval.slice(offset);
+                }
+                
+                // fill bucket_sums
+                for (size_t j = 0; j < block.size(); ++j) {
+                    auto elem = block[j];
+                    if (elem != (sa_index)-1 && elem != (sa_index)0) { 
+                        sa_index pre_index = elem-(sa_index)1;
+                        auto pre_char = t[pre_index];
+                        size_t curr_pos_in_sa = s+offset+j;
+                        if (pre_char != curr_char // To ensure repititions are only calculated once
+                                && is_l_type(t, l_buckets, elem, curr_pos_in_sa, pre_char)) {
+                            bucket_sums[pre_char][i]++;
+                        }
+                    }
+                }
+            }
+        
+            //induce.split("perform prefix sums on bucket_sums");
+            
+            // perform prefix sums on each bucket_sum array
+            #pragma omp parallel for
+            for (size_t d = 0; d <= max_character; ++d) {
+                //TODO: workaround to access 1d-array bucket_sums[d]: copy elements to new container
+                auto bucket_sums_1d_cont = util::container<size_t>(block_count);
+                util::span<size_t> bucket_sums_1d = bucket_sums_1d_cont;
+                #pragma omp parallel for
+                for (size_t i = 0; i < bucket_sums_1d.size(); ++i) {
+                    bucket_sums_1d[i] = bucket_sums[d][i];
+                }                
+                
+                prefix_sum(bucket_sums_1d);
+                
+                // copy elements back to bucket_sums[d]
+                #pragma omp parallel for
+                for (size_t i = 0; i < bucket_sums_1d.size(); ++i) {
+                    bucket_sums[d][i] = bucket_sums_1d[i];
+                } 
+            }
+            
+            //induce.split("induce not repetitions");
+            
+            // initialize new entries
+            #pragma omp parallel for
+            for (size_t i = 0; i < block_count; ++i) {
+                // get current block
+                util::span<sa_index> block = interval.slice(0); // Dummy
+                auto offset = i*block_size;
+                if (offset+block_size <= interval.size()) {
+                    block = interval.slice(offset, offset+block_size);
+                }
+                else {
+                    block = interval.slice(offset);
+                }
+                
+                // array for count of bucket writes in current block
+                auto bucket_writes = util::container<size_t>(max_character+1);
+                
+                for (size_t j = 0; j < block.size(); ++j) {
+                    auto elem = block[j];
+                    if (elem != (sa_index)-1 && elem != (sa_index)0) { 
+                        sa_index pre_index = elem-(sa_index)1;
+                        auto pre_char = t[pre_index];
+                        size_t curr_pos_in_sa = s+offset+j;
+                        if (pre_char != curr_char // To ensure repititions are only calculated once
+                                && is_l_type(t, l_buckets, elem, curr_pos_in_sa, pre_char)) { 
+                            auto l_bucket_first = l_buckets[pre_char];
+                            auto bucket_write_count_prev = i == 0 ? 0 : bucket_sums[pre_char][i-1];
+                            auto bucket_write_count_block = bucket_writes[pre_char]++;
+                            sa[l_bucket_first+bucket_write_count_prev+bucket_write_count_block] = pre_index;
+                        }
+                    }
+                }
+            }
+            
+            //induce.split("Increase bucket pointers");
+            
+            // increase bucket pointers
+            #pragma omp parallel for
+            for (size_t d = 0; d < l_buckets.size(); ++d) {
+                l_buckets[d] += bucket_sums[d][block_count-1];
+            }
+        }
+    }
+    
+    /* This function induces all L-Type suffixes which have multiple occurences 
+       of curr_char at the beginning of the suffix. */
+    template <typename T, typename sa_index, typename B>
+    void induce_type_l_repititions_parallel(const T& t, util::span<sa_index> sa, const size_t curr_char, 
+                const B& buckets, B& l_buckets) {
+        // get Interval of initialized type-L SA entrys with first character curr_char
+        size_t s = buckets[curr_char];
+        size_t e = l_buckets[curr_char];
+        util::span<sa_index> interval = sa.slice(s, e);
+            
+        while (interval.size() != 0) {
+            // count number of positions which have curr_char before the first character in interval
+            size_t count = 0;
+            #pragma omp parallel for reduction(+:count)
+            for (size_t i = 0; i < interval.size(); ++i)  {
+                sa_index curr_elem = interval[i];
+                if (curr_elem != (sa_index)-1 && curr_elem != (sa_index)0  
+                            && t[curr_elem-(sa_index)1] == curr_char) {
+                    count += 1;
+                }
+            }
             
             // copy entries which have curr_char before the first character to new_interval
             util::span<sa_index> new_interval = sa.slice(e, e+count);
@@ -268,8 +468,6 @@ namespace sacabench::util {
             };
             filter(interval, new_interval, has_same_prev_char);
             
-            //std::cout << "x" << std::endl;
-            
             // correct the new entries in sa
             s = e;
             e +=count;
@@ -279,22 +477,48 @@ namespace sacabench::util {
                 new_interval[i]--;
             }
             
-            //std::cout << "y" << std::endl;
-            
             // increase bucket pointer
             l_buckets[curr_char] += count;
-            
-            //std::cout << "z" << std::endl;
         }
     }
     
-    template <typename T, typename B, typename sa_index>
-    bool is_l_type(T& t, B& l_buckets, sa_index curr_pos_in_t, size_t curr_pos_in_sa) {
-        sa_index pre_pos_in_t = curr_pos_in_t-(sa_index)1;
-        bool curr_pos_is_l_type = (curr_pos_in_sa < l_buckets[t[curr_pos_in_t]]); // bucket pointer points at l-type-positions 
-        return t[pre_pos_in_t] > t[curr_pos_in_t] || (t[pre_pos_in_t] == t[curr_pos_in_t] && curr_pos_is_l_type);
+    /* This function induces all L-Type suffixes sequentially in an interval of sa.*/
+    template <typename T, typename sa_index, typename B>
+    void induce_type_l_interval_seq(const T& t, const util::span<sa_index> interval, const size_t s, 
+            util::span<sa_index> sa, B& l_buckets) {
+        for (size_t i = 0; i < interval.size(); ++i) {
+            auto elem = interval[i];
+            if (elem != (sa_index)-1 && elem != (sa_index)0) { 
+                sa_index pre_index = elem-(sa_index)1;
+                auto pre_char = t[pre_index];
+                if (is_l_type(t, l_buckets, elem, s+i, pre_char)) {
+                    sa[l_buckets[pre_char]++] = pre_index;
+                }
+            }
+        }
     }
     
+    /* This function checks if the position in t before curr_pos_in_t is of type S. */
+    template <typename T, typename B, typename sa_index>
+    bool is_l_type(T& t, B& l_buckets, sa_index curr_pos_in_t, size_t curr_pos_in_sa, size_t prev_char) {
+        auto curr_char = t[curr_pos_in_t];
+        bool curr_pos_is_l_type = (curr_pos_in_sa < l_buckets[curr_char]); // bucket pointer points at l-type-positions 
+        return prev_char > curr_char || (prev_char == curr_char && curr_pos_is_l_type);
+    }
+    
+    /**\brief Filters all elements in an interval by a filter function
+     * \tparam Array type for consecutive memory space
+     * \tparam Filter filter function
+     * \param interval input interval
+     * \param out_interval output interval which contains all elements of
+                interval for which filter_func returns true after calling
+                this function
+     * \param filter_func filter function which must return a bool value
+     *
+     * Takes as input an interval and a filter function and writes all elements
+     * for which the filter function returns true into an output interval.
+     * This operation is parallelized.
+     */
     template <typename Array, typename Filter>
     void filter(Array interval, Array out_interval, Filter filter_func) {
         /* indicator for interval. filtered_elements[i] = 1 means that interval[i]
@@ -302,7 +526,6 @@ namespace sacabench::util {
         auto filtered_elements_cont = util::container<size_t>(interval.size());
         util::span<size_t> filtered_elements = filtered_elements_cont;
         
-        //std::cout << "xx" << std::endl;
         // fill filtered_elements
         #pragma omp parallel for
         for (size_t i = 0; i < interval.size(); ++i) {
@@ -311,11 +534,9 @@ namespace sacabench::util {
             }
         }
         
-        //std::cout << "yy" << std::endl;
         // perform prefix_sum on filtered_elements
         prefix_sum(filtered_elements);
         
-        //std::cout << "zz" << std::endl;
         // write filtered elements to out_interval
         #pragma omp parallel for
         for (size_t i = 0; i < interval.size(); ++i) {
@@ -324,9 +545,10 @@ namespace sacabench::util {
                 out_interval[pos] = interval[i];
             }
         }
-        //std::cout << "zzz" << std::endl;
     }
     
+    /* This Function calculates the bucket borders of each character 
+       of text parallely. */
     template <typename T, typename B>
     void generate_buckets_parallel(T& text, B& buckets) {
         #pragma omp parallel for

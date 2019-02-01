@@ -122,11 +122,12 @@ public:
         // sort LMS substrings
         if (!recursion) {
             util::induce_type_l_parallel(s, SA, K-1);
+            util::induce_type_s_parallel(s, SA, K-1);
         }
         else {
             induce_L_Types<T, sa_index>(s, buckets, t, K, false, SA);
+            induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
         }
-        induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
 
         // because we have at most n/2 LMS, we can store the sorted indices in
         // the first half of the SA
@@ -218,11 +219,12 @@ public:
 
         if (!recursion) {
             util::induce_type_l_parallel(s, SA, K-1);
+            util::induce_type_s_parallel(s, SA, K-1);
         }
         else {
             induce_L_Types<T, sa_index>(s, buckets, t, K, false, SA);
+            induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
         }
-        induce_S_Types<T, sa_index>(s, buckets, t, K, true, SA);
     }
 
     template <typename sa_index>
@@ -231,7 +233,6 @@ public:
                              util::span<sa_index> out_sa) {
 
         tdc::StatPhase sais("Main Phase");
-        std::cout << sizeof(size_t) << std::endl;
         if (text.size() > 1) {
             run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel(), false);
         }
