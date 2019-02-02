@@ -339,14 +339,27 @@ def generate_tex(config_dict, input_dict):
             loader = file_loader)
             
     if scaling:
-        for count, configuration in enumerate(config_dict):
-            config = Config(configuration, input_dict)
-            if config.mode == "weak":
-                template = env.get_template('weakscale.tex')
-            else:
-                template = env.get_template('strongscale.tex')
-            output_file = open('{}-{}.tex'.format(config.mode, count), 'w')
-            output_file.write(template.render(config=config))
+        configs = [Config(c, input_dict) for c in config_dict]
+        for count, config in enumerate(configs):
+            config.id = count
+        if configs[0].mode == "weak":
+            template = env.get_template('weakscale.tex')
+        else:
+            template = env.get_template('strongscale.tex')
+        output_file = open('{}.tex'.format(configs[0].mode), 'w')
+        output_file.write(template.render(configs=configs))
+
+
+
+
+        #for count, configuration in enumerate(config_dict):
+            #config = Config(configuration, input_dict)
+            #if config.mode == "weak":
+                #template = env.get_template('weakscale.tex')
+            #else:
+                #template = env.get_template('strongscale.tex')
+            #output_file = open('{}-{}.tex'.format(config.mode, count), 'w')
+            #output_file.write(template.render(config=config))
     else:
         mode = get_mode_from_dict(input_dict)
         for count, configuration in enumerate(config_dict):

@@ -31,9 +31,10 @@
 
 \begin{document}
 
-\section{Weak-Scaling}
+\BLOCK{ for config in configs }
+\section{Weak-Scaling: \VAR{config.escaped_input_file}}
 \textbf{Configuration} \hfill Model name: \VAR{config.cpu}
-% IMPORT-DATA stats result/result_algorithm.txt
+% IMPORT-DATA stats\VAR{config.id} result/result_algorithm.txt
 
 \begin{center}
     \begin{tikzpicture}
@@ -45,7 +46,7 @@
                 xlabel={num Threads, input size [100\,MB]},
                 ylabel={SA construction time [s]},
                 legend columns=4,
-                legend to name=legend0,
+                legend to name=legend\VAR{config.id},
                 legend style={
                     /tikz/every even column/.append style={column sep=0.5cm,black},
                     /tikz/every even column/.append style={black},
@@ -54,7 +55,7 @@
 
             %% MULTIPLOT(algo) SELECT thread_count AS x, time/1000 AS y, MULTIPLOT
             %% FROM (
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep, thread_count
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
             %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
 
         \end{axis}
@@ -71,7 +72,7 @@
 
             %% MULTIPLOT(algo) SELECT thread_count AS x, memPeak/1000000 AS y, MULTIPLOT
             %% FROM (
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats GROUP BY algo, input, prefix, rep, thread_count
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
             %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
 
             \legend{}
@@ -79,6 +80,9 @@
     \end{tikzpicture}
 
     \medskip
-    \ref{legend0}
+    \ref{legend\VAR{config.id}}
 \end{center}
+\newpage
+\BLOCK{ endfor }
+
 \end{document}
