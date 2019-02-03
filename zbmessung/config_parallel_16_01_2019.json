@@ -13,7 +13,7 @@
             "PARALLEL_SAIS",
             "mSufSort_par",
             "mSufSort_scan_par",
-            "mSufSortV2_par",
+            "mSufSortV2_par"
         ],
         "input": [
             "pc_dblp.xml.200MB",
