@@ -245,9 +245,15 @@ public:
             if ((pos+1) >= (ssize)(0) && pos >= (ssize)0 && pos < (ssize)SA.size() && getBit(t, pos) == L_Type)
             {
                 if (r[i].first == (sa_index)(0))
+                {
                     chr = (sa_index)s[(sa_index)pos];
+                }
                 else
+                {
                     chr = (sa_index)r[i].first;
+                    r[i].first = (sa_index)0;
+                    r[i].second = (sa_index)(-1);
+                }
 
                 sa_index idx = buckets[chr];
                 buckets[chr]++;
@@ -286,10 +292,14 @@ public:
             {
                 if (r[i].first == (sa_index)0)
                     chr = (sa_index)s[(sa_index)pos];
-                else
+                else {
                     chr = r[i].first;
+                    r[i].first = (sa_index)0;
+                    r[i].second = (sa_index)(-1);
+                }
 
                 sa_index idx = --buckets[chr];
+
 
                 // if idx is in Block k-1 or Block k
                 if (ssize(translate) - 2 * part_length <= ssize(idx) && idx <= i + translate) {
@@ -315,12 +325,11 @@ public:
                 break;
 
             if (i < (ssize)w.size() && w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1)) {
-
                 SA[w[i].first] = w[i].second;
-
                 w[i].first = (sa_index)(0);
                 w[i].second = (sa_index)(-1);
             }
+
         }
     }
 
@@ -358,9 +367,9 @@ public:
         size_t write_amount_1 = 0;
         size_t write_amount_2 = 0;
 
-        double timePreparing = 0;
-        double timeInducing = 0;
-        double timeUpdating = 0;
+        // double timePreparing = 0;
+        // double timeInducing = 0;
+        // double timeUpdating = 0;
 
 
         // To differentiate the L-Type-Inducing from the S-Type-Inducing we just invert the blocknumber we are currently handling when methods are being called
@@ -396,14 +405,14 @@ public:
 
                     #pragma omp task default(shared)
                     {
-                        auto start = steady_clock::now();
+                        // auto start = steady_clock::now();
 
                         auto& r = cur_prepare_block % 2 == 0 ? r1 : r2;
                         prepare_parallel<T, sa_index>(s, part_length, r, SA, t, type, cur_prepare_block);
 
-                        auto end = steady_clock::now();
-                        double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
-                        timePreparing += timeAddition;
+                        // auto end = steady_clock::now();
+                        // double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                        // timePreparing += timeAddition;
                         // std::cout << "prep: " << timeAddition * 1000 << std::endl;
                     }
                 }
@@ -413,16 +422,16 @@ public:
                     {
                         #pragma omp task default(shared)
                         {
-                            auto start = steady_clock::now();
+                            // auto start = steady_clock::now();
 
                             auto& r = inducing_block % 2 == 0 ? r1 : r2;
                             auto& w = inducing_block % 2 == 0 ? w1 : w2;
                             size_t* write_amount = inducing_block % 2 == 0 ? &write_amount_1 : &write_amount_2;
                             induce_L_Types_Pipelined<T, sa_index>(s, SA, buckets, t, inducing_block, r, w, part_length, write_amount);
                         
-                            auto end = steady_clock::now();
-                            double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
-                            timeInducing += timeAddition;
+                            // auto end = steady_clock::now();
+                            // double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                            // timeInducing += timeAddition;
                             // std::cout << "indu: " << timeAddition * 1000 << std::endl;
                         }
                     }
@@ -430,16 +439,16 @@ public:
                     {
                         #pragma omp task default(shared)
                         {
-                            auto start = steady_clock::now();
+                            // auto start = steady_clock::now();
 
                             auto& r = (thread_count - inducing_block) % 2 == 0 ? r1 : r2;
                             auto& w = (thread_count - inducing_block) % 2 == 0 ? w1 : w2;
                             size_t* write_amount = (thread_count - inducing_block) % 2 == 0 ? &write_amount_1 : &write_amount_2;
                             induce_S_Types_Pipelined<T, sa_index>(s, SA, buckets, t, (thread_count - inducing_block), r, w, part_length, write_amount);
                         
-                            auto end = steady_clock::now();
-                            double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
-                            timeInducing += timeAddition;
+                            // auto end = steady_clock::now();
+                            // double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                            // timeInducing += timeAddition;
                             // std::cout << "indu: " << timeAddition * 1000 << std::endl;
                         }
                     }
@@ -450,15 +459,15 @@ public:
 
                     #pragma omp task default(shared)
                     {
-                        auto start = steady_clock::now();
+                        // auto start = steady_clock::now();
 
                         auto& w = cur_update_block % 2 == 0 ? w1 : w2;
                         size_t* write_amount = cur_update_block % 2 == 0 ? &write_amount_1 : &write_amount_2;
                         update_parallel<sa_index>(part_length, w, SA, write_amount);
 
-                        auto end = steady_clock::now();
-                        double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
-                        timeUpdating += timeAddition;
+                        // auto end = steady_clock::now();
+                        // double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
+                        // timeUpdating += timeAddition;
                         // std::cout << "upda: " << timeAddition * 1000 << std::endl;
                     }
                 }
@@ -470,8 +479,33 @@ public:
        //  std::cout << "Time Preparing: " << timePreparing*1000 << ", Time Inducing: " << timeInducing * 1000 << ", Time Updating: " << timeUpdating * 1000 << std::endl;
     }
 
+    //template <typename T, typename sa_index>
+    //static void induce_L_Types_sequential(T s, span<sa_index> buckets, std::vector<uint8_t>& t, size_t K, bool end, span<sa_index> SA) {
+    //    generate_buckets<T, sa_index>(s, buckets, K, end);
+    //    for (size_t i = 0; i < s.size(); i++) {
+    //        ssize pre_index = SA[i] - (sa_index)1; // pre index of the ith suffix array position
+
+    //        if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 && getBit(t, pre_index) == L_Type) { // pre index is type L
+    //            SA[buckets[s.at(pre_index)]++] = pre_index; // "sort" index in the bucket
+
+    //        }
+    //    }
+    //}
+
+    //template <typename T, typename sa_index>
+    //static void induce_S_Types_sequential(T s, span<sa_index> buckets, std::vector<uint8_t>& t, size_t K, bool end, span<sa_index> SA) {
+    //    generate_buckets<T, sa_index>(s, buckets, K, end);
+    //    for (ssize i = s.size() - 1; i >= 0; i--) {
+    //        ssize pre_index = SA[i] - (sa_index)1;
+
+    //        if (SA[i] != (sa_index)-1 && SA[i] != (sa_index)0 && getBit(t, pre_index) == S_Type) {
+    //            SA[--buckets[s.at(pre_index)]] = pre_index;
+    //        }
+    //    }
+    //}
+
     template <typename T, typename sa_index>
-    static void run_saca(T s, span<sa_index> SA, size_t K, container<std::pair<sa_index, sa_index>> &buff) {
+    static void run_saca(T s, span<sa_index> SA, size_t K, container<std::pair<sa_index, sa_index>> &buff, size_t depth) {
 
         size_t beta = 100000;
 
@@ -493,8 +527,6 @@ public:
         thread_count = std::min(thread_count, s.size() - 1);
         ssize part_length = s.size() / thread_count;
         ssize rest_length = (s.size() - (thread_count - 1) * part_length);
-
-        // std::cout << "Blocksize is " << part_length << std::endl;
                
 
         // for very small inputs, so that we can always assure that rest_length <= part_length
@@ -551,14 +583,7 @@ public:
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, L_Type);
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, S_Type);
 
-        /*for(const auto& idx: SA) {
-            
-            (void) idx;
-
-            DCHECK_NE(idx, sa_index(-1));
-        }*/
-
-        // Recursion Call #############################################################
+        // Prepare and Check for Recursion Call #############################################################
         
         // because we have at most n/2 LMS, we can store the sorted indices in
         // the first half of the SA
@@ -620,8 +645,9 @@ public:
         span<sa_index> s1 = SA.slice(s.size() - n1, s.size());
         span<sa_index> sa_ = SA.slice(0, n1);
 
+        
         if (name < n1) {
-            run_saca<span<sa_index const>, sa_index>(s1, sa_, name, buffers.size() > buff.size() ? buffers : buff);
+            run_saca<span<sa_index const>, sa_index>(s1, sa_, name, buffers.size() > buff.size() ? buffers : buff, depth+1);
         } else {
             for (ssize i = 0; i < n1; i++) {
                 SA[s1[i]] = i;
@@ -632,30 +658,29 @@ public:
 
         // induce the final SA
         generate_buckets<T, sa_index>(s, buckets, K, true);
-
         size_t j;
         for (size_t i = 1, j = 0; i < s.size(); i++) {
             if (is_LMS(t, i)) {
                 s1[j++] = i;
             }
-
         }
 
         for (ssize i = 0; i < n1; i++) {
-            SA[i] = s1[SA[i]];
+             SA[i] = s1[SA[i]];
         }
 
         for (size_t i = n1; i < s.size(); i++) {
             SA[i] = (sa_index)-1;
         }
 
+
         for (ssize i = n1 - 1; i >= 0; i--) {
+            
             j = SA[i];
             SA[i] = (sa_index)-1;
             SA[--buckets[s.at(j)]] = j;
         }
 
-        
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, L_Type);
         pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, S_Type);
     }
@@ -671,7 +696,7 @@ public:
         if (text.size() > 1) {
             #pragma omp parallel
             #pragma omp master
-            run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel(), buffers);
+            run_saca<string_span, sa_index>(text, out_sa, alphabet.size_with_sentinel(), buffers, 0);
         }
     }
 };
