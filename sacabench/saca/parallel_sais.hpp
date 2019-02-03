@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (C) 2018 Jonas Bode <jonas.bode@tu-dortmund.de>
  * Copyright (C) 2018 Christopher Poeplau <christopher.poeplau@tu-dortmund.de>
- * Copyright (C) 2018 Janina Michaelis <janina.michaelis@tu-dortmund.de>
  * Copyright (C) 2018 Rosa Pink <rosa.pink@tu-dortmund.de>
  * Copyright (C) 2018 Marvin Böcker <marvin.boecker@tu-dortmund.de>
+ * Copyright (C) 2018 Janina Michaelis <janina.michaelis@tu-dortmund.de>
  *
  * All rights reserved. Published under the BSD-3 license in the LICENSE file.
  ******************************************************************************/
@@ -42,6 +42,8 @@ public:
     
     static const int L_Type = 0;
     static const int S_Type = 1;
+
+    static const int parallel_min_size = 5000000; // SAIS is usually still faster on inputs of the size of ~5MB
 
     static uint8_t getBit(std::vector<uint8_t>& t, int index) {
         return (t[index/8] >> (7-(index & 0x7)) & 0x1);
@@ -507,9 +509,9 @@ public:
     template <typename T, typename sa_index>
     static void run_saca(T s, span<sa_index> SA, size_t K, container<std::pair<sa_index, sa_index>> &buff, size_t depth) {
 
-        size_t beta = 100000;
+        size_t beta = 10000000; // Buffer size of 10MB
 
-        if (beta > s.size())
+        if (parallel_min_size > s.size())
         {
             sacabench::sais::sais::run_saca<T, sa_index>(s, SA, K);
             return;
@@ -517,25 +519,24 @@ public:
 
         container<sa_index> buckets = make_container<sa_index>(K);
         std::vector<uint8_t> t(s.size() / 8 + 1);
-        size_t thread_count = std::thread::hardware_concurrency();
+        // size_t thread_count = std::thread::hardware_concurrency();
+        // thread_count = std::min(thread_count, s.size() - 1);
 
-        container<size_t> thread_border = make_container<size_t>(thread_count);
-        container<bool> thread_info = make_container<bool>(thread_count);
-        
-        // Prepare blocks for parallel computing
+        ssize part_length = beta;
+        size_t block_amount = std::max((size_t)1,(size_t)(s.size() / part_length));
+        // ssize rest_length = (s.size() % part_length);
 
-        thread_count = std::min(thread_count, s.size() - 1);
-        ssize part_length = s.size() / thread_count;
-        ssize rest_length = (s.size() - (thread_count - 1) * part_length);
+        container<size_t> thread_border = make_container<size_t>(block_amount);
+        container<bool> thread_info = make_container<bool>(block_amount);
                
 
         // for very small inputs, so that we can always assure that rest_length <= part_length
-        while (rest_length > part_length && thread_count > 1)
+        /*while (rest_length > part_length && thread_count > 1)
         {
             thread_count--;
             part_length = s.size() / thread_count;
             rest_length = (s.size() - (thread_count - 1) * part_length);
-        }
+        }*/
        
         // Read/Write Buffer for the pipeline, one single buffer cut into 4 seperate ones, each with length "part_length + 1"
         container<std::pair<sa_index, sa_index>> buffers;
@@ -560,7 +561,7 @@ public:
             w2 = buffers.slice(3 * part_length + 3, 4 * part_length + 4);
         }
 
-        compute_types(t, s, thread_border, thread_info, thread_count);
+        compute_types(t, s, thread_border, thread_info, block_amount);
 
         // First Induction ###################################################
 
@@ -580,8 +581,8 @@ public:
             }
         }
 
-        pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, L_Type);
-        pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, S_Type);
+        pipelined_Inducing(s, SA, t, buckets.slice(), K, block_amount, r1, r2, w1, w2, part_length, L_Type);
+        pipelined_Inducing(s, SA, t, buckets.slice(), K, block_amount, r1, r2, w1, w2, part_length, S_Type);
 
         // Prepare and Check for Recursion Call #############################################################
         
@@ -681,8 +682,8 @@ public:
             SA[--buckets[s.at(j)]] = j;
         }
 
-        pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, L_Type);
-        pipelined_Inducing(s, SA, t, buckets.slice(), K, thread_count, r1, r2, w1, w2, part_length, S_Type);
+        pipelined_Inducing(s, SA, t, buckets.slice(), K, block_amount, r1, r2, w1, w2, part_length, L_Type);
+        pipelined_Inducing(s, SA, t, buckets.slice(), K, block_amount, r1, r2, w1, w2, part_length, S_Type);
     }
 
     template <typename sa_index>
