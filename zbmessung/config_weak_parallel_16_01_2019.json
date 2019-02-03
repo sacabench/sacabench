@@ -21,7 +21,7 @@
             "$WORK/large_datasets/wiki.txt"
         ],
         "rep": 1,
-        "prefix": 100,
+        "prefix": 250,
         "threads": [
             1, 2, 4, 8, 12, 16, 20
         ],
