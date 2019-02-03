@@ -9,9 +9,11 @@
             "NaivIps4oParallel",
             "NaivParallel",
             "BPR_par",
-            "GSACA_parallel",
             "Deep-Shallow_par",
-            "PARALLEL_SAIS"
+            "PARALLEL_SAIS",
+            "mSufSort_par",
+            "mSufSort_scan_par",
+            "mSufSortV2_par",
         ],
         "input": [
             "pc_dblp.xml.200MB",
