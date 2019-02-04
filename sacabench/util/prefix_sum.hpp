@@ -234,15 +234,18 @@ void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
         }
     }
     else {
+        auto tmp = util::container<Content>(in.size());
+        std::copy(in.begin(), in.end(), tmp.begin());
+        
         out[0] = identity;
-        out[1] = in[0];
+        out[1] = tmp[0];
         #pragma omp parallel for
         for (size_t i = 2; i < out.size(); ++i) {
             if (i % 2 == 0) {
                 out[i] = pair_sums[(i-1)/2];
             }
             else {
-                out[i] = add(in[i-1], pair_sums[(i-2)/2]);
+                out[i] = add(tmp[i-1], pair_sums[(i-2)/2]);
             }
         }
     }
