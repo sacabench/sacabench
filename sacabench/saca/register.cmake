@@ -95,7 +95,10 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
-
+    
+SACA_REGISTER("saca/sais_with_parallel_induce.hpp"
+    sacabench::sais_wip::sais_wip)
+    
 SACA_REGISTER("saca/parallel_sais.hpp"
     sacabench::parallel_sais::parallel_sais)
 
@@ -161,3 +164,4 @@ SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
 
 SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
     sacabench::osipov::osipov_parallel_wp)
+
