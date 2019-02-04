@@ -14,6 +14,7 @@
 #include <util/kd_array.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/sort/introsort.hpp>
+#include <util/sort/stable_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
@@ -253,7 +254,7 @@ public:
             init_uchain_links_[i] = END<sa_index>;
             head_uchains_[i] = END<sa_index>;
         }
-        
+
         // put head of sentinel chain in array (as it is not included in rtl scan)
         head_uchains_[0] = text.size()-1;
 
@@ -458,10 +459,10 @@ inline void rank_type_l_list(size_t i, size_t j, m_suf_sort_attr<sa_index>& attr
 // compare function for introsort that sorts first after text symbols at given
 // indices and if both text symbols are the same compares (unique) indices.
 template <typename sa_index>
-struct compare_uChain_elements {
+struct compare_uChain_elements_unstable {
 public:
     // Function for comparisons within introsort
-    compare_uChain_elements(sa_index l, const util::string_span text)
+    compare_uChain_elements_unstable(sa_index l, const util::string_span text)
         : length(l), input_text(text) {}
 
     const sa_index length;
@@ -477,9 +478,9 @@ public:
         bool is_a_smaller = at_a > at_b;
         // in case of equality of the characters compare indices and sort
         // ascending (to pass chains from left to right and re-link)
-        if (at_a == at_b) {
-            is_a_smaller = a < b;
-        }
+        // if (at_a == at_b) {
+        //     is_a_smaller = a < b;
+        // }
         return is_a_smaller;
     }
 
@@ -514,8 +515,8 @@ template <typename sa_index>
 inline void refine_uChain(m_suf_sort_attr<sa_index>& attr,
                    util::span<sa_index> new_chain_IDs, sa_index length) {
 
-    compare_uChain_elements comparator(length, attr.text);
-    util::sort::introsort(new_chain_IDs, comparator);
+    compare_uChain_elements_unstable comparator(length, attr.text);
+    util::sort::stable_sort(new_chain_IDs, comparator);
 
     // last index that is to be linked
     sa_index last_ID = END<sa_index>;

@@ -1,0 +1,29 @@
+{
+    "launch" : {
+        "algo": [
+            "DC3_parallel",
+            "DC3-Parallel-2",
+            "DivSufSort_PARALLEL_ref",
+            "Osipov_parallel_wp",
+            "Discarding4Parallel",
+            "NaivIps4oParallel",
+            "BPR_par",
+            "GSACA_parallel",
+            "Deep-Shallow_par"
+        ],
+        "input": [
+            "pc_dblp.xml.200MB",
+            "pc_dna.200MB",
+            "pc_english.200MB",
+            "pc_proteins.200MB",
+            "pc_sources.200MB"
+        ],
+        "rep": 1,
+        "prefix": 200,
+        "threads": [
+            1, 2, 4, 8, 16, 20
+        ],
+        "weak_scale": false,
+        "cluster_config": "gpu"
+    }
+}

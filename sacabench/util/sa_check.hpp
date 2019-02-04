@@ -11,6 +11,7 @@
 
 #include <util/assertions.hpp>
 #include <util/compare.hpp>
+#include <util/sort/ips4o.hpp>
 #include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
@@ -58,8 +59,9 @@ private:
     cases value;
 };
 
-template <typename sa_index_type>
-sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
+template <typename sa_index_type, typename sorter_type>
+sa_check_result sa_check_naive_sorter(span<sa_index_type> sa, string_span text,
+                                      sorter_type sorter) {
     DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
 
     if (sa.size() != text.size()) {
@@ -75,8 +77,8 @@ sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
 
     // Construct a SA by sorting according
     // to the suffix starting at that index.
-    sort::std_sort(naive,
-                   util::compare_key([&](size_t i) { return text.slice(i); }));
+    sorter(naive.slice(),
+           util::compare_key([&](size_t i) { return text.slice(i); }));
 
     for (size_t i = 0; i < N; i++) {
         if (naive[i] != sa[i]) {
@@ -88,7 +90,14 @@ sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
 }
 
 template <typename sa_index_type>
-sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
+sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
+    return sa_check_naive_sorter<sa_index_type>(
+        sa, text, [](auto slice, auto cmp_func) { sort::std_sort(slice, cmp_func); });
+}
+
+template <typename sa_index_type, typename sorter_type>
+sa_check_result sa_check_sorter(span<sa_index_type> sa, string_span text,
+                                sorter_type sorter) {
     // Check for size + 1 because the algorithm
     // calculates maxvalue + 1 at one point.
     DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
@@ -108,7 +117,7 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
         P[i] = pair{sa[i], sa_index_type(i + 1)};
     }
 
-    sort::std_sort(P, [](auto const& lhs, auto const& rhs) {
+    sorter(P.slice(), [](auto const& lhs, auto const& rhs) {
         return lhs.text_pos < rhs.text_pos;
     });
 
@@ -137,7 +146,7 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
         S[i] = tripple{r1, text[i], r2};
     }
 
-    sort::std_sort(S, [](auto const& lhs, auto const& rhs) {
+    sorter(S.slice(), [](auto const& lhs, auto const& rhs) {
         return lhs.sa_pos < rhs.sa_pos;
     });
 
@@ -152,4 +161,21 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
 
     return sa_check_result::ok;
 }
+
+template <typename sa_index_type>
+sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
+    return sa_check_sorter<sa_index_type>(
+        sa, text, [](auto slice, auto cmp_func) { sort::std_sort(slice, cmp_func); });
+}
+
+template <typename sa_index_type>
+sa_check_result sa_check_dispatch(span<sa_index_type> sa, string_span text,
+                                  bool fast) {
+    if (fast) {
+        return sa_check_sorter(
+            sa, text, [](auto slice, auto cmp_func) { sort::ips4o_sort_parallel(slice, cmp_func); });
+    }
+    return sa_check(sa, text);
+}
+
 } // namespace sacabench::util

@@ -6,8 +6,9 @@
 
 #include <gtest/gtest.h>
 #include "test/saca.hpp"
-#include <saca/external/divsufsort.hpp>
+#include <saca/external/divsufsort/divsufsort.hpp>
 
 TEST(reference_sacas, divsufsort) {
     test::saca_corner_cases<sacabench::reference_sacas::div_suf_sort>();
 }
+

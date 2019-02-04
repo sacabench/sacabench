@@ -1,9 +1,9 @@
 #pragma once
 
 #include <algorithm>
-#include <byteswap.h>
 #include <tudocomp_stat/StatPhase.hpp>
 #include <tuple>
+#include <util/macros.hpp>
 #include <util/alphabet.hpp>
 #include <util/assertions.hpp>
 #include <util/compare.hpp>
@@ -21,10 +21,10 @@ namespace sacabench::osipov {
     \brief Sequential implementation of the osipov algorithm used in class
     osipov (see osipov.hpp).
 */
-template <typename sa_index>
+template <bool wordpacking_4_sort, typename sa_index>
 class osipov_seq{
 private:
-        osipov_spans<sa_index> spans;
+        osipov_spans<wordpacking_4_sort, sa_index> spans;
 
 
 public:
@@ -32,14 +32,15 @@ public:
         Constructor for class osipov_seq. Directly creates a osipov_spans
         instance within instantiation list (otherwise default constructor for
         osipov_spans is needed).
-        
+
         @param out_sa Span for the final sa.
         @param isa Span for the isa.
         @param tuples Span for the tuples.
     */
     inline osipov_seq(util::span<sa_index> out_sa, util::span<sa_index> isa,
-            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples) :
-            spans(osipov_spans<sa_index>(out_sa, isa, tuples)) {}
+            util::span<std::tuple<sa_index, sa_index, sa_index>> tuples,
+            util::string_span text) :
+            spans(osipov_spans<wordpacking_4_sort, sa_index>(out_sa, isa, tuples, text)) {}
 
     // Returns the tuple span (needed for tuple comparison function)
     util::span<std::tuple<sa_index, sa_index, sa_index>> get_tuples() {
@@ -118,10 +119,10 @@ public:
         @param cmp The initial compare function (most probably
         compare_first_four_chars)
     */
-    template <typename compare_func>
-    void initialize_isa(compare_func cmp) {
+    void initialize_isa() {
         auto sa = spans.sa;
         auto isa = spans.isa;
+        auto cmp = spans.cmp_init;
 
         // Auxiliary array for marking new groups.
         util::container<sa_index> aux =
@@ -152,9 +153,8 @@ public:
         @param cmp_init The compare function to sort by (most probably
         compare_first_four_chars)
     */
-    template <typename compare_func>
-    void initial_sort(compare_func cmp_init) {
-        util::sort::ips4o_sort(spans.sa, cmp_init);
+    void initial_sort() {
+        util::sort::ips4o_sort(spans.sa, spans.cmp_init);
     }
 
     /*
@@ -163,9 +163,8 @@ public:
 
         @param cmp The compare function to sort the tuples.
     */
-    template <typename compare_func>
-    void stable_sort(compare_func cmp) {
-        util::sort::stable_sort(spans.tuples, cmp);
+    void stable_sort() {
+        util::sort::stable_sort(spans.tuples, spans.cmp_tuples);
     }
 
     /*
@@ -219,6 +218,7 @@ public:
                     isa[index]);
             }
         }
+        spans.set_cmp_tuples(tuples);
         // Return number of counted tuples.
         return s;
     }
@@ -226,7 +226,7 @@ public:
     /*
         \brief Update rank of each tuple after tuples have been sorted.
     */
-    void update_ranks() {
+    void update_ranks(size_t) {
         auto tuples = spans.tuples;
         // Index for each reference point while updating index.
         sa_index head = 0;
@@ -283,10 +283,9 @@ public:
             auto tuples = util::span<std::tuple<sa_index, sa_index, sa_index>>(
                     tuple_container);
             // create instance of sequential osipov implementation.
-            auto impl = osipov_seq<sa_index>(out_sa, isa, tuples);
+            auto impl = osipov_seq<wordpacking_4_sort, sa_index>(out_sa, isa, tuples, text);
             // Call main osipov function.
-            osipov<wordpacking_4_sort, sa_index>::prefix_doubling(text, out_sa,
-                impl);
+            osipov<sa_index>::prefix_doubling(text, out_sa, impl);
         } else {
             out_sa[0] = 0;
         }
