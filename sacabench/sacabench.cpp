@@ -51,12 +51,13 @@ nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::stri
     auto cmd_model_name = "lscpu | grep 'Model name' | cut -f 2 -d ':'| awk '{$1=$1}1'";
     auto cmd_amount_cpus = "grep -c ^processor /proc/cpuinfo";
     auto cmd_threads_per_socket = "lscpu | grep 'Thread(s)' | cut -f 2 -d ':'| awk '{$1=$1}1'";
-           
-                       
+    auto cmd_all_lscpu_info = "lscpu";
+                         
     auto operating_system = get_output_from_cmd(cmd_operating_system);
     auto model_name = get_output_from_cmd(cmd_model_name);
     auto amount_cpus = get_output_from_cmd(cmd_amount_cpus);
     auto threads_per_socket = get_output_from_cmd(cmd_threads_per_socket);
+    auto all_lscpu_info = get_output_from_cmd(cmd_all_lscpu_info);
     
     operating_system.erase(std::remove(operating_system.begin(), operating_system.end(), '\n'), operating_system.end());
     model_name.erase(std::remove(model_name.begin(), model_name.end(), '\n'), model_name.end());
@@ -74,7 +75,8 @@ nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::stri
         {"operating_system", operating_system},
         {"model_name", model_name},
         {"amount_cpus", amount_cpus},
-        {"threads_per_socket", threads_per_socket}
+        {"threads_per_socket", threads_per_socket},
+        {"all_lscpu_info", all_lscpu_info}
     };
             
     config_json.push_back(j);
