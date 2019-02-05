@@ -16,14 +16,15 @@
 #include <util/merge_sa_dc.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
+#include <util/prefix_sum.hpp>
 #include <math.h>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
 //parallel
 #include <omp.h>
-#include <thread>
-#include <util/sort/ips4o.hpp>
+//#include <util/sort/ips4o.hpp>
+#include <util/sort/std_sort.hpp>
 
 
 namespace sacabench::dc3_par {
@@ -70,27 +71,25 @@ private:
         // mod 3 != 0
 
         (void)alphabet_size;
-        sa_index counter = 0;
         sa_index one = 1;
         sa_index two = 2;
-
+        
         auto triplets_12_to_be_sorted =
             sacabench::util::make_container<std::tuple<C, C, C, sa_index>>(
                 2 * (INPUT_STRING.size() - 2) / 3);
 
-        for (sa_index i = 1; i < INPUT_STRING.size() - 2; ++i) {
+        #pragma omp parallel for
+        for (size_t i = 1; i < INPUT_STRING.size() - 2; ++i) {
             if (i % 3 != 0) {
-                triplets_12_to_be_sorted[counter++] =
+                triplets_12_to_be_sorted[i - i/3 - 1] =
                     std::tuple<C, C, C, sa_index>(INPUT_STRING[i],
                                                   INPUT_STRING[i + one],
-                                                  INPUT_STRING[i + two], i);
+                                                  INPUT_STRING[i + two], i);                    
             }
         }
-
-        //std::sort(triplets_12_to_be_sorted.begin(),
-        //          triplets_12_to_be_sorted.end());
         
-        util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        //util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        util::sort::std_par_sort(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
         
         #pragma omp parallel for
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
@@ -145,6 +144,45 @@ private:
             }
         }
     }
+    
+    template <typename sa_index, typename T, typename S, typename L>
+    static void determine_leq_par(const T& INPUT_STRING, const S& triplets_12,
+                              L& t_12, bool& recursion, size_t alphabet_size) {
+
+        (void)alphabet_size;
+        DCHECK_MSG(triplets_12.size() == t_12.size(),
+                   "triplets_12 must have the same length as t_12");
+        using triple = std::tuple<size_t, size_t, sa_index>;
+        
+        auto tmp_cont = util::make_container<triple>(t_12.size());
+        util::span<triple> tmp = tmp_cont;
+        #pragma omp parallel for
+        for (size_t i = 0; i < t_12.size(); ++i) {
+            tmp[i] = triple(triplets_12[i], triplets_12[i], 1);
+        }
+        sa_index one = 1;
+        auto add = [&](triple a, triple b) {
+            size_t first_left = std::get<0>(a);
+            size_t first_right = std::get<1>(a);
+            size_t second_left = std::get<0>(b);
+            size_t second_right = std::get<1>(b);
+            sa_index rank_first = std::get<2>(a);
+            sa_index rank_second = std::get<2>(b);
+            if (sacabench::util::span(&INPUT_STRING[first_right], 3) !=
+                    sacabench::util::span(&INPUT_STRING[second_left], 3)) {
+                return triple(first_left, second_right, rank_first + rank_second);
+            } else {
+                recursion = true;
+                return triple(first_left, second_right, rank_first + rank_second - one);
+            }
+        };
+        util::par_prefix_sum_eff(tmp, tmp, true, add, triple(0,0,0));
+        
+        #pragma omp parallel for
+        for (size_t i = 0; i < t_12.size(); ++i) {
+            t_12[i] = std::get<2>(tmp[i]);
+        }
+    }
 
     template <typename S, typename I>
     static void determine_sa(const S& t_12, I& isa_12) {
@@ -183,9 +221,27 @@ private:
             // fill t_12 with lexicographical names
             auto span_t_12 = util::span(&t_12[0], t_12.size() - 3);
             //alphabet_size = span_t_12.size();
+            
+            determine_leq_par<sa_index>(text, triplets_12, span_t_12, recursion,
+                                    alphabet_size);
+            
+            //-----------TO BE DELETED--------------------//
+            std::cout << "par: ";
+            for(size_t i = 0; i < span_t_12.size(); ++i){
+                std::cout << span_t_12[i] << ", ";
+            }
+            std::cout << std::endl;
+            
+            std::cout << "seq: ";
             determine_leq<sa_index>(text, triplets_12, span_t_12, recursion,
                                     alphabet_size);
-
+            for(size_t i = 0; i < span_t_12.size(); ++i){
+                std::cout << span_t_12[i] << ", ";
+            }
+            std::cout << std::endl;
+            //-----------TO BE DELETED--------------------//
+            
+            
             util::span<sa_index> sa_12 = util::span(&out_sa[0], t_12.size() - 3);
             //#pragma omp barrier
             // run the algorithm recursivly if the names are not unique
@@ -677,10 +733,10 @@ private:
                 sa_0_to_be_sorted[i/3] =
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
-
-        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
                   
-        util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+        //util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+        
+        util::sort::std_par_sort(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
 
         #pragma omp parallel for
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
