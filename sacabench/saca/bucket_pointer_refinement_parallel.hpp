@@ -187,18 +187,6 @@ public:
                     }
                 }
             }
-            /*
-        }
-
-        for (c_cur = 0; c_cur < alph_size; ++c_cur) {
-
-            sa_index suffix_idx;
-
-            size_t bucket_idx;
-
-            // predecessor and pre-predecessor characters of
-            util::character c_pre, c_pre_pre;
-            */
 
             /*
              * use copy technique for left buckets
