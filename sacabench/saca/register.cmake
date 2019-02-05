@@ -4,11 +4,14 @@
 SACA_REGISTER("saca/external/deep_shallow.hpp"
     sacabench::reference_sacas::deep_shallow)
 
-SACA_REGISTER("saca/external/divsufsort.hpp"
+SACA_REGISTER("saca/external/divsufsort/divsufsort.hpp"
     sacabench::reference_sacas::div_suf_sort)
 
 SACA_REGISTER("saca/external/parallel_divsufsort/parallel_divsufsort.hpp"
     sacabench::reference_sacas::parallel_div_suf_sort)
+
+SACA_REGISTER("saca/external/divsufsort/divsufsort_par.hpp"
+    sacabench::reference_sacas::div_suf_sort_par)
 
 SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
     sacabench::reference_sacas::msufsort)
@@ -92,7 +95,10 @@ SACA_REGISTER("saca/prefix_doubling.hpp"
 
 SACA_REGISTER("saca/sais.hpp"
     sacabench::sais::sais)
-
+    
+SACA_REGISTER("saca/sais_with_parallel_induce.hpp"
+    sacabench::sais_wip::sais_wip)
+    
 SACA_REGISTER("saca/parallel_sais.hpp"
     sacabench::parallel_sais::parallel_sais)
 
@@ -158,3 +164,4 @@ SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
 
 SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
     sacabench::osipov::osipov_parallel_wp)
+
