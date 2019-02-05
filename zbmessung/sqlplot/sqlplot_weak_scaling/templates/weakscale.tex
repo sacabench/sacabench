@@ -27,6 +27,54 @@
     legend pos=north west,
 }
 
+\pgfplotscreateplotcyclelist{exotic}{%
+    teal,every mark/.append style={fill=teal!80!black},mark=*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=square*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=otimes*\\%
+    red!70!white,mark=star\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=diamond*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=square*\\%
+    black,every mark/.append style={solid,fill=gray},mark=otimes*\\%
+    blue,densely dashed,mark=star,every mark/.append style=solid\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=diamond*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=square*\\%
+    red!70!white,mark=otimes*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=star\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=diamond*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=*\\%
+    black,every mark/.append style={solid,fill=gray},mark=square*\\%
+    blue,densely dashed,mark=otimes*,every mark/.append style=solid\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=star\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=diamond*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=*\\%
+    red!70!white,mark=square*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=otimes*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=star\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=diamond*\\%
+    black,every mark/.append style={solid,fill=gray},mark=*\\%
+    blue,densely dashed,mark=square*,every mark/.append style=solid\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=otimes*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=star\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},diamond=*\\%
+    red!70!white,mark=*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=square*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=otimes*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=star\\%
+    black,every mark/.append style={solid,fill=gray},mark=diamond*\\%
+    blue,densely dashed,mark=square*,every mark/.append style=*\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=square*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=otimes*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},diamond=star\\%
+    red!70!white,mark=diamond*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=square*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=otimes*\\%
+    black,every mark/.append style={solid,fill=gray},mark=star\\%
+    blue,densely dashed,mark=square*,every mark/.append style=diamond*\\%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -40,6 +88,7 @@
     \begin{tikzpicture}
         \begin{axis}[
                 name=axis1,
+                cycle list name={exotic},
                 width=0.5\textwidth,
                 height=90mm,
                 title={\VAR{config.escaped_input_file}},
@@ -60,6 +109,7 @@
 
         \end{axis}
         \begin{axis}[
+                cycle list name={exotic},
                 at={(axis1.outer north east)},
                 anchor=outer north west,
                 name=axis2,
