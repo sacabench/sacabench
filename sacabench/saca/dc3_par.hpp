@@ -180,7 +180,15 @@ private:
         
         #pragma omp parallel for
         for (size_t i = 0; i < t_12.size(); ++i) {
-            t_12[i] = std::get<2>(tmp[i]);
+            if (triplets_12[i] % 3 == 1) {
+                t_12[triplets_12[i] / 3] = std::get<2>(tmp[i]);
+            } else {
+                if (t_12.size() % 2 == 0) {
+                    t_12[t_12.size() / 2 + triplets_12[i] / 3] = std::get<2>(tmp[i]);
+                } else {
+                    t_12[t_12.size() / 2 + 1 + triplets_12[i] / 3] = std::get<2>(tmp[i]);
+                }
+            }
         }
     }
 
@@ -224,23 +232,6 @@ private:
             
             determine_leq_par<sa_index>(text, triplets_12, span_t_12, recursion,
                                     alphabet_size);
-            
-            //-----------TO BE DELETED--------------------//
-            std::cout << "par: ";
-            for(size_t i = 0; i < span_t_12.size(); ++i){
-                std::cout << span_t_12[i] << ", ";
-            }
-            std::cout << std::endl;
-            
-            std::cout << "seq: ";
-            determine_leq<sa_index>(text, triplets_12, span_t_12, recursion,
-                                    alphabet_size);
-            for(size_t i = 0; i < span_t_12.size(); ++i){
-                std::cout << span_t_12[i] << ", ";
-            }
-            std::cout << std::endl;
-            //-----------TO BE DELETED--------------------//
-            
             
             util::span<sa_index> sa_12 = util::span(&out_sa[0], t_12.size() - 3);
             //#pragma omp barrier

@@ -50,14 +50,14 @@ void seq_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
     if(inclusive) {
         out[0] = add(identity, in[0]);
         for(size_t i = 1; i < in.size(); ++i) {
-            out[i] = add(in[i], out[i - 1]);
+            out[i] = add(out[i - 1], in[i]);
         }
     } else {
         Content tmp2, tmp = in[0];
         out[0] = identity;
         for(size_t i=1; i < in.size(); ++i) {
             tmp2 = in[i];
-            out[i] = add(tmp, out[i-1]);
+            out[i] = add(out[i-1], tmp);
             tmp = tmp2;
         }
     }
@@ -226,7 +226,7 @@ void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
         #pragma omp parallel for
         for (size_t i = 2; i < out.size(); ++i) {
             if (i % 2 == 0) {
-                out[i] = add(in[i], pair_sums[(i-1)/2]);
+                out[i] = add(pair_sums[(i-1)/2], in[i]);
             }
             else {
                 out[i] = pair_sums[i/2];
@@ -245,7 +245,7 @@ void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
                 out[i] = pair_sums[(i-1)/2];
             }
             else {
-                out[i] = add(tmp[i-1], pair_sums[(i-2)/2]);
+                out[i] = add(pair_sums[(i-2)/2], tmp[i-1]);
             }
         }
     }
