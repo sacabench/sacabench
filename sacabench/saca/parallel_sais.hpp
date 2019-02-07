@@ -315,39 +315,33 @@ public:
     }
 
 
-    // Updating and writing into the SuffixArray, w needs to be properly connected to the rest of the code now
+        // Updating and writing into the SuffixArray, w needs to be properly connected to the rest of the code now
     template <typename sa_index>
-    static void update_SA(ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t thread_id, size_t *w_count) {
-        
-        ssize offset = thread_id * part_length;
+    static void update_SA(span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t i) {
 
-        for (ssize i = offset; i < part_length + offset; i++) {
+        if (w[i].second != static_cast<sa_index>(-1) && w[i].first != static_cast<sa_index>(0)) {
 
-            if ((size_t)i > *w_count)
-                break;
-
-            if (i < (ssize)w.size() && w[i].first != static_cast<sa_index>(0) && w[i].second != static_cast<sa_index>(-1)) {
-                SA[w[i].first] = w[i].second;
-                w[i].first = (sa_index)(0);
-                w[i].second = (sa_index)(-1);
-            }
-
+            SA[w[i].first] = w[i].second;
+            w[i].first = (sa_index)(0);
+            w[i].second = (sa_index)(-1);
         }
+
     }
+   
 
     template <typename sa_index>
-    static void update_parallel(ssize part_length, span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
+    static void update_parallel(span<std::pair<sa_index, sa_index>> w, span<sa_index> SA, size_t *w_count) {
 
-        size_t max = *w_count;
+        size_t max = *w_count + 1;
 
         #pragma omp taskgroup
         {
             #pragma omp parallel for schedule(static, 102400)
             for (size_t i = 0; i < w.size(); i++) {
-                if ((i*part_length) > max)
+                if (i > max)
                     i = w.size();
                 else
-                    update_SA<sa_index>(part_length, w, SA, i, w_count);
+                    update_SA<sa_index>(w, SA, i);
             }
         }
 
@@ -465,7 +459,7 @@ public:
 
                         auto& w = cur_update_block % 2 == 0 ? w1 : w2;
                         size_t* write_amount = cur_update_block % 2 == 0 ? &write_amount_1 : &write_amount_2;
-                        update_parallel<sa_index>(part_length, w, SA, write_amount);
+                        update_parallel<sa_index>(w, SA, write_amount);
 
                         // auto end = steady_clock::now();
                         // double timeAddition = ((end - start).count()) * steady_clock::period::num / static_cast<double>(steady_clock::period::den);
