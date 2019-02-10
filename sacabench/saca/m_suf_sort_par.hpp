@@ -346,6 +346,10 @@ public:
                         chain_index, attr.isa.get_rank(chain_index + length));
                     sorting_induced_.push_back(new_sort_pair);
                 }
+                if (attr.isa.is_END(chain_index)) {
+                   break;
+               }
+
                 // update chain index by following the chain links
                 chain_index = attr.isa.get(chain_index);
             }
