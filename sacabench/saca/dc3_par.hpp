@@ -207,8 +207,9 @@ private:
     static void construct_sa_dc3(S& text, util::span<sa_index> out_sa,
                                  size_t alphabet_size) {
         (void)alphabet_size;
+        
             //-----------------------Phase 1------------------------------//
-            //tdc::StatPhase dc3_parallel("Phase 1");
+            tdc::StatPhase dc3_parallel("Phase 1");
             // empty container which will contain indices of triplet
             // at positions i mod 3 != 0
             auto triplets_12 = sacabench::util::make_container<sa_index>(
@@ -244,7 +245,7 @@ private:
             }
 
             //-----------------------Phase2------------------------------//
-            //dc3_parallel.split("Phase 2");
+            dc3_parallel.split("Phase 2");
 
             // if in recursion use temporary sa. Otherwise t_12
             if (recursion) {
@@ -277,7 +278,7 @@ private:
 
             //-----------------------Phase 3------------------------------//
            
-            //dc3_parallel.split("Phase 3");
+            dc3_parallel.split("Phase 3");
             
             
             /*// parallel merging the SA's of triplets in i mod 3 != 0 and ranks of i mod 3 = 0
