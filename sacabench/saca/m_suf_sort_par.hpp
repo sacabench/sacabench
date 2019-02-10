@@ -20,14 +20,9 @@
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
-// logger includes
-#include <util/bucket_size.hpp>
-#include <fstream>
-#include <iostream>
 
 #include <tudocomp_stat/StatPhase.hpp>
 
-//#include<iostream>
 #include <stack>
 #include <utility>
 #include <vector>
@@ -248,7 +243,6 @@ public:
                                        text};
 
         // make complete rtl scan for type s/type l suffixes
-
         bool is_last_type_l = false;
 
         auto memory_ = util::make_container<sa_index>(2*alphabet.size_with_sentinel());
@@ -304,13 +298,6 @@ public:
         std::vector<sa_index> to_be_refined_;
         std::vector<pair_si<sa_index>> sorting_induced_;
 
-        // for statistics about uchain refinement
-        size_t singleton_count = 0;
-        size_t singleton_per_char = 0;
-        auto bucket_sizes = util::get_bucket_sizes(text, alphabet);
-        util::container<double> singleton_percentage = util::make_container<double>(alphabet.size_with_sentinel());
-        size_t max_chain_len = 0;
-
         // begin main loop:
         while (attr.chain_stack.size() > 0) {
             // clear vectors (possibly filled from previous iteration)
@@ -337,20 +324,6 @@ public:
                     }
                 }
             }
-            // is this a completely new uChain? (with lcp=0 to last uChain)
-            // then store statistics for last character!
-            if(length == sa_index(1)) {
-                if(size_t(current_char) != 0) {
-                    std::cout << "max uchain length: " << max_chain_len << std::endl;
-                    std::cout << "spc: " << singleton_per_char << std::endl;
-                    std::cout << "bucket size: " << bucket_sizes[size_t(current_char)-1] << std::endl;
-                    singleton_percentage[size_t(current_char)-1] = double(singleton_per_char) / double(bucket_sizes[size_t(current_char)-1]);
-                    std::cout << "s_percentage: " << singleton_percentage[size_t(current_char)-1] << std::endl;
-                }
-                singleton_per_char = 0;
-                max_chain_len = 0;
-            }
-
 
             // if u-Chain is singleton rank it!
             if (attr.isa.is_END(chain_index)) {
@@ -398,9 +371,6 @@ public:
             last_char = current_char;
         }
 
-        // after uchain refinement is done, store statistics for last char:
-        singleton_percentage[last_char] = singleton_per_char / singleton_percentage[last_char];
-
         // After chain_stack is empty, rank all remaining type-l-lists:
         size_t max_char = alphabet.max_character_value();
         for (size_t i = 0; i <= max_char; i++) {
@@ -429,18 +399,8 @@ public:
             std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
         #endif
 
-        //logger for statistics
-        std::ofstream myfile;
-        myfile.open("most_recent.log", std::fstream::out | std::fstream::trunc);
-        for(size_t i = 0; i < alphabet.max_character_value(); i++) {
-            myfile << singleton_percentage[i] << "\n";
-        }
-        myfile << "Total Singleton Percentage: " << (double(singleton_count) / double(text.size())) << "%";
-        myfile.close();
-
-
-        // Here, hard coded isa2sa inplace conversion is used. Optimize later
-        // (try 2 other options)
+        // Here, hard coded isa2sa inplace conversion is used.
+        // Other variants could be implemented.
         util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
     }
 };
