@@ -44,7 +44,7 @@ namespace sacabench::util {
         /*DCHECK_MSG(sa.size() == t.size(),
                    "sa must be initialised and must have the same length as t.");*/
 
-        tdc::StatPhase induce("Generate Buckets");
+        //tdc::StatPhase induce("Generate Buckets");
         
         auto buckets_cont = util::container<size_t>(max_character+1);
         util::span<size_t> buckets = buckets_cont;
@@ -75,22 +75,21 @@ namespace sacabench::util {
             size_t block_size = log2(n)*(max_character+1); // blocks of size sigma*logn
             size_t block_count = interval.size()/block_size + (interval.size() % block_size != 0);
             
-            induce.split("Sequential");
+            //induce.split("Sequential");
             if (interval.size() < 4*block_size) {
                 induce_type_s_interval_seq(t, interval, s, sa, s_buckets);
                 continue;
             }
             
-            induce.split("Induce Repetitions");
+            //induce.split("Induce Repetitions");
             
             induce_type_s_repititions_parallel(t, sa, curr_char, buckets, s_buckets);
             
             if (curr_char == 0) { break; } //TODO: unschön
             
-            induce.split("Initialize bucket_sums");
+            //induce.split("Initialize bucket_sums");
             
             // bucket_sums[d][i] = 1 if position i in interval writes to bucket d
-            //size_t n = std::max((size_t)2, interval.size());
             auto bucket_sums = util::array2d<size_t>({max_character+1, block_count+1});
             
             // initialize bucket_sums with 0
@@ -101,7 +100,7 @@ namespace sacabench::util {
                 bucket_sums[first][second] = 0;
             }*/
             
-            induce.split("fill bucket_sums");
+            //induce.split("fill bucket_sums");
             #pragma omp parallel for
             for (size_t i = 0; i < block_count; ++i) {
                 // get current block
@@ -115,7 +114,6 @@ namespace sacabench::util {
                     block = interval.slice(0, interval.size()-offset);
                 }
                 
-                //TODO: false sharing bei bucket_sums?
                 auto bucket_sums_1d_cont = util::container<size_t>(max_character+1);
                 util::span<size_t> bucket_sums_1d = bucket_sums_1d_cont;
                 
@@ -129,7 +127,6 @@ namespace sacabench::util {
                         size_t curr_pos_in_sa = e-offset+curr_j;
                         if (pre_char != curr_char // To ensure repititions are only calculated once
                                 && is_s_type(t, s_buckets, elem, curr_pos_in_sa, pre_char)) {
-                            //bucket_sums[pre_char][i]++;
                             bucket_sums_1d[pre_char]++;
                         }
                     }
@@ -141,7 +138,7 @@ namespace sacabench::util {
                 }
             }
         
-            induce.split("perform prefix sums on bucket_sums");
+            //induce.split("perform prefix sums on bucket_sums");
             
             // perform prefix sums on each bucket_sum array
             #pragma omp parallel for
@@ -166,7 +163,7 @@ namespace sacabench::util {
                 } 
             }
             
-            induce.split("induce not repetitions");
+            //induce.split("induce not repetitions");
             
             // initialize new entries
             #pragma omp parallel for
@@ -182,7 +179,6 @@ namespace sacabench::util {
                     block = interval.slice(0, interval.size()-offset);
                 }
                 
-                //TODO: false sharing bei bucket_sums?
                 auto bucket_sums_1d_cont = util::container<size_t>(max_character+1);
                 util::span<size_t> bucket_sums_1d = bucket_sums_1d_cont;
                 #pragma omp parallel for
@@ -200,7 +196,6 @@ namespace sacabench::util {
                         if (pre_char != curr_char // To ensure repititions are only calculated once
                                 && is_s_type(t, s_buckets, elem, curr_pos_in_sa, pre_char)) { 
                             auto s_bucket_last = s_buckets[pre_char];
-                            //auto bucket_write_count_prev = bucket_sums[pre_char][i]++;
                             auto bucket_write_count_prev = bucket_sums_1d[pre_char]++;
                             sa[s_bucket_last-bucket_write_count_prev] = pre_index;
                         }
@@ -208,7 +203,7 @@ namespace sacabench::util {
                 }
             }
             
-            induce.split("Update bucket pointers");
+            //induce.split("Update bucket pointers");
             
             // update bucket pointers
             #pragma omp parallel for
@@ -308,7 +303,7 @@ namespace sacabench::util {
         /*DCHECK_MSG(sa.size() == t.size(),
                    "sa must be initialised and must have the same length as t.");*/
 
-        tdc::StatPhase induce("Generate Buckets");
+        //tdc::StatPhase induce("Generate Buckets");
         
         auto buckets_cont = util::container<size_t>(max_character+1);
         util::span<size_t> buckets = buckets_cont;
@@ -335,22 +330,21 @@ namespace sacabench::util {
             size_t block_size = log2(n)*(max_character+1); // blocks of size sigma*logn
             size_t block_count = interval.size()/block_size + (interval.size() % block_size != 0);
             
-            induce.split("Sequential");
+            //induce.split("Sequential");
             if (interval.size() < 4*block_size) {
                 induce_type_l_interval_seq(t, interval, s, sa, l_buckets);
                 continue;
             }
             
-            induce.split("Induce Repetitions");
+            //induce.split("Induce Repetitions");
             
             induce_type_l_repititions_parallel(t, sa, curr_char, buckets, l_buckets);
             
             if (curr_char == max_character) { break; } //TODO: unschön
             
-            induce.split("Initialize bucket_sums");
+            //induce.split("Initialize bucket_sums");
             
             // bucket_sums[d][i] = 1 if position i in interval writes to bucket d
-            //size_t n = std::max((size_t)2, interval.size());
             auto bucket_sums = util::array2d<size_t>({max_character+1, block_count+1});
             
             // initialize bucket_sums with 0
@@ -361,7 +355,7 @@ namespace sacabench::util {
                 bucket_sums[first][second] = 0;
             }*/
             
-            induce.split("fill bucket_sums");
+            //induce.split("fill bucket_sums");
             #pragma omp parallel for
             for (size_t i = 0; i < block_count; ++i) {
                 // get current block
@@ -374,7 +368,6 @@ namespace sacabench::util {
                     block = interval.slice(offset);
                 }
                 
-                //TODO: false sharing bei bucket_sums?
                 auto bucket_sums_1d_cont = util::container<size_t>(max_character+1);
                 util::span<size_t> bucket_sums_1d = bucket_sums_1d_cont;
                 
@@ -387,7 +380,6 @@ namespace sacabench::util {
                         size_t curr_pos_in_sa = s+offset+j;
                         if (pre_char != curr_char // To ensure repititions are only calculated once
                                 && is_l_type(t, l_buckets, elem, curr_pos_in_sa, pre_char)) {
-                            //bucket_sums[pre_char][i]++;
                             bucket_sums_1d[pre_char]++;
                         }
                     }
@@ -399,7 +391,7 @@ namespace sacabench::util {
                 }
             }
         
-            induce.split("perform prefix sums on bucket_sums");
+            //induce.split("perform prefix sums on bucket_sums");
             
             // perform prefix sums on each bucket_sum array
             //#pragma omp parallel for
@@ -424,7 +416,7 @@ namespace sacabench::util {
                 } 
             }
             
-            induce.split("induce not repetitions");
+            //induce.split("induce not repetitions");
             
             // initialize new entries
             #pragma omp parallel for
@@ -439,7 +431,6 @@ namespace sacabench::util {
                     block = interval.slice(offset);
                 }
                 
-                //TODO: false sharing bei bucket_sums?
                 auto bucket_sums_1d_cont = util::container<size_t>(max_character+1);
                 util::span<size_t> bucket_sums_1d = bucket_sums_1d_cont;
                 #pragma omp parallel for
@@ -456,7 +447,6 @@ namespace sacabench::util {
                         if (pre_char != curr_char // To ensure repititions are only calculated once
                                 && is_l_type(t, l_buckets, elem, curr_pos_in_sa, pre_char)) { 
                             auto l_bucket_first = l_buckets[pre_char];
-                            //auto bucket_write_count_prev = bucket_sums[pre_char][i]++;
                             auto bucket_write_count_prev = bucket_sums_1d[pre_char]++;
                             sa[l_bucket_first+bucket_write_count_prev] = pre_index;
                         }
@@ -464,7 +454,7 @@ namespace sacabench::util {
                 }
             }
             
-            induce.split("Increase bucket pointers");
+            //induce.split("Increase bucket pointers");
             
             // increase bucket pointers
             #pragma omp parallel for
@@ -557,30 +547,62 @@ namespace sacabench::util {
      * for which the filter function returns true into an output interval.
      * This operation is parallelized.
      */
-    template <typename Array, typename Filter>
-    void filter(Array interval, Array out_interval, Filter filter_func) {
+    template <typename Content, typename Filter>
+    void filter(util::span<Content> interval, util::span<Content> out_interval, Filter filter_func) {
         /* indicator for interval. filtered_elements[i] = 1 means that interval[i]
            is filtered*/
-        auto filtered_elements_cont = util::container<size_t>(interval.size());
+        size_t n = interval.size();
+        size_t block_size = log2(n)+1;
+        size_t block_count = n/block_size + (n % block_size != 0);
+           
+        auto filtered_elements_cont = util::container<size_t>(block_count);
         util::span<size_t> filtered_elements = filtered_elements_cont;
         
         // fill filtered_elements
         #pragma omp parallel for
-        for (size_t i = 0; i < interval.size(); ++i) {
-            if (filter_func(interval[i])) {
-                filtered_elements[i] = 1;
+        for (size_t i = 0; i < block_count; ++i) {
+            // get current block
+            util::span<Content> block = interval.slice(0); // Dummy
+            auto offset = i*block_size;
+            if (offset+block_size <= n) {
+                block = interval.slice(offset, offset+block_size);
+            }
+            else {
+                block = interval.slice(offset);
+            }
+            
+            for (size_t j = 0; j < block.size(); ++j) {
+                if (filter_func(block[j])) {
+                    filtered_elements[i]++;
+                }
             }
         }
         
         // perform prefix_sum on filtered_elements
-        prefix_sum(filtered_elements);
+        auto add = [&](size_t a, size_t b) {
+            return a + b;
+        };
+        util::par_prefix_sum_eff(filtered_elements, filtered_elements, false, add, (size_t)0);
         
         // write filtered elements to out_interval
         #pragma omp parallel for
-        for (size_t i = 0; i < interval.size(); ++i) {
-            if (filter_func(interval[i])) {
-                auto pos = filtered_elements[i]-1;
-                out_interval[pos] = interval[i];
+        for (size_t i = 0; i < block_count; ++i) {
+            // get current block
+            util::span<Content> block = interval.slice(0); // Dummy
+            auto offset = i*block_size;
+            if (offset+block_size <= n) {
+                block = interval.slice(offset, offset+block_size);
+            }
+            else {
+                block = interval.slice(offset);
+            }
+            
+            for (size_t j = 0; j < block.size(); ++j) {
+                auto elem = block[j];
+                if (filter_func(elem)) {
+                    auto pos = filtered_elements[i]++;
+                    out_interval[pos] = elem;
+                }
             }
         }
     }
