@@ -22,7 +22,8 @@
 //parallel
 #include <omp.h>
 #include <thread>
-#include <util/sort/ips4o.hpp>
+//#include <util/sort/ips4o.hpp>
+#include <util/sort/std_sort.hpp>
 
 namespace sacabench::dc3_par2 {
 
@@ -84,10 +85,8 @@ private:
             }
         }
         
-        //std::sort(triplets_12_to_be_sorted.begin(),
-        //          triplets_12_to_be_sorted.end());
-        
-        util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        //util::sort::ips4o_sort_parallel(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
+        util::sort::std_par_sort(triplets_12_to_be_sorted, std::less<std::tuple<C, C, C, sa_index>>());
         
         #pragma omp parallel for
         for (sa_index i = 0; i < triplets_12_to_be_sorted.size(); ++i) {
@@ -463,10 +462,10 @@ private:
                 sa_0_to_be_sorted[i/3] =
                     (std::tuple<C, sa_index, sa_index>(text[i], 0, i));
         }
+        
+        //util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
 
-        //std::sort(sa_0_to_be_sorted.begin(), sa_0_to_be_sorted.end());
-                  
-        util::sort::ips4o_sort_parallel(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
+        util::sort::std_par_sort(sa_0_to_be_sorted, std::less<std::tuple<C, sa_index, sa_index>>());
 
         #pragma omp parallel for
         for (sa_index i = 0; i < sa_0_to_be_sorted.size(); ++i) {
