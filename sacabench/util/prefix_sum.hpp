@@ -204,17 +204,17 @@ void par_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
 template <typename Content, typename add_operator>
 void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
         add_operator add, Content identity) {    
-    par_prefix_sum_eff_call(in, out, inclusive, add, identity, 1);
+    par_prefix_sum_eff_call(in, inclusive, add, identity, 1);
 }
 
 template <typename Content, typename add_operator>
-void par_prefix_sum_eff_call(span<Content> in, span<Content> out, bool inclusive,
+void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
         add_operator add, Content identity, size_t level) {    
-    //tdc::StatPhase prefix("Initialize Pair Sums"); 
+    tdc::StatPhase prefix("Initialize Pair Sums"); 
     
     size_t factor = pow(2, level);
     
-    if (factor > out.size()) { return; }
+    if (factor > in.size()) { return; }
     
     size_t prev_factor = factor/2;
     size_t number_of_even_idx = in.size()/factor;
@@ -228,47 +228,47 @@ void par_prefix_sum_eff_call(span<Content> in, span<Content> out, bool inclusive
         residue = in.size() % 2;
     }
     
-    //prefix.split("Fill Pair Sums");
+    prefix.split("Fill Pair Sums");
     
     #pragma omp parallel for
     for (size_t i = 1; i <= number_of_even_idx; ++i) {
         auto pos = i*factor-1;
-        out[pos] = add(in[pos-prev_factor], in[pos]);
+        in[pos] = add(in[pos-prev_factor], in[pos]);
     }
     
     //std::cout << "out_level_" << level << ": " << out << std::endl;
     
-    //prefix.split("Recursion");
+    prefix.split("Recursion");
     
-    par_prefix_sum_eff_call(in, out, true, add, identity, level+1);
+    par_prefix_sum_eff_call(in, true, add, identity, level+1);
     
-    //prefix.split("Final");
+    prefix.split("Final");
     
     if (inclusive) {
-        out[prev_factor-1] = in[prev_factor-1];
+        //in[prev_factor-1] = in[prev_factor-1];
         #pragma omp parallel for
         for (size_t i = 1; i < number_of_even_idx; ++i) {
             auto pos = i*factor-1;
-            out[pos+prev_factor] = add(out[pos], in[pos+prev_factor]);
+            in[pos+prev_factor] = add(in[pos], in[pos+prev_factor]);
         }
         if (residue == 1) {
             auto pos = number_of_even_idx*factor-1;
-            out[pos+prev_factor] = add(out[pos], in[pos+prev_factor]);
+            in[pos+prev_factor] = add(in[pos], in[pos+prev_factor]);
         }
     }
     else {
         auto tmp = util::container<Content>(in.size());
-        std::copy(out.begin(), out.end(), tmp.begin());
+        std::copy(in.begin(), in.end(), tmp.begin());
         
-        out[0] = identity;
-        out[1] = tmp[0];
+        in[0] = identity;
+        in[1] = tmp[0];
         #pragma omp parallel for
-        for (size_t i = 2; i < out.size(); ++i) {
+        for (size_t i = 2; i < in.size(); ++i) {
             if (i % 2 == 0) {
-                out[i] = tmp[i-1];
+                in[i] = tmp[i-1];
             }
             else {
-                out[i] = add(tmp[i-2], tmp[i-1]);
+                in[i] = add(tmp[i-2], tmp[i-1]);
             }
         }
     }
