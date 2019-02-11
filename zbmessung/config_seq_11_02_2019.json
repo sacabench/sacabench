@@ -36,7 +36,7 @@
             "nzSufSort",
             "DC3-Lite",
             "Osipov_sequential",
-            "Osipov_sequential_wp",
+            "Osipov_sequential_wp"
         ],
         "input": [
             "pc_dblp.xml.200MB",

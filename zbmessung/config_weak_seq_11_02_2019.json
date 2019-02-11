@@ -36,7 +36,7 @@
             "nzSufSort",
             "DC3-Lite",
             "Osipov_sequential",
-            "Osipov_sequential_wp",
+            "Osipov_sequential_wp"
         ],
         "input": [
             "$WORK/large_datasets/commoncrawl.txt",
