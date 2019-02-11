@@ -237,7 +237,7 @@ if args.launch:
         write_json(outdir / Path("index.json"), index)
         print("Started {} jobs!".format(counter))
         print("Current personal job queue:")
-        subprocess.run("squeue -u $USER", shell=True)
+        #subprocess.run("squeue -u $USER", shell=True)
 
 def load_data(dir):
     index = load_json(dir / Path("index.json"))
