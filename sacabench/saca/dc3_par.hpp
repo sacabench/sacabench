@@ -41,20 +41,31 @@ public:
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
-        /*auto tmp_cont = util::make_container<size_t>(text.size());
+        auto tmp_cont = util::make_container<size_t>(text.size());
         util::span<size_t> tmp = tmp_cont;
         auto tmp_2_cont = util::make_container<size_t>(text.size());
         util::span<size_t> tmp_2 = tmp_2_cont;
+        auto tmp_3_cont = util::make_container<size_t>(text.size());
+        util::span<size_t> tmp_3 = tmp_3_cont;
         std::copy(text.begin(), text.end(), tmp.begin());
-        tdc::StatPhase test("Parallel prefix"); 
+        
+        tdc::StatPhase test("Parallel prefix with blocks"); 
         auto add = [&](size_t a, size_t b) {
             return a + b;
         };
         util::par_prefix_sum_eff(tmp, tmp, true, add, (size_t)0);
+        
         test.split("copy");
         std::copy(text.begin(), text.end(), tmp_2.begin());
+        
+        test.split("Parallel prefix without blocks");
+        util::par_prefix_sum_eff_call(tmp_2, true, add, (size_t)0, 1);
+        
+        test.split("copy");
+        std::copy(text.begin(), text.end(), tmp_3.begin());
+        
         test.split("Seq prefix");
-        util::seq_prefix_sum(tmp_2, tmp_2, true, add, (size_t)0);*/
+        util::seq_prefix_sum(tmp_3, tmp_3, true, add, (size_t)0);
         
         /*util::container<size_t> tmp_cont = { 5,3,8,11,4,2,1,7,3 };
         util::span<size_t> tmp = tmp_cont;
@@ -63,11 +74,11 @@ public:
         };
         util::par_prefix_sum_eff(tmp, tmp, true, add, (size_t)0);*/
         
-        if (text.size() > 4) {
+        /*if (text.size() > 4) {
             construct_sa_dc3<sa_index, false, sacabench::util::character>(
                 text, out_sa.slice(3, out_sa.size()),
                 alphabet.size_with_sentinel());
-        }
+        }*/
     }
 
 private:
@@ -315,7 +326,7 @@ private:
             //alphabet_size = span_t_12.size();
             
             dc3_parallel.split("Präfixsumme");
-            determine_leq_par<sa_index>(text, triplets_12, span_t_12, recursion,
+            determine_leq<sa_index>(text, triplets_12, span_t_12, recursion,
                                     alphabet_size);
             dc3_parallel.split("Rest");
             

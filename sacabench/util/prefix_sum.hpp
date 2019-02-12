@@ -207,7 +207,64 @@ template <typename Content, typename add_operator>
 void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
         add_operator add, Content identity) {  
     (void) out;
-    par_prefix_sum_eff_call(in, inclusive, add, identity, 1);
+    //par_prefix_sum_eff_call(in, inclusive, add, identity, 1);
+    
+    tdc::StatPhase prefix("Initialize block_sums");   
+    
+    size_t n = in.size();
+    size_t block_size = log2(n)/2;
+    size_t block_count = n/block_size + (n % block_size != 0);
+    
+    //auto block_sums_cont = util::make_container<Content>(block_count);
+    //util::span<Content> block_sums = block_sums_cont;
+    util::span<Content> block_sums = in.slice(0,block_count);
+    
+    prefix.split("Fill block_sums");
+    
+    #pragma omp parallel for
+    for (size_t i = 0; i < block_count; ++i) {
+        // get current block
+        util::span<Content> block = in.slice(0); // Dummy
+        auto offset = i*block_size;
+        if (offset+block_size <= n) {
+            block = in.slice(offset, offset+block_size);
+        }
+        else {
+            block = in.slice(offset);
+        }
+        
+        // fill block_sums
+        for (size_t j = 0; j < block.size(); ++j) {
+            block_sums[i] = add(block_sums[i], block[j]);
+        }
+    }
+    
+    prefix.split("Prefix sum of block_sums");
+    
+    //par_prefix_sum_eff_call(block_sums, inclusive, add, identity, 1);
+    seq_prefix_sum(block_sums, block_sums, inclusive, add, identity);
+    
+    prefix.split("Final");
+    
+    #pragma omp parallel for
+    for (size_t i = 0; i < block_count; ++i) {
+        // get current block
+        util::span<Content> block = in.slice(0); // Dummy
+        auto offset = i*block_size;
+        if (offset+block_size <= n) {
+            block = in.slice(offset, offset+block_size);
+        }
+        else {
+            block = in.slice(offset);
+        }
+        
+        // fill block_sums
+        auto prev = i==0 ? identity : block_sums[i-1];
+        block[0] = add(prev, block[0]);
+        for (size_t j = 1; j < block.size(); ++j) {
+            block[j] = add(block[j-1], block[j]);
+        }
+    }
 }
 
 template <typename Content, typename add_operator>
