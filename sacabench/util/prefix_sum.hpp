@@ -346,7 +346,7 @@ void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
     
     prefix.split("Fill Pair Sums");
     
-    #pragma omp parallel for
+    #pragma omp parallel for simd
     for (size_t i = 1; i <= number_of_even_idx; ++i) {
         auto pos = i*factor-1;
         in[pos] = add(in[pos-prev_factor], in[pos]);
@@ -362,7 +362,7 @@ void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
     
     if (inclusive) {
         //in[prev_factor-1] = in[prev_factor-1];
-        #pragma omp parallel for
+        #pragma omp parallel for simd
         for (size_t i = 1; i < number_of_even_idx; ++i) {
             auto pos = i*factor-1;
             in[pos+prev_factor] = add(in[pos], in[pos+prev_factor]);
