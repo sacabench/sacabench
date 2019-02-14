@@ -207,64 +207,7 @@ template <typename Content, typename add_operator>
 void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
         add_operator add, Content identity) {  
     (void) out;
-    //par_prefix_sum_eff_call(in, inclusive, add, identity, 1);
-    
-    tdc::StatPhase prefix("Initialize block_sums");   
-    
-    size_t n = in.size();
-    size_t block_size = log2(n)/2;
-    size_t block_count = n/block_size + (n % block_size != 0);
-    
-    //auto block_sums_cont = util::make_container<Content>(block_count);
-    //util::span<Content> block_sums = block_sums_cont;
-    util::span<Content> block_sums = in.slice(0,block_count);
-    
-    prefix.split("Fill block_sums");
-    
-    #pragma omp parallel for
-    for (size_t i = 0; i < block_count; ++i) {
-        // get current block
-        util::span<Content> block = in.slice(0); // Dummy
-        auto offset = i*block_size;
-        if (offset+block_size <= n) {
-            block = in.slice(offset, offset+block_size);
-        }
-        else {
-            block = in.slice(offset);
-        }
-        
-        // fill block_sums
-        for (size_t j = 0; j < block.size(); ++j) {
-            block_sums[i] = add(block_sums[i], block[j]);
-        }
-    }
-    
-    prefix.split("Prefix sum of block_sums");
-    
-    //par_prefix_sum_eff_call(block_sums, inclusive, add, identity, 1);
-    seq_prefix_sum(block_sums, block_sums, inclusive, add, identity);
-    
-    prefix.split("Final");
-    
-    #pragma omp parallel for
-    for (size_t i = 0; i < block_count; ++i) {
-        // get current block
-        util::span<Content> block = in.slice(0); // Dummy
-        auto offset = i*block_size;
-        if (offset+block_size <= n) {
-            block = in.slice(offset, offset+block_size);
-        }
-        else {
-            block = in.slice(offset);
-        }
-        
-        // fill block_sums
-        auto prev = i==0 ? identity : block_sums[i-1];
-        block[0] = add(prev, block[0]);
-        for (size_t j = 1; j < block.size(); ++j) {
-            block[j] = add(block[j-1], block[j]);
-        }
-    }
+    par_prefix_sum_eff_call(in, inclusive, add, identity, 1);
 }
 
 template <typename Content, typename add_operator>
@@ -275,8 +218,8 @@ void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
         return;
     }*/
         
-    tdc::StatPhase prefix("Initialize Pair Sums");   
-    prefix.log("level", level);
+    //tdc::StatPhase prefix("Initialize Pair Sums");   
+    //prefix.log("level", level);
     
     size_t factor = pow(2, level);
     
@@ -344,7 +287,7 @@ void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
         return;
     }*/
     
-    prefix.split("Fill Pair Sums");
+    //prefix.split("Fill Pair Sums");
     
     #pragma omp parallel for simd
     for (size_t i = 1; i <= number_of_even_idx; ++i) {
@@ -354,11 +297,11 @@ void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
     
     //std::cout << "out_level_" << level << ": " << out << std::endl;
     
-    prefix.split("Recursion");
+    //prefix.split("Recursion");
     
     par_prefix_sum_eff_call(in, true, add, identity, level+1);
     
-    prefix.split("Final");
+    //prefix.split("Final");
     
     if (inclusive) {
         //in[prev_factor-1] = in[prev_factor-1];

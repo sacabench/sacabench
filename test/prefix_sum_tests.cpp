@@ -42,8 +42,6 @@ TEST(PrefixSum, eff_max) {
     par_prefix_sum_eff(span<size_t>(container), span<size_t>(container),
             true, add, (size_t)0);
             
-    std::cout << "seq: " << result << std::endl;
-    std::cout << "par: " << container << std::endl;
     for (size_t i = 0; i < container.size(); ++i) {
         ASSERT_EQ(container[i], result[i]);
     }

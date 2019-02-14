@@ -33,7 +33,7 @@ class dc3_par {
 public:
     
     static constexpr size_t EXTRA_SENTINELS = 3;
-    static constexpr char const* NAME = "DC3_parallel";
+    static constexpr char const* NAME = "DC3-Parallel-V1";
     static constexpr char const* DESCRIPTION =
         "Difference Cover Modulo 3 parallel";
 
@@ -41,44 +41,11 @@ public:
     static void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
-        auto tmp_cont = util::make_container<size_t>(text.size());
-        util::span<size_t> tmp = tmp_cont;
-        auto tmp_2_cont = util::make_container<size_t>(text.size());
-        util::span<size_t> tmp_2 = tmp_2_cont;
-        auto tmp_3_cont = util::make_container<size_t>(text.size());
-        util::span<size_t> tmp_3 = tmp_3_cont;
-        std::copy(text.begin(), text.end(), tmp.begin());
-        
-        tdc::StatPhase test("Parallel prefix with blocks"); 
-        auto add = [&](size_t a, size_t b) {
-            return a + b;
-        };
-        util::par_prefix_sum_eff(tmp, tmp, true, add, (size_t)0);
-        
-        test.split("copy");
-        std::copy(text.begin(), text.end(), tmp_2.begin());
-        
-        test.split("Parallel prefix without blocks");
-        util::par_prefix_sum_eff_call(tmp_2, true, add, (size_t)0, 1);
-        
-        test.split("copy");
-        std::copy(text.begin(), text.end(), tmp_3.begin());
-        
-        test.split("Seq prefix");
-        util::seq_prefix_sum(tmp_3, tmp_3, true, add, (size_t)0);
-        
-        /*util::container<size_t> tmp_cont = { 5,3,8,11,4,2,1,7,3 };
-        util::span<size_t> tmp = tmp_cont;
-        auto add = [&](size_t a, size_t b) {
-            return a + b;
-        };
-        util::par_prefix_sum_eff(tmp, tmp, true, add, (size_t)0);*/
-        
-        /*if (text.size() > 4) {
+        if (text.size() > 4) {
             construct_sa_dc3<sa_index, false, sacabench::util::character>(
                 text, out_sa.slice(3, out_sa.size()),
                 alphabet.size_with_sentinel());
-        }*/
+        }
     }
 
 private:
@@ -178,63 +145,6 @@ private:
         }
     }
     
-    /*template <typename sa_index, typename T, typename S, typename L>
-    static void determine_leq_par(const T& INPUT_STRING, const S& triplets_12,
-                              L& t_12, bool& recursion, size_t alphabet_size) {
-
-        (void)alphabet_size;
-        DCHECK_MSG(triplets_12.size() == t_12.size(),
-                   "triplets_12 must have the same length as t_12");
-        using pair = std::tuple<size_t, sa_index>;
-        
-        //std::cout << "text: " << INPUT_STRING << std::endl;
-        //std::cout << "triplets: " << triplets_12 << std::endl;
-        
-        auto tmp_cont = util::make_container<pair>(t_12.size());
-        util::span<pair> tmp = tmp_cont;
-        #pragma omp parallel for
-        for (size_t i = 0; i < t_12.size(); ++i) {
-            tmp[i] = pair(i, 1);
-        }
-        sa_index one = 1;
-        auto add = [&](pair a, pair b) {
-            size_t first_last = std::get<0>(a);
-            size_t second_last = std::get<0>(b);
-            sa_index rank_first = std::get<1>(a);
-            sa_index rank_second = std::get<1>(b);
-            
-            //std::cout << "a: (" << first_last << "," << rank_first << ")" << std::endl;
-            //std::cout << "b: (" << second_last << "," << rank_second << ")" << std::endl;
-            
-            size_t text_pos = triplets_12[first_last];
-            size_t next_text_pos = triplets_12[first_last+1];
-            if (sacabench::util::span(&INPUT_STRING[text_pos], 3) !=
-                    sacabench::util::span(&INPUT_STRING[next_text_pos], 3)) {
-                //std::cout << "result: (" << second_last << "," << rank_first + rank_second << ")" << std::endl;
-                return pair(second_last, rank_first + rank_second);
-            } else {
-                recursion = true;
-                //std::cout << "result: (" << second_last << "," << rank_first + rank_second -one << ")" << std::endl;
-                return pair(second_last, rank_first + rank_second - one);
-            }
-        };
-        util::par_prefix_sum_eff(tmp, tmp, true, add, pair(0,0));
-        
-        #pragma omp parallel for
-        for (size_t i = 0; i < t_12.size(); ++i) {
-            if (triplets_12[i] % 3 == 1) {
-                t_12[triplets_12[i] / 3] = std::get<1>(tmp[i]);
-            } else {
-                if (t_12.size() % 2 == 0) {
-                    t_12[t_12.size() / 2 + triplets_12[i] / 3] = std::get<1>(tmp[i]);
-                } else {
-                    t_12[t_12.size() / 2 + 1 + triplets_12[i] / 3] = std::get<1>(tmp[i]);
-                }
-            }
-        }
-        //std::cout << "t_12: " << t_12 << std::endl;
-    }*/
-    
     template <typename sa_index, typename T, typename S, typename L>
     static void determine_leq_par(const T& INPUT_STRING, const S& triplets_12,
                               L& t_12, bool& recursion, size_t alphabet_size) {
@@ -303,7 +213,7 @@ private:
         (void)alphabet_size;
         
             //-----------------------Phase 1------------------------------//
-            tdc::StatPhase dc3_parallel("Start");
+            //tdc::StatPhase dc3_parallel("Phase 1");
             // empty container which will contain indices of triplet
             // at positions i mod 3 != 0
             auto triplets_12 = sacabench::util::make_container<sa_index>(
@@ -325,10 +235,8 @@ private:
             auto span_t_12 = util::span(&t_12[0], t_12.size() - 3);
             //alphabet_size = span_t_12.size();
             
-            dc3_parallel.split("Präfixsumme");
-            determine_leq<sa_index>(text, triplets_12, span_t_12, recursion,
+            determine_leq_par<sa_index>(text, triplets_12, span_t_12, recursion,
                                     alphabet_size);
-            dc3_parallel.split("Rest");
             
             util::span<sa_index> sa_12 = util::span(&out_sa[0], t_12.size() - 3);
             //#pragma omp barrier
