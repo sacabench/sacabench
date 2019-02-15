@@ -238,7 +238,7 @@ if args.launch_config:
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)
         print("Started {} jobs!".format(counter))
-        print("Current personal job queue:")
+        #print("Current personal job queue:")
         #subprocess.run("squeue -u $USER", shell=True)
 
 def load_data(dir):
