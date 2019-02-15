@@ -35,11 +35,18 @@ std::string get_output_from_cmd(std::string cmd) {
 
     stream = popen(cmd.c_str(), "r");
     if (stream) {
-    while (!std::feof(stream))
-    if (std::fgets(buffer, max_buffer, stream) != NULL) data.append(buffer);
-    pclose(stream);
+        while (!std::feof(stream)) {
+            if (std::fgets(buffer, max_buffer, stream) != NULL) {
+                data.append(buffer);
+            }
+        }
+        pclose(stream);
     }
     return data;
+}
+
+void remove_newline(std::string& s) {
+    s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 }
 
 nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::string input_filename){
@@ -52,17 +59,19 @@ nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::stri
     auto cmd_amount_cpus = "grep -c ^processor /proc/cpuinfo";
     auto cmd_threads_per_socket = "lscpu | grep 'Thread(s)' | cut -f 2 -d ':'| awk '{$1=$1}1'";
     auto cmd_all_lscpu_info = "lscpu";
+    auto cmd_all_uname_info = "uname -a";
 
     auto operating_system = get_output_from_cmd(cmd_operating_system);
     auto model_name = get_output_from_cmd(cmd_model_name);
     auto amount_cpus = get_output_from_cmd(cmd_amount_cpus);
     auto threads_per_socket = get_output_from_cmd(cmd_threads_per_socket);
     auto all_lscpu_info = get_output_from_cmd(cmd_all_lscpu_info);
+    auto all_uname_info = get_output_from_cmd(cmd_all_uname_info);
 
-    operating_system.erase(std::remove(operating_system.begin(), operating_system.end(), '\n'), operating_system.end());
-    model_name.erase(std::remove(model_name.begin(), model_name.end(), '\n'), model_name.end());
-    amount_cpus.erase(std::remove(amount_cpus.begin(), amount_cpus.end(), '\n'), amount_cpus.end());
-    threads_per_socket.erase(std::remove(threads_per_socket.begin(), threads_per_socket.end(), '\n'), threads_per_socket.end());
+    remove_newline(operating_system);
+    remove_newline(model_name);
+    remove_newline(amount_cpus);
+    remove_newline(threads_per_socket);
 
     // input_filename contains full path to input file. For config_json file we only need the name.
     auto filename_start_index = input_filename.find_last_of("\\/") + 1;
@@ -76,7 +85,8 @@ nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::stri
         {"model_name", model_name},
         {"amount_cpus", amount_cpus},
         {"threads_per_socket", threads_per_socket},
-        {"all_lscpu_info", all_lscpu_info}
+        {"all_lscpu_info", all_lscpu_info},
+        {"all_uname_info", all_uname_info},
     };
 
     config_json.push_back(j);
