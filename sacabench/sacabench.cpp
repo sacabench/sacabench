@@ -394,7 +394,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     };
 
     auto maybe_do_sa_check = [&](util::text_initializer const& text,
-                                 util::abstract_sa& sa) {
+                                 util::abstract_sa const& sa) {
         if (check_sa || fast_check) {
             tdc::StatPhase check_sa_phase("SA Checker");
 
@@ -411,6 +411,24 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 late_fail = 1;
             } else {
                 std::cerr << "SA check OK" << std::endl;
+            }
+        }
+    };
+
+    auto maybe_do_output_benchmark = [&](nlohmann::json const& j) {
+        if (out_benchmark) {
+            auto write_bench = [&](std::ostream& out) {
+                out << j.dump(4) << std::endl;
+            };
+
+            if (benchmark_filename == "-") {
+                write_bench(std::cout);
+            } else {
+                std::ofstream benchmark_file(benchmark_filename,
+                                                std::ios_base::out |
+                                                    std::ios_base::binary |
+                                                    std::ios_base::trunc);
+                write_bench(benchmark_file);
             }
         }
     };
@@ -523,23 +541,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 sum_array.push_back(root.to_json());
             }
 
-            if (out_benchmark) {
-                auto write_bench = [&](std::ostream& out) {
-                    // auto j = root.to_json();
-                    auto j = sum_array;
-                    out << j.dump(4) << std::endl;
-                };
-
-                if (benchmark_filename == "-") {
-                    write_bench(std::cout);
-                } else {
-                    std::ofstream benchmark_file(benchmark_filename,
-                                                 std::ios_base::out |
-                                                     std::ios_base::binary |
-                                                     std::ios_base::trunc);
-                    write_bench(benchmark_file);
-                }
-            }
+            maybe_do_output_benchmark(sum_array);
         }
 
         maybe_do_automation();
@@ -614,23 +616,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             stat_array.push_back(alg_array);
         }
 
-        if (out_benchmark) {
-            auto write_bench = [&](std::ostream& out) {
-                // auto j = stat_array.to_json();
-                out << stat_array.dump(4) << std::endl;
-            };
-
-            if (benchmark_filename == "-") {
-                write_bench(std::cout);
-            } else {
-                std::ofstream benchmark_file(benchmark_filename,
-                                             std::ios_base::out |
-                                                 std::ios_base::binary |
-                                                 std::ios_base::trunc);
-                write_bench(benchmark_file);
-            }
-        }
-
+        maybe_do_output_benchmark(stat_array);
         maybe_do_automation();
 
         if (sanity_counter == 0) {

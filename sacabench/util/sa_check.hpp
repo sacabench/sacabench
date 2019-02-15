@@ -62,7 +62,8 @@ private:
 template <typename sa_index_type, typename sorter_type>
 sa_check_result sa_check_naive_sorter(span<sa_index_type> sa, string_span text,
                                       sorter_type sorter) {
-    DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
+    using mut_sa_idx = std::remove_cv_t<sa_index_type>;
+    DCHECK(can_represent_all_values<mut_sa_idx>(sa.size() + 1));
 
     if (sa.size() != text.size()) {
         return sa_check_result::wrong_length;
@@ -70,7 +71,7 @@ sa_check_result sa_check_naive_sorter(span<sa_index_type> sa, string_span text,
     size_t const N = text.size();
 
     // Create an container of every index positions.
-    auto naive = util::make_container<sa_index_type>(N);
+    auto naive = util::make_container<mut_sa_idx>(N);
     for (size_t i = 0; i < N; i++) {
         naive[i] = i;
     }
