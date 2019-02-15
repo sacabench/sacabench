@@ -25,13 +25,22 @@ bool file_exist_check(std::string const& path) {
     return res;
 }
 
-std::string get_output_from_cmd(std::string cmd) {
+struct output_t {
+    std::string output;
+    int exitcode;
 
+    operator bool() const {
+        return exitcode == 0;
+    }
+};
+
+output_t get_output_from_cmd(std::string cmd) {
     std::string data;
     std::FILE * stream;
     const int max_buffer = 256;
     char buffer[max_buffer];
     cmd.append(" 2>&1");
+    int exitcode = 101;
 
     stream = popen(cmd.c_str(), "r");
     if (stream) {
@@ -40,16 +49,38 @@ std::string get_output_from_cmd(std::string cmd) {
                 data.append(buffer);
             }
         }
-        pclose(stream);
+        int st = pclose(stream);
+        if(WIFEXITED(st)) {
+            exitcode = WEXITSTATUS(st);
+        }
     }
-    return data;
+    return output_t {
+        data,
+        exitcode,
+    };
+}
+
+std::string get_short_filename(std::string const& s) {
+    auto filename_start_index = s.find_last_of("\\/");
+    if (filename_start_index != std::string::npos) {
+        filename_start_index += 1;
+        return s.substr(filename_start_index);
+    } else {
+        return s;
+    }
+}
+
+std::string get_parent_path(std::string const& s) {
+    return s.substr(0, s.find_last_of("\\/"));
 }
 
 void remove_newline(std::string& s) {
     s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 }
 
-nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::string input_filename){
+nlohmann::json get_config_json(size_t prefix,
+                               size_t repetition_count,
+                               std::string input_filename){
     // Create json file with config
     // file name, prefix size, amount of repetitions
     nlohmann::json config_json = nlohmann::json::array();
@@ -60,33 +91,40 @@ nlohmann::json get_config_json(size_t prefix, size_t repetition_count, std::stri
     auto cmd_threads_per_socket = "lscpu | grep 'Thread(s)' | cut -f 2 -d ':'| awk '{$1=$1}1'";
     auto cmd_all_lscpu_info = "lscpu";
     auto cmd_all_uname_info = "uname -a";
+    auto cmd_all_mem_info = "free -t";
 
-    auto operating_system = get_output_from_cmd(cmd_operating_system);
-    auto model_name = get_output_from_cmd(cmd_model_name);
-    auto amount_cpus = get_output_from_cmd(cmd_amount_cpus);
-    auto threads_per_socket = get_output_from_cmd(cmd_threads_per_socket);
-    auto all_lscpu_info = get_output_from_cmd(cmd_all_lscpu_info);
-    auto all_uname_info = get_output_from_cmd(cmd_all_uname_info);
+    auto all_lscpu_info = get_output_from_cmd(cmd_all_lscpu_info).output;
+    auto all_uname_info = get_output_from_cmd(cmd_all_uname_info).output;
+    auto all_mem_info = get_output_from_cmd(cmd_all_mem_info).output;
 
+    auto operating_system = get_output_from_cmd(cmd_operating_system).output;
     remove_newline(operating_system);
+
+    auto model_name = get_output_from_cmd(cmd_model_name).output;
     remove_newline(model_name);
+
+    auto amount_cpus = get_output_from_cmd(cmd_amount_cpus).output;
     remove_newline(amount_cpus);
+
+    auto threads_per_socket = get_output_from_cmd(cmd_threads_per_socket).output;
     remove_newline(threads_per_socket);
 
     // input_filename contains full path to input file. For config_json file we only need the name.
-    auto filename_start_index = input_filename.find_last_of("\\/") + 1;
-    auto filename_end_index = input_filename.length();
-    auto corrected_input_filename = input_filename.substr(filename_start_index, filename_end_index);
+    input_filename = get_short_filename(input_filename);
+
     nlohmann::json j = {
-        {"input", corrected_input_filename},
+        {"input", input_filename},
         {"prefix", prefix},
         {"repetitions", repetition_count},
         {"operating_system", operating_system},
         {"model_name", model_name},
         {"amount_cpus", amount_cpus},
         {"threads_per_socket", threads_per_socket},
+
+        // Keep these unchanged!
         {"all_lscpu_info", all_lscpu_info},
         {"all_uname_info", all_uname_info},
+        {"all_mem_info", all_mem_info},
     };
 
     config_json.push_back(j);
@@ -329,6 +367,66 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         return 0;
     };
 
+    auto maybe_do_automation = [&] {
+        if (automation) {
+            // Create json file with config
+            // file name, prefix size, amount of repetitions
+            nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
+
+            auto write_config = [&](std::ostream& out) {
+                out << config_json.dump(4) << std::endl;
+            };
+
+            std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
+                                                std::ios_base::out |
+                                                    std::ios_base::binary |
+                                                    std::ios_base::trunc);
+            write_config(config_file);
+
+            std::string pdf_destination = get_parent_path(benchmark_filename);
+            std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
+            std::cout << command << std::endl;
+            int exit_status = system(command.c_str());
+            if (exit_status < 0) {
+                std::cerr << "error thrown while running plot automation script." << std::endl;
+            }
+        }
+    };
+
+    auto maybe_do_sa_check = [&](util::text_initializer const& text,
+                                 util::abstract_sa& sa) {
+        if (check_sa || fast_check) {
+            tdc::StatPhase check_sa_phase("SA Checker");
+
+            // Read the string in again
+            size_t text_size = text.text_size();
+            auto s = util::string(text_size);
+            text.initializer(s);
+
+            // Run the SA checker, and print the result
+            auto res = sa.check(s, fast_check);
+            check_sa_phase.log("check_result", res);
+            if (res != util::sa_check_result::ok) {
+                std::cerr << "ERROR: SA check failed" << std::endl;
+                late_fail = 1;
+            } else {
+                std::cerr << "SA check OK" << std::endl;
+            }
+        }
+    };
+
+    auto log_root_stats = [&](tdc::StatPhase& root,
+                              util::saca const& algo,
+                              size_t textsize) {
+        auto short_input_filename = get_short_filename(input_filename);
+
+        root.log("algorithm_name", algo.name());
+        root.log("input_file", short_input_filename);
+        root.log("repetitions", repetition_count);
+        root.log("thread_count", omp_get_max_threads());
+        root.log("prefix", textsize);
+    };
+
     if (list) {
         implemented_algos();
     }
@@ -418,38 +516,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                                 sa->write_binary(stream, out_fixed_bits);
                             });
                     }
-                    if (check_sa || fast_check) {
-                        tdc::StatPhase check_sa_phase("SA Checker");
+                    maybe_do_sa_check(*text, *sa);
 
-                        // Read the string in again
-                        size_t text_size = text->text_size();
-                        auto s = util::string(text_size);
-                        text->initializer(s);
-
-                        // Run the SA checker, and print the result
-                        auto res = sa->check(s, fast_check);
-                        check_sa_phase.log("check_result", res);
-                        if (res != util::sa_check_result::ok) {
-                            std::cerr << "ERROR: SA check failed" << std::endl;
-                            late_fail = 1;
-                        } else {
-                            std::cerr << "SA check OK" << std::endl;
-                        }
-                    }
+                    log_root_stats(root, *algo, text->text_size());
                 }
-
-                auto short_input_filename = input_filename;
-                auto last_pos = input_filename.rfind("/");
-                if (last_pos != std::string::npos) {
-                    short_input_filename = input_filename.substr(last_pos + 1);
-                }
-
-                root.log("algorithm_name", algo->name());
-                root.log("input_file", short_input_filename);
-                //root.log("repetitions", repetition_count);
-                root.log("thread_count", omp_get_max_threads());
-                root.log("prefix", prefix);
-
                 sum_array.push_back(root.to_json());
             }
 
@@ -472,29 +542,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             }
         }
 
-        if (automation) {
-            // Create json file with config
-            // file name, prefix size, amount of repetitions
-            nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
-
-            auto write_config = [&](std::ostream& out) {
-                out << config_json.dump(4) << std::endl;
-            };
-
-            std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
-                                             std::ios_base::out |
-                                                 std::ios_base::binary |
-                                                 std::ios_base::trunc);
-            write_config(config_file);
-
-            std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
-            std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
-            std::cout << command << std::endl;
-            int exit_status = system(command.c_str());
-            if (exit_status < 0) {
-                std::cerr << "error thrown while running plot automation script." << std::endl;
-            }
-        }
+        maybe_do_automation();
     }
 
     if (demo) {
@@ -557,38 +605,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
                     auto sa = algo->construct_sa(*text, sa_minimum_bits);
 
-                    if (check_sa || fast_check) {
-                        tdc::StatPhase check_sa_phase("SA Checker");
+                    maybe_do_sa_check(*text, *sa);
 
-                        // Read the string in again
-                        size_t text_size = text->text_size();
-                        auto s = util::string(text_size);
-                        text->initializer(s);
-
-                        // Run the SA checker, and print the result
-                        auto res = sa->check(s, fast_check);
-                        check_sa_phase.log("check_result", res);
-                        if (res != util::sa_check_result::ok) {
-                            std::cerr << "ERROR: SA check failed" << std::endl;
-                            late_fail = 1;
-                        } else {
-                            std::cerr << "SA check OK" << std::endl;
-                        }
-                    }
+                    log_root_stats(root, *algo, text->text_size());
                 }
-
-                auto short_input_filename = input_filename;
-                auto last_pos = input_filename.rfind("/");
-                if (last_pos != std::string::npos) {
-                    short_input_filename = input_filename.substr(last_pos + 1);
-                }
-
-                root.log("algorithm_name", algo->name());
-                root.log("input_file", short_input_filename);
-                //root.log("repetitions", repetition_count);
-                root.log("thread_count", omp_get_max_threads());
-                root.log("prefix", prefix);
-
                 alg_array.push_back(root.to_json());
             }
             stat_array.push_back(alg_array);
@@ -611,29 +631,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             }
         }
 
-        if (automation) {
-            // Create json file with config
-            // file name, prefix size, amount of repetitions
-            nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
-
-            auto write_config = [&](std::ostream& out) {
-                out << config_json.dump(4) << std::endl;
-            };
-
-            std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
-                                             std::ios_base::out |
-                                                 std::ios_base::binary |
-                                                 std::ios_base::trunc);
-            write_config(config_file);
-
-            std::string pdf_destination = benchmark_filename.substr(0, benchmark_filename.find_last_of("\\/"));
-            std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
-            std::cout << command << std::endl;
-            int exit_status = system(command.c_str());
-            if (exit_status < 0) {
-                std::cerr << "error thrown while running plot automation script." << std::endl;
-            }
-        }
+        maybe_do_automation();
 
         if (sanity_counter == 0) {
             std::cerr << "ERROR: No Algorithm ran!\n";
