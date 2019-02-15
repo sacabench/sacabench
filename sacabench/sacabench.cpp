@@ -25,6 +25,13 @@ bool file_exist_check(std::string const& path) {
     return res;
 }
 
+nlohmann::json load_json(std::string const& path) {
+    std::ifstream f(path.c_str());
+    nlohmann::json j;
+    f >> j;
+    return j;
+}
+
 struct output_t {
     std::string output;
     int exitcode;
@@ -131,6 +138,93 @@ nlohmann::json get_config_json(size_t prefix,
     return config_json;
 }
 
+struct benchmark_json_info {
+    enum benchmark_json_format {
+        unknown,
+        construct,
+        batch,
+    };
+
+    benchmark_json_format kind;
+    std::string prefix;
+    std::string input_file;
+
+    bool is_batch() {
+        return kind == benchmark_json_format::batch;
+    }
+};
+
+
+benchmark_json_info check_benchmark_json_format(nlohmann::json const& j) {
+    auto r = benchmark_json_info::unknown;
+
+    nlohmann::json const* first_entry = nullptr;
+    if (j.is_array()) {
+        r = benchmark_json_info::construct;
+        if (j.size() > 0) {
+            if (j.at(0).is_array()) {
+                r = benchmark_json_info::batch;
+                if (j.at(0).size() > 0) {
+                    first_entry = &j.at(0).at(0);
+                }
+            } else {
+                first_entry = &j.at(0);
+            }
+        }
+    }
+
+    auto r2 = benchmark_json_info {};
+    r2.kind = r;
+
+    if (first_entry) {
+        auto& stats = (*first_entry)["stats"];
+        for (auto& e : stats) {
+            if (e["key"] == "input_file") {
+                r2.input_file = e["value"];
+            }
+            if (e["key"] == "prefix") {
+                r2.prefix = e["value"];
+            }
+        }
+    }
+
+    return r2;
+}
+
+benchmark_json_info load_benchmark_json_format(std::string const& path) {
+    auto stats_json = load_json(path);
+    return check_benchmark_json_format(stats_json);
+}
+
+void do_plot(std::string const& benchmark_filename,
+             size_t text_size,
+             bool out_benchmark) {
+    auto stats = load_benchmark_json_format(benchmark_filename);
+
+    bool batch = stats.is_batch();
+    auto short_input_filename = stats.input_file;
+
+    std::string r_command =
+        "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+    std::cerr << "plot benchmark...";
+    if (batch) {
+        r_command += " 1 " + short_input_filename + " " +
+                        std::to_string(text_size) +
+                        "'  ..//stats/stat_plot.R test.Rout";
+    } else if (out_benchmark) {
+        r_command += " 0 " + short_input_filename + " " +
+                        std::to_string(text_size) +
+                        "'  ..//stats/stat_plot.R test.Rout";
+    } else {
+        std::cerr << "not able to plot." << std::endl;
+        return;
+    }
+    int exit_status = system(r_command.c_str());
+    if (exit_status < 0) {
+        std::cerr << "error thrown while running R-script." << std::endl;
+    }
+    std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
+}
 
 std::int32_t main(std::int32_t argc, char const** argv) {
     int late_fail = 0;
@@ -265,13 +359,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     }
 
     CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
-    std::string benchmark_source;
-    const std::set<std::string> benchmark_sources{"batch", "construct"};
     {
-        plot_app
-            .add_set("benchmark_source", benchmark_source, benchmark_sources,
-                     "Where the benchmark_file originated")
-            ->required();
         plot_app.add_option("input", input_filename, "Path to input file.")
             ->required();
         plot_app
@@ -625,37 +713,6 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     }
 
-    auto do_plot = [](auto const& benchmark_filename,
-                      auto const& input_filename, bool batch, size_t text_size,
-                      bool out_benchmark) {
-        auto short_input_filename = input_filename;
-        auto last_pos = input_filename.rfind("/");
-        if (last_pos != std::string::npos) {
-            short_input_filename = input_filename.substr(last_pos + 1);
-        }
-
-        std::string r_command =
-            "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
-        std::cerr << "plot benchmark...";
-        if (batch) {
-            r_command += " 1 " + short_input_filename + " " +
-                         std::to_string(text_size) +
-                         "'  ..//stats/stat_plot.R test.Rout";
-        } else if (out_benchmark) {
-            r_command += " 0 " + short_input_filename + " " +
-                         std::to_string(text_size) +
-                         "'  ..//stats/stat_plot.R test.Rout";
-        } else {
-            std::cerr << "not able to plot." << std::endl;
-            return;
-        }
-        int exit_status = system(r_command.c_str());
-        if (exit_status < 0) {
-            std::cerr << "error thrown while running R-script." << std::endl;
-        }
-        std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
-    };
-
     if (plot || plot_app) {
         if (benchmark_filename == "-") {
             abort(); // TODO: this can not work!;
@@ -681,19 +738,10 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
 
         if (plot) {
-            do_plot(benchmark_filename, input_filename, batch, text_size,
-                    out_benchmark);
+            do_plot(benchmark_filename, text_size, out_benchmark);
         }
         if (plot_app) {
-            if (benchmark_source == "batch") {
-                do_plot(benchmark_filename, input_filename, true, text_size,
-                        true);
-            } else if (benchmark_source == "construct") {
-                do_plot(benchmark_filename, input_filename, false, text_size,
-                        true);
-            } else {
-                abort();
-            }
+            do_plot(benchmark_filename, text_size, true);
         }
     }
 
