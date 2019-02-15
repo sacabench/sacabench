@@ -118,6 +118,24 @@ int parse_prefix_if_set(std::string const& prefix_size,
     return 0;
 }
 
+struct sysinfo_t {
+    std::string all_lscpu_info;
+    std::string all_uname_info;
+    std::string all_mem_info;
+};
+sysinfo_t get_full_sysinfo() {
+    sysinfo_t r;
+    auto cmd_all_lscpu_info = "lscpu";
+    auto cmd_all_uname_info = "uname -a";
+    auto cmd_all_mem_info = "free -t";
+
+    r.all_lscpu_info = get_output_from_cmd(cmd_all_lscpu_info).output;
+    r.all_uname_info = get_output_from_cmd(cmd_all_uname_info).output;
+    r.all_mem_info = get_output_from_cmd(cmd_all_mem_info).output;
+
+    return r;
+}
+
 nlohmann::json get_config_json(size_t prefix,
                                size_t repetition_count,
                                std::string input_filename){
@@ -129,13 +147,6 @@ nlohmann::json get_config_json(size_t prefix,
     auto cmd_model_name = "lscpu | grep 'Model name' | cut -f 2 -d ':'| awk '{$1=$1}1'";
     auto cmd_amount_cpus = "grep -c ^processor /proc/cpuinfo";
     auto cmd_threads_per_socket = "lscpu | grep 'Thread(s)' | cut -f 2 -d ':'| awk '{$1=$1}1'";
-    auto cmd_all_lscpu_info = "lscpu";
-    auto cmd_all_uname_info = "uname -a";
-    auto cmd_all_mem_info = "free -t";
-
-    auto all_lscpu_info = get_output_from_cmd(cmd_all_lscpu_info).output;
-    auto all_uname_info = get_output_from_cmd(cmd_all_uname_info).output;
-    auto all_mem_info = get_output_from_cmd(cmd_all_mem_info).output;
 
     auto operating_system = get_output_from_cmd(cmd_operating_system).output;
     remove_newline(operating_system);
@@ -152,6 +163,8 @@ nlohmann::json get_config_json(size_t prefix,
     // input_filename contains full path to input file. For config_json file we only need the name.
     input_filename = get_short_filename(input_filename);
 
+    auto sysinfo = get_full_sysinfo();
+
     nlohmann::json j = {
         {"input", input_filename},
         {"prefix", prefix},
@@ -160,11 +173,9 @@ nlohmann::json get_config_json(size_t prefix,
         {"model_name", model_name},
         {"amount_cpus", amount_cpus},
         {"threads_per_socket", threads_per_socket},
-
-        // Keep these unchanged!
-        {"all_lscpu_info", all_lscpu_info},
-        {"all_uname_info", all_uname_info},
-        {"all_mem_info", all_mem_info},
+        {"all_lscpu_info", sysinfo.all_lscpu_info},
+        {"all_uname_info", sysinfo.all_uname_info},
+        {"all_mem_info", sysinfo.all_mem_info},
     };
 
     config_json.push_back(j);
@@ -552,6 +563,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
     };
 
+    sysinfo_t sysinfo_cache;
+
     auto log_root_stats = [&](tdc::StatPhase& root,
                               util::saca const& algo,
                               size_t textsize) {
@@ -562,7 +575,17 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         root.log("repetitions", repetition_count);
         root.log("thread_count", omp_get_max_threads());
         root.log("prefix", textsize);
+
+        if (sysinfo) {
+            root.log("all_lscpu_info", sysinfo_cache.all_lscpu_info);
+            root.log("all_mem_info", sysinfo_cache.all_mem_info);
+            root.log("all_uname_info", sysinfo_cache.all_uname_info);
+        }
     };
+
+    if (sysinfo) {
+        sysinfo_cache = get_full_sysinfo();
+    }
 
     if (list) {
         implemented_algos();

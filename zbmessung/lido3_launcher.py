@@ -214,7 +214,7 @@ if args.launch:
                 if CHECK:
                     maybe_check = "-q"
 
-                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check}".format(
+                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -s -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check}".format(
                     bench_out=batch_output,
                     prefix=local_prefix,
                     rep=N,
