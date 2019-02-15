@@ -49,6 +49,9 @@ usage.add_argument("--sacabench-directory", default=sacabench_default,
 usage.add_argument("--launch-config", type=Path,
                    help="Config file used by launch.")
 
+usage.add_argument("--force-sa-check", action="store_true",
+                   help="Force a --launch to enable the sa checker.")
+
 args = usage.parse_args()
 # ---------------------
 
@@ -173,6 +176,8 @@ if args.launch:
             CHECK = j["launch"]["check"]
         if "cluster_config" in j["launch"]:
             CLUSTER_CONFIG = j["launch"]["cluster_config"]
+
+    CHECK = CHECK or args.force_sa_check;
 
     counter = 0
     print("Starting jobs...")

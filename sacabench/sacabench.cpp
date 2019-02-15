@@ -85,6 +85,39 @@ void remove_newline(std::string& s) {
     s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 }
 
+int parse_prefix_if_set(std::string const& prefix_size,
+                         size_t& prefix) {
+    if (prefix_size.size() > 0) {
+        try {
+            uint32_t unit_factor = 0;
+            size_t input_prefix = 0;
+            if (prefix_size[prefix_size.size() - 1] == 'K') {
+                std::string number_part =
+                    prefix_size.substr(0, prefix_size.size() - 1);
+                input_prefix = std::stoi(number_part);
+                unit_factor = 1024;
+            } else if (prefix_size[prefix_size.size() - 1] == 'M') {
+                std::string number_part =
+                    prefix_size.substr(0, prefix_size.size() - 1);
+                input_prefix = std::stoi(number_part);
+                unit_factor = 1024 * 1024;
+            } else {
+                std::string number_part =
+                    prefix_size.substr(0, prefix_size.size());
+                input_prefix = std::stoi(number_part);
+                unit_factor = 1;
+            }
+            prefix = input_prefix * unit_factor;
+        } catch (const std::invalid_argument& ia) {
+            std::cerr << "ERROR: input prefix is not a "
+                            "valid prefix value."
+                        << std::endl;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 nlohmann::json get_config_json(size_t prefix,
                                size_t repetition_count,
                                std::string input_filename){
@@ -146,8 +179,8 @@ struct benchmark_json_info {
     };
 
     benchmark_json_format kind;
-    std::string prefix;
     std::string input_file;
+    size_t prefix = 0;
 
     bool is_batch() {
         return kind == benchmark_json_format::batch;
@@ -183,7 +216,8 @@ benchmark_json_info check_benchmark_json_format(nlohmann::json const& j) {
                 r2.input_file = e["value"];
             }
             if (e["key"] == "prefix") {
-                r2.prefix = e["value"];
+                std::string prefix_size = e["value"];
+                parse_prefix_if_set(prefix_size, r2.prefix);
             }
         }
     }
@@ -197,12 +231,12 @@ benchmark_json_info load_benchmark_json_format(std::string const& path) {
 }
 
 void do_plot(std::string const& benchmark_filename,
-             size_t text_size,
              bool out_benchmark) {
     auto stats = load_benchmark_json_format(benchmark_filename);
 
     bool batch = stats.is_batch();
     auto short_input_filename = stats.input_file;
+    size_t text_size = stats.prefix;
 
     std::string r_command =
         "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
@@ -224,6 +258,38 @@ void do_plot(std::string const& benchmark_filename,
         std::cerr << "error thrown while running R-script." << std::endl;
     }
     std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
+}
+
+std::unique_ptr<sacabench::util::text_initializer> load_input(
+    std::string const& input_filename,
+    std::string const& prefix_size,
+    std::string& stdin_buf)
+{
+    using namespace sacabench;
+
+    std::unique_ptr<util::text_initializer> text;
+
+    size_t prefix;
+    if (parse_prefix_if_set(prefix_size, prefix)) {
+        return nullptr;
+    }
+
+    if (input_filename == "-") {
+        stdin_buf = std::string(
+            std::istreambuf_iterator<char>(std::cin), {});
+        text =
+            std::make_unique<util::text_initializer_from_span>(
+                util::string_span(
+                    (util::character const*)stdin_buf.data(),
+                    stdin_buf.size()),
+                prefix);
+    } else {
+        text =
+            std::make_unique<util::text_initializer_from_file>(
+                input_filename, prefix);
+    }
+
+    return text;
 }
 
 std::int32_t main(std::int32_t argc, char const** argv) {
@@ -256,13 +322,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool check_sa = false;
     uint32_t out_fixed_bits = 0;
     std::string prefix_size = "";
-    size_t prefix = -1;
     bool force_overwrite = false;
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
     bool plot = false;
     bool automation = false;
     bool fast_check = false;
+    bool sysinfo = false;
     {
         construct.set_config("--config", "",
                              "Read an config file for CLI args");
@@ -274,7 +340,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             ->required();
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
         construct.add_flag("-q,--fastcheck", fast_check, "Check the constructed SA with a faster, parallel algorithm.");
-        construct.add_option("-b,--benchmark", benchmark_filename,
+        auto b_opt = construct.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes path "
                              "to output file, or - for STDOUT");
 
@@ -315,6 +381,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
         construct.add_flag("-z,--plot", plot, "Plot measurements.");
         construct.add_flag("--automation", automation, "Automatic generation of pdf report.");
+        construct.add_flag("-s,--sysinfo", sysinfo, "Add system information to benchmark output.")->needs(b_opt);
     }
 
     CLI::App& demo =
@@ -356,18 +423,15 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             ->excludes(wlist);
         batch.add_flag("-z,--plot", plot, "Plot measurements.")->needs(b_opt);
         batch.add_flag("--automation", automation, "Automatic generation of pdf report.");
+        batch.add_flag("-s,--sysinfo", sysinfo, "Add system information to benchmark output.")->needs(b_opt);
     }
 
     CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
     {
-        plot_app.add_option("input", input_filename, "Path to input file.")
-            ->required();
         plot_app
             .add_option("benchmark_file", benchmark_filename,
                         "Path to benchmark json file.")
             ->required();
-        plot_app.add_option("-p,--prefix", prefix_size,
-                            "Set the prefix size, if used by the benchmark.");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -422,40 +486,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << std::endl;
     };
 
-    auto parse_prefix_if_set = [](std::string const& prefix_size,
-                                  auto& prefix) {
-        if (prefix_size.size() > 0) {
-            try {
-                uint32_t unit_factor = 0;
-                size_t input_prefix = 0;
-                if (prefix_size[prefix_size.size() - 1] == 'K') {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size() - 1);
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1024;
-                } else if (prefix_size[prefix_size.size() - 1] == 'M') {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size() - 1);
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1024 * 1024;
-                } else {
-                    std::string number_part =
-                        prefix_size.substr(0, prefix_size.size());
-                    input_prefix = std::stoi(number_part);
-                    unit_factor = 1;
-                }
-                prefix = input_prefix * unit_factor;
-            } catch (const std::invalid_argument& ia) {
-                std::cerr << "ERROR: input prefix is not a "
-                             "valid prefix value."
-                          << std::endl;
-                return 1;
-            }
-        }
-        return 0;
-    };
-
-    auto maybe_do_automation = [&] {
+    auto maybe_do_automation = [&](size_t prefix, size_t repetition_count) {
         if (automation) {
             // Create json file with config
             // file name, prefix size, amount of repetitions
@@ -563,31 +594,18 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         if (check_in_filename(input_filename, "Input")) {
             return 1;
         }
+
+        size_t automation_prefix = 0;
         {
             nlohmann::json sum_array = nlohmann::json::array();
             for (uint32_t i = 0; i < repetition_count; i++) {
                 tdc::StatPhase root("CLI");
                 {
-                    std::unique_ptr<util::text_initializer> text;
                     std::string stdin_buf;
-
-                    if (parse_prefix_if_set(prefix_size, prefix)) {
+                    std::unique_ptr<util::text_initializer> text
+                        = load_input(input_filename, prefix_size, stdin_buf);
+                    if(text == nullptr) {
                         return 1;
-                    }
-
-                    if (input_filename == "-") {
-                        stdin_buf = std::string(
-                            std::istreambuf_iterator<char>(std::cin), {});
-                        text =
-                            std::make_unique<util::text_initializer_from_span>(
-                                util::string_span(
-                                    (util::character const*)stdin_buf.data(),
-                                    stdin_buf.size()),
-                                prefix);
-                    } else {
-                        text =
-                            std::make_unique<util::text_initializer_from_file>(
-                                input_filename, prefix);
                     }
 
                     auto sa = algo->construct_sa(*text, sa_minimum_bits);
@@ -625,6 +643,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     maybe_do_sa_check(*text, *sa);
 
                     log_root_stats(root, *algo, text->text_size());
+                    automation_prefix = text->text_size();
                 }
                 sum_array.push_back(root.to_json());
             }
@@ -632,7 +651,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             maybe_do_output_benchmark(sum_array);
         }
 
-        maybe_do_automation();
+        maybe_do_automation(automation_prefix, repetition_count);
     }
 
     if (demo) {
@@ -651,23 +670,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
 
         std::cerr << "Loading input..." << std::endl;
-        std::unique_ptr<util::text_initializer> text;
         std::string stdin_buf;
-
-        if (parse_prefix_if_set(prefix_size, prefix)) {
+        std::unique_ptr<util::text_initializer> text
+            = load_input(input_filename, prefix_size, stdin_buf);
+        if(text == nullptr) {
             return 1;
-        }
-
-        if (input_filename == "-") {
-            stdin_buf =
-                std::string(std::istreambuf_iterator<char>(std::cin), {});
-            text = std::make_unique<util::text_initializer_from_span>(
-                util::string_span((util::character const*)stdin_buf.data(),
-                                  stdin_buf.size()),
-                prefix);
-        } else {
-            text = std::make_unique<util::text_initializer_from_file>(
-                input_filename, prefix);
         }
 
         nlohmann::json stat_array = nlohmann::json::array();
@@ -705,7 +712,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
 
         maybe_do_output_benchmark(stat_array);
-        maybe_do_automation();
+        maybe_do_automation(text->text_size(), repetition_count);
 
         if (sanity_counter == 0) {
             std::cerr << "ERROR: No Algorithm ran!\n";
@@ -717,31 +724,11 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         if (benchmark_filename == "-") {
             abort(); // TODO: this can not work!;
         }
-        if (parse_prefix_if_set(prefix_size, prefix)) {
-            return 1;
-        }
-        size_t text_size;
-        if (input_filename == "-") {
-            abort(); // TODO: this can not work!
-            auto stdin_buf =
-                std::string(std::istreambuf_iterator<char>(std::cin), {});
-            auto text = std::make_unique<util::text_initializer_from_span>(
-                util::string_span((util::character const*)stdin_buf.data(),
-                                  stdin_buf.size()),
-                prefix);
-            text_size = text->text_size();
-
-        } else {
-            auto text = std::make_unique<util::text_initializer_from_file>(
-                input_filename, prefix);
-            text_size = text->text_size();
-        }
-
         if (plot) {
-            do_plot(benchmark_filename, text_size, out_benchmark);
+            do_plot(benchmark_filename, out_benchmark);
         }
         if (plot_app) {
-            do_plot(benchmark_filename, text_size, true);
+            do_plot(benchmark_filename, true);
         }
     }
 
