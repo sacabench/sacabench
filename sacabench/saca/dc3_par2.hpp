@@ -33,7 +33,7 @@ class dc3_par2 {
 public:
     
     static constexpr size_t EXTRA_SENTINELS = 3;
-    static constexpr char const* NAME = "DC3-Parallel_V2";
+    static constexpr char const* NAME = "DC3-Parallel-V2";
     static constexpr char const* DESCRIPTION =
         "Difference Cover Modulo 3 parallel";
 
