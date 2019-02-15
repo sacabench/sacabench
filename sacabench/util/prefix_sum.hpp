@@ -213,10 +213,10 @@ void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
 template <typename Content, typename add_operator>
 void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
         add_operator add, Content identity, size_t level) {  
-    /*if (in.size() < 2048) { 
+    if (in.size() < 2048) { 
         seq_prefix_sum(in, in, inclusive, add, identity);
         return;
-    }*/
+    }
         
     //tdc::StatPhase prefix("Initialize Pair Sums");   
     //prefix.log("level", level);
@@ -301,7 +301,7 @@ void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
     
     par_prefix_sum_eff_call(in, true, add, identity, level+1);
     
-    //prefix.split("Final");
+    //prefix.split("Final"); 
     
     if (inclusive) {
         //in[prev_factor-1] = in[prev_factor-1];
