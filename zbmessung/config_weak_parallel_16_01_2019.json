@@ -4,6 +4,7 @@
             "DC3_parallel",
             "DC3-Parallel-2",
             "DivSufSort_PARALLEL_ref",
+            "DivSufSort_par_ref",
             "Osipov_parallel_wp",
             "Discarding4Parallel",
             "NaivIps4oParallel",
@@ -21,7 +22,7 @@
             "$WORK/large_datasets/wiki.txt"
         ],
         "rep": 1,
-        "prefix": 250,
+        "prefix": 200,
         "threads": [
             1, 2, 4, 8, 12, 16, 20
         ],

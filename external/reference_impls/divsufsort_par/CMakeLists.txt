@@ -4,7 +4,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 include(AppendCompilerFlags)
 
 ## Project information ##
-project(libdivsufsort C)
+project(libdivsufsort_par C)
 set(PROJECT_VENDOR "Yuta Mori")
 set(PROJECT_CONTACT "yuta.256@gmail.com")
 set(PROJECT_URL "https://github.com/y-256/libdivsufsort")
@@ -19,10 +19,10 @@ include(ProjectCPack)
 ## Project options ##
 option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
 option(BUILD_EXAMPLES "Build examples" ON)
-option(BUILD_DIVSUFSORT64 "Build libdivsufsort64" OFF)
+option(BUILD_DIVSUFSORT_PAR_64 "Build libdivsufsort_par_64" OFF)
 
-option(USE_OPENMP "Use OpenMP for parallelization" OFF)
-MESSAGE( STATUS "Parallelization in ref_divsufsort enabled: " ${USE_OPENMP} )
+option(USE_OPENMP_PAR "Use OpenMP for parallelization" ON)
+MESSAGE( STATUS "Parallelization in ref_divsufsort_par enabled: " ${USE_OPENMP_PAR} )
 
 option(WITH_LFS "Enable Large File Support" ON)
 
@@ -98,5 +98,5 @@ CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/CMakeModules/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
-ADD_CUSTOM_TARGET(uninstall
+ADD_CUSTOM_TARGET(uninstall_par
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/CMakeModules/cmake_uninstall.cmake")

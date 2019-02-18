@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "external_saca.hpp"
+#include "../external_saca.hpp"
 #include <util/span.hpp>
 #include <cstdint>
 
@@ -17,7 +17,7 @@ struct div_suf_sort {
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "DivSufSort_ref";
     static constexpr char const* DESCRIPTION =
-        "Reference implementation of DivSufSort";
+        "Reference implementation of DivSufSort with disabled parallelization.";
 
     template <typename sa_index>
     inline static void construct_sa(util::string_span text,
