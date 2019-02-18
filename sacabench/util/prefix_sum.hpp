@@ -18,6 +18,8 @@
 #include <util/bits.hpp>
 #include <util/assertions.hpp>
 
+#include <tudocomp_stat/StatPhase.hpp>
+
 namespace sacabench::util {
 
 
@@ -50,14 +52,14 @@ void seq_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
     if(inclusive) {
         out[0] = add(identity, in[0]);
         for(size_t i = 1; i < in.size(); ++i) {
-            out[i] = add(in[i], out[i - 1]);
+            out[i] = add(out[i - 1], in[i]);
         }
     } else {
         Content tmp2, tmp = in[0];
         out[0] = identity;
         for(size_t i=1; i < in.size(); ++i) {
             tmp2 = in[i];
-            out[i] = add(tmp, out[i-1]);
+            out[i] = add(out[i-1], tmp);
             tmp = tmp2;
         }
     }
@@ -203,30 +205,170 @@ void par_prefix_sum(span<Content> in, span<Content> out, bool inclusive,
 
 template <typename Content, typename add_operator>
 void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
+        add_operator add, Content identity) {  
+    (void) out;
+    par_prefix_sum_eff_call(in, inclusive, add, identity, 1);
+}
+
+template <typename Content, typename add_operator>
+void par_prefix_sum_eff_call(span<Content> in, bool inclusive,
+        add_operator add, Content identity, size_t level) {  
+    if (in.size() < 2048) { 
+        seq_prefix_sum(in, in, inclusive, add, identity);
+        return;
+    }
+        
+    //tdc::StatPhase prefix("Initialize Pair Sums");   
+    //prefix.log("level", level);
+    
+    size_t factor = pow(2, level);
+    
+    if (factor > in.size()) { return; }
+    
+    size_t prev_factor = factor/2;
+    size_t number_of_even_idx = in.size()/factor;
+    
+    size_t residue = 0;
+    if (level > 1) {
+        size_t prev_number_of_even_idx = in.size()/prev_factor;
+        residue = prev_number_of_even_idx % 2;
+    }
+    else {
+        residue = in.size() % 2;
+    }
+    
+    /*if (number_of_even_idx < 2048) {
+        prefix.split("Cutoff");
+        
+        auto pair_sums_cont = util::make_container<Content>(number_of_even_idx);
+        util::span<Content> pair_sums = pair_sums_cont;
+        
+        #pragma omp parallel for
+        for (size_t i = 1; i <= number_of_even_idx; ++i) {
+            auto pos = i*factor-1;
+            pair_sums[i-1] = add(in[pos-prev_factor], in[pos]);
+        }
+        
+        //par_prefix_sum_eff_call(pair_sums, true, add, identity, 1);
+        seq_prefix_sum(pair_sums, pair_sums, true, add, identity);
+        
+        if (inclusive) {
+            #pragma omp parallel for
+            for (size_t i = 1; i < 2*number_of_even_idx; ++i) {
+                auto pos = (i+1)*factor/2-1;
+                if (i % 2 == 0) {
+                    in[pos] = add(pair_sums[(i-1)/2], in[pos]);
+                }
+                else {
+                    in[pos] = pair_sums[i/2];
+                }
+            }
+            if (residue == 1) {
+                auto pos = number_of_even_idx*factor+factor/2-1;
+                in[pos] = add(pair_sums[number_of_even_idx-1], in[pos]);
+            }
+        }
+        else {
+            auto tmp = util::container<Content>(in.size());
+            std::copy(in.begin(), in.end(), tmp.begin());
+            
+            out[0] = identity;
+            out[1] = tmp[0];
+            #pragma omp parallel for
+            for (size_t i = 2; i < out.size(); ++i) {
+                if (i % 2 == 0) {
+                    out[i] = pair_sums[(i-1)/2];
+                }
+                else {
+                    out[i] = add(pair_sums[(i-2)/2], tmp[i-1]);
+                }
+            }
+        }
+        return;
+    }*/
+    
+    //prefix.split("Fill Pair Sums");
+    
+    #pragma omp parallel for simd
+    for (size_t i = 1; i <= number_of_even_idx; ++i) {
+        auto pos = i*factor-1;
+        in[pos] = add(in[pos-prev_factor], in[pos]);
+    }
+    
+    //std::cout << "out_level_" << level << ": " << out << std::endl;
+    
+    //prefix.split("Recursion");
+    
+    par_prefix_sum_eff_call(in, true, add, identity, level+1);
+    
+    //prefix.split("Final"); 
+    
+    if (inclusive) {
+        //in[prev_factor-1] = in[prev_factor-1];
+        #pragma omp parallel for simd
+        for (size_t i = 1; i < number_of_even_idx; ++i) {
+            auto pos = i*factor-1;
+            in[pos+prev_factor] = add(in[pos], in[pos+prev_factor]);
+        }
+        if (residue == 1) {
+            auto pos = number_of_even_idx*factor-1;
+            in[pos+prev_factor] = add(in[pos], in[pos+prev_factor]);
+        }
+    }
+    else {
+        auto tmp = util::container<Content>(in.size());
+        std::copy(in.begin(), in.end(), tmp.begin());
+        
+        in[0] = identity;
+        in[1] = tmp[0];
+        #pragma omp parallel for
+        for (size_t i = 2; i < in.size(); ++i) {
+            if (i % 2 == 0) {
+                in[i] = tmp[i-1];
+            }
+            else {
+                in[i] = add(tmp[i-2], tmp[i-1]);
+            }
+        }
+    }
+    
+    //std::cout << "out_level_" << level << ": " << out << std::endl;
+}
+
+/*template <typename Content, typename add_operator>
+void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
         add_operator add, Content identity) {
     if (in.size() < 10) {
         seq_prefix_sum(in, out, inclusive, add, identity);
         return;
     }
             
+    tdc::StatPhase prefix("Initialize Pair Sums"); 
     size_t number_of_even_idx = in.size()/2;
     auto pair_sums_cont = util::make_container<Content>(number_of_even_idx);
     util::span<Content> pair_sums = pair_sums_cont;
     
-    #pragma omp parallel for
+    prefix.split("Fill Pair Sums");
+    
+    //#pragma omp parallel for
     for (size_t i = 0; i < number_of_even_idx; ++i) {
         pair_sums[i] = add(in[2*i], in[2*i+1]);
     }
     
-    par_prefix_sum_eff(pair_sums, pair_sums, true, add, identity);
+    prefix.split("Recursion");
+    
+    //par_prefix_sum_eff(pair_sums, pair_sums, true, add, identity);
+    seq_prefix_sum(pair_sums, pair_sums, true, add, identity);
+    
+    prefix.split("Final");
     
     if (inclusive) {
         out[0] = in[0];
         out[1] = pair_sums[0];
-        #pragma omp parallel for
+        //#pragma omp parallel for
         for (size_t i = 2; i < out.size(); ++i) {
             if (i % 2 == 0) {
-                out[i] = add(in[i], pair_sums[(i-1)/2]);
+                out[i] = add(pair_sums[(i-1)/2], in[i]);
             }
             else {
                 out[i] = pair_sums[i/2];
@@ -245,10 +387,10 @@ void par_prefix_sum_eff(span<Content> in, span<Content> out, bool inclusive,
                 out[i] = pair_sums[(i-1)/2];
             }
             else {
-                out[i] = add(tmp[i-1], pair_sums[(i-2)/2]);
+                out[i] = add(pair_sums[(i-2)/2], tmp[i-1]);
             }
         }
     }
-}
+}*/
 // End Namespace
 }
