@@ -496,7 +496,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << std::endl;
     };
 
-    auto maybe_do_automation = [&](size_t prefix, size_t repetition_count) {
+    auto maybe_do_latexplot = [&](size_t prefix, size_t repetition_count) {
         if (latexplot) {
             // Create json file with config
             // file name, prefix size, amount of repetitions
@@ -734,7 +734,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
 
         maybe_do_output_benchmark(stat_array);
-        maybe_do_automation(text->text_size(), repetition_count);
+        maybe_do_latexplot(text->text_size(), repetition_count);
 
         if (sanity_counter == 0) {
             std::cerr << "ERROR: No Algorithm ran!\n";
