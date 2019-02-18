@@ -298,7 +298,6 @@ public:
         }
 
         // initialize last chain character value
-        // TODO: optimization: only rank necessary type l lists, not all
         util::character last_char = 0;
 
         // vectors for suffixes to be refined and
@@ -404,7 +403,6 @@ public:
             }
 
             // set last character to current
-            // TODO: see other todo...
             last_char = current_char;
         }
 

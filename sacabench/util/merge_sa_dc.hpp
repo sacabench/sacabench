@@ -139,13 +139,11 @@ namespace sacabench::util {
     template <typename sa_index, typename Compare>
     void merge_sa_dc_parallel(const util::span<sa_index> sa_0, const util::span<sa_index> sa_12,
                      util::span<sa_index> sa, const Compare comp) {
-        //std::cout << "sa_0: " << sa_0 << ", sa_12: " << sa_12 << std::endl; 
         DCHECK_MSG(
             sa.size() == (sa_0.size() + sa_12.size()),
             "the length of sa must be the sum of the length of sa_0 and sa_12");
 
         merge_parallel(sa_0, sa_12, sa, false, comp, 1);
-        //std::cout << "sa: " << sa << std::endl;
     }
     
     /**\brief Merge two suffix array with the difference cover idea by using the
@@ -167,14 +165,11 @@ namespace sacabench::util {
     template <typename sa_index, typename Compare>
     void merge_sa_dc_parallel_opt(const util::span<sa_index> sa_0, const util::span<sa_index> sa_12,
                      util::span<sa_index> sa, const Compare comp) {
-        //std::cout << "sa_0: " << sa_0 << ", sa_12: " << sa_12 << std::endl; 
         DCHECK_MSG(
             sa.size() == (sa_0.size() + sa_12.size()),
             "the length of sa must be the sum of the length of sa_0 and sa_12");
 
-        //omp_set_num_threads(1);
         merge_parallel_opt(sa_0, sa_12, sa, false, comp);
-        //std::cout << "sa: " << sa << std::endl;
     }
 
     /**\brief Parallel algorithm for merging two arrays by CLRS.
@@ -430,28 +425,11 @@ namespace sacabench::util {
             }
         }
         
-        /*std::cout << "marked_elements_1: " << std::endl;
-        for (size_t i = 0; i < marked_elements_1.size(); ++i) {
-            auto elem_1 = std::get<0>(marked_elements_1[i]);
-            auto elem_2 = std::get<1>(marked_elements_1[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl;*/
-        
-        /*std::cout << "marked_elements_2: " << std::endl;
-        for (size_t i = 0; i < marked_elements_2.size(); ++i) {
-            auto elem_1 = std::get<0>(marked_elements_2[i]);
-            auto elem_2 = std::get<1>(marked_elements_2[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl;*/
-        
         // merge the marked elements
         auto comp_marked_elements = [&](marked_element a, 
                 marked_element b) {
             return comp(a_1[std::get<0>(a)], a_2[std::get<0>(b)]);
         };
-        //TODO: Implement Valiants merge
         util::span<marked_element> marked_elements_1_span = marked_elements_1;
         util::span<marked_element> marked_elements_2_span = marked_elements_2;
         util::span<marked_element> marked_elements_out_span = marked_elements_out;
@@ -459,29 +437,13 @@ namespace sacabench::util {
                 comp_marked_elements, 1);*/
         merge_sa_dc_parallel_kruskal_2(marked_elements_1_span, marked_elements_2_span, comp_marked_elements,
                 marked_elements_out_span, 0);
-                
-        /*std::cout << "marked_elements_out: " << std::endl;
-        for (size_t i = 0; i < marked_elements_out.size(); ++i) {
-            auto elem_1 = std::get<0>(marked_elements_out[i]);
-            auto elem_2 = std::get<1>(marked_elements_out[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl;*/
             
         // determine the segment of each marked element in the other array
         util::container<std::tuple<size_t, size_t>> segments = 
                 util::container<std::tuple<size_t, size_t>>(marked_elements_out.size());       
         util::span<std::tuple<size_t, size_t>> segments_span = segments;
         determine_segments(a_1, a_2, marked_elements_out_span, segments_span, marked_elements_1.size(), 
-                marked_elements_2.size(), stepsize);
-                
-        /*std::cout << "segments: " << std::endl;
-        for (size_t i = 0; i < segments.size(); ++i) {
-            auto elem_1 = std::get<0>(segments[i]);
-            auto elem_2 = std::get<1>(segments[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl;*/
+                marked_elements_2.size());
         
         auto pos_1 = util::make_container<std::tuple<size_t, bool>>(marked_elements_2.size());
         auto pos_2 = util::make_container<std::tuple<size_t, bool>>(marked_elements_1.size());
@@ -490,12 +452,16 @@ namespace sacabench::util {
            positions in b. Write the positions in a new container. */
         #pragma omp parallel for
         for (size_t i = 0; i < marked_elements_out.size(); ++i) {
-            size_t pos = std::get<0>(marked_elements_out[i]); 
+            auto marked_elem = marked_elements_out[i];
+            auto seg = segments[i];
+            
+            size_t pos = std::get<0>(marked_elem); 
             sa_index elem = 0;
-            bool is_in_2 = std::get<1>(marked_elements_out[i]);
-            size_t pos_in_pos = std::get<2>(marked_elements_out[i]);
-            size_t left = std::get<0>(segments[i]);
-            size_t right = std::get<1>(segments[i]);
+            bool is_in_2 = std::get<1>(marked_elem);
+            size_t pos_in_pos = std::get<2>(marked_elem);
+            
+            size_t left = std::get<0>(seg);
+            size_t right = std::get<1>(seg);
             
             size_t pos_in_other = 0;
             if (!is_in_2) {
@@ -512,14 +478,6 @@ namespace sacabench::util {
             b[pos+pos_in_other] = elem;
         }
         
-        /*std::cout << "pos_1: " << std::endl;
-        for (size_t i = 0; i < pos_1.size(); ++i) {
-            auto elem_1 = std::get<0>(pos_1[i]);
-            auto elem_2 = std::get<1>(pos_1[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl;*/
-        
         // determine subsegments
         using scheduled_pair = std::tuple<util::span<sa_index>, util::span<sa_index>, 
                 util::span<sa_index>, bool, size_t>;
@@ -534,21 +492,6 @@ namespace sacabench::util {
         util::span<std::tuple<size_t, bool>> pos_2_span = pos_2;
         determine_subsegments(a_1, a_2, pos_1_span, pos_2_span, stepsize, subsegments_1, subsegments_2);
         
-        /*std::cout << "subsegments_1: " << std::endl;
-        for (size_t i = 0; i < subsegments_1.size(); ++i) {
-            auto elem_1 = std::get<0>(subsegments_1[i]);
-            auto elem_2 = std::get<1>(subsegments_1[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl;*/
-        
-        /*std::cout << "subsegments_2: " << std::endl;
-        for (size_t i = 0; i < subsegments_2.size(); ++i) {
-            auto elem_1 = std::get<0>(subsegments_2[i]);
-            auto elem_2 = std::get<1>(subsegments_2[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl; */
         
         // schedule subsegments to processors
         auto schedule = util::make_container<processor_list>(p);
@@ -596,18 +539,6 @@ namespace sacabench::util {
                 schedule[processor_2].push_back(pair_2);
             }
         }
-        
-        /*for (size_t i = 0; i < schedule.size(); ++i) {
-            processor_list list = schedule[i];
-            for (size_t j = 0; j < list.size(); ++j) {
-                auto elem_1 = std::get<0>(list[j]);
-                auto elem_2 = std::get<1>(list[j]);
-                auto elem_3 = std::get<2>(list[j]);
-                auto elem_4 = std::get<3>(list[j]);
-                std::cout << "<" << elem_1 << ", " << elem_2 << ", " << elem_3 << ", " << elem_4 << ">";
-            }
-            std::cout << std::endl;
-        }*/
         
         // merge subsegments by calculated schedule
         #pragma omp parallel for
@@ -816,11 +747,13 @@ namespace sacabench::util {
         size_t new_left = 0;
         size_t new_right = 0;
         util::container<bool> comp_results = util::container<bool>(p);
+        
+        auto offset = n/(p+1);
         #pragma omp parallel
         {
             #pragma omp for
             for (size_t i = 0; i < p; ++i) {
-                sa_index elem = array[left + n/(p+1)*(i+1)];
+                sa_index elem = array[left + offset*(i+1)];
                 
                 if (!swapped) { comp_results[i] = comp(key, elem); }
                 else { comp_results[i] = !comp(elem, key); }
@@ -830,15 +763,15 @@ namespace sacabench::util {
             for (size_t i = 0; i < p; ++i) {
                 if (i == 0 && comp_results[0] == true) {
                     new_left = left;
-                    new_right = left + n/(p+1)*1;
+                    new_right = left + offset*1;
                 }
                 else if (i == p-1 && comp_results[p-1] == false) {
-                    new_left = left + n/(p+1)*(p);
+                    new_left = left + offset*(p);
                     new_right = right;
                 }
                 else if (comp_results[i] == false && comp_results[i+1] == true) {
-                    new_left = left + n/(p+1)*(i+1);
-                    new_right = left + n/(p+1)*(i+2);
+                    new_left = left + offset*(i+1);
+                    new_right = left + offset*(i+2);
                 }
             }
         }
@@ -854,29 +787,23 @@ namespace sacabench::util {
     void determine_segments(util::span<sa_index> a_1, util::span<sa_index> a_2,
             util::span<std::tuple<size_t, bool, size_t>> marked_elements,
             util::span<std::tuple<size_t, size_t>> segments, size_t marked_elements_1_size,
-            size_t marked_elements_2_size, size_t stepsize) {
+            size_t marked_elements_2_size) {
         // Positions of marked elements of a_1 and a_2 in merged array        
         util::container<size_t> pos_1 = util::container<size_t>(marked_elements_1_size); 
         util::container<size_t> pos_2 = util::container<size_t>(marked_elements_2_size);
 
         #pragma omp parallel 
         {
-            /* Fill pos_1 and pos_2. We simply have to divide by
-               stepsize because the merged array contains positions 
+            /* Fill pos_1 and pos_2. We simply have to take the saved position
+               because the merged array contains positions 
                of marked elements */
             #pragma omp for
             for (size_t i = 0; i < marked_elements.size(); ++i) {
-                size_t elem = std::get<0>(marked_elements[i]);
+                size_t pos = std::get<2>(marked_elements[i]);
                 bool is_in_2 = std::get<1>(marked_elements[i]);
-                if (!is_in_2) { pos_1[elem/stepsize] = i; }
-                else { pos_2[elem/stepsize] = i; }
+                if (!is_in_2) { pos_1[pos] = i; }
+                else { pos_2[pos] = i; }
             }
-            
-            /*#pragma omp single 
-            {
-                std::cout << "pos_1: " << pos_1 << std::endl;
-                std::cout << "pos_2: " << pos_2 << std::endl;
-            }*/
             
             /*Determine segments of marked elements of a_2 in a_1.
               Because two adjacent positions p and p' in pos_1 possibly contain
@@ -993,30 +920,6 @@ namespace sacabench::util {
             }
         }
         
-        /*std::cout << "pos_marked_elements_1: " << std::endl;
-        for (size_t i = 0; i < pos_marked_elements_1.size(); ++i) {
-            auto elem_1 = std::get<0>(pos_marked_elements_1[i]);
-            auto elem_2 = std::get<1>(pos_marked_elements_1[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl;*/
-        
-        /*std::cout << "pos_1: " << std::endl;
-        for (size_t i = 0; i < pos_1.size(); ++i) {
-            auto elem_1 = std::get<0>(pos_1[i]);
-            auto elem_2 = std::get<1>(pos_1[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">"; 
-        }
-        std::cout << std::endl;*/
-        
-        /*std::cout << "pos_marked_elements_2: " << std::endl;
-        for (size_t i = 0; i < pos_marked_elements_2.size(); ++i) {
-            auto elem_1 = std::get<0>(pos_marked_elements_2[i]);
-            auto elem_2 = std::get<1>(pos_marked_elements_2[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl; */
-        
         // Arrays which contain the borders of the subsegments
         auto borders_1 = util::make_container<std::tuple<size_t, bool>>(pos_1.size()+pos_marked_elements_1.size());
         auto borders_2 = util::make_container<std::tuple<size_t, bool>>(pos_2.size()+pos_marked_elements_2.size());
@@ -1034,22 +937,6 @@ namespace sacabench::util {
         merge_parallel(pos_marked_elements_2_span, pos_2, borders_2_span, false, comp, 1);*/
         merge_sa_dc_parallel_kruskal_2(pos_marked_elements_1_span, pos_1, comp, borders_1_span, 0);
         merge_sa_dc_parallel_kruskal_2(pos_marked_elements_2_span, pos_2, comp, borders_2_span, 0);
-        
-        /*std::cout << "borders_1_span: " << std::endl;
-        for (size_t i = 0; i < borders_1_span.size(); ++i) {
-            auto elem_1 = std::get<0>(borders_1_span[i]);
-            auto elem_2 = std::get<1>(borders_1_span[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl; */
-        
-        /*std::cout << "borders_2_span: " << std::endl;
-        for (size_t i = 0; i < borders_2_span.size(); ++i) {
-            auto elem_1 = std::get<0>(borders_2_span[i]); 
-            auto elem_2 = std::get<1>(borders_2_span[i]);
-            std::cout << "<" << elem_1 << ", " << elem_2 << ">";
-        }
-        std::cout << std::endl; */
         
         /*
          Create the subsegments out of the border arrays
@@ -1117,47 +1004,6 @@ namespace sacabench::util {
                 }
             }
         }
-        
-        /*using segment_type = std::tuple<size_t, size_t> 
-        using segment_list_type = std::vector<segment_type>;
-        
-        size_t segments_1_size = a_1.size()/stepsize + (a_1.size() % stepsize > 0);
-        size_t segments_2_size = a_2.size()/stepsize + (a_2.size() % stepsize > 0);
-        auto segments_1 = util::make_container<segment_list_type>(segments_1_size);
-        auto segments_2 = util::make_container<segment_list_type>(segments_2_size);
-        
-        #pragma omp parallel for
-        for (size_t i = 0; i < segments_1.size()+segments_2.size(); ++i) {
-            if (i < segments_1.size()) {
-                segments_1[i] = std::vector<segment_type>();
-                auto segment_list = segments_1[i];
-                size_t left = i*stepsize;
-                size_t right = std::min((i+1)*stepsize-1, a_1.size());
-                segment_list.push_back(segment_type(left, right));
-            }
-            else {
-                size_t j = segments_1.size()-i;
-                segments_2[j] = std::vector<segment_type>();
-                auto segment_list = segments_2[j];
-                size_t left = j*stepsize;
-                size_t right = std::min((j+1)*stepsize-1, a_2.size());
-                segment_list.push_back(segment_type(left, right));
-            }
-        }
-        
-        //TODO: Segmente in Subsegmente unterteilen
-        #pragma omp parallel for
-        for (size_t i = 0; i < pos_1.size()+pos_2.size(); ++i) {
-            if (i < pos_1.size()) {
-                size_t segment = pos_1[i]/stepsize;
-            }
-            else {
-                j = pos_1.size()-i;
-                
-            }
-        }
-        
-        //TODO: Subsegmente in richtigen Speicherbereich kopieren*/
     }
     
     template <typename sa_index, typename X, typename I, typename S>

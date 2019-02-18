@@ -187,18 +187,6 @@ public:
                     }
                 }
             }
-            /*
-        }
-
-        for (c_cur = 0; c_cur < alph_size; ++c_cur) {
-
-            sa_index suffix_idx;
-
-            size_t bucket_idx;
-
-            // predecessor and pre-predecessor characters of
-            util::character c_pre, c_pre_pre;
-            */
 
             /*
              * use copy technique for left buckets
@@ -329,12 +317,8 @@ public:
         // sort the given bucket by using sort_key for each suffix
         if (bucket.size() < INSSORT_THRESHOLD) {
             insertion_sort(bucket, util::compare_key(sort_key));
-        } else if (bucket.size() < 5000) {
-            // ternary_quicksort(bucket, util::compare_key(sort_key));
-            util::sort::ips4o_sort(bucket, util::compare_key(sort_key));
         } else {
-            // ternary_quicksort(bucket, util::compare_key(sort_key));
-            util::sort::ips4o_sort_parallel(bucket, util::compare_key(sort_key));
+            util::sort::ips4o_sort(bucket, util::compare_key(sort_key));
         }
 
         /* As a consequence of sorting, bucket pointers might have changed.

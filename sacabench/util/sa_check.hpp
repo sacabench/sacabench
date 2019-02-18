@@ -62,7 +62,8 @@ private:
 template <typename sa_index_type, typename sorter_type>
 sa_check_result sa_check_naive_sorter(span<sa_index_type> sa, string_span text,
                                       sorter_type sorter) {
-    DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
+    using mut_sa_idx = std::remove_cv_t<sa_index_type>;
+    DCHECK(can_represent_all_values<mut_sa_idx>(sa.size() + 1));
 
     if (sa.size() != text.size()) {
         return sa_check_result::wrong_length;
@@ -70,7 +71,7 @@ sa_check_result sa_check_naive_sorter(span<sa_index_type> sa, string_span text,
     size_t const N = text.size();
 
     // Create an container of every index positions.
-    auto naive = util::make_container<sa_index_type>(N);
+    auto naive = util::make_container<mut_sa_idx>(N);
     for (size_t i = 0; i < N; i++) {
         naive[i] = i;
     }
@@ -98,6 +99,8 @@ sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
 template <typename sa_index_type, typename sorter_type>
 sa_check_result sa_check_sorter(span<sa_index_type> sa, string_span text,
                                 sorter_type sorter) {
+    using mut_sa_idx = std::remove_cv_t<sa_index_type>;
+
     // Check for size + 1 because the algorithm
     // calculates maxvalue + 1 at one point.
     DCHECK(can_represent_all_values<sa_index_type>(sa.size() + 1));
@@ -108,13 +111,13 @@ sa_check_result sa_check_sorter(span<sa_index_type> sa, string_span text,
     size_t const N = text.size();
 
     struct pair {
-        sa_index_type text_pos;
-        sa_index_type sa_pos;
+        mut_sa_idx text_pos;
+        mut_sa_idx sa_pos;
     };
     auto P = make_container<pair>(N);
 
     for (size_t i = 0; i < N; ++i) {
-        P[i] = pair{sa[i], sa_index_type(i + 1)};
+        P[i] = pair{sa[i], mut_sa_idx(i + 1)};
     }
 
     sorter(P.slice(), [](auto const& lhs, auto const& rhs) {
@@ -122,21 +125,21 @@ sa_check_result sa_check_sorter(span<sa_index_type> sa, string_span text,
     });
 
     for (size_t i = 0; i < N; ++i) {
-        if (P[i].text_pos != static_cast<sa_index_type>(i)) {
+        if (P[i].text_pos != static_cast<mut_sa_idx>(i)) {
             return sa_check_result::not_a_permutation;
         }
     }
 
     struct tripple {
-        sa_index_type sa_pos;
+        mut_sa_idx sa_pos;
         character chr;
-        sa_index_type sa_pos_2;
+        mut_sa_idx sa_pos_2;
     };
     auto S = make_container<tripple>(N);
 
     for (size_t i = 0; i < N; ++i) {
-        sa_index_type r1 = P[i].sa_pos;
-        sa_index_type r2;
+        mut_sa_idx r1 = P[i].sa_pos;
+        mut_sa_idx r2;
         if (i + 1 < N) {
             r2 = P[i + 1].sa_pos;
         } else {

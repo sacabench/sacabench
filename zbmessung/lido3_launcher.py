@@ -29,8 +29,8 @@ def load_str(path):
 
 usage = argparse.ArgumentParser()
 
-usage.add_argument("--launch", action="store_true",
-                   help="Launch batch jobs.")
+usage.add_argument("--launch-config", type=Path,
+                   help="Launch batch jobs with the given config file.")
 usage.add_argument("--combine", type=Path,
                    help="Gather results of a index.json file produced by a --launch.")
 usage.add_argument("--test-only", action="store_true",
@@ -46,8 +46,8 @@ sacabench_default="$HOME/sacabench"
 usage.add_argument("--sacabench-directory", default=sacabench_default,
                    help="Location where the sacabench directory is located. Defaults to \"{}\".".format(sacabench_default))
 
-usage.add_argument("--launch-config", type=Path,
-                   help="Config file used by launch.")
+usage.add_argument("--force-sa-check", action="store_true",
+                   help="Force a --launch to enable the sa checker.")
 
 args = usage.parse_args()
 # ---------------------
@@ -149,7 +149,7 @@ cluster_configs = {
 }
 cluster_config_default='20cores'
 
-if args.launch:
+if args.launch_config:
     #TODO: Move to external config file
     ALGOS = []
     DATASETS=[]
@@ -159,20 +159,22 @@ if args.launch:
     WEAK_SCALE = False
     CHECK = False
     CLUSTER_CONFIG = cluster_config_default
-    if args.launch_config:
-        j = load_json(args.launch_config)
-        ALGOS = j["launch"]["algo"]
-        DATASETS = j["launch"]["input"]
-        N = j["launch"]["rep"]
-        PREFIX = j["launch"]["prefix"]
-        if "threads" in j["launch"]:
-            THREADS=j["launch"]["threads"]
-        if "weak_scale" in j["launch"]:
-            WEAK_SCALE = j["launch"]["weak_scale"]
-        if "check" in j["launch"]:
-            CHECK = j["launch"]["check"]
-        if "cluster_config" in j["launch"]:
-            CLUSTER_CONFIG = j["launch"]["cluster_config"]
+
+    j = load_json(args.launch_config)
+    ALGOS = j["launch"]["algo"]
+    DATASETS = j["launch"]["input"]
+    N = j["launch"]["rep"]
+    PREFIX = j["launch"]["prefix"]
+    if "threads" in j["launch"]:
+        THREADS=j["launch"]["threads"]
+    if "weak_scale" in j["launch"]:
+        WEAK_SCALE = j["launch"]["weak_scale"]
+    if "check" in j["launch"]:
+        CHECK = j["launch"]["check"]
+    if "cluster_config" in j["launch"]:
+        CLUSTER_CONFIG = j["launch"]["cluster_config"]
+
+    CHECK = CHECK or args.force_sa_check;
 
     counter = 0
     print("Starting jobs...")
@@ -209,7 +211,7 @@ if args.launch:
                 if CHECK:
                     maybe_check = "-q"
 
-                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check}".format(
+                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -s -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check}".format(
                     bench_out=batch_output,
                     prefix=local_prefix,
                     rep=N,
@@ -236,8 +238,8 @@ if args.launch:
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)
         print("Started {} jobs!".format(counter))
-        print("Current personal job queue:")
-        subprocess.run("squeue -u $USER", shell=True)
+        #print("Current personal job queue:")
+        #subprocess.run("squeue -u $USER", shell=True)
 
 def load_data(dir):
     index = load_json(dir / Path("index.json"))
