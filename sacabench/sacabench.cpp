@@ -115,8 +115,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     bool force_overwrite = false;
     uint32_t sa_minimum_bits = 32;
     uint32_t repetition_count = 1;
-    bool plot = false;
-    bool automation = false;
+    bool rplot = false;
+    bool latexplot = false;
     bool fast_check = false;
     {
         construct.set_config("--config", "",
@@ -168,8 +168,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "larger number will possibly yield more accurate results",
             1);
 
-        construct.add_flag("-z,--plot", plot, "Plot measurements.");
-        construct.add_flag("--automation", automation, "Automatic generation of pdf report.");
+        construct.add_flag("-z,--rplot", rplot, "Plots measurements with R.");
+        construct.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.");
     }
 
     CLI::App& demo =
@@ -209,8 +209,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             .add_option("--blacklist", blacklist,
                         "Blacklist algorithms from execution")
             ->excludes(wlist);
-        batch.add_flag("-z,--plot", plot, "Plot measurements.")->needs(b_opt);
-        batch.add_flag("--automation", automation, "Automatic generation of pdf report.");
+        batch.add_flag("-z,--rplot", rplot, "Plots measurements with R.")->needs(b_opt);
+        batch.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.");
     }
 
     CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
@@ -449,7 +449,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             }
         }
 
-        if (automation) {
+        if (latexplot) {
             // Create json file with config 
             // file name, prefix size, amount of repetitions
             nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
@@ -588,7 +588,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             }
         }
 
-        if (automation) {
+        if (latexplot) {
             // Create json file with config 
             // file name, prefix size, amount of repetitions
             nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
@@ -649,7 +649,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
     };
 
-    if (plot || plot_app) {
+    if (rplot || plot_app) {
         if (benchmark_filename == "-") {
             abort(); // TODO: this can not work!;
         }
@@ -673,7 +673,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             text_size = text->text_size();
         }
 
-        if (plot) {
+        if (rplot) {
             do_plot(benchmark_filename, input_filename, batch, text_size,
                     out_benchmark);
         }
