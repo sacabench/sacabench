@@ -69,6 +69,7 @@ class ResultKeys:
     memPeak = "memPeak"
     threads = "threads"
     time = "time"	
+    checkResult = "sacheck"	
 
 def buildResultString(data):
     """
@@ -154,6 +155,11 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionCount, repet
             data[ResultKeys.memFinal] = algorithmEntry["memFinal"]
             data[ResultKeys.memOff] = algorithmEntry["memOff"]
             data[ResultKeys.memPeak] = algorithmEntry["memPeak"]
+
+    saCheckDataDict = dict["sub"][1]["stats"]
+    for checkEntry in saCheckDataDict:
+        if checkEntry["key"] == "check_result":
+            data[ResultKeys.checkResult] = checkEntry["value"]
 
     numberOfPhases = 0
     allPhases = dict["sub"][0]["sub"]

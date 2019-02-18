@@ -57,7 +57,7 @@
     blue,densely dashed,mark=square*,every mark/.append style=solid\\%
     teal,every mark/.append style={fill=teal!80!black},mark=otimes*\\%
     orange,every mark/.append style={fill=orange!80!black},mark=star\\%
-    cyan!60!black,every mark/.append style={fill=cyan!80!black},diamond=*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=diamond*\\%
     red!70!white,mark=*\\%
     lime!80!black,every mark/.append style={fill=lime},mark=square*\\%
     red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=otimes*\\%
@@ -66,7 +66,7 @@
     blue,densely dashed,mark=square*,every mark/.append style=*\\%
     teal,every mark/.append style={fill=teal!80!black},mark=square*\\%
     orange,every mark/.append style={fill=orange!80!black},mark=otimes*\\%
-    cyan!60!black,every mark/.append style={fill=cyan!80!black},diamond=star\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=star\\%
     red!70!white,mark=diamond*\\%
     lime!80!black,every mark/.append style={fill=lime},mark=*\\%
     red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=square*\\%
@@ -92,7 +92,7 @@
                 width=0.5\textwidth,
                 height=90mm,
                 title={\VAR{config.escaped_input_file}},
-                xlabel={num Threads, input size [100\,MB]},
+                xlabel={num Threads, input size [200\,MB]},
                 ylabel={SA construction time [s]},
                 legend columns=4,
                 legend to name=legend\VAR{config.id},
@@ -104,8 +104,8 @@
 
             %% MULTIPLOT(algo) SELECT thread_count AS x, time/1000 AS y, MULTIPLOT
             %% FROM (
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
-            %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
 
         \end{axis}
         \begin{axis}[
@@ -116,14 +116,14 @@
                 width=0.5\textwidth,
                 height=90mm,
                 title={\VAR{config.escaped_input_file}},
-                xlabel={num Threads, input size [100\,MB]},
+                xlabel={num Threads, input size [200\,MB]},
                 ylabel={Extra Memory [MB]},
             ]
 
             %% MULTIPLOT(algo) SELECT thread_count AS x, memPeak/1000000 AS y, MULTIPLOT
             %% FROM (
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
-            %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
 
             \legend{}
         \end{axis}

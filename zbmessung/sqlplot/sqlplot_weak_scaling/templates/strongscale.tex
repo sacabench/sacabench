@@ -104,8 +104,8 @@
 
             %% MULTIPLOT(algo) SELECT thread_count AS x, time/1000 AS y, MULTIPLOT
             %% FROM (
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
-            %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
 
         \end{axis}
         \begin{axis}[
@@ -122,8 +122,8 @@
 
             %% MULTIPLOT(algo) SELECT thread_count AS x, memPeak/1000000 AS y, MULTIPLOT
             %% FROM (
-            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
-            %% ) WHERE input="\VAR{config.input_file}" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
 
             \legend{}
         \end{axis}
