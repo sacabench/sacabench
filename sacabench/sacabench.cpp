@@ -389,8 +389,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
-        construct.add_flag("-z,--rplot", rplot, "Plots measurements with R.");
-        construct.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.");
+        construct.add_flag("-z,--rplot", rplot, "Plots measurements with R.")->needs(b_opt);
+        construct.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.")->needs(b_opt);
         construct.add_flag("-s,--sysinfo", sysinfo, "Add system information to benchmark output.")->needs(b_opt);
     }
 
@@ -432,7 +432,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Blacklist algorithms from execution")
             ->excludes(wlist);
         batch.add_flag("-z,--rplot", rplot, "Plots measurements with R.")->needs(b_opt);
-        batch.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.");
+        batch.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.")->needs(b_opt);
         batch.add_flag("-s,--sysinfo", sysinfo, "Add system information to benchmark output.")->needs(b_opt);
     }
 
