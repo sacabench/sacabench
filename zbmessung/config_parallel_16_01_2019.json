@@ -29,6 +29,6 @@
             1, 2, 4, 8, 12, 16, 20
         ],
         "weak_scale": false,
-        "check": false
+        "check": true
     }
 }
