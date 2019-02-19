@@ -93,7 +93,7 @@ sa_check_result sa_check_naive_sorter(span<sa_index_type> sa, string_span text,
 template <typename sa_index_type>
 sa_check_result sa_check_naive(span<sa_index_type> sa, string_span text) {
     return sa_check_naive_sorter<sa_index_type>(
-        sa, text, [](auto slice, auto cmp_func) { sort::std_sort(slice, cmp_func); });
+        sa, text, [](auto slice, auto cmp_func) { sort::std_par_sort(slice, cmp_func); });
 }
 
 template <typename sa_index_type, typename sorter_type>
@@ -175,9 +175,14 @@ template <typename sa_index_type>
 sa_check_result sa_check_dispatch(span<sa_index_type> sa, string_span text,
                                   bool fast) {
     if (fast) {
+        return sa_check_naive(sa, text);
+    }
+    /*
+    if (fast) {
         return sa_check_sorter(
             sa, text, [](auto slice, auto cmp_func) { sort::ips4o_sort_parallel(slice, cmp_func); });
     }
+    */
     return sa_check(sa, text);
 }
 

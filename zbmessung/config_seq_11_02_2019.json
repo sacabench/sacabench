@@ -48,7 +48,7 @@
         "rep": 1,
         "prefix": 200,
         "threads": [
-            1
+            20
         ],
         "weak_scale": false,
         "check": false
