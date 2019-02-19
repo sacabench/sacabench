@@ -477,13 +477,16 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     auto implemented_algos = [&] {
         std::cout << "Currently implemented algorithms:" << std::endl;
         bool first = true;
+        if (list_json) {
+                std::cout << "[" << std::endl;
+        }
         for (const auto& a : saca_list) {
             if (list_json) {
                 if (first) {
-                    std::cout << "\"" << a->name() << "\"";
+                    std::cout << "\t\"" << a->name() << "\"";
                     first = false;
                 } else {
-                    std::cout << "," << std::endl << "\"" << a->name() << "\"";
+                    std::cout << "," << std::endl << "\t\"" << a->name() << "\"";
                 }
             } else {
                 std::cout << "  [" << a->name() << "]" << std::endl;
@@ -492,6 +495,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     std::cout << std::endl;
                 }
             }
+        }
+        if (list_json) {
+                std::cout << "\n]" << std::endl;
         }
         std::cout << std::endl;
     };
