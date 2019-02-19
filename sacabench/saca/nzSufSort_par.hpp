@@ -56,8 +56,6 @@ namespace sacabench::nzsufsort_par {
                   revert the characters in t*/
                 bool is_text_reverted = false;  
                 util::container<util::character> tmp_text;
-                std::cout << "count_s_type_pos: " << count_s_type_pos << std::endl;
-                std::cout << "text.size()/2: " << text.size()/2 << std::endl;
                 if (count_s_type_pos > text.size()/2) {
                     phase.split("Transform input text");
                     //TODO: Text kann nicht überschrieben werden
@@ -71,16 +69,12 @@ namespace sacabench::nzsufsort_par {
                     is_text_reverted = true;
                 }
                 
-                std::cout << "is_text_reverted: " << is_text_reverted << std::endl;
-                
                 // calculate position array of s-type-positions with i mod 3 != 0
                 size_t mod_1 = count_s_type_pos/3 + (count_s_type_pos % 3 > 1);
                 size_t mod_2 = count_s_type_pos/3;
                 util::span<sa_index> p_12 = out_sa.slice(0, mod_1+mod_2);
                 phase.split("Calculate position arrays");
                 calculate_p_12(text, p_12, count_s_type_pos);
-                
-                std::cout << "p_12: " << p_12 << std::endl;
                 
                 // calculate length of Z_3-Strings
                 phase.split("Calculate array of length of Z_3-Strings");
@@ -148,8 +142,6 @@ namespace sacabench::nzsufsort_par {
                     to_be_sorted_12[i] = p_12[to_be_sorted_12[i]];
                 }
                 std::copy(to_be_sorted_12.begin(), to_be_sorted_12.end(), p_12.begin());
-                
-                std::cout << "p_12: " << p_12 << std::endl;
                 
                 //calculate t_12 in the begin of out_sa
                 phase.split("Calculate reduced text t_12");
@@ -270,10 +262,6 @@ namespace sacabench::nzsufsort_par {
                 
                 calculate_p_0(text, p_0, count_s_type_pos);
                 calculate_p_12(text, p_12, count_s_type_pos);
-                std::cout << "p_0: " << p_0 << std::endl;
-                std::cout << "p_12: " << p_12 << std::endl;
-                std::cout << "sa_0: " << sa_0 << std::endl;
-                std::cout << "sa_12: " << sa_12 << std::endl;
                 
                 phase.split("Update indices of SA_0 and SA_12 with position arrays");
                 #pragma omp parallel for
@@ -285,9 +273,6 @@ namespace sacabench::nzsufsort_par {
                 for (size_t i = 0; i < sa_12.size(); ++i) {
                     sa_12[i] = p_12[sa_12[i]];
                 }
-                
-                std::cout << "sa_0: " << sa_0 << std::endl;
-                std::cout << "sa_12: " << sa_12 << std::endl;
                 
                 // revert sa_0 and sa_12 so we can traverse them easier later
                 revert(sa_0);
@@ -470,8 +455,6 @@ namespace sacabench::nzsufsort_par {
                     last_char = text[i-1];
                 }
                 
-                std::cout << "out_sa: " << out_sa << std::endl;
-                
                 /* calculate sa_012 by traversing isa_012 */
                 phase.split("Calculate SA_012");
                 util::span<sa_index> sa_012 = out_sa.slice(0, count_s_type_pos);
@@ -495,8 +478,6 @@ namespace sacabench::nzsufsort_par {
                     last_char = text[i-1];
                 }
                 
-                std::cout << "p_012: " << p_012 << std::endl;
-                
                 /* update sa_012 with positions in p_012 */ 
                 phase.split("Update SA_012 with s-type-positions");
                 #pragma omp parallel for
@@ -507,8 +488,6 @@ namespace sacabench::nzsufsort_par {
                 /* induction scan to calculate correct sa */
                 phase.split("Induce SA");
                 left_induction_scan(text, out_sa, alphabet.size_with_sentinel()+1, count_s_type_pos);
-                
-                std::cout << "out_sa: " << out_sa << std::endl;
                 
                 /* if text was reverted at the beginning out_sa must be reverted */
                 if (is_text_reverted) { 
@@ -806,9 +785,6 @@ namespace sacabench::nzsufsort_par {
             static void calculate_t_0(const T& text, util::span<sa_index> out_sa, 
                     size_t start_sa_12, size_t length_sa_12, size_t start_p_0, 
                     size_t length_p_0, size_t count_s_type_pos) {
-                        
-                std::cout << "out_sa: " << out_sa << std::endl;
-                
                 util::span<sa_index> sa_12 = out_sa.slice(start_sa_12, start_sa_12+length_sa_12);
                 util::span<sa_index> p_0 = out_sa.slice(start_p_0, start_p_0+length_p_0);
                 // revert p_0 so we can access it later from left to right
@@ -838,7 +814,6 @@ namespace sacabench::nzsufsort_par {
                     if (curr_pos_sa_12 == start_sa_12) { break; }
                 }
                 
-                std::cout << "out_sa: " << out_sa << std::endl;
                 /* Determine lexicographical ranks of Positions p_0 and save
                    them in correct positions in out_sa */
                 size_t rank = 1;
@@ -865,7 +840,6 @@ namespace sacabench::nzsufsort_par {
                     last_char = text[i-1];
                 }
                 if (length_p_0 > 0) { out_sa[out_sa[last_i-1]] = rank; }
-                std::cout << "out_sa: " << out_sa << std::endl;
                 
                 /* Determine t_0 by looking up the lexicographical ranks 
                    in out_sa and save them in l-type-positions of out_sa in reverted order*/
@@ -911,7 +885,6 @@ namespace sacabench::nzsufsort_par {
                     }
                     last_char = text[i-1];
                 }
-                std::cout << "out_sa: " << out_sa << std::endl;
 
                 /* move l-type-positions to the end of out_sa */
                 size_t counter = text.size()-1;
@@ -924,7 +897,6 @@ namespace sacabench::nzsufsort_par {
                     if (!s_type) { out_sa[counter--] = out_sa[i-1]; }
                     last_char = text[i-1];
                 }
-                std::cout << "out_sa: " << out_sa << std::endl;
                 
                 /* move sa_12 and t_0 to the begin of out_sa */
                 size_t p_0_first = text.size()-length_p_0;
@@ -937,7 +909,6 @@ namespace sacabench::nzsufsort_par {
                 for (size_t i = length_sa_12; i > 0; --i) {
                     sa_12[i-1] = out_sa[sa_12_first+i-1];
                 }
-                std::cout << "out_sa: " << out_sa << std::endl;
             }
             
             template<typename C, typename T>
