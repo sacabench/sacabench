@@ -673,7 +673,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             maybe_do_output_benchmark(sum_array);
         }
 
-        maybe_do_automation(automation_prefix, repetition_count);
+        maybe_do_latexplot(automation_prefix, repetition_count);
     }
 
     if (demo) {
