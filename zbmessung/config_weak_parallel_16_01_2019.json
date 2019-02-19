@@ -1,8 +1,8 @@
 {
     "launch" : {
         "algo": [
-            "DC3_parallel",
-            "DC3-Parallel-2",
+            "DC3-Parallel-V1",
+            "DC3-Parallel-V2",
             "DivSufSort_PARALLEL_ref",
             "DivSufSort_par_ref",
             "Osipov_parallel_wp",
