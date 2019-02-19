@@ -38,10 +38,7 @@ namespace sacabench::nzsufsort {
                                      util::alphabet const& alphabet,
                                      util::span<sa_index> out_sa) {
                 tdc::StatPhase phase("Count s-type-positions");
-                
-                std::cout << "text.size: " << text.size() << std::endl;
-                std::cout << "out_sa.size: " << out_sa.size() << std::endl;
-                
+                               
                 // count number of s-type-positions in text
                 size_t count_s_type_pos = 1;
                 bool s_type = true;
