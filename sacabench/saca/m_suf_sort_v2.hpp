@@ -431,7 +431,7 @@ public:
                 }
             }
             // Debug information: global_rank at text.size()? (Next rank would be invalid)
-            std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
+            // std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
         #endif
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
