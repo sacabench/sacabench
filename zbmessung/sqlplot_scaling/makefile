@@ -7,9 +7,9 @@ CONFIG = plotconfig.json
 all: main
 
 sqlplottools:
-	git clone https://github.com/bingmann/sqlplot-tools.git sqlplottools
-	mkdir -p sqlplottools/build
-	cd sqlplottools/build && cmake .. && $(MAKE)
+	git clone https://github.com/bingmann/sqlplot-tools.git ../sqlplot/sqlplottools
+	mkdir -p ../sqlplot/sqlplottools/build
+	cd ../sqlplot/sqlplottools/build && cmake .. && $(MAKE)
 
 json:
 	mkdir -p result
@@ -17,7 +17,7 @@ json:
 
 sql: json sqlplottools
 	for file in $(shell ls *.tex); do \
-		./sqlplottools/build/src/sp-process $$file; \
+		../sqlplot/sqlplottools/build/src/sp-process $$file; \
 	done;
 
 main: sql
