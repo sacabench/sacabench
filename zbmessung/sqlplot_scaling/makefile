@@ -13,7 +13,7 @@ sqlplottools:
 
 json:
 	mkdir -p result
-	python ../json_to_result_converter.py $(CONFIG) $(BENCHMARK) result scaling
+	python ../sqlplot/json_to_result_converter.py $(CONFIG) $(BENCHMARK) result scaling
 
 sql: json sqlplottools
 	for file in $(shell ls *.tex); do \
