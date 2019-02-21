@@ -206,7 +206,7 @@ if args.launch_config:
                 local_prefix = PREFIX
                 if omp_threads and WEAK_SCALE:
                     local_prefix *= omp_threads
-                local_prefix = "{}M".format(local_prefix)
+                local_prefix_str = "{}M".format(local_prefix)
                 maybe_check = ""
                 if CHECK:
                     maybe_check = "-q"
@@ -218,7 +218,7 @@ if args.launch_config:
 
                 cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -s -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check} -m {sa_bits}".format(
                     bench_out=batch_output,
-                    prefix=local_prefix,
+                    prefix=local_prefix_str,
                     rep=N,
                     algo=algo,
                     input_path=input_path,
@@ -234,7 +234,7 @@ if args.launch_config:
                     "input": str(input_path),
                     "algo": algo,
                     "prefix": "{}M".format(PREFIX),
-                    "actual_prefix": local_prefix,
+                    "actual_prefix": local_prefix_str,
                     "rep": N,
                     "jobid": jobid,
                     "threads": omp_threads,
