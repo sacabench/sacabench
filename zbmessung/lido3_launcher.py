@@ -211,13 +211,19 @@ if args.launch_config:
                 if CHECK:
                     maybe_check = "-q"
 
-                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -s -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check}".format(
+                sa_bits = 32
+
+                if local_prefix > (2 ** 31):
+                    sa_bits = 64
+
+                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -s -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check} -m {sa_bits}".format(
                     bench_out=batch_output,
                     prefix=local_prefix,
                     rep=N,
                     algo=algo,
                     input_path=input_path,
-                    maybe_check=maybe_check
+                    maybe_check=maybe_check,
+                    sa_bits=sa_bits,
                 )
 
                 jobid = launch_job(cwd, cmd, output, omp_threads, cluster_configs[CLUSTER_CONFIG])

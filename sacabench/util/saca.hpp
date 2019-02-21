@@ -297,10 +297,10 @@ public:
                  size_t minimum_sa_bit_width) const {
         if (minimum_sa_bit_width <= 32) {
             return construct_sa_32(text);
-        // } else if (minimum_sa_bit_width <= 40) {
-        //     return construct_sa_40(text);
-        // } else if (minimum_sa_bit_width <= 48) {
-        //     return construct_sa_48(text);
+        } else if (minimum_sa_bit_width <= 40) {
+            return construct_sa_40(text);
+        } else if (minimum_sa_bit_width <= 48) {
+            return construct_sa_48(text);
         } else {
             return construct_sa_64(text);
         }
