@@ -7,7 +7,7 @@ CONFIG = plotconfig.json
 all: main
 
 sqlplottools:
-	git clone https://github.com/bingmann/sqlplot-tools.git ../sqlplot/sqlplottools
+	if [ ! -d ../sqlplot/sqlplottools ] ; then git clone https://github.com/bingmann/sqlplot-tools.git ../sqlplot/sqlplottools; fi
 	mkdir -p ../sqlplot/sqlplottools/build
 	cd ../sqlplot/sqlplottools/build && cmake .. && $(MAKE)
 
