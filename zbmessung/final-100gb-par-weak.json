@@ -25,7 +25,7 @@
         "rep": 1,
         "prefix": 200,
         "threads": [
-            4, 8, 12, 16, 20
+            1, 2, 4, 8, 12, 16, 20
         ],
         "weak_scale": true,
         "check": true
