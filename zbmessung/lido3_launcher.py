@@ -28,6 +28,7 @@ def load_str(path):
 log_str = ""
 def log_print(s):
     print(s)
+    global log_str
     log_str += "{}\n".format(s)
 
 # ---------------------
