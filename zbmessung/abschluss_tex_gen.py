@@ -176,13 +176,13 @@ def nice_file(f):
     f = latex_rotate(f)
     return f
 
-def fix_algo_name(n):
-    if n == "DSS":
-        n = "DivSufSort"
-    n = n[0].capitalize() + n[1:]
-    return n
-
 def nice_algoname(n):
+    def fix_algo_name(n):
+        if n == "DSS":
+            n = "DivSufSort"
+        n = n[0].capitalize() + n[1:]
+        return n
+
     n = fix_algo_name(n)
     n = "\\text{{{}}}".format(n)
     #n = n.replace("_par_ref", "}äää{\\text{par,ref}}{")
@@ -193,33 +193,6 @@ def nice_algoname(n):
     n = n.replace("{}", "")
     n = "${}$".format(n)
     return n
-
-def generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit):
-    out = ""
-    out += "\\subsection{{{}}}\n".format(title)
-    out += "\n{}\n".format(header_text).replace("%LABEL", label)
-    out += "\\begin{table}\n"
-    out += "\\caption{{{}{}}}\n".format(title, unit)
-    out += "\\label{{{}}}\n".format(label)
-    out += "\\resizebox{\\textwidth}{!}{\n"
-    out += "\\begin{tabular}{l" + "".join(["r" for e in files]) + "}\n"
-    out += "\\toprule\n"
-
-    nice_files = [nice_file(s) for s in files]
-
-    out += "     & {} \\\\\n".format(" & ".join(nice_files))
-    out += "\\midrule\n"
-
-    for algorithm_name in algorithms:
-        data = list(map(lambda f : get_data(f, algorithm_name), files))
-        out += "    {} & {} \\\\\n".format(nice_algoname(algorithm_name), " & ".join(data))
-
-    out += "\\bottomrule\n"
-    out += "\\end{tabular}\n"
-    out += "}\n"
-    out += "\\end{table}\n"
-
-    return out
 
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
