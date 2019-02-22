@@ -6,6 +6,7 @@
             "DivSufSort_PARALLEL_ref",
             "DivSufSort_par_ref",
             "Osipov_parallel_wp",
+            "Discarding2Parallel",
             "Discarding4Parallel",
             "NaivIps4oParallel",
             "NaivParallel",
