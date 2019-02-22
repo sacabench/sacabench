@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * Copyright (C) 2019 Oliver Magiera <oliver.magiera@tu-dortmund.de>
+ *
+ * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ ******************************************************************************/
+
 #pragma once
 
 struct Max_without_branching;

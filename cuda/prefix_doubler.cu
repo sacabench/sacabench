@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (C) 2019 Hermann Foot <hermann.foot@tu-dortmund.de>
+ * Copyright (C) 2019 Oliver Magiera <oliver.magiera@tu-dortmund.de>
+ * Copyright (C) 2019 Marvin Löbel <loebel.marvin@gmail.com>
+ *
+ * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ ******************************************************************************/
+
+
 #include <string>
 #include <iostream>
 #include "../external/cub/cub/cub.cuh"

@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (C) 2019 Marvin Löbel <loebel.marvin@gmail.com> 
+ * Copyright (C) 2019 Oliver Magiera <oliver.magiera@tu-dortmund.de>
+ * Copyright (C) 2019 Hermann Foot <hermann.foot@tu-dortmund.de>
+ *
+ * All rights reserved. Published under the BSD-3 license in the LICENSE file.
+ ******************************************************************************/
+
 #include<iostream>
 #include<cstdint>
 #include<cstddef>
