@@ -109,8 +109,6 @@ def handle_tablegen(args):
     pprint.pprint(threads_and_sizes)
     pprint.pprint(files)
 
-    return
-
     for f in files:
         for algorithm_name in algorithms:
             if f not in matrix:
@@ -154,8 +152,8 @@ def handle_tablegen(args):
             #pprint.pprint([f, algorithm_name])
 
 
-    #pprint.pprint(matrix)
-    generate_latex_table(matrix, algorithms, files)
+    pprint.pprint(matrix)
+    #generate_latex_table(matrix, algorithms, files)
 
 def latex_rotate(s):
     return "\\rotatebox[origin=c]{{90}}{{{}}}".format(s)
