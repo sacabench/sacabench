@@ -114,6 +114,7 @@ def handle_tablegen(args):
     threads_and_sizes = list(sorted(threads_and_sizes))
     files = list(sorted(files))
 
+    # Do some post-processing
     for threads_and_size in threads_and_sizes:
         for f in files:
             for algorithm_name in algorithms:
@@ -157,10 +158,7 @@ def handle_tablegen(args):
                 process(avg, statistics.mean)
                 process(med, statistics.median)
 
-                #pprint.pprint([f, algorithm_name])
-
-        #pprint.pprint(matrix)
-        generate_latex_table(matrix, algorithms, files)
+    generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files)
 
 def latex_rotate(s):
     return "\\rotatebox[origin=c]{{90}}{{{}}}".format(s)
@@ -223,7 +221,43 @@ def generate_latex_table_single(data, algorithms, files, get_data, title, header
 
     return out
 
-def generate_latex_table(data, algorithms, files):
+def generate_latex_table_single_2(multidim_array,
+                                  x_headings,
+                                  y_headings,
+                                  title,
+                                  header_text,
+                                  label):
+    out = ""
+    out += "\\subsection{{{}}}\n".format(title)
+    out += "\n{}\n".format(header_text).replace("%LABEL", label)
+    out += "\\begin{table}\n"
+    out += "\\caption{{{}}}\n".format(title)
+    out += "\\label{{{}}}\n".format(label)
+    out += "\\resizebox{\\textwidth}{!}{\n"
+
+    assert len(x_headings) == 1
+    assert len(y_headings) == 1
+
+    out += "\\begin{tabular}{l" + "".join(["r" for e in x_headings[0]]) + "}\n"
+    out += "\\toprule\n"
+
+    out += "     & {} \\\\\n".format(" & ".join(x_headings[0]))
+    out += "\\midrule\n"
+
+    for y_heading in y_headings[0]:
+        data = ["" for e in x_headings[0]] #list(map(lambda f : get_data(f, algorithm_name), files))
+        out += "    {} & {} \\\\\n".format(y_heading, " & ".join(data))
+
+    out += "\\bottomrule\n"
+    out += "\\end{tabular}\n"
+    out += "}\n"
+    out += "\\end{table}\n"
+
+    return out
+
+def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
+    data = outer_matrix[threads_and_sizes[0]]
+
     #print("files", len(files))
     #print("algorithms", len(algorithms))
 
@@ -330,7 +364,22 @@ Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die 
     ]
 
     for (title, get_data, header_text, label, unit) in batch:
-        out = generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit)
+        #out = generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit)
+
+        # data, algorithms, files
+        x_headings = [
+            [nice_file(s) for s in files]
+        ]
+        y_headings = [
+            [nice_algoname(algorithm_name) for algorithm_name in algorithms]
+        ]
+        multidim_array = []
+        out = generate_latex_table_single_2(multidim_array,
+                                            x_headings,
+                                            y_headings,
+                                            title,
+                                            header_text,
+                                            label)
         print(out)
 
 
