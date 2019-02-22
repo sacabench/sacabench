@@ -194,6 +194,28 @@ def nice_algoname(n):
     n = "${}$".format(n)
     return n
 
+def expanded_headings_size(headings):
+    total_width = 1
+    for e in headings:
+        total_width *= len(e)
+    return total_width
+
+def expand_x_headings(x_headings):
+    total_width = expanded_headings_size(x_headings)
+    rv = []
+    for e in x_headings:
+        rv.append([])
+
+    v = rv[0]
+    for e in x_headings[0]:
+        v.append((e, int(total_width / len(x_headings[0]))))
+        if len(x_headings) > 1:
+            rrv = expand_x_headings(x_headings[1:])[0]
+            for i,sublist in enumerate(rrv):
+                rv[i+1] += sublist
+
+    return (rv, total_width)
+
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
                                   y_headings,
@@ -208,13 +230,28 @@ def generate_latex_table_single_2(multidim_array,
     out += "\\label{{{}}}\n".format(label)
     out += "\\resizebox{\\textwidth}{!}{\n"
 
-    assert len(x_headings) == 1
+    assert len(x_headings) >= 1
     assert len(y_headings) == 1
 
-    out += "\\begin{tabular}{l" + "".join(["r" for e in x_headings[0]]) + "}\n"
+    rv = expand_x_headings(x_headings)
+    x_cells = rv[1]
+    x_cell_levels = rv[0]
+    for x in rv[0]:
+        print(x)
+
+    out += "\\begin{tabular}{l" + ("r" * x_cells) + "}\n"
     out += "\\toprule\n"
 
-    out += "     & {} \\\\\n".format(" & ".join(x_headings[0]))
+    for x_cell_level in x_cell_levels:
+        x_cell_level_fmt = []
+        for (x_cell, span) in x_cell_level:
+            if span == 1:
+                x_cell_level_fmt.append(x_cell)
+            else:
+                x_cell_level_fmt.append("\\multicolumn{{{}}}{{c}}{{{}}}".format(span,x_cell))
+
+        out += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
+
     out += "\\midrule\n"
 
     for y_heading in y_headings[0]:
@@ -321,7 +358,6 @@ def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
         return d
 
     batch = [
-        #("Measured", if_check("data", "exists", "med")),
         ("\\sa Korrektheit", if_check("check_result", "ok", "med"), """
 Wir Überprüfen zunächst, ob alle Testdaten von allen Implementierungen
 korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\texttt{-{}-check} erzeugte Informationen und können in \\cref{%LABEL} eingesehen werden.
@@ -336,20 +372,55 @@ Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die 
          """[1:-1], "messung:tab:mem", " in GiB"),
     ]
 
+    batch = [
+        batch[0]
+    ]
+
     for (title, get_data, header_text, label, unit) in batch:
         #out = generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit)
 
         # data, algorithms, files
+        x_tex_headings = [
+            [nice_file(s) for s in files],
+            ["{}".format(t) for (t, s) in threads_and_sizes],
+        ]
+        y_tex_headings = [
+            [nice_algoname(algorithm_name) for algorithm_name in algorithms],
+        ]
+
         x_headings = [
-            [nice_file(s) for s in files]
+            files,
+            threads_and_sizes,
         ]
         y_headings = [
-            [nice_algoname(algorithm_name) for algorithm_name in algorithms]
+            algorithms,
         ]
+
+        def rec(headings):
+            if len(headings) == 1:
+                return [[e] for e in headings[0]]
+            else:
+                r = []
+                for e in headings[0]:
+                    ee = rec(headings[1:])
+                    for eee in ee:
+                        eee.insert(0, e)
+                    r += ee
+                return r
+
         multidim_array = []
+        for [algorithm] in rec(y_headings):
+            multidim_array.append([])
+            for [file, threads_and_size] in rec(x_headings):
+                cell = "{}-{}-{}".format(algorithm, file, threads_and_size)
+                multidim_array[-1].append(cell)
+                #print(algorithm, file, threads_and_size)
+
+        pprint.pprint(multidim_array)
+
         out = generate_latex_table_single_2(multidim_array,
-                                            x_headings,
-                                            y_headings,
+                                            x_tex_headings,
+                                            y_tex_headings,
                                             title,
                                             header_text,
                                             label)
