@@ -25,6 +25,11 @@ def load_str(path):
     with open(path, 'r') as f:
         return f.read()
 
+log_str = ""
+def log_print(s):
+    print(s)
+    log_str += "{}\n".format(s)
+
 # ---------------------
 
 usage = argparse.ArgumentParser()
@@ -111,10 +116,10 @@ def launch_job(cwd, cmd, output, omp_threads, clstcfg):
     )
 
     if args.print_sbatch:
-        print("Instance:\n---\n{}---".format(instance))
+        log_print("Instance:\n---\n{}---".format(instance))
     jobid = subprocess.check_output("sbatch", input=instance, encoding="utf-8")
     jobid = jobid.strip()
-    print("Started job with id {}".format(jobid))
+    log_print("Started job with id {}".format(jobid))
     if jobid != "":
         return jobid
     else:
@@ -177,7 +182,7 @@ if args.launch_config:
     CHECK = CHECK or args.force_sa_check;
 
     counter = 0
-    print("Starting jobs...")
+    log_print("Starting jobs...")
     index = {
         "output_files" : [],
     }
@@ -244,8 +249,8 @@ if args.launch_config:
                 })
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)
-        print("Started {} jobs!".format(counter))
-        #print("Current personal job queue:")
+        log_print("Started {} jobs!".format(counter))
+        #log_print("Current personal job queue:")
         #subprocess.run("squeue -u $USER", shell=True)
 
 def load_data(dir):
@@ -278,11 +283,11 @@ def load_data(dir):
         else:
             err_reason = "no file {}".format(stat_output.name)
 
-        print("Missing data for {}, {}, {}, {} ({})".format(algo, input.name, prefix, threads, err_reason))
+        log_print("Missing data for {}, {}, {}, {} ({})".format(algo, input.name, prefix, threads, err_reason))
         if output.is_file():
-            print("-output----------")
-            print(load_str(output))
-            print("-----------------")
+            log_print("-output----------")
+            log_print(load_str(output))
+            log_print("-----------------")
         continue
 
 def stat_nav_sub(stat, title):
@@ -338,6 +343,7 @@ def to_sqlplot(output_file, stats):
 
 if args.combine:
     dir = Path(args.combine)
+
     sqlplot_out = ""
     file_map = {}
 
@@ -383,7 +389,7 @@ if args.combine:
     for key in file_map:
         (input, threads) = key
         op = dir / Path("results-{}-{}.json".format(input.name, threads))
-        print("Writing data to {}".format(op))
+        log_print("Writing data to {}".format(op))
         #combined_json.append({
         #    "threads": threads,
         #    "input": input.name,
@@ -392,16 +398,20 @@ if args.combine:
         combined_json += file_map[key]
         write_json(op, file_map[key])
     op = dir / Path("sqlplot.txt")
-    print("Writing data to {}".format(op))
+    log_print("Writing data to {}".format(op))
     write_str(op, sqlplot_out)
 
     op = dir / Path("results-combined.json")
-    print("Writing data to {}".format(op))
+    log_print("Writing data to {}".format(op))
     #write_json(op, {
     #    "measures": combined_json,
     #    "sqlplot": sqlplot_out,
     #})
     write_json(op, combined_json)
+
+    logpath = dir / Path("combine.log")
+    log_print("Writing data to {}".format(logpath))
+    write_str(logpath, log_str)
 
     # input_file
     # thread_count
