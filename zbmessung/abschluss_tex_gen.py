@@ -44,8 +44,10 @@ def handle_tablegen(args):
     path = args.path
     mode = args.mode
 
-    matrix = {}
+    outer_matrix = {}
+
     algorithms = set()
+    files = set()
     threads_and_sizes = set()
 
     js = load_json_from_file(path)
@@ -78,11 +80,18 @@ def handle_tablegen(args):
         sa_peak = get_mem_time(sa_alloc_phase)[0]
 
         # Gather data in central data structure
+
+        if (thread_count, prefix) not in outer_matrix:
+            outer_matrix[(thread_count, prefix)] = {}
+
+        matrix = outer_matrix[(thread_count, prefix)]
+
         if input_file not in matrix:
             matrix[input_file] = {}
 
         algorithms.add(algorithm_name)
         threads_and_sizes.add((thread_count, prefix))
+        files.add(input_file)
 
         if algorithm_name not in matrix[input_file]:
             matrix[input_file][algorithm_name] = {
@@ -103,57 +112,55 @@ def handle_tablegen(args):
     # Prepare matrix of all gathered data
     algorithms = list(sorted(algorithms))
     threads_and_sizes = list(sorted(threads_and_sizes))
-    files = list(sorted(matrix))
+    files = list(sorted(files))
 
-    pprint.pprint(algorithms)
-    pprint.pprint(threads_and_sizes)
-    pprint.pprint(files)
+    for threads_and_size in threads_and_sizes:
+        for f in files:
+            for algorithm_name in algorithms:
+                matrix = outer_matrix[threads_and_size]
 
-    for f in files:
-        for algorithm_name in algorithms:
-            if f not in matrix:
-                matrix[f] = {}
-            if algorithm_name not in matrix[f]:
-                matrix[f][algorithm_name] = { "data": "missing" }
-                continue
+                if f not in matrix:
+                    matrix[f] = {}
+                if algorithm_name not in matrix[f]:
+                    matrix[f][algorithm_name] = { "data": "missing" }
+                    continue
 
-            data = matrix[f][algorithm_name]
-            lst = data["all"]
-            avg = data["avg"]
-            med = data["med"]
+                data = matrix[f][algorithm_name]
+                lst = data["all"]
+                avg = data["avg"]
+                med = data["med"]
 
-            for key in lst[0]:
-                avg[key] = []
-                med[key] = []
+                for key in lst[0]:
+                    avg[key] = []
+                    med[key] = []
 
-            for e in lst:
-                for key in e:
-                    avg[key].append(e[key])
-                    med[key].append(e[key])
+                for e in lst:
+                    for key in e:
+                        avg[key].append(e[key])
+                        med[key].append(e[key])
 
-            def process(t, f):
-                for key in t:
-                    if key == "check_result":
-                        all_ok = all(e == "ok" for e in t[key])
-                        if all_ok:
-                            t[key] = "ok"
+                def process(t, f):
+                    for key in t:
+                        if key == "check_result":
+                            all_ok = all(e == "ok" for e in t[key])
+                            if all_ok:
+                                t[key] = "ok"
+                            else:
+                                t[key] = "error"
+                        elif key == "extra_sentinels":
+                            assert len(set(t[key])) == 1
+
+                            t[key] = int(t[key][0])
                         else:
-                            t[key] = "error"
-                    elif key == "extra_sentinels":
-                        assert len(set(t[key])) == 1
+                            t[key] = f(t[key])
 
-                        t[key] = int(t[key][0])
-                    else:
-                        t[key] = f(t[key])
+                process(avg, statistics.mean)
+                process(med, statistics.median)
 
-            process(avg, statistics.mean)
-            process(med, statistics.median)
+                #pprint.pprint([f, algorithm_name])
 
-            #pprint.pprint([f, algorithm_name])
-
-
-    pprint.pprint(matrix)
-    #generate_latex_table(matrix, algorithms, files)
+        #pprint.pprint(matrix)
+        generate_latex_table(matrix, algorithms, files)
 
 def latex_rotate(s):
     return "\\rotatebox[origin=c]{{90}}{{{}}}".format(s)
@@ -180,7 +187,11 @@ def fix_algo_name(n):
 def nice_algoname(n):
     n = fix_algo_name(n)
     n = "\\text{{{}}}".format(n)
-    n = n.replace("_ref", "}_{\\text{ref}}{")
+    #n = n.replace("_par_ref", "}äää{\\text{par,ref}}{")
+    n = n.replace("_ref", "}äää{\\text{ref}}{")
+    #n = n.replace("_par", "}äää{\\text{par}}{")
+    n = n.replace("_", "\\_")
+    n = n.replace("äää", "_")
     n = n.replace("{}", "")
     n = "${}$".format(n)
     return n
