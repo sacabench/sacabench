@@ -119,7 +119,7 @@ struct naive_parallel {
 
         // Construct a SA by sorting according
         // to the suffix starting at that index.
-        util::sort::std_par_stable_sort(
+        util::sort::std_par_sort(
             out_sa, util::compare_key([&](size_t i) { return text.slice(i); }));
     }
 }; // struct prefix_doubling_discarding

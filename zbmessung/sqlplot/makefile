@@ -6,13 +6,13 @@ BENCHMARK = plots.json
 all: main
 
 sqlplottools:
-	git clone https://github.com/bingmann/sqlplot-tools.git sqlplottools
+	if [ ! -d sqlplottools ] ; then git clone https://github.com/bingmann/sqlplot-tools.git sqlplottools; fi
 	mkdir -p sqlplottools/build
 	cd sqlplottools/build && cmake .. && $(MAKE)
 
 json:
 	mkdir -p result
-	python json_to_result_converter.py $(BENCHMARK) result
+	python json_to_result_converter.py plotconfig.json $(BENCHMARK) result
 
 sql: json sqlplottools
 	for file in $(shell ls *.tex); do \

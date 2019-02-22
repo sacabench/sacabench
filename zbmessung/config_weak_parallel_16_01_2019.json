@@ -1,15 +1,20 @@
 {
     "launch" : {
         "algo": [
-            "DC3_parallel",
-            "DC3-Parallel-2",
+            "DC3-Parallel-V1",
+            "DC3-Parallel-V2",
             "DivSufSort_PARALLEL_ref",
+            "DivSufSort_par_ref",
             "Osipov_parallel_wp",
             "Discarding4Parallel",
             "NaivIps4oParallel",
+            "NaivParallel",
             "BPR_par",
-            "GSACA_parallel",
-            "Deep-Shallow_par"
+            "Deep-Shallow_par",
+            "PARALLEL_SAIS",
+            "mSufSort_par",
+            "mSufSort_scan_par",
+            "mSufSortV2_par"
         ],
         "input": [
             "$WORK/large_datasets/commoncrawl.txt",
@@ -17,10 +22,11 @@
             "$WORK/large_datasets/wiki.txt"
         ],
         "rep": 1,
-        "prefix": 100,
+        "prefix": 200,
         "threads": [
             1, 2, 4, 8, 12, 16, 20
         ],
-        "weak_scale": true
+        "weak_scale": true,
+        "check": true
     }
 }
