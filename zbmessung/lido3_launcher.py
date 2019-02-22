@@ -213,7 +213,7 @@ if args.launch_config:
 
                 sa_bits = 32
 
-                if local_prefix > (2 ** 31):
+                if (local_prefix * 1024 * 1024) > (2 ** 31):
                     sa_bits = 64
 
                 cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -s -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check} -m {sa_bits}".format(
@@ -240,6 +240,7 @@ if args.launch_config:
                     "threads": omp_threads,
                     "is_weak": bool(WEAK_SCALE),
                     "checked": bool(CHECK),
+                    "sa_bits": sa_bits,
                 })
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)
