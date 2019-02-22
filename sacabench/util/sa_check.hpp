@@ -173,7 +173,6 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
 
 template <typename sa_index_type>
 sa_check_result sa_check_fast(span<sa_index_type> sa, string_span text) {
-    using mut_sa_idx = std::remove_cv_t<sa_index_type>;
     DCHECK(can_represent_all_values<mut_sa_idx>(sa.size() + 1));
 
     if (sa.size() != text.size()) {
@@ -183,8 +182,8 @@ sa_check_result sa_check_fast(span<sa_index_type> sa, string_span text) {
 
     if (N > 1) {
         for (size_t i = 1; i < N; i++) {
-            size_t jl = sa[i - 1];
-            size_t jr = sa[i];
+            uint64_t jl = sa[i - 1];
+            uint64_t jr = sa[i];
 
             if ((jl >= N) || (jr >= N)) {
                 return sa_check_result::not_a_permutation;
