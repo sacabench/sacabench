@@ -169,11 +169,12 @@ def latex_color(s, cname):
 def latex_colorbox(s, cname):
     return "\\colorbox{{{}}}{{{}}}".format(cname, s)
 
-def nice_file(f):
+def nice_file(f, rotate=True):
     f = f.replace(".200MB", "")
     f = f.replace("_", "\\_")
     f = "\\texttt{{{}}}".format(f)
-    f = latex_rotate(f)
+    if rotate:
+        f = latex_rotate(f)
     return f
 
 def nice_algoname(n):
@@ -223,11 +224,9 @@ def generate_latex_table_single_2(multidim_array,
                                   header_text,
                                   label):
     out = ""
-    out += "\\subsection{{{}}}\n".format(title)
-    out += "\n{}\n".format(header_text).replace("%LABEL", label)
+    #out += "\\subsection{{{}}}\n".format(title)
+    #out += "\n{}\n".format(header_text).replace("%LABEL", label)
     out += "\\begin{table}\n"
-    out += "\\caption{{{}}}\n".format(title)
-    out += "\\label{{{}}}\n".format(label)
     out += "\\resizebox{\\textwidth}{!}{\n"
 
     assert len(x_headings) >= 1
@@ -236,8 +235,6 @@ def generate_latex_table_single_2(multidim_array,
     rv = expand_x_headings(x_headings)
     x_cells = rv[1]
     x_cell_levels = rv[0]
-    for x in rv[0]:
-        print(x)
 
     out += "\\begin{tabular}{l" + ("r" * x_cells) + "}\n"
     out += "\\toprule\n"
@@ -254,38 +251,32 @@ def generate_latex_table_single_2(multidim_array,
 
     out += "\\midrule\n"
 
-    for y_heading in y_headings[0]:
-        data = ["" for e in x_headings[0]] #list(map(lambda f : get_data(f, algorithm_name), files))
-        out += "    {} & {} \\\\\n".format(y_heading, " & ".join(data))
+    for (y_heading, dataline) in zip(y_headings[0], multidim_array):
+        out += "    {} & {} \\\\\n".format(y_heading, " & ".join(dataline))
 
     out += "\\bottomrule\n"
     out += "\\end{tabular}\n"
     out += "}\n"
+    out += "\\caption{{{}}}\n".format(title)
+    out += "\\label{{{}}}\n".format(label)
     out += "\\end{table}\n"
 
     return out
 
 def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
-    data = outer_matrix[threads_and_sizes[0]]
-
-    #print("files", len(files))
-    #print("algorithms", len(algorithms))
-
-    #sata[f][algorithm_name]["data"]
-
     def if_check(key, cmp, which):
-        nonlocal data
+        nonlocal outer_matrix
 
-        def ret(f, algorithm_name):
-            nonlocal data
+        def ret(ts, f, algorithm_name):
+            nonlocal outer_matrix
             nonlocal cmp
             nonlocal which
             nonlocal key
 
-            if data[f][algorithm_name]["data"] != "exists":
+            if outer_matrix[ts][f][algorithm_name]["data"] != "exists":
                 return "{\color{darkgray}--}"
 
-            if data[f][algorithm_name][which][key] == cmp:
+            if outer_matrix[ts][f][algorithm_name][which][key] == cmp:
                 return "\\cmarkc"
             else:
                 return "\\xmarkc"
@@ -293,25 +284,29 @@ def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
         return ret
 
     def tex_number(key, fmt, which):
-        nonlocal data
+        nonlocal outer_matrix
         nonlocal algorithms
 
-        def ret(f, algorithm_name):
-            nonlocal data
+        def ret(ts, f, algorithm_name):
+            nonlocal outer_matrix
             nonlocal fmt
             nonlocal which
             nonlocal key
             nonlocal algorithms
 
 
-            if data[f][algorithm_name]["data"] != "exists":
+            if outer_matrix[ts][f][algorithm_name]["data"] != "exists":
+                return "{\color{darkgray}--}"
+
+            if outer_matrix[ts][f][algorithm_name][which]["check_result"] != "ok":
                 return "{\color{darkgray}--}"
 
             datapoints = set()
             for ai in algorithms:
-                if not data[f][ai]["data"] != "exists":
-                    d = data[f][ai][which][key]
-                    datapoints.add((d, ai))
+                if not outer_matrix[ts][f][ai]["data"] != "exists":
+                    if not outer_matrix[ts][f][ai][which]["check_result"] != "ok":
+                        d = outer_matrix[ts][f][ai][which][key]
+                        datapoints.add((d, ai))
 
             datapoints = list(sorted(datapoints, key = lambda t: t[0]))
             datapoints = [(d, n, i) for (i, (d, n)) in enumerate(datapoints)]
@@ -321,7 +316,7 @@ def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
             #print((d, i))
             #print()
 
-            raw = data[f][algorithm_name][which][key]
+            raw = outer_matrix[ts][f][algorithm_name][which][key]
             assert raw == d
 
             formated = fmt(d, i, size)
@@ -358,25 +353,21 @@ def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
         return d
 
     batch = [
-        ("\\sa Korrektheit", if_check("check_result", "ok", "med"), """
+        ("\\sa Korrektheit Weak-Scaling Large", if_check("check_result", "ok", "med"), """
 Wir Überprüfen zunächst, ob alle Testdaten von allen Implementierungen
 korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\texttt{-{}-check} erzeugte Informationen und können in \\cref{%LABEL} eingesehen werden.
-         """[1:-1], "messung:tab:sa-chk", ""),
-        ("Laufzeit", tex_number("duration", time_fmt, "med"), """
+         """[1:-1], "messung:tab:sa-chk-weak-large"),
+        ("Laufzeit Weak-Scaling Large in Minuten", tex_number("duration", time_fmt, "med"), """
 Wir betrachten nun in \\cref{%LABEL} die mediane Laufzeit, die jeder Algorithmus für die jeweiligen Testdaten erreicht hat.
 Pro Eingabe sind jeweils die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
-         """[1:-1], "messung:tab:duration", " in Minuten"),
-        ("Speicherpeak", tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"), """
+         """[1:-1], "messung:tab:duration-weak-large"),
+        ("Speicherpeak Weak-Scaling Large in GiB", tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"), """
 \\Cref{%LABEL} entnehmen wir den mediane Speicherverbrauch. Der Wert setzt sich zusammen aus der Allokation für den Eingabetext inklusive der vom Algorithmus benötigten extra Sentinel Bytes, die Allokation für das Ausgabe \sa und dem vom Algorithmus selbst benötigten Speichers.
 Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
-         """[1:-1], "messung:tab:mem", " in GiB"),
+         """[1:-1], "messung:tab:mem-weak-large"),
     ]
 
-    batch = [
-        batch[0]
-    ]
-
-    for (title, get_data, header_text, label, unit) in batch:
+    for (title, get_data, header_text, label) in batch:
         #out = generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit)
 
         # data, algorithms, files
@@ -412,11 +403,12 @@ Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die 
         for [algorithm] in rec(y_headings):
             multidim_array.append([])
             for [file, threads_and_size] in rec(x_headings):
-                cell = "{}-{}-{}".format(algorithm, file, threads_and_size)
+                #cell = "{}-{}-{}".format(nice_algoname(algorithm), nice_file(file, False), threads_and_size[0])
+                cell = get_data(threads_and_size, file, algorithm)
                 multidim_array[-1].append(cell)
                 #print(algorithm, file, threads_and_size)
 
-        pprint.pprint(multidim_array)
+        #pprint.pprint(multidim_array)
 
         out = generate_latex_table_single_2(multidim_array,
                                             x_tex_headings,
