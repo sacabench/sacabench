@@ -121,6 +121,10 @@ public:
         return sorting_order[sorting_idx++];
     }
 
+    inline const span<const std::pair<u_char, u_char>> get_sorting_order() const {
+        return sorting_order.slice();
+    }
+
     inline bool are_buckets_left() const {
         return sorting_idx < sorting_order.size();
     }
