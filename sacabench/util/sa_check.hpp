@@ -173,7 +173,7 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
 
 template <typename sa_index_type>
 sa_check_result sa_check_fast(span<sa_index_type> sa, string_span text) {
-    DCHECK(can_represent_all_values<mut_sa_idx>(sa.size() + 1));
+    DCHECK(can_represent_all_values<std::remove_cv_t<sa_index_type>>(sa.size() + 1));
 
     if (sa.size() != text.size()) {
         return sa_check_result::wrong_length;
