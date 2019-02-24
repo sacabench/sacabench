@@ -1,0 +1,1938 @@
+Missing data for Deep-Shallow_ref, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo000-threads008.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+slurmstepd: error: *** JOB 3537648 ON cstd01-057 CANCELLED AT 2019-02-23T11:14:58 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo000-threads012.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo000-threads016.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo000-threads020.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for MSufSort_ref, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo002-threads008.json)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+/var/spool/slurm/d/job3537662/slurm_script: line 21: 16253 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'MSufSort_ref' -q -m 32
+
+-----------------
+Missing data for MSufSort_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo002-threads020.json)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537665/slurm_script: line 21: 64076 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo002-threads020.json -f -s -p 4000M -r 1 --whitelist 'MSufSort_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo004-threads012.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537677/slurm_script: line 21: 192225 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo004-threads012.json -f -s -p 2400M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo004-threads016.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537678/slurm_script: line 21: 60885 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo004-threads020.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537679/slurm_script: line 21: 88339 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo005-threads012.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3537684/slurm_script: line 21: 193458 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo005-threads012.json -f -s -p 2400M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo005-threads016.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3537685/slurm_script: line 21: 27129 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo005-threads020.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3537686/slurm_script: line 21: 68881 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo008-threads012.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+/var/spool/slurm/d/job3537705/slurm_script: line 21: 13120 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo008-threads012.json -f -s -p 2400M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537705.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo008-threads016.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+/var/spool/slurm/d/job3537706/slurm_script: line 21: 26500 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo008-threads016.json -f -s -p 3200M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537706.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo008-threads020.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537707/slurm_script: line 21: 20627 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo009-threads012.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_array_new_length'
+  what():  std::bad_array_new_length
+/var/spool/slurm/d/job3537712/slurm_script: line 21: 16307 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo009-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo009-threads016.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_array_new_length'
+  what():  std::bad_array_new_length
+/var/spool/slurm/d/job3537713/slurm_script: line 21: 192276 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo009-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo009-threads020.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537714/slurm_script: line 21:  5176 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for Deep-Shallow, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo010-threads004.json)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+slurmstepd: error: *** JOB 3537717 ON cstd01-028 CANCELLED AT 2019-02-23T11:15:28 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo010-threads008.json)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+slurmstepd: error: *** JOB 3537718 ON cstd01-059 CANCELLED AT 2019-02-23T11:15:28 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo010-threads012.json)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+slurmstepd: error: *** JOB 3537719 ON cstd02-003 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo010-threads016.json)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+slurmstepd: error: *** JOB 3537720 ON cstd01-044 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo010-threads020.json)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+slurmstepd: error: *** JOB 3537721 ON cstd01-022 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_bb, commoncrawl.txt, 200M, 2 (no file stat-inp000-algo011-threads002.json)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+slurmstepd: error: *** JOB 3537723 ON cstd02-017 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_bb, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo011-threads004.json)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+slurmstepd: error: *** JOB 3537724 ON cstd02-004 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_bb, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo011-threads008.json)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+slurmstepd: error: *** JOB 3537725 ON cstd01-030 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_bb, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo011-threads012.json)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+slurmstepd: error: *** JOB 3537726 ON cstd01-060 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_bb, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo011-threads016.json)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+slurmstepd: error: *** JOB 3537727 ON cstd01-029 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_bb, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo011-threads020.json)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+slurmstepd: error: *** JOB 3537728 ON cstd01-045 CANCELLED AT 2019-02-23T11:16:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for BPR, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo012-threads020.json)
+-output----------
+Loading input...
+Running BPR (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537735/slurm_script: line 21: 53979 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR_ref, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo013-threads012.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+/var/spool/slurm/d/job3537740/slurm_script: line 21: 160631 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo013-threads012.json -f -s -p 2400M -r 1 --whitelist 'BPR_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537740.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_ref, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo013-threads016.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+/var/spool/slurm/d/job3537741/slurm_script: line 21: 164408 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo013-threads016.json -f -s -p 3200M -r 1 --whitelist 'BPR_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537741.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo013-threads020.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+Error in file kbs_SuffixArrayConstDStepAndPre.c, line 623:
+  Allocation Error, not enough space
+
+-----------------
+Missing data for mSufSort, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo014-threads020.json)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+slurmstepd: error: *** JOB 3537749 ON cstd02-012 CANCELLED AT 2019-02-23T11:18:30 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo015-threads016.json)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+slurmstepd: error: *** JOB 3537755 ON cgpu01-004 CANCELLED AT 2019-02-23T11:19:30 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo015-threads020.json)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+slurmstepd: error: *** JOB 3537756 ON cstd01-047 CANCELLED AT 2019-02-23T11:19:30 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo016-threads020.json)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+slurmstepd: error: *** JOB 3537763 ON cstd01-019 CANCELLED AT 2019-02-23T11:21:35 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Doubling, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo017-threads008.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+slurmstepd: error: *** JOB 3537767 ON cstd02-011 CANCELLED AT 2019-02-23T11:23:06 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Doubling, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo017-threads012.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537768/slurm_script: line 21: 21820 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo017-threads012.json -f -s -p 2400M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo017-threads016.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537769/slurm_script: line 21: 18395 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo017-threads016.json -f -s -p 3200M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo017-threads020.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537770/slurm_script: line 21: 21868 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo017-threads020.json -f -s -p 4000M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Discarding2, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo018-threads012.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537775/slurm_script: line 21: 12557 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo018-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo018-threads016.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537776/slurm_script: line 21: 12592 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo018-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo018-threads020.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537777/slurm_script: line 21: 12626 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo018-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding4, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo019-threads012.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537782/slurm_script: line 21: 150685 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo019-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for Discarding4, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo019-threads016.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537783/slurm_script: line 21: 169200 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo019-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for Discarding4, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo019-threads020.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537784/slurm_script: line 21: 150718 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo019-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for GSACA, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo023-threads012.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537810/slurm_script: line 21: 120275 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo023-threads012.json -f -s -p 2400M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo023-threads016.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537811/slurm_script: line 21: 92333 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo023-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo023-threads020.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537812/slurm_script: line 21: 120448 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo023-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA_Opt, commoncrawl.txt, 200M, 1 (no file stat-inp000-algo024-threads001.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3537813 ON cstd01-051 CANCELLED AT 2019-02-23T11:37:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, commoncrawl.txt, 200M, 2 (no file stat-inp000-algo024-threads002.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3537814 ON cstd01-023 CANCELLED AT 2019-02-23T11:37:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo024-threads004.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3537815 ON cstd01-034 CANCELLED AT 2019-02-23T11:37:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo024-threads008.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3537816 ON cstd01-010 CANCELLED AT 2019-02-23T11:37:44 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo024-threads012.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+/var/spool/slurm/d/job3537817/slurm_script: line 21: 80937 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo024-threads012.json -f -s -p 2400M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537817.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for GSACA_Opt, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo024-threads016.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537818/slurm_script: line 21: 56978 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo024-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+
+-----------------
+Missing data for GSACA_Opt, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo024-threads020.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537819/slurm_script: line 21: 170208 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo024-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+
+-----------------
+Missing data for DC7, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo025-threads012.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537824/slurm_script: line 21: 132499 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo025-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for DC7, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo025-threads016.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+/var/spool/slurm/d/job3537825/slurm_script: line 21: 76423 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo025-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC7' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537825.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC7, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo025-threads020.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537826/slurm_script: line 21: 76471 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo025-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for qsufsort, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo026-threads016.json)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+slurmstepd: error: *** JOB 3537832 ON cstd01-058 CANCELLED AT 2019-02-23T11:42:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for qsufsort, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo026-threads020.json)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537833/slurm_script: line 21: 13036 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo026-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort' -q -m 64
+
+-----------------
+Missing data for Naiv, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo027-threads012.json)
+-output----------
+Loading input...
+Running Naiv (1/1)
+slurmstepd: error: *** JOB 3537838 ON cstd01-043 CANCELLED AT 2019-02-23T11:44:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Naiv, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo027-threads016.json)
+-output----------
+Loading input...
+Running Naiv (1/1)
+slurmstepd: error: *** JOB 3537839 ON cstd01-243 CANCELLED AT 2019-02-23T11:46:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Naiv, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo027-threads020.json)
+-output----------
+Loading input...
+Running Naiv (1/1)
+slurmstepd: error: *** JOB 3537840 ON cstd01-031 CANCELLED AT 2019-02-23T11:46:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, commoncrawl.txt, 200M, 1 (no file stat-inp000-algo028-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3537841 ON cstd02-018 CANCELLED AT 2019-02-23T11:46:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, commoncrawl.txt, 200M, 2 (no file stat-inp000-algo028-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3537842 ON cstd02-019 CANCELLED AT 2019-02-23T11:47:19 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo028-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3537843 ON cstd01-013 CANCELLED AT 2019-02-23T11:47:19 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo028-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3537844 ON cstd02-021 CANCELLED AT 2019-02-23T11:47:49 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo028-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3537845 ON cstd01-003 CANCELLED AT 2019-02-23T11:48:19 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo028-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3537846 ON cstd02-001 CANCELLED AT 2019-02-23T11:49:19 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo028-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3537847 ON cstd01-056 CANCELLED AT 2019-02-23T11:49:19 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo030-threads012.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537859/slurm_script: line 21: 165958 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo030-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo030-threads016.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537860/slurm_script: line 21: 102018 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo030-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo030-threads020.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537861/slurm_script: line 21: 60653 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo030-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DivSufSort, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo031-threads016.json)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+slurmstepd: error: *** JOB 3537867 ON cstd01-007 CANCELLED AT 2019-02-23T11:56:52 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DivSufSort, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo031-threads020.json)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+slurmstepd: error: *** JOB 3537868 ON cstd01-040 CANCELLED AT 2019-02-23T11:58:26 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo032-threads004.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3537871 ON cstd01-026 CANCELLED AT 2019-02-23T12:00:55 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo032-threads008.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3537872 ON cstd01-036 CANCELLED AT 2019-02-23T12:00:55 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo032-threads012.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3537873 ON cstd01-035 CANCELLED AT 2019-02-23T12:00:55 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo032-threads016.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3537874 ON cstd01-002 CANCELLED AT 2019-02-23T12:01:25 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo032-threads020.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3537875 ON cstd01-105 CANCELLED AT 2019-02-23T12:01:55 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo033-threads004.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3537878 ON cstd01-012 CANCELLED AT 2019-02-23T12:02:25 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo033-threads008.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3537879 ON cstd02-009 CANCELLED AT 2019-02-23T12:03:28 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo033-threads012.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3537880 ON cstd01-021 CANCELLED AT 2019-02-23T12:03:28 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo033-threads016.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537881/slurm_script: line 21: 184003 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo033-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for DC3-Lite, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo033-threads020.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537882/slurm_script: line 21: 184112 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo033-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo034-threads012.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537887/slurm_script: line 21: 169663 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo034-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo034-threads016.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537888/slurm_script: line 21: 83423 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo034-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo034-threads020.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537889/slurm_script: line 21: 169710 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo034-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo035-threads012.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537894/slurm_script: line 21: 132331 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo035-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo035-threads016.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537895/slurm_script: line 21: 132378 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo035-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo035-threads020.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537896/slurm_script: line 21: 124945 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp000-algo035-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, 200M, 12 (no file stat-inp001-algo000-threads012.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, 200M, 16 (no file stat-inp001-algo000-threads016.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, 200M, 20 (no file stat-inp001-algo000-threads020.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for MSufSort_ref, dna.txt, 200M, 8 (no file stat-inp001-algo002-threads008.json)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+/var/spool/slurm/d/job3537916/slurm_script: line 21: 133344 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'MSufSort_ref' -q -m 32
+
+-----------------
+Missing data for MSufSort_ref, dna.txt, 200M, 20 (no file stat-inp001-algo002-threads020.json)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537919/slurm_script: line 21: 133394 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo002-threads020.json -f -s -p 4000M -r 1 --whitelist 'MSufSort_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, dna.txt, 200M, 12 (no file stat-inp001-algo004-threads012.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537933/slurm_script: line 21: 190590 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo004-threads012.json -f -s -p 2400M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, dna.txt, 200M, 16 (no file stat-inp001-algo004-threads016.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537934/slurm_script: line 21: 62673 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, dna.txt, 200M, 20 (no file stat-inp001-algo004-threads020.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537935/slurm_script: line 21:  1722 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, dna.txt, 200M, 12 (no file stat-inp001-algo005-threads012.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3537940/slurm_script: line 21: 159021 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo005-threads012.json -f -s -p 2400M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, dna.txt, 200M, 16 (no file stat-inp001-algo005-threads016.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3537941/slurm_script: line 21: 159053 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, dna.txt, 200M, 20 (no file stat-inp001-algo005-threads020.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3537942/slurm_script: line 21: 58138 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, 200M, 12 (no file stat-inp001-algo008-threads012.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+/var/spool/slurm/d/job3537961/slurm_script: line 21: 178397 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo008-threads012.json -f -s -p 2400M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537961.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, 200M, 16 (no file stat-inp001-algo008-threads016.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+/var/spool/slurm/d/job3537962/slurm_script: line 21: 95336 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo008-threads016.json -f -s -p 3200M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537962.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, 200M, 20 (no file stat-inp001-algo008-threads020.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537963/slurm_script: line 21: 108321 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, dna.txt, 200M, 12 (no file stat-inp001-algo009-threads012.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_array_new_length'
+  what():  std::bad_array_new_length
+/var/spool/slurm/d/job3537968/slurm_script: line 21: 85499 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo009-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, dna.txt, 200M, 16 (no file stat-inp001-algo009-threads016.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_array_new_length'
+  what():  std::bad_array_new_length
+/var/spool/slurm/d/job3537969/slurm_script: line 21: 85548 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo009-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, dna.txt, 200M, 20 (no file stat-inp001-algo009-threads020.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537970/slurm_script: line 21: 45675 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for BPR, dna.txt, 200M, 16 (no file stat-inp001-algo012-threads016.json)
+-output----------
+Loading input...
+Running BPR (1/1)
+/var/spool/slurm/d/job3537990/slurm_script: line 21: 172020 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo012-threads016.json -f -s -p 3200M -r 1 --whitelist 'BPR' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537990.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR, dna.txt, 200M, 20 (no file stat-inp001-algo012-threads020.json)
+-output----------
+Loading input...
+Running BPR (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3537991/slurm_script: line 21: 172147 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR_ref, dna.txt, 200M, 12 (no file stat-inp001-algo013-threads012.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+/var/spool/slurm/d/job3537996/slurm_script: line 21: 172595 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo013-threads012.json -f -s -p 2400M -r 1 --whitelist 'BPR_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537996.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_ref, dna.txt, 200M, 16 (no file stat-inp001-algo013-threads016.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+/var/spool/slurm/d/job3537997/slurm_script: line 21: 193813 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo013-threads016.json -f -s -p 3200M -r 1 --whitelist 'BPR_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3537997.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_ref, dna.txt, 200M, 20 (no file stat-inp001-algo013-threads020.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+Error in file kbs_SuffixArrayConstDStepAndPre.c, line 726:
+  Allocation Error, not enough space
+
+-----------------
+Missing data for Doubling, dna.txt, 200M, 12 (no file stat-inp001-algo017-threads012.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538024/slurm_script: line 21: 22869 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo017-threads012.json -f -s -p 2400M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, dna.txt, 200M, 16 (no file stat-inp001-algo017-threads016.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538025/slurm_script: line 21: 193256 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo017-threads016.json -f -s -p 3200M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, dna.txt, 200M, 20 (no file stat-inp001-algo017-threads020.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538026/slurm_script: line 21: 23247 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo017-threads020.json -f -s -p 4000M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Discarding2, dna.txt, 200M, 12 (no file stat-inp001-algo018-threads012.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538031/slurm_script: line 21: 44730 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo018-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, dna.txt, 200M, 16 (no file stat-inp001-algo018-threads016.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538032/slurm_script: line 21: 44777 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo018-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, dna.txt, 200M, 20 (no file stat-inp001-algo018-threads020.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538033/slurm_script: line 21: 44809 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo018-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding4, dna.txt, 200M, 12 (no file stat-inp001-algo019-threads012.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538038/slurm_script: line 21: 44857 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo019-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for Discarding4, dna.txt, 200M, 16 (no file stat-inp001-algo019-threads016.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538039/slurm_script: line 21: 44891 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo019-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for Discarding4, dna.txt, 200M, 20 (no file stat-inp001-algo019-threads020.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538040/slurm_script: line 21: 44923 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo019-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for GSACA, dna.txt, 200M, 12 (no file stat-inp001-algo023-threads012.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538066/slurm_script: line 21: 104161 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo023-threads012.json -f -s -p 2400M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, dna.txt, 200M, 16 (no file stat-inp001-algo023-threads016.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538067/slurm_script: line 21: 103349 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo023-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, dna.txt, 200M, 20 (no file stat-inp001-algo023-threads020.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538068/slurm_script: line 21:  2662 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo023-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA_Opt, dna.txt, 200M, 1 (no file stat-inp001-algo024-threads001.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538069 ON cstd01-020 CANCELLED AT 2019-02-23T13:10:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, dna.txt, 200M, 2 (no file stat-inp001-algo024-threads002.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538070 ON cstd01-038 CANCELLED AT 2019-02-23T13:10:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, dna.txt, 200M, 4 (no file stat-inp001-algo024-threads004.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538071 ON cstd02-005 CANCELLED AT 2019-02-23T13:10:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, dna.txt, 200M, 8 (no file stat-inp001-algo024-threads008.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538072 ON cstd02-016 CANCELLED AT 2019-02-23T13:10:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, dna.txt, 200M, 12 (no file stat-inp001-algo024-threads012.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+/var/spool/slurm/d/job3538073/slurm_script: line 21:  2719 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo024-threads012.json -f -s -p 2400M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538073.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for GSACA_Opt, dna.txt, 200M, 16 (no file stat-inp001-algo024-threads016.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538074/slurm_script: line 21: 48813 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo024-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+
+-----------------
+Missing data for GSACA_Opt, dna.txt, 200M, 20 (no file stat-inp001-algo024-threads020.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538075/slurm_script: line 21:  3098 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo024-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+
+-----------------
+Missing data for DC7, dna.txt, 200M, 12 (no file stat-inp001-algo025-threads012.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538080/slurm_script: line 21: 45605 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo025-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for DC7, dna.txt, 200M, 16 (no file stat-inp001-algo025-threads016.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+/var/spool/slurm/d/job3538081/slurm_script: line 21: 71707 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo025-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC7' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538081.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC7, dna.txt, 200M, 20 (no file stat-inp001-algo025-threads020.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538082/slurm_script: line 21: 122470 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo025-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for qsufsort, dna.txt, 200M, 20 (no file stat-inp001-algo026-threads020.json)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538089/slurm_script: line 21: 94102 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo026-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort' -q -m 64
+
+-----------------
+Missing data for NaivIps4o, dna.txt, 200M, 1 (no file stat-inp001-algo028-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538097 ON cstd01-045 CANCELLED AT 2019-02-23T13:16:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, dna.txt, 200M, 2 (no file stat-inp001-algo028-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538098 ON cstd01-006 CANCELLED AT 2019-02-23T13:16:37 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, dna.txt, 200M, 4 (no file stat-inp001-algo028-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538099 ON cstd02-017 CANCELLED AT 2019-02-23T13:16:37 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, dna.txt, 200M, 8 (no file stat-inp001-algo028-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538100 ON cstd01-053 CANCELLED AT 2019-02-23T13:17:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, dna.txt, 200M, 12 (no file stat-inp001-algo028-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538101 ON cstd02-013 CANCELLED AT 2019-02-23T13:17:37 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, dna.txt, 200M, 16 (no file stat-inp001-algo028-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538102 ON cstd01-024 CANCELLED AT 2019-02-23T13:18:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, dna.txt, 200M, 20 (no file stat-inp001-algo028-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538103 ON cstd02-020 CANCELLED AT 2019-02-23T13:18:07 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3, dna.txt, 200M, 12 (no file stat-inp001-algo030-threads012.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538115/slurm_script: line 21: 58388 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo030-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, dna.txt, 200M, 16 (no file stat-inp001-algo030-threads016.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538116/slurm_script: line 21: 23046 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo030-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, dna.txt, 200M, 20 (no file stat-inp001-algo030-threads020.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538117/slurm_script: line 21: 112401 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo030-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DivSufSort, dna.txt, 200M, 20 (no file stat-inp001-algo031-threads020.json)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+slurmstepd: error: *** JOB 3538124 ON cstd01-037 CANCELLED AT 2019-02-23T13:23:08 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, dna.txt, 200M, 8 (no file stat-inp001-algo032-threads008.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538128 ON cgpu01-004 CANCELLED AT 2019-02-23T13:25:38 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, dna.txt, 200M, 12 (no file stat-inp001-algo032-threads012.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538129 ON cgpu01-006 CANCELLED AT 2019-02-23T13:26:08 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, dna.txt, 200M, 16 (no file stat-inp001-algo032-threads016.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538130 ON cstd01-039 CANCELLED AT 2019-02-23T13:26:38 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, dna.txt, 200M, 20 (no file stat-inp001-algo032-threads020.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538131 ON cstd02-012 CANCELLED AT 2019-02-23T13:26:38 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, dna.txt, 200M, 4 (no file stat-inp001-algo033-threads004.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3538134 ON cstd01-017 CANCELLED AT 2019-02-23T13:28:38 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, dna.txt, 200M, 8 (no file stat-inp001-algo033-threads008.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3538135 ON cstd01-025 CANCELLED AT 2019-02-23T13:30:08 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, dna.txt, 200M, 12 (no file stat-inp001-algo033-threads012.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3538136 ON cstd01-027 CANCELLED AT 2019-02-23T13:30:38 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, dna.txt, 200M, 16 (no file stat-inp001-algo033-threads016.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538137/slurm_script: line 21: 196433 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo033-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for DC3-Lite, dna.txt, 200M, 20 (no file stat-inp001-algo033-threads020.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538138/slurm_script: line 21:  1890 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo033-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, dna.txt, 200M, 12 (no file stat-inp001-algo034-threads012.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538143/slurm_script: line 21: 100736 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo034-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, dna.txt, 200M, 16 (no file stat-inp001-algo034-threads016.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538144/slurm_script: line 21:  7511 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo034-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, dna.txt, 200M, 20 (no file stat-inp001-algo034-threads020.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538145/slurm_script: line 21: 100771 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo034-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, dna.txt, 200M, 12 (no file stat-inp001-algo035-threads012.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538150/slurm_script: line 21: 156281 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo035-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, dna.txt, 200M, 16 (no file stat-inp001-algo035-threads016.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538151/slurm_script: line 21: 196568 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo035-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, dna.txt, 200M, 20 (no file stat-inp001-algo035-threads020.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538152/slurm_script: line 21: 156317 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp001-algo035-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, 200M, 8 (no file stat-inp002-algo000-threads008.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+slurmstepd: error: *** JOB 3538156 ON cstd01-032 CANCELLED AT 2019-02-23T13:36:08 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, 200M, 12 (no file stat-inp002-algo000-threads012.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, 200M, 16 (no file stat-inp002-algo000-threads016.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo000-threads020.json)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+malloc failed (ds_sort)
+
+-----------------
+Missing data for MSufSort_ref, wiki.txt, 200M, 8 (no file stat-inp002-algo002-threads008.json)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+/var/spool/slurm/d/job3538170/slurm_script: line 21: 113197 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'MSufSort_ref' -q -m 32
+
+-----------------
+Missing data for MSufSort_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo002-threads020.json)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538173/slurm_script: line 21: 113287 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo002-threads020.json -f -s -p 4000M -r 1 --whitelist 'MSufSort_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, wiki.txt, 200M, 12 (no file stat-inp002-algo004-threads012.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538185/slurm_script: line 21: 169631 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo004-threads012.json -f -s -p 2400M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, wiki.txt, 200M, 16 (no file stat-inp002-algo004-threads016.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538186/slurm_script: line 21: 191531 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SADS_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo004-threads020.json)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538187/slurm_script: line 21: 169703 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'SADS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, 200M, 12 (no file stat-inp002-algo005-threads012.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3538192/slurm_script: line 21: 169819 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo005-threads012.json -f -s -p 2400M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, 200M, 16 (no file stat-inp002-algo005-threads016.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3538193/slurm_script: line 21: 169888 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo005-threads020.json)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+/var/spool/slurm/d/job3538194/slurm_script: line 21: 22517 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'SAIS_ref' -q -m 64
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, 200M, 12 (no file stat-inp002-algo008-threads012.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+/var/spool/slurm/d/job3538213/slurm_script: line 21: 161487 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo008-threads012.json -f -s -p 2400M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538213.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, 200M, 16 (no file stat-inp002-algo008-threads016.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+/var/spool/slurm/d/job3538214/slurm_script: line 21: 30959 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo008-threads016.json -f -s -p 3200M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538214.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo008-threads020.json)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538215/slurm_script: line 21: 142354 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, wiki.txt, 200M, 12 (no file stat-inp002-algo009-threads012.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_array_new_length'
+  what():  std::bad_array_new_length
+/var/spool/slurm/d/job3538220/slurm_script: line 21: 30095 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo009-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, wiki.txt, 200M, 16 (no file stat-inp002-algo009-threads016.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_array_new_length'
+  what():  std::bad_array_new_length
+/var/spool/slurm/d/job3538221/slurm_script: line 21: 142387 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo009-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for DC3_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo009-threads020.json)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538222/slurm_script: line 21: 171642 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3_ref' -q -m 64
+
+-----------------
+Missing data for BPR, wiki.txt, 200M, 12 (no file stat-inp002-algo012-threads012.json)
+-output----------
+Loading input...
+Running BPR (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538241/slurm_script: line 21: 61165 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo012-threads012.json -f -s -p 2400M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR, wiki.txt, 200M, 16 (no file stat-inp002-algo012-threads016.json)
+-output----------
+Loading input...
+Running BPR (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538242/slurm_script: line 21: 31428 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo012-threads016.json -f -s -p 3200M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR, wiki.txt, 200M, 20 (no file stat-inp002-algo012-threads020.json)
+-output----------
+Loading input...
+Running BPR (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538243/slurm_script: line 21: 30570 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR_ref, wiki.txt, 200M, 12 (no file stat-inp002-algo013-threads012.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+/var/spool/slurm/d/job3538248/slurm_script: line 21: 61542 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo013-threads012.json -f -s -p 2400M -r 1 --whitelist 'BPR_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538248.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_ref, wiki.txt, 200M, 16 (no file stat-inp002-algo013-threads016.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+/var/spool/slurm/d/job3538249/slurm_script: line 21: 15544 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo013-threads016.json -f -s -p 3200M -r 1 --whitelist 'BPR_ref' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538249.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo013-threads020.json)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+Error in file kbs_SuffixArrayConstDStepAndPre.c, line 623:
+  Allocation Error, not enough space
+
+-----------------
+Missing data for Doubling, wiki.txt, 200M, 12 (no file stat-inp002-algo017-threads012.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538276/slurm_script: line 21: 85394 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo017-threads012.json -f -s -p 2400M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, wiki.txt, 200M, 16 (no file stat-inp002-algo017-threads016.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538277/slurm_script: line 21: 85453 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo017-threads016.json -f -s -p 3200M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, wiki.txt, 200M, 20 (no file stat-inp002-algo017-threads020.json)
+-output----------
+Loading input...
+Running Doubling (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538278/slurm_script: line 21: 85861 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo017-threads020.json -f -s -p 4000M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Discarding2, wiki.txt, 200M, 12 (no file stat-inp002-algo018-threads012.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538283/slurm_script: line 21: 183369 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo018-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, wiki.txt, 200M, 16 (no file stat-inp002-algo018-threads016.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538284/slurm_script: line 21: 45762 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo018-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, wiki.txt, 200M, 20 (no file stat-inp002-algo018-threads020.json)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538285/slurm_script: line 21:  7339 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo018-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding4, wiki.txt, 200M, 12 (no file stat-inp002-algo019-threads012.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538290/slurm_script: line 21:  7723 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo019-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for Discarding4, wiki.txt, 200M, 16 (no file stat-inp002-algo019-threads016.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538291/slurm_script: line 21: 134577 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo019-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for Discarding4, wiki.txt, 200M, 20 (no file stat-inp002-algo019-threads020.json)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538292/slurm_script: line 21:  7756 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo019-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4' -q -m 64
+
+-----------------
+Missing data for GSACA, wiki.txt, 200M, 12 (no file stat-inp002-algo023-threads012.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538318/slurm_script: line 21: 160370 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo023-threads012.json -f -s -p 2400M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, wiki.txt, 200M, 16 (no file stat-inp002-algo023-threads016.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538319/slurm_script: line 21: 102389 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo023-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, wiki.txt, 200M, 20 (no file stat-inp002-algo023-threads020.json)
+-output----------
+Loading input...
+Running GSACA (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538320/slurm_script: line 21: 160404 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo023-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA_Opt, wiki.txt, 200M, 1 (no file stat-inp002-algo024-threads001.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538321 ON cstd01-013 CANCELLED AT 2019-02-23T14:08:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, wiki.txt, 200M, 2 (no file stat-inp002-algo024-threads002.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538322 ON cstd01-052 CANCELLED AT 2019-02-23T14:08:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, wiki.txt, 200M, 4 (no file stat-inp002-algo024-threads004.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538323 ON cstd02-011 CANCELLED AT 2019-02-23T14:08:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, wiki.txt, 200M, 8 (no file stat-inp002-algo024-threads008.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+slurmstepd: error: *** JOB 3538324 ON cstd02-019 CANCELLED AT 2019-02-23T14:08:44 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_Opt, wiki.txt, 200M, 12 (no file stat-inp002-algo024-threads012.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+/var/spool/slurm/d/job3538325/slurm_script: line 21: 113480 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo024-threads012.json -f -s -p 2400M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538325.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for GSACA_Opt, wiki.txt, 200M, 16 (no file stat-inp002-algo024-threads016.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538326/slurm_script: line 21: 163278 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo024-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+
+-----------------
+Missing data for GSACA_Opt, wiki.txt, 200M, 20 (no file stat-inp002-algo024-threads020.json)
+-output----------
+Loading input...
+Running GSACA_Opt (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538327/slurm_script: line 21: 113603 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo024-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA_Opt' -q -m 64
+
+-----------------
+Missing data for DC7, wiki.txt, 200M, 12 (no file stat-inp002-algo025-threads012.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538332/slurm_script: line 21: 54040 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo025-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for DC7, wiki.txt, 200M, 16 (no file stat-inp002-algo025-threads016.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+/var/spool/slurm/d/job3538333/slurm_script: line 21: 177085 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo025-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC7' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3538333.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC7, wiki.txt, 200M, 20 (no file stat-inp002-algo025-threads020.json)
+-output----------
+Loading input...
+Running DC7 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538334/slurm_script: line 21: 76580 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo025-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for qsufsort, wiki.txt, 200M, 20 (no file stat-inp002-algo026-threads020.json)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538341/slurm_script: line 21: 74487 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo026-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort' -q -m 64
+
+-----------------
+Missing data for NaivIps4o, wiki.txt, 200M, 1 (no file stat-inp002-algo028-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538349 ON cstd01-055 CANCELLED AT 2019-02-23T14:17:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, wiki.txt, 200M, 2 (no file stat-inp002-algo028-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538350 ON cstd01-049 CANCELLED AT 2019-02-23T14:17:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, wiki.txt, 200M, 4 (no file stat-inp002-algo028-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538351 ON cstd02-007 CANCELLED AT 2019-02-23T14:17:44 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, wiki.txt, 200M, 8 (no file stat-inp002-algo028-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538352 ON cstd01-048 CANCELLED AT 2019-02-23T14:17:44 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, wiki.txt, 200M, 12 (no file stat-inp002-algo028-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538353 ON cstd01-105 CANCELLED AT 2019-02-23T14:19:44 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, wiki.txt, 200M, 16 (no file stat-inp002-algo028-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538354 ON cstd02-015 CANCELLED AT 2019-02-23T14:20:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4o, wiki.txt, 200M, 20 (no file stat-inp002-algo028-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4o (1/1)
+slurmstepd: error: *** JOB 3538355 ON cstd02-008 CANCELLED AT 2019-02-23T14:20:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3, wiki.txt, 200M, 12 (no file stat-inp002-algo030-threads012.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538367/slurm_script: line 21: 116694 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo030-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, wiki.txt, 200M, 16 (no file stat-inp002-algo030-threads016.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538368/slurm_script: line 21: 183746 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo030-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, wiki.txt, 200M, 20 (no file stat-inp002-algo030-threads020.json)
+-output----------
+Loading input...
+Running DC3 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538369/slurm_script: line 21: 10072 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo030-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DivSufSort, wiki.txt, 200M, 20 (no file stat-inp002-algo031-threads020.json)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+slurmstepd: error: *** JOB 3538376 ON cstd01-036 CANCELLED AT 2019-02-23T14:30:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, wiki.txt, 200M, 4 (no file stat-inp002-algo032-threads004.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538379 ON cstd02-006 CANCELLED AT 2019-02-23T14:30:44 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, wiki.txt, 200M, 8 (no file stat-inp002-algo032-threads008.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538380 ON cstd01-030 CANCELLED AT 2019-02-23T14:30:44 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, wiki.txt, 200M, 12 (no file stat-inp002-algo032-threads012.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538381 ON cstd01-035 CANCELLED AT 2019-02-23T14:31:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, wiki.txt, 200M, 16 (no file stat-inp002-algo032-threads016.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538382 ON cstd01-051 CANCELLED AT 2019-02-23T14:34:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, wiki.txt, 200M, 20 (no file stat-inp002-algo032-threads020.json)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+slurmstepd: error: *** JOB 3538383 ON cstd02-014 CANCELLED AT 2019-02-23T14:35:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, wiki.txt, 200M, 4 (no file stat-inp002-algo033-threads004.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3538386 ON cstd01-022 CANCELLED AT 2019-02-23T14:37:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, wiki.txt, 200M, 8 (no file stat-inp002-algo033-threads008.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3538387 ON cstd01-056 CANCELLED AT 2019-02-23T14:38:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, wiki.txt, 200M, 12 (no file stat-inp002-algo033-threads012.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+slurmstepd: error: *** JOB 3538388 ON cstd01-003 CANCELLED AT 2019-02-23T14:38:45 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Lite, wiki.txt, 200M, 16 (no file stat-inp002-algo033-threads016.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538389/slurm_script: line 21:  6055 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo033-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for DC3-Lite, wiki.txt, 200M, 20 (no file stat-inp002-algo033-threads020.json)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538390/slurm_script: line 21:  6483 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo033-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, wiki.txt, 200M, 12 (no file stat-inp002-algo034-threads012.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538395/slurm_script: line 21: 174425 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo034-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, wiki.txt, 200M, 16 (no file stat-inp002-algo034-threads016.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538396/slurm_script: line 21: 174472 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo034-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, wiki.txt, 200M, 20 (no file stat-inp002-algo034-threads020.json)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538397/slurm_script: line 21: 130209 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo034-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, wiki.txt, 200M, 12 (no file stat-inp002-algo035-threads012.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538402/slurm_script: line 21: 43335 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo035-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, wiki.txt, 200M, 16 (no file stat-inp002-algo035-threads016.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538403/slurm_script: line 21: 119413 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo035-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, wiki.txt, 200M, 20 (no file stat-inp002-algo035-threads020.json)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3538404/slurm_script: line 21: 43389 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T09:14:48/stat-inp002-algo035-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-commoncrawl.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-commoncrawl.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-commoncrawl.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-commoncrawl.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-commoncrawl.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-commoncrawl.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-commoncrawl.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-dna.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-dna.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-dna.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-dna.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-dna.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-dna.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-dna.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-wiki.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-wiki.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-wiki.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-wiki.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-wiki.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-wiki.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-wiki.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/sqlplot.txt
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/results-combined.json
+Writing data to /work/smmaloeb/measure/2019-02-23T09:14:48/combine.log

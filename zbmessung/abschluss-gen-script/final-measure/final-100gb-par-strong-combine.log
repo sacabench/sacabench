@@ -1,0 +1,318 @@
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 1 (no file stat-inp000-algo002-threads001.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539591/slurm_script: line 21: 14702 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp000-algo002-threads001.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 2 (no file stat-inp000-algo002-threads002.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539592/slurm_script: line 21: 162224 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp000-algo002-threads002.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo002-threads004.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539593/slurm_script: line 21: 135483 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp000-algo002-threads004.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo002-threads008.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539594/slurm_script: line 21: 121054 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp000-algo002-threads008.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo002-threads012.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539595/slurm_script: line 21: 144099 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp000-algo002-threads012.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo002-threads016.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539596/slurm_script: line 21: 10681 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp000-algo002-threads016.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo002-threads020.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539597/slurm_script: line 21: 78376 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp000-algo002-threads020.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 1 (no file stat-inp000-algo007-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539626 ON cstd02-011 CANCELLED AT 2019-02-23T19:14:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 2 (no file stat-inp000-algo007-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539627 ON cstd02-012 CANCELLED AT 2019-02-23T19:14:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo007-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539628 ON cstd02-013 CANCELLED AT 2019-02-23T19:14:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo007-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539629 ON cstd02-014 CANCELLED AT 2019-02-23T19:14:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo007-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539630 ON cstd02-015 CANCELLED AT 2019-02-23T19:14:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo007-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539631 ON cstd02-016 CANCELLED AT 2019-02-23T19:14:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo007-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539632 ON cstd02-017 CANCELLED AT 2019-02-23T19:14:15 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 1 (no file stat-inp001-algo002-threads001.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539696/slurm_script: line 21: 150841 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp001-algo002-threads001.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 2 (no file stat-inp001-algo002-threads002.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539697/slurm_script: line 21: 52409 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp001-algo002-threads002.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 4 (no file stat-inp001-algo002-threads004.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539698/slurm_script: line 21: 64834 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp001-algo002-threads004.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 8 (no file stat-inp001-algo002-threads008.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539699/slurm_script: line 21: 118537 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp001-algo002-threads008.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 12 (no file stat-inp001-algo002-threads012.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539700/slurm_script: line 21: 44717 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp001-algo002-threads012.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 16 (no file stat-inp001-algo002-threads016.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539701/slurm_script: line 21: 24326 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp001-algo002-threads016.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 20 (no file stat-inp001-algo002-threads020.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539702/slurm_script: line 21: 170227 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp001-algo002-threads020.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 1 (no file stat-inp001-algo007-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539731 ON cstd01-047 CANCELLED AT 2019-02-23T19:18:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 2 (no file stat-inp001-algo007-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539732 ON cstd01-030 CANCELLED AT 2019-02-23T19:18:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 4 (no file stat-inp001-algo007-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539733 ON cstd02-005 CANCELLED AT 2019-02-23T19:18:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 8 (no file stat-inp001-algo007-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539734 ON cstd01-052 CANCELLED AT 2019-02-23T19:18:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 12 (no file stat-inp001-algo007-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539735 ON cstd02-022 CANCELLED AT 2019-02-23T19:18:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 16 (no file stat-inp001-algo007-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539736 ON cstd01-029 CANCELLED AT 2019-02-23T19:18:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 20 (no file stat-inp001-algo007-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539737 ON cstd01-058 CANCELLED AT 2019-02-23T19:18:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 1 (no file stat-inp002-algo002-threads001.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539801/slurm_script: line 21: 155145 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp002-algo002-threads001.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 2 (no file stat-inp002-algo002-threads002.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539802/slurm_script: line 21: 68418 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp002-algo002-threads002.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 4 (no file stat-inp002-algo002-threads004.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539803/slurm_script: line 21: 33021 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp002-algo002-threads004.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 8 (no file stat-inp002-algo002-threads008.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539804/slurm_script: line 21: 35762 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp002-algo002-threads008.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 12 (no file stat-inp002-algo002-threads012.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539805/slurm_script: line 21: 38822 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp002-algo002-threads012.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 16 (no file stat-inp002-algo002-threads016.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539806/slurm_script: line 21: 11945 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp002-algo002-threads016.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 20 (no file stat-inp002-algo002-threads020.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539807/slurm_script: line 21: 52535 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:06/stat-inp002-algo002-threads020.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 1 (no file stat-inp002-algo007-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539836 ON cstd01-053 CANCELLED AT 2019-02-23T19:22:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 2 (no file stat-inp002-algo007-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539837 ON cstd01-018 CANCELLED AT 2019-02-23T19:22:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 4 (no file stat-inp002-algo007-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539838 ON cstd02-021 CANCELLED AT 2019-02-23T19:22:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 8 (no file stat-inp002-algo007-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539839 ON cstd01-044 CANCELLED AT 2019-02-23T19:22:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 12 (no file stat-inp002-algo007-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539840 ON cstd01-140 CANCELLED AT 2019-02-23T19:22:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 16 (no file stat-inp002-algo007-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539841 ON cstd02-003 CANCELLED AT 2019-02-23T19:22:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 20 (no file stat-inp002-algo007-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539842 ON cstd01-057 CANCELLED AT 2019-02-23T19:22:18 DUE TO TIME LIMIT ***
+
+-----------------
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-commoncrawl.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-commoncrawl.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-commoncrawl.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-commoncrawl.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-commoncrawl.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-commoncrawl.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-commoncrawl.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-dna.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-dna.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-dna.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-dna.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-dna.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-dna.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-dna.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-wiki.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-wiki.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-wiki.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-wiki.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-wiki.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-wiki.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-wiki.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/sqlplot.txt
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/results-combined.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:06/combine.log

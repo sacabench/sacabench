@@ -1,0 +1,1778 @@
+Missing data for DC3-Parallel-V1, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo000-threads012.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+/var/spool/slurm/d/job3539901/slurm_script: line 21: 12536 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo000-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+slurmstepd: error: Detected 12 oom-kill event(s) in step 3539901.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC3-Parallel-V1, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo000-threads016.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539902/slurm_script: line 21: 53715 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo000-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V1, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo000-threads020.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539903/slurm_script: line 21: 25280 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo000-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo001-threads012.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+/var/spool/slurm/d/job3539908/slurm_script: line 21: 62519 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo001-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+slurmstepd: error: Detected 12 oom-kill event(s) in step 3539908.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC3-Parallel-V2, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo001-threads016.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539909/slurm_script: line 21: 53748 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo001-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo001-threads020.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539910/slurm_script: line 21:  5840 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo001-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 1 (no file stat-inp000-algo002-threads001.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539911/slurm_script: line 21: 130505 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo002-threads001.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 2 (no file stat-inp000-algo002-threads002.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539912/slurm_script: line 21:  6055 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo002-threads002.json -f -s -p 400M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo002-threads004.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539913/slurm_script: line 21: 91236 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo002-threads004.json -f -s -p 800M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo002-threads008.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3539914/slurm_script: line 21: 176571 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for Osipov_parallel_wp, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo004-threads008.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+/var/spool/slurm/d/job3539928/slurm_script: line 21: 132009 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo004-threads008.json -f -s -p 1600M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 32
+slurmstepd: error: Detected 8 oom-kill event(s) in step 3539928.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for Osipov_parallel_wp, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo004-threads012.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539929/slurm_script: line 21:  6437 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo004-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_parallel_wp, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo004-threads016.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539930/slurm_script: line 21:  5893 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_parallel_wp, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo004-threads020.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539931/slurm_script: line 21: 130898 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo005-threads012.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539936/slurm_script: line 21: 37581 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo005-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo005-threads016.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539937/slurm_script: line 21: 130589 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo005-threads020.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539938/slurm_script: line 21:  6474 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo006-threads012.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539943/slurm_script: line 21: 60278 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo006-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo006-threads016.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539944/slurm_script: line 21: 48109 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo006-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo006-threads020.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539945/slurm_script: line 21:  5941 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo006-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 1 (no file stat-inp000-algo007-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539946 ON cstd02-019 CANCELLED AT 2019-02-23T19:26:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 2 (no file stat-inp000-algo007-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539947 ON cstd02-007 CANCELLED AT 2019-02-23T19:26:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 4 (no file stat-inp000-algo007-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539948 ON cstd01-010 CANCELLED AT 2019-02-23T19:26:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo007-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539949 ON cstd02-018 CANCELLED AT 2019-02-23T19:26:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo007-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539950 ON cstd01-031 CANCELLED AT 2019-02-23T19:26:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo007-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539951 ON cstd01-021 CANCELLED AT 2019-02-23T19:26:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo007-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3539952 ON cgpu01-002 CANCELLED AT 2019-02-23T19:26:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivParallel, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo008-threads020.json)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+/var/spool/slurm/d/job3539959/slurm_script: line 21: 30190 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'NaivParallel' -q -m 64
+slurmstepd: error: Detected 8 oom-kill event(s) in step 3539959.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_par, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo009-threads020.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3539966/slurm_script: line 21: 100388 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo010-threads008.json)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+/var/spool/slurm/d/job3539970/slurm_script: line 21: 100436 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo010-threads008.json -f -s -p 1600M -r 1 --whitelist 'Deep-Shallow_par' -q -m 32
+
+-----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo010-threads012.json)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+/var/spool/slurm/d/job3539971/slurm_script: line 21: 148366 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo010-threads012.json -f -s -p 2400M -r 1 --whitelist 'Deep-Shallow_par' -q -m 64
+
+-----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo010-threads016.json)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+/var/spool/slurm/d/job3539972/slurm_script: line 21: 26562 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo010-threads016.json -f -s -p 3200M -r 1 --whitelist 'Deep-Shallow_par' -q -m 64
+
+-----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo010-threads020.json)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+/var/spool/slurm/d/job3539973/slurm_script: line 21: 115131 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo010-threads020.json -f -s -p 4000M -r 1 --whitelist 'Deep-Shallow_par' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo011-threads012.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+*** Error in `./sacabench/sacabench': munmap_chunk(): invalid pointer: 0x000000055abab820 ***
+======= Backtrace: =========
+/lib64/libc.so.6(+0x7f5e4)[0x2abc6d77b5e4]
+./sacabench/sacabench(_ZN9sacabench13parallel_sais13parallel_sais8run_sacaINS_4util4spanIKhEEmEEvT_NS4_IT0_EEmRNS3_9containerISt4pairIS8_S8_EEEm+0x828)[0xb55418]
+./sacabench/sacabench[0xb5562f]
+/cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1(GOMP_parallel+0x3f)[0x2abc6d0a8a6f]
+./sacabench/sacabench(_ZN9sacabench4util24prepare_and_construct_saINS_13parallel_sais13parallel_saisEmEENS0_10uniform_saIT0_EERKNS0_16text_initializerE+0x39c)[0xb4f24c]
+./sacabench/sacabench(_ZNK9sacabench4util13concrete_sacaINS_13parallel_sais13parallel_saisEE15construct_sa_64ERKNS0_16text_initializerE+0x13)[0xb4f383]
+./sacabench/sacabench(_ZNK9sacabench4util4saca12construct_saERKNS0_16text_initializerEm+0x1c)[0x53477c]
+./sacabench/sacabench(main+0x22cb)[0x52760b]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x2abc6d71e445]
+./sacabench/sacabench[0x5299bf]
+======= Memory map: ========
+00400000-00f59000 r-xp 00000000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01158000-01159000 r--p 00b58000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01159000-0115a000 rw-p 00b59000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+0115a000-011b6000 rw-p 00000000 00:00 0 
+01f88000-5cf4d7000 rw-p 00000000 00:00 0                                 [heap]
+2abc6c1e3000-2abc6c205000 r-xp 00000000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2abc6c205000-2abc6c208000 rw-p 00000000 00:00 0 
+2abc6c211000-2abc6c218000 rw-p 00000000 00:00 0 
+2abc6c404000-2abc6c405000 r--p 00021000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2abc6c405000-2abc6c406000 rw-p 00022000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2abc6c406000-2abc6c407000 rw-p 00000000 00:00 0 
+2abc6c407000-2abc6c40d000 r-xp 00000000 00:29 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2abc6c40d000-2abc6c60c000 ---p 00006000 00:29 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2abc6c60c000-2abc6c60d000 r--p 00005000 00:29 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2abc6c60d000-2abc6c60e000 rw-p 00006000 00:29 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2abc6c60e000-2abc6c60f000 rw-p 00000000 00:00 0 
+2abc6c60f000-2abc6c610000 r-xp 00000000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2abc6c610000-2abc6c810000 ---p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2abc6c810000-2abc6c811000 r--p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2abc6c811000-2abc6c812000 rw-p 00002000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2abc6c812000-2abc6c814000 r-xp 00000000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2abc6c814000-2abc6ca14000 ---p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2abc6ca14000-2abc6ca15000 r--p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2abc6ca15000-2abc6ca16000 rw-p 00003000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2abc6ca16000-2abc6cb89000 r-xp 00000000 00:29 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2abc6cb89000-2abc6cd89000 ---p 00173000 00:29 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2abc6cd89000-2abc6cd93000 r--p 00173000 00:29 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2abc6cd93000-2abc6cd95000 rw-p 0017d000 00:29 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2abc6cd95000-2abc6cd99000 rw-p 00000000 00:00 0 
+2abc6cd99000-2abc6ce9a000 r-xp 00000000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2abc6ce9a000-2abc6d099000 ---p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2abc6d099000-2abc6d09a000 r--p 00100000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2abc6d09a000-2abc6d09b000 rw-p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2abc6d09b000-2abc6d0c8000 r-xp 00000000 00:29 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2abc6d0c8000-2abc6d2c7000 ---p 0002d000 00:29 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2abc6d2c7000-2abc6d2c8000 r--p 0002c000 00:29 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2abc6d2c8000-2abc6d2c9000 rw-p 0002d000 00:29 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2abc6d2c9000-2abc6d2df000 r-xp 00000000 00:29 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2abc6d2df000-2abc6d4de000 ---p 00016000 00:29 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2abc6d4de000-2abc6d4df000 r--p 00015000 00:29 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2abc6d4df000-2abc6d4e0000 rw-p 00016000 00:29 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2abc6d4e0000-2abc6d4f7000 r-xp 00000000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2abc6d4f7000-2abc6d6f6000 ---p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2abc6d6f6000-2abc6d6f7000 r--p 00016000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2abc6d6f7000-2abc6d6f8000 rw-p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2abc6d6f8000-2abc6d6fc000 rw-p 00000000 00:00 0 
+2abc6d6fc000-2abc6d8bf000 r-xp 00000000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2abc6d8bf000-2abc6dabe000 ---p 001c3000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2abc6dabe000-2abc6dac2000 r--p 001c2000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2abc6dac2000-2abc6dac4000 rw-p 001c6000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2abc6dac4000-2abc6dac9000 rw-p 00000000 00:00 0 
+2abc6dac9000-2abc6daca000 ---p 00000000 00:00 0 
+2abc6daca000-2abc6dcca000 rw-p 00000000 00:00 0 
+2abc6dcca000-2abc6dccb000 ---p 00000000 00:00 0 
+2abc6dccb000-2abc6decb000 rw-p 00000000 00:00 0 
+2abc6decb000-2abc6decc000 ---p 00000000 00:00 0 
+2abc6decc000-2abc6e0cc000 rw-p 00000000 00:00 0 
+2abc6e0cc000-2abc6e0cd000 ---p 00000000 00:00 0 
+2abc6e0cd000-2abc6e2cd000 rw-p 00000000 00:00 0 
+2abc6e2cd000-2abc6e2ce000 ---p 00000000 00:00 0 
+2abc6e2ce000-2abc6e4ce000 rw-p 00000000 00:00 0 
+2abc6e4ce000-2abc6e4cf000 ---p 00000000 00:00 0 
+2abc6e4cf000-2abc6e6cf000 rw-p 00000000 00:00 0 
+2abc6e6cf000-2abc6e6d0000 ---p 00000000 00:00 0 
+2abc6e6d0000-2abc6e8d0000 rw-p 00000000 00:00 0 
+2abc6e8d0000-2abc6e8d1000 ---p 00000000 00:00 0 
+2abc6e8d1000-2abc6ead1000 rw-p 00000000 00:00 0 
+2abc6ead1000-2abc6ead2000 ---p 00000000 00:00 0 
+2abc6ead2000-2abc6ecd2000 rw-p 00000000 00:00 0 
+2abc6ecd2000-2abc6ecd3000 ---p 00000000 00:00 0 
+2abc6ecd3000-2abc6eed3000 rw-p 00000000 00:00 0 
+2abc6eed3000-2abc6eed4000 ---p 00000000 00:00 0 
+2abc6eed4000-2abc6f0d4000 rw-p 00000000 00:00 0 
+2abc6f0d4000-2abc6f0d5000 ---p 00000000 00:00 0 
+2abc6f0d5000-2abc6f2d5000 rw-p 00000000 00:00 0 
+2abc6f2d5000-2abc6f2d6000 ---p 00000000 00:00 0 
+2abc6f2d6000-2abc6f4d6000 rw-p 00000000 00:00 0 
+2abc6f4d6000-2abc6f4d7000 ---p 00000000 00:00 0 
+2abc6f4d7000-2abc6f6d7000 rw-p 00000000 00:00 0 
+2abc6f6d7000-2abc6f6d8000 ---p 00000000 00:00 0 
+2abc6f6d8000-2abc6f8d8000 rw-p 00000000 00:00 0 
+2abc6f8d8000-2abc6f8d9000 ---p 00000000 00:00 0 
+2abc6f8d9000-2abc6fad9000 rw-p 00000000 00:00 0 
+2abc6fad9000-2abc6fada000 ---p 00000000 00:00 0 
+2abc6fada000-2abc6fcda000 rw-p 00000000 00:00 0 
+2abc6fcda000-2abc6fcdb000 ---p 00000000 00:00 0 
+2abc6fcdb000-2abc6fedb000 rw-p 00000000 00:00 0 
+2abc70000000-2abc70021000 rw-p 00000000 00:00 0 
+2abc70021000-2abc74000000 ---p 00000000 00:00 0 
+2abc74000000-2abc74021000 rw-p 00000000 00:00 0 
+2abc74021000-2abc78000000 ---p 00000000 00:00 0 
+2abc78000000-2abc78021000 rw-p 00000000 00:00 0 
+2abc78021000-2abc7c000000 ---p 00000000 00:00 0 
+2abc7c000000-2abc7c021000 rw-p 00000000 00:00 0 
+2abc7c021000-2abc80000000 ---p 00000000 00:00 0 
+2abc80000000-2abc80021000 rw-p 00000000 00:00 0 
+2abc80021000-2abc84000000 ---p 00000000 00:00 0 
+2abc84000000-2abc84021000 rw-p 00000000 00:00 0 
+2abc84021000-2abc88000000 ---p 00000000 00:00 0 
+2abc88000000-2abc88021000 rw-p 00000000 00:00 0 
+2abc88021000-2abc8c000000 ---p 00000000 00:00 0 
+2abc8c000000-2abc8c021000 rw-p 00000000 00:00 0 
+2abc8c021000-2abc90000000 ---p 00000000 00:00 0 
+2abc90000000-2abc90021000 rw-p 00000000 00:00 0 
+2abc90021000-2abc94000000 ---p 00000000 00:00 0 
+2abc94000000-2abc94021000 rw-p 00000000 00:00 0 
+2abc94021000-2abc98000000 ---p 00000000 00:00 0 
+2abc98000000-2abc98021000 rw-p 00000000 00:00 0 
+2abc98021000-2abc9c000000 ---p 00000000 00:00 0 
+2abc9c000000-2abc9c001000 ---p 00000000 00:00 0 
+2abc9c001000-2abc9c201000 rw-p 00000000 00:00 0 
+2abc9c201000-2abc9c202000 ---p 00000000 00:00 0 
+2abc9c202000-2abc9c402000 rw-p 00000000 00:00 0 
+2abc9c402000-2abc9c403000 ---p 00000000 00:00 0 
+2abc9c403000-2abc9c603000 rw-p 00000000 00:00 0 
+2abc9c603000-2abc9c604000 ---p 00000000 00:00 0 
+2abc9c604000-2abc9c804000 rw-p 00000000 00:00 0 
+2abc9c804000-2abc9c805000 ---p 00000000 00:00 0 
+2abc9c805000-2abc9ca05000 rw-p 00000000 00:00 0 
+2abc9ca05000-2abc9ca06000 ---p 00000000 00:00 0 
+2abc9ca06000-2abc9cc06000 rw-p 00000000 00:00 0 
+2abc9cc06000-2abc9cc07000 ---p 00000000 00:00 0 
+2abc9cc07000-2abc9ce07000 rw-p 00000000 00:00 0 
+2abc9ce07000-2abc9ce08000 ---p 00000000 00:00 0 
+2abc9ce08000-2abc9d008000 rw-p 00000000 00:00 0 
+2abc9d008000-2abc9d009000 ---p 00000000 00:00 0 
+2abc9d009000-2abc9d209000 rw-p 00000000 00:00 0 
+2abc9d209000-2abc9d20a000 ---p 00000000 00:00 0 
+2abc9d20a000-2abc9d40a000 rw-p 00000000 00:00 0 
+7ffdcc472000-7ffdcc494000 rw-p 00000000 00:00 0                          [stack]
+7ffdcc57a000-7ffdcc57c000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+/var/spool/slurm/d/job3539978/slurm_script: line 21: 16237 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo011-threads012.json -f -s -p 2400M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo011-threads016.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+/var/spool/slurm/d/job3539979/slurm_script: line 21: 41190 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo011-threads016.json -f -s -p 3200M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo011-threads020.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+/var/spool/slurm/d/job3539980/slurm_script: line 21: 34108 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp000-algo011-threads020.json -f -s -p 4000M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for mSufSort_par, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo012-threads008.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+slurmstepd: error: *** JOB 3539984 ON cstd01-003 CANCELLED AT 2019-02-23T19:31:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo012-threads012.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+slurmstepd: error: *** JOB 3539985 ON cstd01-139 CANCELLED AT 2019-02-23T19:31:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo012-threads016.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+slurmstepd: error: *** JOB 3539986 ON cstd01-014 CANCELLED AT 2019-02-23T19:31:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo012-threads020.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+slurmstepd: error: *** JOB 3539987 ON cstd01-045 CANCELLED AT 2019-02-23T19:32:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_scan_par, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo013-threads020.json)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+slurmstepd: error: *** JOB 3539994 ON cstd01-022 CANCELLED AT 2019-02-23T19:34:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2_par, commoncrawl.txt, 200M, 8 (no file stat-inp000-algo014-threads008.json)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+slurmstepd: error: *** JOB 3539998 ON cgpu01-003 CANCELLED AT 2019-02-23T19:35:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2_par, commoncrawl.txt, 200M, 12 (no file stat-inp000-algo014-threads012.json)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+slurmstepd: error: *** JOB 3539999 ON cstd01-059 CANCELLED AT 2019-02-23T19:35:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2_par, commoncrawl.txt, 200M, 16 (no file stat-inp000-algo014-threads016.json)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+slurmstepd: error: *** JOB 3540000 ON cstd02-002 CANCELLED AT 2019-02-23T19:35:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2_par, commoncrawl.txt, 200M, 20 (no file stat-inp000-algo014-threads020.json)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+slurmstepd: error: *** JOB 3540001 ON cgpu01-005 CANCELLED AT 2019-02-23T19:35:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Parallel-V1, dna.txt, 200M, 12 (no file stat-inp001-algo000-threads012.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+/var/spool/slurm/d/job3540006/slurm_script: line 21:   680 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo000-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+slurmstepd: error: Detected 2 oom-kill event(s) in step 3540006.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC3-Parallel-V1, dna.txt, 200M, 16 (no file stat-inp001-algo000-threads016.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540007/slurm_script: line 21: 13969 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo000-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V1, dna.txt, 200M, 20 (no file stat-inp001-algo000-threads020.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540008/slurm_script: line 21: 72579 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo000-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, dna.txt, 200M, 12 (no file stat-inp001-algo001-threads012.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+/var/spool/slurm/d/job3540013/slurm_script: line 21: 74087 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo001-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+slurmstepd: error: Detected 4 oom-kill event(s) in step 3540013.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC3-Parallel-V2, dna.txt, 200M, 16 (no file stat-inp001-algo001-threads016.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540014/slurm_script: line 21: 96365 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo001-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, dna.txt, 200M, 20 (no file stat-inp001-algo001-threads020.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540015/slurm_script: line 21: 72627 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo001-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 1 (no file stat-inp001-algo002-threads001.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540016/slurm_script: line 21: 146232 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo002-threads001.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 2 (no file stat-inp001-algo002-threads002.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540017/slurm_script: line 21: 96412 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo002-threads002.json -f -s -p 400M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 4 (no file stat-inp001-algo002-threads004.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540018/slurm_script: line 21: 146266 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo002-threads004.json -f -s -p 800M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, dna.txt, 200M, 8 (no file stat-inp001-algo002-threads008.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540019/slurm_script: line 21: 74147 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for Osipov_parallel_wp, dna.txt, 200M, 8 (no file stat-inp001-algo004-threads008.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+/var/spool/slurm/d/job3540033/slurm_script: line 21: 162091 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo004-threads008.json -f -s -p 1600M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 32
+slurmstepd: error: Detected 8 oom-kill event(s) in step 3540033.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for Osipov_parallel_wp, dna.txt, 200M, 12 (no file stat-inp001-algo004-threads012.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540034/slurm_script: line 21: 74207 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo004-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_parallel_wp, dna.txt, 200M, 16 (no file stat-inp001-algo004-threads016.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540035/slurm_script: line 21: 121116 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_parallel_wp, dna.txt, 200M, 20 (no file stat-inp001-algo004-threads020.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540036/slurm_script: line 21: 74262 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, dna.txt, 200M, 12 (no file stat-inp001-algo005-threads012.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540041/slurm_script: line 21: 63932 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo005-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, dna.txt, 200M, 16 (no file stat-inp001-algo005-threads016.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540042/slurm_script: line 21: 74296 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, dna.txt, 200M, 20 (no file stat-inp001-algo005-threads020.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540043/slurm_script: line 21: 37645 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, dna.txt, 200M, 12 (no file stat-inp001-algo006-threads012.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540048/slurm_script: line 21: 162502 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo006-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, dna.txt, 200M, 16 (no file stat-inp001-algo006-threads016.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540049/slurm_script: line 21: 37694 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo006-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, dna.txt, 200M, 20 (no file stat-inp001-algo006-threads020.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540050/slurm_script: line 21: 162534 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo006-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 1 (no file stat-inp001-algo007-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540051 ON cstd01-035 CANCELLED AT 2019-02-23T19:41:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 2 (no file stat-inp001-algo007-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540052 ON cstd01-203 CANCELLED AT 2019-02-23T19:41:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 4 (no file stat-inp001-algo007-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540053 ON cstd02-008 CANCELLED AT 2019-02-23T19:41:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 8 (no file stat-inp001-algo007-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540054 ON cstd01-024 CANCELLED AT 2019-02-23T19:41:48 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 12 (no file stat-inp001-algo007-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540055 ON cstd01-143 CANCELLED AT 2019-02-23T19:42:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 16 (no file stat-inp001-algo007-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540056 ON cstd01-042 CANCELLED AT 2019-02-23T19:42:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, dna.txt, 200M, 20 (no file stat-inp001-algo007-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540057 ON cstd01-195 CANCELLED AT 2019-02-23T19:42:18 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivParallel, dna.txt, 200M, 20 (no file stat-inp001-algo008-threads020.json)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+/var/spool/slurm/d/job3540064/slurm_script: line 21: 116500 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'NaivParallel' -q -m 64
+slurmstepd: error: Detected 20 oom-kill event(s) in step 3540064.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_par, dna.txt, 200M, 8 (no file stat-inp001-algo009-threads008.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540068/slurm_script: line 21: 116567 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo009-threads008.json -f -s -p 1600M -r 1 --whitelist 'BPR_par' -q -m 32
+
+-----------------
+Missing data for BPR_par, dna.txt, 200M, 12 (no file stat-inp001-algo009-threads012.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540069/slurm_script: line 21: 172740 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo009-threads012.json -f -s -p 2400M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for BPR_par, dna.txt, 200M, 16 (no file stat-inp001-algo009-threads016.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+/var/spool/slurm/d/job3540070/slurm_script: line 21: 116599 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo009-threads016.json -f -s -p 3200M -r 1 --whitelist 'BPR_par' -q -m 64
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3540070.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_par, dna.txt, 200M, 20 (no file stat-inp001-algo009-threads020.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540071/slurm_script: line 21: 74765 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, dna.txt, 200M, 12 (no file stat-inp001-algo011-threads012.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+*** Error in `./sacabench/sacabench': free(): invalid size: 0x000000055a0a8050 ***
+======= Backtrace: =========
+/lib64/libc.so.6(+0x81499)[0x2b5981dde499]
+./sacabench/sacabench(_ZN9sacabench13parallel_sais13parallel_sais8run_sacaINS_4util4spanIKhEEmEEvT_NS4_IT0_EEmRNS3_9containerISt4pairIS8_S8_EEEm+0x828)[0xb55418]
+./sacabench/sacabench[0xb5562f]
+/cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1(GOMP_parallel+0x3f)[0x2b5981709a6f]
+./sacabench/sacabench(_ZN9sacabench4util24prepare_and_construct_saINS_13parallel_sais13parallel_saisEmEENS0_10uniform_saIT0_EERKNS0_16text_initializerE+0x39c)[0xb4f24c]
+./sacabench/sacabench(_ZNK9sacabench4util13concrete_sacaINS_13parallel_sais13parallel_saisEE15construct_sa_64ERKNS0_16text_initializerE+0x13)[0xb4f383]
+./sacabench/sacabench(_ZNK9sacabench4util4saca12construct_saERKNS0_16text_initializerEm+0x1c)[0x53477c]
+./sacabench/sacabench(main+0x22cb)[0x52760b]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x2b5981d7f445]
+./sacabench/sacabench[0x5299bf]
+======= Memory map: ========
+00400000-00f59000 r-xp 00000000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01158000-01159000 r--p 00b58000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01159000-0115a000 rw-p 00b59000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+0115a000-011b6000 rw-p 00000000 00:00 0 
+01485000-5d072f000 rw-p 00000000 00:00 0                                 [heap]
+2b5980844000-2b5980866000 r-xp 00000000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2b5980866000-2b5980869000 rw-p 00000000 00:00 0 
+2b5980872000-2b5980879000 rw-p 00000000 00:00 0 
+2b5980a65000-2b5980a66000 r--p 00021000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2b5980a66000-2b5980a67000 rw-p 00022000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2b5980a67000-2b5980a68000 rw-p 00000000 00:00 0 
+2b5980a68000-2b5980a6e000 r-xp 00000000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b5980a6e000-2b5980c6d000 ---p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b5980c6d000-2b5980c6e000 r--p 00005000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b5980c6e000-2b5980c6f000 rw-p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b5980c6f000-2b5980c70000 rw-p 00000000 00:00 0 
+2b5980c70000-2b5980c71000 r-xp 00000000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b5980c71000-2b5980e71000 ---p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b5980e71000-2b5980e72000 r--p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b5980e72000-2b5980e73000 rw-p 00002000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b5980e73000-2b5980e75000 r-xp 00000000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b5980e75000-2b5981075000 ---p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b5981075000-2b5981076000 r--p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b5981076000-2b5981077000 rw-p 00003000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b5981077000-2b59811ea000 r-xp 00000000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b59811ea000-2b59813ea000 ---p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b59813ea000-2b59813f4000 r--p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b59813f4000-2b59813f6000 rw-p 0017d000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b59813f6000-2b59813fa000 rw-p 00000000 00:00 0 
+2b59813fa000-2b59814fb000 r-xp 00000000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b59814fb000-2b59816fa000 ---p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b59816fa000-2b59816fb000 r--p 00100000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b59816fb000-2b59816fc000 rw-p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b59816fc000-2b5981729000 r-xp 00000000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b5981729000-2b5981928000 ---p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b5981928000-2b5981929000 r--p 0002c000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b5981929000-2b598192a000 rw-p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b598192a000-2b5981940000 r-xp 00000000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b5981940000-2b5981b3f000 ---p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b5981b3f000-2b5981b40000 r--p 00015000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b5981b40000-2b5981b41000 rw-p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b5981b41000-2b5981b58000 r-xp 00000000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b5981b58000-2b5981d57000 ---p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b5981d57000-2b5981d58000 r--p 00016000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b5981d58000-2b5981d59000 rw-p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b5981d59000-2b5981d5d000 rw-p 00000000 00:00 0 
+2b5981d5d000-2b5981f20000 r-xp 00000000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b5981f20000-2b598211f000 ---p 001c3000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b598211f000-2b5982123000 r--p 001c2000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b5982123000-2b5982125000 rw-p 001c6000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b5982125000-2b598212a000 rw-p 00000000 00:00 0 
+2b598212a000-2b598212b000 ---p 00000000 00:00 0 
+2b598212b000-2b598232b000 rw-p 00000000 00:00 0 
+2b598232b000-2b598232c000 ---p 00000000 00:00 0 
+2b598232c000-2b598252c000 rw-p 00000000 00:00 0 
+2b598252c000-2b598252d000 ---p 00000000 00:00 0 
+2b598252d000-2b598272d000 rw-p 00000000 00:00 0 
+2b598272d000-2b598272e000 ---p 00000000 00:00 0 
+2b598272e000-2b598292e000 rw-p 00000000 00:00 0 
+2b598292e000-2b598292f000 ---p 00000000 00:00 0 
+2b598292f000-2b5982b2f000 rw-p 00000000 00:00 0 
+2b5982b2f000-2b5982b30000 ---p 00000000 00:00 0 
+2b5982b30000-2b5982d30000 rw-p 00000000 00:00 0 
+2b5982d30000-2b5982d31000 ---p 00000000 00:00 0 
+2b5982d31000-2b5982f31000 rw-p 00000000 00:00 0 
+2b5982f31000-2b5982f32000 ---p 00000000 00:00 0 
+2b5982f32000-2b5983132000 rw-p 00000000 00:00 0 
+2b5983132000-2b5983133000 ---p 00000000 00:00 0 
+2b5983133000-2b5983333000 rw-p 00000000 00:00 0 
+2b5983333000-2b5983334000 ---p 00000000 00:00 0 
+2b5983334000-2b5983534000 rw-p 00000000 00:00 0 
+2b5983534000-2b5983535000 ---p 00000000 00:00 0 
+2b5983535000-2b5983735000 rw-p 00000000 00:00 0 
+2b5983735000-2b5983736000 ---p 00000000 00:00 0 
+2b5983736000-2b5983936000 rw-p 00000000 00:00 0 
+2b5983936000-2b5983937000 ---p 00000000 00:00 0 
+2b5983937000-2b5983b37000 rw-p 00000000 00:00 0 
+2b5983b37000-2b5983b38000 ---p 00000000 00:00 0 
+2b5983b38000-2b5983d38000 rw-p 00000000 00:00 0 
+2b5983d38000-2b5983d39000 ---p 00000000 00:00 0 
+2b5983d39000-2b5983f39000 rw-p 00000000 00:00 0 
+2b5984000000-2b5984021000 rw-p 00000000 00:00 0 
+2b5984021000-2b5988000000 ---p 00000000 00:00 0 
+2b5988000000-2b5988021000 rw-p 00000000 00:00 0 
+2b5988021000-2b598c000000 ---p 00000000 00:00 0 
+2b598c000000-2b598c021000 rw-p 00000000 00:00 0 
+2b598c021000-2b5990000000 ---p 00000000 00:00 0 
+2b5990000000-2b5990021000 rw-p 00000000 00:00 0 
+2b5990021000-2b5994000000 ---p 00000000 00:00 0 
+2b5994000000-2b5994021000 rw-p 00000000 00:00 0 
+2b5994021000-2b5998000000 ---p 00000000 00:00 0 
+2b5998000000-2b5998021000 rw-p 00000000 00:00 0 
+2b5998021000-2b599c000000 ---p 00000000 00:00 0 
+2b599c000000-2b599c021000 rw-p 00000000 00:00 0 
+2b599c021000-2b59a0000000 ---p 00000000 00:00 0 
+2b59a0000000-2b59a0021000 rw-p 00000000 00:00 0 
+2b59a0021000-2b59a4000000 ---p 00000000 00:00 0 
+2b59a4000000-2b59a4021000 rw-p 00000000 00:00 0 
+2b59a4021000-2b59a8000000 ---p 00000000 00:00 0 
+2b59a8000000-2b59a8021000 rw-p 00000000 00:00 0 
+2b59a8021000-2b59ac000000 ---p 00000000 00:00 0 
+2b59ac000000-2b59ac021000 rw-p 00000000 00:00 0 
+2b59ac021000-2b59b0000000 ---p 00000000 00:00 0 
+2b59b0000000-2b59b0001000 ---p 00000000 00:00 0 
+2b59b0001000-2b59b0201000 rw-p 00000000 00:00 0 
+2b59b0201000-2b59b0202000 ---p 00000000 00:00 0 
+2b59b0202000-2b59b0402000 rw-p 00000000 00:00 0 
+2b59b0402000-2b59b0403000 ---p 00000000 00:00 0 
+2b59b0403000-2b59b0603000 rw-p 00000000 00:00 0 
+2b59b0603000-2b59b0604000 ---p 00000000 00:00 0 
+2b59b0604000-2b59b0804000 rw-p 00000000 00:00 0 
+2b59b0804000-2b59b0805000 ---p 00000000 00:00 0 
+2b59b0805000-2b59b0a05000 rw-p 00000000 00:00 0 
+2b59b0a05000-2b59b0a06000 ---p 00000000 00:00 0 
+2b59b0a06000-2b59b0c06000 rw-p 00000000 00:00 0 
+2b59b0c06000-2b59b0c07000 ---p 00000000 00:00 0 
+2b59b0c07000-2b59b0e07000 rw-p 00000000 00:00 0 
+2b59b0e07000-2b59b0e08000 ---p 00000000 00:00 0 
+2b59b0e08000-2b59b1008000 rw-p 00000000 00:00 0 
+2b59b1008000-2b59b1009000 ---p 00000000 00:00 0 
+2b59b1009000-2b59b1209000 rw-p 00000000 00:00 0 
+2b59b1209000-2b59b120a000 ---p 00000000 00:00 0 
+2b59b120a000-2b59b140a000 rw-p 00000000 00:00 0 
+2b59b140a000-2b59b140b000 ---p 00000000 00:00 0 
+2b59b140b000-2b59b160b000 rw-p 00000000 00:00 0 
+2b59b160b000-2b59b160c000 ---p 00000000 00:00 0 
+2b59b160c000-2b59b180c000 rw-p 00000000 00:00 0 
+2b59b180c000-2b59b180d000 ---p 00000000 00:00 0 
+2b59b180d000-2b59b1a0d000 rw-p 00000000 00:00 0 
+2b59b1a0d000-2b59b1a0e000 ---p 00000000 00:00 0 
+2b59b1a0e000-2b59b1c0e000 rw-p 00000000 00:00 0 
+2b59b4000000-2b59b4021000 rw-p 00000000 00:00 0 
+2b59b4021000-2b59b8000000 ---p 00000000 00:00 0 
+7fff8ff81000-7fff8ffa3000 rw-p 00000000 00:00 0                          [stack]
+7fff8ffce000-7fff8ffd0000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+/var/spool/slurm/d/job3540083/slurm_script: line 21: 39384 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo011-threads012.json -f -s -p 2400M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, dna.txt, 200M, 16 (no file stat-inp001-algo011-threads016.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+*** Error in `./sacabench/sacabench': munmap_chunk(): invalid pointer: 0x00000007227af080 ***
+======= Backtrace: =========
+/lib64/libc.so.6(+0x7f5e4)[0x2b385d9e95e4]
+./sacabench/sacabench(_ZN9sacabench13parallel_sais13parallel_sais8run_sacaINS_4util4spanIKhEEmEEvT_NS4_IT0_EEmRNS3_9containerISt4pairIS8_S8_EEEm+0x828)[0xb55418]
+./sacabench/sacabench[0xb5562f]
+/cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1(GOMP_parallel+0x3f)[0x2b385d316a6f]
+./sacabench/sacabench(_ZN9sacabench4util24prepare_and_construct_saINS_13parallel_sais13parallel_saisEmEENS0_10uniform_saIT0_EERKNS0_16text_initializerE+0x39c)[0xb4f24c]
+./sacabench/sacabench(_ZNK9sacabench4util13concrete_sacaINS_13parallel_sais13parallel_saisEE15construct_sa_64ERKNS0_16text_initializerE+0x13)[0xb4f383]
+./sacabench/sacabench(_ZNK9sacabench4util4saca12construct_saERKNS0_16text_initializerEm+0x1c)[0x53477c]
+./sacabench/sacabench(main+0x22cb)[0x52760b]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x2b385d98c445]
+./sacabench/sacabench[0x5299bf]
+======= Memory map: ========
+00400000-00f59000 r-xp 00000000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01158000-01159000 r--p 00b58000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01159000-0115a000 rw-p 00b59000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+0115a000-011b6000 rw-p 00000000 00:00 0 
+0178b000-798e36000 rw-p 00000000 00:00 0                                 [heap]
+2b385c451000-2b385c473000 r-xp 00000000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2b385c473000-2b385c476000 rw-p 00000000 00:00 0 
+2b385c47f000-2b385c486000 rw-p 00000000 00:00 0 
+2b385c672000-2b385c673000 r--p 00021000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2b385c673000-2b385c674000 rw-p 00022000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2b385c674000-2b385c675000 rw-p 00000000 00:00 0 
+2b385c675000-2b385c67b000 r-xp 00000000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b385c67b000-2b385c87a000 ---p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b385c87a000-2b385c87b000 r--p 00005000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b385c87b000-2b385c87c000 rw-p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2b385c87c000-2b385c87d000 rw-p 00000000 00:00 0 
+2b385c87d000-2b385c87e000 r-xp 00000000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b385c87e000-2b385ca7e000 ---p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b385ca7e000-2b385ca7f000 r--p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b385ca7f000-2b385ca80000 rw-p 00002000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2b385ca80000-2b385ca82000 r-xp 00000000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b385ca82000-2b385cc82000 ---p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b385cc82000-2b385cc83000 r--p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b385cc83000-2b385cc84000 rw-p 00003000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2b385cc84000-2b385cdf7000 r-xp 00000000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b385cdf7000-2b385cff7000 ---p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b385cff7000-2b385d001000 r--p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b385d001000-2b385d003000 rw-p 0017d000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2b385d003000-2b385d007000 rw-p 00000000 00:00 0 
+2b385d007000-2b385d108000 r-xp 00000000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b385d108000-2b385d307000 ---p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b385d307000-2b385d308000 r--p 00100000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b385d308000-2b385d309000 rw-p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2b385d309000-2b385d336000 r-xp 00000000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b385d336000-2b385d535000 ---p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b385d535000-2b385d536000 r--p 0002c000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b385d536000-2b385d537000 rw-p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2b385d537000-2b385d54d000 r-xp 00000000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b385d54d000-2b385d74c000 ---p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b385d74c000-2b385d74d000 r--p 00015000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b385d74d000-2b385d74e000 rw-p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2b385d74e000-2b385d765000 r-xp 00000000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b385d765000-2b385d964000 ---p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b385d964000-2b385d965000 r--p 00016000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b385d965000-2b385d966000 rw-p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2b385d966000-2b385d96a000 rw-p 00000000 00:00 0 
+2b385d96a000-2b385db2d000 r-xp 00000000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b385db2d000-2b385dd2c000 ---p 001c3000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b385dd2c000-2b385dd30000 r--p 001c2000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b385dd30000-2b385dd32000 rw-p 001c6000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2b385dd32000-2b385dd37000 rw-p 00000000 00:00 0 
+2b385dd37000-2b385dd38000 ---p 00000000 00:00 0 
+2b385dd38000-2b385df38000 rw-p 00000000 00:00 0 
+2b385df38000-2b385df39000 ---p 00000000 00:00 0 
+2b385df39000-2b385e139000 rw-p 00000000 00:00 0 
+2b385e139000-2b385e13a000 ---p 00000000 00:00 0 
+2b385e13a000-2b385e33a000 rw-p 00000000 00:00 0 
+2b385e33a000-2b385e33b000 ---p 00000000 00:00 0 
+2b385e33b000-2b385e53b000 rw-p 00000000 00:00 0 
+2b385e53b000-2b385e53c000 ---p 00000000 00:00 0 
+2b385e53c000-2b385e73c000 rw-p 00000000 00:00 0 
+2b385e73c000-2b385e73d000 ---p 00000000 00:00 0 
+2b385e73d000-2b385e93d000 rw-p 00000000 00:00 0 
+2b385e93d000-2b385e93e000 ---p 00000000 00:00 0 
+2b385e93e000-2b385eb3e000 rw-p 00000000 00:00 0 
+2b385eb3e000-2b385eb3f000 ---p 00000000 00:00 0 
+2b385eb3f000-2b385ed3f000 rw-p 00000000 00:00 0 
+2b385ed3f000-2b385ed40000 ---p 00000000 00:00 0 
+2b385ed40000-2b385ef40000 rw-p 00000000 00:00 0 
+2b385ef40000-2b385ef41000 ---p 00000000 00:00 0 
+2b385ef41000-2b385f141000 rw-p 00000000 00:00 0 
+2b385f141000-2b385f142000 ---p 00000000 00:00 0 
+2b385f142000-2b385f342000 rw-p 00000000 00:00 0 
+2b385f342000-2b385f343000 ---p 00000000 00:00 0 
+2b385f343000-2b385f543000 rw-p 00000000 00:00 0 
+2b385f543000-2b385f544000 ---p 00000000 00:00 0 
+2b385f544000-2b385f744000 rw-p 00000000 00:00 0 
+2b385f744000-2b385f745000 ---p 00000000 00:00 0 
+2b385f745000-2b385f945000 rw-p 00000000 00:00 0 
+2b385f945000-2b385f946000 ---p 00000000 00:00 0 
+2b385f946000-2b385fb46000 rw-p 00000000 00:00 0 
+2b385fb46000-2b385fb47000 ---p 00000000 00:00 0 
+2b385fb47000-2b385fd47000 rw-p 00000000 00:00 0 
+2b385fd47000-2b385fd48000 ---p 00000000 00:00 0 
+2b385fd48000-2b385ff48000 rw-p 00000000 00:00 0 
+2b3860000000-2b3860021000 rw-p 00000000 00:00 0 
+2b3860021000-2b3864000000 ---p 00000000 00:00 0 
+2b3864000000-2b3864021000 rw-p 00000000 00:00 0 
+2b3864021000-2b3868000000 ---p 00000000 00:00 0 
+2b3868000000-2b3868021000 rw-p 00000000 00:00 0 
+2b3868021000-2b386c000000 ---p 00000000 00:00 0 
+2b386c000000-2b386c021000 rw-p 00000000 00:00 0 
+2b386c021000-2b3870000000 ---p 00000000 00:00 0 
+2b3870000000-2b3870021000 rw-p 00000000 00:00 0 
+2b3870021000-2b3874000000 ---p 00000000 00:00 0 
+2b3874000000-2b3874021000 rw-p 00000000 00:00 0 
+2b3874021000-2b3878000000 ---p 00000000 00:00 0 
+2b3878000000-2b3878021000 rw-p 00000000 00:00 0 
+2b3878021000-2b387c000000 ---p 00000000 00:00 0 
+2b387c000000-2b387c021000 rw-p 00000000 00:00 0 
+2b387c021000-2b3880000000 ---p 00000000 00:00 0 
+2b3880000000-2b3880021000 rw-p 00000000 00:00 0 
+2b3880021000-2b3884000000 ---p 00000000 00:00 0 
+2b3884000000-2b3884021000 rw-p 00000000 00:00 0 
+2b3884021000-2b3888000000 ---p 00000000 00:00 0 
+2b3888000000-2b3888021000 rw-p 00000000 00:00 0 
+2b3888021000-2b388c000000 ---p 00000000 00:00 0 
+2b388c000000-2b388c021000 rw-p 00000000 00:00 0 
+2b388c021000-2b3890000000 ---p 00000000 00:00 0 
+2b3890000000-2b3890021000 rw-p 00000000 00:00 0 
+2b3890021000-2b3894000000 ---p 00000000 00:00 0 
+2b3894000000-2b3894021000 rw-p 00000000 00:00 0 
+2b3894021000-2b3898000000 ---p 00000000 00:00 0 
+2b3898000000-2b3898021000 rw-p 00000000 00:00 0 
+2b3898021000-2b389c000000 ---p 00000000 00:00 0 
+2b389c000000-2b389c001000 ---p 00000000 00:00 0 
+2b389c001000-2b389c201000 rw-p 00000000 00:00 0 
+2b389c201000-2b389c202000 ---p 00000000 00:00 0 
+2b389c202000-2b389c402000 rw-p 00000000 00:00 0 
+2b389c402000-2b389c403000 ---p 00000000 00:00 0 
+2b389c403000-2b389c603000 rw-p 00000000 00:00 0 
+2b389c603000-2b389c604000 ---p 00000000 00:00 0 
+2b389c604000-2b389c804000 rw-p 00000000 00:00 0 
+2b389c804000-2b389c805000 ---p 00000000 00:00 0 
+2b389c805000-2b389ca05000 rw-p 00000000 00:00 0 
+2b389ca05000-2b389ca06000 ---p 00000000 00:00 0 
+2b389ca06000-2b389cc06000 rw-p 00000000 00:00 0 
+2b389cc06000-2b389cc07000 ---p 00000000 00:00 0 
+2b389cc07000-2b389ce07000 rw-p 00000000 00:00 0 
+2b389ce07000-2b389ce08000 ---p 00000000 00:00 0 
+2b389ce08000-2b389d008000 rw-p 00000000 00:00 0 
+2b389d008000-2b389d009000 ---p 00000000 00:00 0 
+2b389d009000-2b389d209000 rw-p 00000000 00:00 0 
+2b389d209000-2b389d20a000 ---p 00000000 00:00 0 
+2b389d20a000-2b389d40a000 rw-p 00000000 00:00 0 
+2b389d40a000-2b389d40b000 ---p 00000000 00:00 0 
+2b389d40b000-2b389d60b000 rw-p 00000000 00:00 0 
+2b389d60b000-2b389d60c000 ---p 00000000 00:00 0 
+2b389d60c000-2b389d80c000 rw-p 00000000 00:00 0 
+2b389d80c000-2b389d80d000 ---p 00000000 00:00 0 
+2b389d80d000-2b389da0d000 rw-p 00000000 00:00 0 
+2b389da0d000-2b389da0e000 ---p 00000000 00:00 0 
+2b389da0e000-2b389dc0e000 rw-p 00000000 00:00 0 
+2b389dc0e000-2b389dc0f000 ---p 00000000 00:00 0 
+2b389dc0f000-2b389de0f000 rw-p 00000000 00:00 0 
+7ffeb0acf000-7ffeb0af1000 rw-p 00000000 00:00 0                          [stack]
+7ffeb0bf3000-7ffeb0bf5000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+/var/spool/slurm/d/job3540084/slurm_script: line 21: 14304 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo011-threads016.json -f -s -p 3200M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, dna.txt, 200M, 20 (no file stat-inp001-algo011-threads020.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+*** Error in `./sacabench/sacabench': munmap_chunk(): invalid pointer: 0x00000008ebd750b0 ***
+======= Backtrace: =========
+/lib64/libc.so.6(+0x7f5e4)[0x2aad03a6f5e4]
+./sacabench/sacabench(_ZN9sacabench13parallel_sais13parallel_sais8run_sacaINS_4util4spanIKhEEmEEvT_NS4_IT0_EEmRNS3_9containerISt4pairIS8_S8_EEEm+0x828)[0xb55418]
+./sacabench/sacabench[0xb5562f]
+/cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1(GOMP_parallel+0x3f)[0x2aad0339ca6f]
+./sacabench/sacabench(_ZN9sacabench4util24prepare_and_construct_saINS_13parallel_sais13parallel_saisEmEENS0_10uniform_saIT0_EERKNS0_16text_initializerE+0x39c)[0xb4f24c]
+./sacabench/sacabench(_ZNK9sacabench4util13concrete_sacaINS_13parallel_sais13parallel_saisEE15construct_sa_64ERKNS0_16text_initializerE+0x13)[0xb4f383]
+./sacabench/sacabench(_ZNK9sacabench4util4saca12construct_saERKNS0_16text_initializerEm+0x1c)[0x53477c]
+./sacabench/sacabench(main+0x22cb)[0x52760b]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x2aad03a12445]
+./sacabench/sacabench[0x5299bf]
+======= Memory map: ========
+00400000-00f59000 r-xp 00000000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01158000-01159000 r--p 00b58000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01159000-0115a000 rw-p 00b59000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+0115a000-011b6000 rw-p 00000000 00:00 0 
+02950000-9623fc000 rw-p 00000000 00:00 0                                 [heap]
+2aad024d7000-2aad024f9000 r-xp 00000000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2aad024f9000-2aad024fc000 rw-p 00000000 00:00 0 
+2aad02505000-2aad0250c000 rw-p 00000000 00:00 0 
+2aad026f8000-2aad026f9000 r--p 00021000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2aad026f9000-2aad026fa000 rw-p 00022000 08:01 100664885                  /usr/lib64/ld-2.17.so
+2aad026fa000-2aad026fb000 rw-p 00000000 00:00 0 
+2aad026fb000-2aad02701000 r-xp 00000000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2aad02701000-2aad02900000 ---p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2aad02900000-2aad02901000 r--p 00005000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2aad02901000-2aad02902000 rw-p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2aad02902000-2aad02903000 rw-p 00000000 00:00 0 
+2aad02903000-2aad02904000 r-xp 00000000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2aad02904000-2aad02b04000 ---p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2aad02b04000-2aad02b05000 r--p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2aad02b05000-2aad02b06000 rw-p 00002000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2aad02b06000-2aad02b08000 r-xp 00000000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2aad02b08000-2aad02d08000 ---p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2aad02d08000-2aad02d09000 r--p 00002000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2aad02d09000-2aad02d0a000 rw-p 00003000 08:01 100664930                  /usr/lib64/libdl-2.17.so
+2aad02d0a000-2aad02e7d000 r-xp 00000000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2aad02e7d000-2aad0307d000 ---p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2aad0307d000-2aad03087000 r--p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2aad03087000-2aad03089000 rw-p 0017d000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2aad03089000-2aad0308d000 rw-p 00000000 00:00 0 
+2aad0308d000-2aad0318e000 r-xp 00000000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2aad0318e000-2aad0338d000 ---p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2aad0338d000-2aad0338e000 r--p 00100000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2aad0338e000-2aad0338f000 rw-p 00101000 08:01 100664932                  /usr/lib64/libm-2.17.so
+2aad0338f000-2aad033bc000 r-xp 00000000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2aad033bc000-2aad035bb000 ---p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2aad035bb000-2aad035bc000 r--p 0002c000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2aad035bc000-2aad035bd000 rw-p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2aad035bd000-2aad035d3000 r-xp 00000000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2aad035d3000-2aad037d2000 ---p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2aad037d2000-2aad037d3000 r--p 00015000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2aad037d3000-2aad037d4000 rw-p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2aad037d4000-2aad037eb000 r-xp 00000000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2aad037eb000-2aad039ea000 ---p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2aad039ea000-2aad039eb000 r--p 00016000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2aad039eb000-2aad039ec000 rw-p 00017000 08:01 100664950                  /usr/lib64/libpthread-2.17.so
+2aad039ec000-2aad039f0000 rw-p 00000000 00:00 0 
+2aad039f0000-2aad03bb3000 r-xp 00000000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2aad03bb3000-2aad03db2000 ---p 001c3000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2aad03db2000-2aad03db6000 r--p 001c2000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2aad03db6000-2aad03db8000 rw-p 001c6000 08:01 100664892                  /usr/lib64/libc-2.17.so
+2aad03db8000-2aad03dbd000 rw-p 00000000 00:00 0 
+2aad03dbd000-2aad03dbe000 ---p 00000000 00:00 0 
+2aad03dbe000-2aad03fbe000 rw-p 00000000 00:00 0 
+2aad03fbe000-2aad03fbf000 ---p 00000000 00:00 0 
+2aad03fbf000-2aad041bf000 rw-p 00000000 00:00 0 
+2aad041bf000-2aad041c0000 ---p 00000000 00:00 0 
+2aad041c0000-2aad043c0000 rw-p 00000000 00:00 0 
+2aad043c0000-2aad043c1000 ---p 00000000 00:00 0 
+2aad043c1000-2aad045c1000 rw-p 00000000 00:00 0 
+2aad045c1000-2aad045c2000 ---p 00000000 00:00 0 
+2aad045c2000-2aad047c2000 rw-p 00000000 00:00 0 
+2aad047c2000-2aad047c3000 ---p 00000000 00:00 0 
+2aad047c3000-2aad049c3000 rw-p 00000000 00:00 0 
+2aad049c3000-2aad049c4000 ---p 00000000 00:00 0 
+2aad049c4000-2aad04bc4000 rw-p 00000000 00:00 0 
+2aad04bc4000-2aad04bc5000 ---p 00000000 00:00 0 
+2aad04bc5000-2aad04dc5000 rw-p 00000000 00:00 0 
+2aad04dc5000-2aad04dc6000 ---p 00000000 00:00 0 
+2aad04dc6000-2aad04fc6000 rw-p 00000000 00:00 0 
+2aad04fc6000-2aad04fc7000 ---p 00000000 00:00 0 
+2aad04fc7000-2aad051c7000 rw-p 00000000 00:00 0 
+2aad051c7000-2aad051c8000 ---p 00000000 00:00 0 
+2aad051c8000-2aad053c8000 rw-p 00000000 00:00 0 
+2aad053c8000-2aad053c9000 ---p 00000000 00:00 0 
+2aad053c9000-2aad055c9000 rw-p 00000000 00:00 0 
+2aad055c9000-2aad055ca000 ---p 00000000 00:00 0 
+2aad055ca000-2aad057ca000 rw-p 00000000 00:00 0 
+2aad057ca000-2aad057cb000 ---p 00000000 00:00 0 
+2aad057cb000-2aad059cb000 rw-p 00000000 00:00 0 
+2aad059cb000-2aad059cc000 ---p 00000000 00:00 0 
+2aad059cc000-2aad05bcc000 rw-p 00000000 00:00 0 
+2aad05bcc000-2aad05bcd000 ---p 00000000 00:00 0 
+2aad05bcd000-2aad05dcd000 rw-p 00000000 00:00 0 
+2aad05dcd000-2aad05dce000 ---p 00000000 00:00 0 
+2aad05dce000-2aad05fce000 rw-p 00000000 00:00 0 
+2aad05fce000-2aad05fcf000 ---p 00000000 00:00 0 
+2aad05fcf000-2aad061cf000 rw-p 00000000 00:00 0 
+2aad061cf000-2aad061d0000 ---p 00000000 00:00 0 
+2aad061d0000-2aad063d0000 rw-p 00000000 00:00 0 
+2aad063d0000-2aad063d1000 ---p 00000000 00:00 0 
+2aad063d1000-2aad065d1000 rw-p 00000000 00:00 0 
+2aad065d1000-2aad065d2000 ---p 00000000 00:00 0 
+2aad065d2000-2aad067d2000 rw-p 00000000 00:00 0 
+2aad067d2000-2aad067d3000 ---p 00000000 00:00 0 
+2aad067d3000-2aad069d3000 rw-p 00000000 00:00 0 
+2aad069d3000-2aad069d4000 ---p 00000000 00:00 0 
+2aad069d4000-2aad06bd4000 rw-p 00000000 00:00 0 
+2aad06bd4000-2aad06bd5000 ---p 00000000 00:00 0 
+2aad06bd5000-2aad06dd5000 rw-p 00000000 00:00 0 
+2aad06dd5000-2aad06dd6000 ---p 00000000 00:00 0 
+2aad06dd6000-2aad06fd6000 rw-p 00000000 00:00 0 
+2aad06fd6000-2aad06fd7000 ---p 00000000 00:00 0 
+2aad06fd7000-2aad071d7000 rw-p 00000000 00:00 0 
+2aad071d7000-2aad071d8000 ---p 00000000 00:00 0 
+2aad071d8000-2aad073d8000 rw-p 00000000 00:00 0 
+2aad073d8000-2aad073d9000 ---p 00000000 00:00 0 
+2aad073d9000-2aad075d9000 rw-p 00000000 00:00 0 
+2aad075d9000-2aad075da000 ---p 00000000 00:00 0 
+2aad075da000-2aad077da000 rw-p 00000000 00:00 0 
+2aad077da000-2aad077db000 ---p 00000000 00:00 0 
+2aad077db000-2aad079db000 rw-p 00000000 00:00 0 
+2aad079db000-2aad079dc000 ---p 00000000 00:00 0 
+2aad079dc000-2aad07bdc000 rw-p 00000000 00:00 0 
+2aad07bdc000-2aad07bdd000 ---p 00000000 00:00 0 
+2aad07bdd000-2aad07ddd000 rw-p 00000000 00:00 0 
+2aad07ddd000-2aad07dde000 ---p 00000000 00:00 0 
+2aad07dde000-2aad07fde000 rw-p 00000000 00:00 0 
+2aad08000000-2aad08021000 rw-p 00000000 00:00 0 
+2aad08021000-2aad0c000000 ---p 00000000 00:00 0 
+2aad0c000000-2aad0c021000 rw-p 00000000 00:00 0 
+2aad0c021000-2aad10000000 ---p 00000000 00:00 0 
+2aad10000000-2aad10021000 rw-p 00000000 00:00 0 
+2aad10021000-2aad14000000 ---p 00000000 00:00 0 
+2aad14000000-2aad14021000 rw-p 00000000 00:00 0 
+2aad14021000-2aad18000000 ---p 00000000 00:00 0 
+2aad18000000-2aad18021000 rw-p 00000000 00:00 0 
+2aad18021000-2aad1c000000 ---p 00000000 00:00 0 
+2aad1c000000-2aad1c021000 rw-p 00000000 00:00 0 
+2aad1c021000-2aad20000000 ---p 00000000 00:00 0 
+2aad20000000-2aad20021000 rw-p 00000000 00:00 0 
+2aad20021000-2aad24000000 ---p 00000000 00:00 0 
+2aad24000000-2aad24021000 rw-p 00000000 00:00 0 
+2aad24021000-2aad28000000 ---p 00000000 00:00 0 
+2aad28000000-2aad28021000 rw-p 00000000 00:00 0 
+2aad28021000-2aad2c000000 ---p 00000000 00:00 0 
+2aad2c000000-2aad2c021000 rw-p 00000000 00:00 0 
+2aad2c021000-2aad30000000 ---p 00000000 00:00 0 
+2aad30000000-2aad30021000 rw-p 00000000 00:00 0 
+2aad30021000-2aad34000000 ---p 00000000 00:00 0 
+2aad34000000-2aad34021000 rw-p 00000000 00:00 0 
+2aad34021000-2aad38000000 ---p 00000000 00:00 0 
+2aad38000000-2aad38021000 rw-p 00000000 00:00 0 
+2aad38021000-2aad3c000000 ---p 00000000 00:00 0 
+2aad3c000000-2aad3c021000 rw-p 00000000 00:00 0 
+2aad3c021000-2aad40000000 ---p 00000000 00:00 0 
+2aad40000000-2aad40021000 rw-p 00000000 00:00 0 
+2aad40021000-2aad44000000 ---p 00000000 00:00 0 
+2aad44000000-2aad44021000 rw-p 00000000 00:00 0 
+2aad44021000-2aad48000000 ---p 00000000 00:00 0 
+2aad48000000-2aad48021000 rw-p 00000000 00:00 0 
+2aad48021000-2aad4c000000 ---p 00000000 00:00 0 
+2aad4c000000-2aad4c021000 rw-p 00000000 00:00 0 
+2aad4c021000-2aad50000000 ---p 00000000 00:00 0 
+2aad50000000-2aad50021000 rw-p 00000000 00:00 0 
+2aad50021000-2aad54000000 ---p 00000000 00:00 0 
+2aad54000000-2aad54001000 ---p 00000000 00:00 0 
+2aad54001000-2aad54201000 rw-p 00000000 00:00 0 
+2aad54201000-2aad54202000 ---p 00000000 00:00 0 
+2aad54202000-2aad54402000 rw-p 00000000 00:00 0 
+2aad54402000-2aad54403000 ---p 00000000 00:00 0 
+2aad54403000-2aad54603000 rw-p 00000000 00:00 0 
+2aad54603000-2aad54604000 ---p 00000000 00:00 0 
+2aad54604000-2aad54804000 rw-p 00000000 00:00 0 
+7ffc52a18000-7ffc52a3a000 rw-p 00000000 00:00 0                          [stack]
+7ffc52b8d000-7ffc52b8f000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+/var/spool/slurm/d/job3540085/slurm_script: line 21: 97031 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo011-threads020.json -f -s -p 4000M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for mSufSort_par, dna.txt, 200M, 12 (no file stat-inp001-algo012-threads012.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+/var/spool/slurm/d/job3540090/slurm_script: line 21: 29861 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo012-threads012.json -f -s -p 2400M -r 1 --whitelist 'mSufSort_par' -q -m 64
+
+-----------------
+Missing data for mSufSort_par, dna.txt, 200M, 20 (no file stat-inp001-algo012-threads020.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+/var/spool/slurm/d/job3540092/slurm_script: line 21: 166435 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'mSufSort_par' -q -m 64
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, 200M, 12 (no file stat-inp001-algo013-threads012.json)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+/var/spool/slurm/d/job3540097/slurm_script: line 21: 182212 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo013-threads012.json -f -s -p 2400M -r 1 --whitelist 'mSufSort_scan_par' -q -m 64
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, 200M, 16 (no file stat-inp001-algo013-threads016.json)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+/var/spool/slurm/d/job3540098/slurm_script: line 21: 122596 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo013-threads016.json -f -s -p 3200M -r 1 --whitelist 'mSufSort_scan_par' -q -m 64
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, 200M, 20 (no file stat-inp001-algo013-threads020.json)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+/var/spool/slurm/d/job3540099/slurm_script: line 21: 93436 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp001-algo013-threads020.json -f -s -p 4000M -r 1 --whitelist 'mSufSort_scan_par' -q -m 64
+
+-----------------
+Missing data for mSufSortV2_par, dna.txt, 200M, 20 (no file stat-inp001-algo014-threads020.json)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+slurmstepd: error: *** JOB 3540106 ON cstd01-054 CANCELLED AT 2019-02-23T19:51:51 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DC3-Parallel-V1, wiki.txt, 200M, 12 (no file stat-inp002-algo000-threads012.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+/var/spool/slurm/d/job3540111/slurm_script: line 21: 65319 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo000-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+slurmstepd: error: Detected 12 oom-kill event(s) in step 3540111.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC3-Parallel-V1, wiki.txt, 200M, 16 (no file stat-inp002-algo000-threads016.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540112/slurm_script: line 21: 173690 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo000-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V1, wiki.txt, 200M, 20 (no file stat-inp002-algo000-threads020.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540113/slurm_script: line 21: 187200 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo000-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, wiki.txt, 200M, 12 (no file stat-inp002-algo001-threads012.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+/var/spool/slurm/d/job3540118/slurm_script: line 21: 148161 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo001-threads012.json -f -s -p 2400M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+slurmstepd: error: Detected 11 oom-kill event(s) in step 3540118.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for DC3-Parallel-V2, wiki.txt, 200M, 16 (no file stat-inp002-algo001-threads016.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540119/slurm_script: line 21: 13522 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo001-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, wiki.txt, 200M, 20 (no file stat-inp002-algo001-threads020.json)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540120/slurm_script: line 21: 190518 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo001-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 1 (no file stat-inp002-algo002-threads001.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540121/slurm_script: line 21: 13556 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo002-threads001.json -f -s -p 200M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 2 (no file stat-inp002-algo002-threads002.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540122/slurm_script: line 21: 76113 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo002-threads002.json -f -s -p 400M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 4 (no file stat-inp002-algo002-threads004.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540123/slurm_script: line 21:  2363 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo002-threads004.json -f -s -p 800M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for DivSufSort_PARALLEL_ref, wiki.txt, 200M, 8 (no file stat-inp002-algo002-threads008.json)
+-output----------
+Loading input...
+Running DivSufSort_PARALLEL_ref (1/1)
+/var/spool/slurm/d/job3540124/slurm_script: line 21: 148220 Segmentation fault      ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
+
+-----------------
+Missing data for Osipov_parallel_wp, wiki.txt, 200M, 8 (no file stat-inp002-algo004-threads008.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+/var/spool/slurm/d/job3540138/slurm_script: line 21: 148298 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo004-threads008.json -f -s -p 1600M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 32
+slurmstepd: error: Detected 8 oom-kill event(s) in step 3540138.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for Osipov_parallel_wp, wiki.txt, 200M, 12 (no file stat-inp002-algo004-threads012.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540139/slurm_script: line 21: 137061 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo004-threads012.json -f -s -p 2400M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_parallel_wp, wiki.txt, 200M, 16 (no file stat-inp002-algo004-threads016.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540140/slurm_script: line 21:  2523 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_parallel_wp, wiki.txt, 200M, 20 (no file stat-inp002-algo004-threads020.json)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540141/slurm_script: line 21: 137118 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, wiki.txt, 200M, 12 (no file stat-inp002-algo005-threads012.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540146/slurm_script: line 21: 137150 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo005-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, wiki.txt, 200M, 16 (no file stat-inp002-algo005-threads016.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540147/slurm_script: line 21: 65853 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, wiki.txt, 200M, 20 (no file stat-inp002-algo005-threads020.json)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540148/slurm_script: line 21: 137209 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, wiki.txt, 200M, 12 (no file stat-inp002-algo006-threads012.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540153/slurm_script: line 21: 125555 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo006-threads012.json -f -s -p 2400M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, wiki.txt, 200M, 16 (no file stat-inp002-algo006-threads016.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540154/slurm_script: line 21: 125588 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo006-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, wiki.txt, 200M, 20 (no file stat-inp002-algo006-threads020.json)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540155/slurm_script: line 21: 148734 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo006-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 1 (no file stat-inp002-algo007-threads001.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540156 ON cstd01-039 CANCELLED AT 2019-02-23T20:02:21 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 2 (no file stat-inp002-algo007-threads002.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540157 ON cstd01-032 CANCELLED AT 2019-02-23T20:02:51 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 4 (no file stat-inp002-algo007-threads004.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540158 ON cstd01-019 CANCELLED AT 2019-02-23T20:02:51 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 8 (no file stat-inp002-algo007-threads008.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540159 ON cstd01-001 CANCELLED AT 2019-02-23T20:03:21 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 12 (no file stat-inp002-algo007-threads012.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540160 ON cstd01-043 CANCELLED AT 2019-02-23T20:04:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 16 (no file stat-inp002-algo007-threads016.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540161 ON cstd01-006 CANCELLED AT 2019-02-23T20:04:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivIps4oParallel, wiki.txt, 200M, 20 (no file stat-inp002-algo007-threads020.json)
+-output----------
+Loading input...
+Running NaivIps4oParallel (1/1)
+slurmstepd: error: *** JOB 3540162 ON cstd01-141 CANCELLED AT 2019-02-23T20:04:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for NaivParallel, wiki.txt, 200M, 20 (no file stat-inp002-algo008-threads020.json)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+/var/spool/slurm/d/job3540169/slurm_script: line 21: 66302 Killed                  ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'NaivParallel' -q -m 64
+slurmstepd: error: Detected 17 oom-kill event(s) in step 3540169.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for BPR_par, wiki.txt, 200M, 12 (no file stat-inp002-algo009-threads012.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540174/slurm_script: line 21: 38614 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo009-threads012.json -f -s -p 2400M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for BPR_par, wiki.txt, 200M, 16 (no file stat-inp002-algo009-threads016.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540175/slurm_script: line 21: 129067 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo009-threads016.json -f -s -p 3200M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for BPR_par, wiki.txt, 200M, 20 (no file stat-inp002-algo009-threads020.json)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/var/spool/slurm/d/job3540176/slurm_script: line 21: 129116 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, wiki.txt, 200M, 12 (no file stat-inp002-algo011-threads012.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+*** Error in `./sacabench/sacabench': double free or corruption (out): 0x0000000559fae670 ***
+======= Backtrace: =========
+/lib64/libc.so.6(+0x81499)[0x2ab7eedf0499]
+./sacabench/sacabench(_ZN9sacabench13parallel_sais13parallel_sais8run_sacaINS_4util4spanIKhEEmEEvT_NS4_IT0_EEmRNS3_9containerISt4pairIS8_S8_EEEm+0x828)[0xb55418]
+./sacabench/sacabench[0xb5562f]
+/cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1(GOMP_parallel+0x3f)[0x2ab7ee71ba6f]
+./sacabench/sacabench(_ZN9sacabench4util24prepare_and_construct_saINS_13parallel_sais13parallel_saisEmEENS0_10uniform_saIT0_EERKNS0_16text_initializerE+0x39c)[0xb4f24c]
+./sacabench/sacabench(_ZNK9sacabench4util13concrete_sacaINS_13parallel_sais13parallel_saisEE15construct_sa_64ERKNS0_16text_initializerE+0x13)[0xb4f383]
+./sacabench/sacabench(_ZNK9sacabench4util4saca12construct_saERKNS0_16text_initializerEm+0x1c)[0x53477c]
+./sacabench/sacabench(main+0x22cb)[0x52760b]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x2ab7eed91445]
+./sacabench/sacabench[0x5299bf]
+======= Memory map: ========
+00400000-00f59000 r-xp 00000000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01158000-01159000 r--p 00b58000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+01159000-0115a000 rw-p 00b59000 00:2c 22411                              /home/smmaloeb/sacabench/build/sacabench/sacabench
+0115a000-011b6000 rw-p 00000000 00:00 0 
+0138b000-5d6763000 rw-p 00000000 00:00 0                                 [heap]
+2ab7ed856000-2ab7ed878000 r-xp 00000000 08:01 33555971                   /usr/lib64/ld-2.17.so
+2ab7ed878000-2ab7ed87b000 rw-p 00000000 00:00 0 
+2ab7ed886000-2ab7ed88d000 rw-p 00000000 00:00 0 
+2ab7eda77000-2ab7eda78000 r--p 00021000 08:01 33555971                   /usr/lib64/ld-2.17.so
+2ab7eda78000-2ab7eda79000 rw-p 00022000 08:01 33555971                   /usr/lib64/ld-2.17.so
+2ab7eda79000-2ab7eda7a000 rw-p 00000000 00:00 0 
+2ab7eda7a000-2ab7eda80000 r-xp 00000000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2ab7eda80000-2ab7edc7f000 ---p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2ab7edc7f000-2ab7edc80000 r--p 00005000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2ab7edc80000-2ab7edc81000 rw-p 00006000 00:28 2339899496                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libatomic.so.1.2.0
+2ab7edc81000-2ab7edc82000 rw-p 00000000 00:00 0 
+2ab7edc82000-2ab7edc83000 r-xp 00000000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2ab7edc83000-2ab7ede83000 ---p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2ab7ede83000-2ab7ede84000 r--p 00001000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2ab7ede84000-2ab7ede85000 rw-p 00002000 00:2c 11755                      /home/smmaloeb/sacabench/build/external/tudostats/libtudocomp_stat.so
+2ab7ede85000-2ab7ede87000 r-xp 00000000 08:01 33555984                   /usr/lib64/libdl-2.17.so
+2ab7ede87000-2ab7ee087000 ---p 00002000 08:01 33555984                   /usr/lib64/libdl-2.17.so
+2ab7ee087000-2ab7ee088000 r--p 00002000 08:01 33555984                   /usr/lib64/libdl-2.17.so
+2ab7ee088000-2ab7ee089000 rw-p 00003000 08:01 33555984                   /usr/lib64/libdl-2.17.so
+2ab7ee089000-2ab7ee1fc000 r-xp 00000000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2ab7ee1fc000-2ab7ee3fc000 ---p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2ab7ee3fc000-2ab7ee406000 r--p 00173000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2ab7ee406000-2ab7ee408000 rw-p 0017d000 00:28 2339897239                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libstdc++.so.6.0.24
+2ab7ee408000-2ab7ee40c000 rw-p 00000000 00:00 0 
+2ab7ee40c000-2ab7ee50d000 r-xp 00000000 08:01 33555986                   /usr/lib64/libm-2.17.so
+2ab7ee50d000-2ab7ee70c000 ---p 00101000 08:01 33555986                   /usr/lib64/libm-2.17.so
+2ab7ee70c000-2ab7ee70d000 r--p 00100000 08:01 33555986                   /usr/lib64/libm-2.17.so
+2ab7ee70d000-2ab7ee70e000 rw-p 00101000 08:01 33555986                   /usr/lib64/libm-2.17.so
+2ab7ee70e000-2ab7ee73b000 r-xp 00000000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2ab7ee73b000-2ab7ee93a000 ---p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2ab7ee93a000-2ab7ee93b000 r--p 0002c000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2ab7ee93b000-2ab7ee93c000 rw-p 0002d000 00:28 2339898622                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgomp.so.1.0.0
+2ab7ee93c000-2ab7ee952000 r-xp 00000000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2ab7ee952000-2ab7eeb51000 ---p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2ab7eeb51000-2ab7eeb52000 r--p 00015000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2ab7eeb52000-2ab7eeb53000 rw-p 00016000 00:28 2339880102                 /cluster/sfw/gcc/7.4.0-static-gmp-mpfr-mpc-isl/lib64/libgcc_s.so.1
+2ab7eeb53000-2ab7eeb6a000 r-xp 00000000 08:01 33556004                   /usr/lib64/libpthread-2.17.so
+2ab7eeb6a000-2ab7eed69000 ---p 00017000 08:01 33556004                   /usr/lib64/libpthread-2.17.so
+2ab7eed69000-2ab7eed6a000 r--p 00016000 08:01 33556004                   /usr/lib64/libpthread-2.17.so
+2ab7eed6a000-2ab7eed6b000 rw-p 00017000 08:01 33556004                   /usr/lib64/libpthread-2.17.so
+2ab7eed6b000-2ab7eed6f000 rw-p 00000000 00:00 0 
+2ab7eed6f000-2ab7eef32000 r-xp 00000000 08:01 33555978                   /usr/lib64/libc-2.17.so
+2ab7eef32000-2ab7ef131000 ---p 001c3000 08:01 33555978                   /usr/lib64/libc-2.17.so
+2ab7ef131000-2ab7ef135000 r--p 001c2000 08:01 33555978                   /usr/lib64/libc-2.17.so
+2ab7ef135000-2ab7ef137000 rw-p 001c6000 08:01 33555978                   /usr/lib64/libc-2.17.so
+2ab7ef137000-2ab7ef13c000 rw-p 00000000 00:00 0 
+2ab7ef13c000-2ab7ef13d000 ---p 00000000 00:00 0 
+2ab7ef13d000-2ab7ef33d000 rw-p 00000000 00:00 0 
+2ab7ef33d000-2ab7ef33e000 ---p 00000000 00:00 0 
+2ab7ef33e000-2ab7ef53e000 rw-p 00000000 00:00 0 
+2ab7ef53e000-2ab7ef53f000 ---p 00000000 00:00 0 
+2ab7ef53f000-2ab7ef73f000 rw-p 00000000 00:00 0 
+2ab7ef73f000-2ab7ef740000 ---p 00000000 00:00 0 
+2ab7ef740000-2ab7ef940000 rw-p 00000000 00:00 0 
+2ab7ef940000-2ab7ef941000 ---p 00000000 00:00 0 
+2ab7ef941000-2ab7efb41000 rw-p 00000000 00:00 0 
+2ab7efb41000-2ab7efb42000 ---p 00000000 00:00 0 
+2ab7efb42000-2ab7efd42000 rw-p 00000000 00:00 0 
+2ab7efd42000-2ab7efd43000 ---p 00000000 00:00 0 
+2ab7efd43000-2ab7eff43000 rw-p 00000000 00:00 0 
+2ab7eff43000-2ab7eff44000 ---p 00000000 00:00 0 
+2ab7eff44000-2ab7f0144000 rw-p 00000000 00:00 0 
+2ab7f0144000-2ab7f0145000 ---p 00000000 00:00 0 
+2ab7f0145000-2ab7f0345000 rw-p 00000000 00:00 0 
+2ab7f0345000-2ab7f0346000 ---p 00000000 00:00 0 
+2ab7f0346000-2ab7f0546000 rw-p 00000000 00:00 0 
+2ab7f0546000-2ab7f0547000 ---p 00000000 00:00 0 
+2ab7f0547000-2ab7f0747000 rw-p 00000000 00:00 0 
+2ab7f0747000-2ab7f0748000 ---p 00000000 00:00 0 
+2ab7f0748000-2ab7f0948000 rw-p 00000000 00:00 0 
+2ab7f0948000-2ab7f0949000 ---p 00000000 00:00 0 
+2ab7f0949000-2ab7f0b49000 rw-p 00000000 00:00 0 
+2ab7f0b49000-2ab7f0b4a000 ---p 00000000 00:00 0 
+2ab7f0b4a000-2ab7f0d4a000 rw-p 00000000 00:00 0 
+2ab7f0d4a000-2ab7f0d4b000 ---p 00000000 00:00 0 
+2ab7f0d4b000-2ab7f0f4b000 rw-p 00000000 00:00 0 
+2ab7f0f4b000-2ab7f0f4c000 ---p 00000000 00:00 0 
+2ab7f0f4c000-2ab7f114c000 rw-p 00000000 00:00 0 
+2ab7f114c000-2ab7f114d000 ---p 00000000 00:00 0 
+2ab7f114d000-2ab7f134d000 rw-p 00000000 00:00 0 
+2ab7f134d000-2ab7f134e000 ---p 00000000 00:00 0 
+2ab7f134e000-2ab7f154e000 rw-p 00000000 00:00 0 
+2ab7f154e000-2ab7f154f000 ---p 00000000 00:00 0 
+2ab7f154f000-2ab7f174f000 rw-p 00000000 00:00 0 
+2ab7f174f000-2ab7f1750000 ---p 00000000 00:00 0 
+2ab7f1750000-2ab7f1950000 rw-p 00000000 00:00 0 
+2ab7f1950000-2ab7f1951000 ---p 00000000 00:00 0 
+2ab7f1951000-2ab7f1b51000 rw-p 00000000 00:00 0 
+2ab7f1b51000-2ab7f1b52000 ---p 00000000 00:00 0 
+2ab7f1b52000-2ab7f1d52000 rw-p 00000000 00:00 0 
+2ab7f1d52000-2ab7f1d53000 ---p 00000000 00:00 0 
+2ab7f1d53000-2ab7f1f53000 rw-p 00000000 00:00 0 
+2ab7f1f53000-2ab7f1f54000 ---p 00000000 00:00 0 
+2ab7f1f54000-2ab7f2154000 rw-p 00000000 00:00 0 
+2ab7f2154000-2ab7f2155000 ---p 00000000 00:00 0 
+2ab7f2155000-2ab7f2355000 rw-p 00000000 00:00 0 
+2ab7f2355000-2ab7f2356000 ---p 00000000 00:00 0 
+2ab7f2356000-2ab7f2556000 rw-p 00000000 00:00 0 
+2ab7f2556000-2ab7f2557000 ---p 00000000 00:00 0 
+2ab7f2557000-2ab7f2757000 rw-p 00000000 00:00 0 
+2ab7f2757000-2ab7f2758000 ---p 00000000 00:00 0 
+2ab7f2758000-2ab7f2958000 rw-p 00000000 00:00 0 
+2ab7f4000000-2ab7f4021000 rw-p 00000000 00:00 0 
+2ab7f4021000-2ab7f8000000 ---p 00000000 00:00 0 
+2ab7f8000000-2ab7f8021000 rw-p 00000000 00:00 0 
+2ab7f8021000-2ab7fc000000 ---p 00000000 00:00 0 
+2ab7fc000000-2ab7fc021000 rw-p 00000000 00:00 0 
+2ab7fc021000-2ab800000000 ---p 00000000 00:00 0 
+2ab800000000-2ab800021000 rw-p 00000000 00:00 0 
+2ab800021000-2ab804000000 ---p 00000000 00:00 0 
+2ab804000000-2ab804021000 rw-p 00000000 00:00 0 
+2ab804021000-2ab808000000 ---p 00000000 00:00 0 
+2ab808000000-2ab808021000 rw-p 00000000 00:00 0 
+2ab808021000-2ab80c000000 ---p 00000000 00:00 0 
+2ab80c000000-2ab80c021000 rw-p 00000000 00:00 0 
+2ab80c021000-2ab810000000 ---p 00000000 00:00 0 
+2ab810000000-2ab810021000 rw-p 00000000 00:00 0 
+2ab810021000-2ab814000000 ---p 00000000 00:00 0 
+2ab814000000-2ab814021000 rw-p 00000000 00:00 0 
+2ab814021000-2ab818000000 ---p 00000000 00:00 0 
+2ab818000000-2ab818021000 rw-p 00000000 00:00 0 
+2ab818021000-2ab81c000000 ---p 00000000 00:00 0 
+2ab81c000000-2ab81c021000 rw-p 00000000 00:00 0 
+2ab81c021000-2ab820000000 ---p 00000000 00:00 0 
+2ab820000000-2ab820021000 rw-p 00000000 00:00 0 
+2ab820021000-2ab824000000 ---p 00000000 00:00 0 
+7fff10237000-7fff10259000 rw-p 00000000 00:00 0                          [stack]
+7fff103bd000-7fff103bf000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+/var/spool/slurm/d/job3540188/slurm_script: line 21:  3461 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-23T17:14:45/stat-inp002-algo011-threads012.json -f -s -p 2400M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, wiki.txt, 200M, 16 (no file stat-inp002-algo011-threads016.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+slurmstepd: error: *** JOB 3540189 ON cstd02-001 CANCELLED AT 2019-02-23T20:09:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for PARALLEL_SAIS, wiki.txt, 200M, 20 (no file stat-inp002-algo011-threads020.json)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+slurmstepd: error: *** JOB 3540190 ON cstd01-036 CANCELLED AT 2019-02-23T20:09:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, wiki.txt, 200M, 8 (no file stat-inp002-algo012-threads008.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+slurmstepd: error: *** JOB 3540194 ON cstd02-020 CANCELLED AT 2019-02-23T20:11:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, wiki.txt, 200M, 12 (no file stat-inp002-algo012-threads012.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+slurmstepd: error: *** JOB 3540195 ON cstd01-050 CANCELLED AT 2019-02-23T20:11:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, wiki.txt, 200M, 20 (no file stat-inp002-algo012-threads020.json)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+slurmstepd: error: *** JOB 3540197 ON cstd02-010 CANCELLED AT 2019-02-23T20:11:52 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2_par, wiki.txt, 200M, 20 (no file stat-inp002-algo014-threads020.json)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+slurmstepd: error: *** JOB 3540211 ON cstd01-051 CANCELLED AT 2019-02-23T20:16:52 DUE TO TIME LIMIT ***
+
+-----------------
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-commoncrawl.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-commoncrawl.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-commoncrawl.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-commoncrawl.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-commoncrawl.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-commoncrawl.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-commoncrawl.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-dna.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-dna.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-dna.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-dna.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-dna.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-dna.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-dna.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-wiki.txt-1.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-wiki.txt-2.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-wiki.txt-4.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-wiki.txt-8.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-wiki.txt-12.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-wiki.txt-16.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-wiki.txt-20.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/sqlplot.txt
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/results-combined.json
+Writing data to /work/smmaloeb/measure/2019-02-23T17:14:45/combine.log
