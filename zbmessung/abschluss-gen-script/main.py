@@ -162,7 +162,8 @@ def handle_tablegen(args):
 
     tex_gen_module.generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files)
 
-
+def handle_tablegen_all(args):
+    cfg = load_json_from_file(args.config)
 
 # ------------------------------------------------------------------------------
 
@@ -171,10 +172,18 @@ sacabench_exec = "../build/sacabench/sacabench"
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='sub-command help')
 
-parser_c = subparsers.add_parser('tablegen', help='tablegen help')
+parser_c = subparsers.add_parser('tablegen-single', help='generate latex tables for single measure file')
 parser_c.add_argument('path', help='path of combined json measure file')
 parser_c.add_argument('mode', help='mode')
 parser_c.set_defaults(func=handle_tablegen)
+
+parser_c = subparsers.add_parser('tablegen-all', help='generate combined')
+parser_c.add_argument('--config', help='path of config file', default="config.json")
+parser_c.set_defaults(func=handle_tablegen_all)
+
+def deflt(args):
+    parser.print_help(sys.stderr)
+parser.set_defaults(func=deflt)
 
 args = parser.parse_args()
 args.func(args)

@@ -1,0 +1,23 @@
+{
+    "measures": [
+        {
+            "path": "final-measure/final-100gb-par-strong-results-combined.json",
+            "thread-scale": "strong"
+        },
+        {
+            "path": "final-100gb-par-weak-results-combined.json",
+            "thread-scale": "weak"
+        },
+        {
+            "path": "final-100gb-seq-weak-results-combined.json",
+            "thread-scale": "weak"
+        },
+        {
+            "path": "final-200mb-seq-none-results-combined.json",
+            "thread-scale": "none"
+        }
+    ],
+    "output": {
+        "path": "tex-output"
+    }
+}
