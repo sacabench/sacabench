@@ -55,17 +55,23 @@ def expand_x_headings(x_headings):
 
     return (rv, total_width)
 
+class pre_processed_tex_table:
+    tabular = ""
+    def in_resize_box(self):
+        out = ""
+        out += "\\resizebox{\\textwidth}{!}{\n"
+        out += self.tabular
+        out += "}\n"
+        return out
+
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
                                   y_headings,
                                   title,
                                   header_text,
                                   label):
-    out = ""
-    #out += "\\subsection{{{}}}\n".format(title)
-    #out += "\n{}\n".format(header_text).replace("%LABEL", label)
-    out += "\\begin{table}\n"
-    out += "\\resizebox{\\textwidth}{!}{\n"
+    out2 = pre_processed_tex_table()
+
 
     assert len(x_headings) >= 1
     assert len(y_headings) == 1
@@ -74,8 +80,8 @@ def generate_latex_table_single_2(multidim_array,
     x_cells = rv[1]
     x_cell_levels = rv[0]
 
-    out += "\\begin{tabular}{l" + ("r" * x_cells) + "}\n"
-    out += "\\toprule\n"
+    out2.tabular += "\\begin{tabular}{l" + ("r" * x_cells) + "}\n"
+    out2.tabular += "\\toprule\n"
 
     for x_cell_level in x_cell_levels:
         x_cell_level_fmt = []
@@ -85,16 +91,21 @@ def generate_latex_table_single_2(multidim_array,
             else:
                 x_cell_level_fmt.append("\\multicolumn{{{}}}{{c}}{{{}}}".format(span,x_cell))
 
-        out += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
+        out2.tabular += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
 
-    out += "\\midrule\n"
+    out2.tabular += "\\midrule\n"
 
     for (y_heading, dataline) in zip(y_headings[0], multidim_array):
-        out += "    {} & {} \\\\\n".format(y_heading, " & ".join(dataline))
+        out2.tabular += "    {} & {} \\\\\n".format(y_heading, " & ".join(dataline))
 
-    out += "\\bottomrule\n"
-    out += "\\end{tabular}\n"
-    out += "}\n"
+    out2.tabular += "\\bottomrule\n"
+    out2.tabular += "\\end{tabular}\n"
+
+    out = ""
+    #out += "\\subsection{{{}}}\n".format(title)
+    #out += "\n{}\n".format(header_text).replace("%LABEL", label)
+    out += "\\begin{table}\n"
+    out += out2.in_resize_box()
     out += "\\caption{{{}}}\n".format(title)
     out += "\\label{{{}}}\n".format(label)
     out += "\\end{table}\n"
@@ -102,6 +113,13 @@ def generate_latex_table_single_2(multidim_array,
     return out
 
 def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
+    l = generate_latex_table_list(outer_matrix, threads_and_sizes, algorithms, files)
+    for e in l:
+        print(e)
+
+def generate_latex_table_list(outer_matrix, threads_and_sizes, algorithms, files):
+    returnlist = []
+
     def if_check(key, cmp, which):
         nonlocal outer_matrix
 
@@ -254,4 +272,6 @@ Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die 
                                             title,
                                             header_text,
                                             label)
-        print(out)
+        returnlist.push(out)
+
+    return returnlist

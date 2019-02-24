@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
-import pprint
+from pprint import pprint
 import os
 import argparse
 import json
@@ -42,10 +42,7 @@ def get_mem_time(phase):
 
     return (peak, duration)
 
-def handle_tablegen(args):
-    path = args.path
-    mode = args.mode
-
+def prepare_and_extract(path):
     outer_matrix = {}
 
     algorithms = set()
@@ -160,10 +157,39 @@ def handle_tablegen(args):
                 process(avg, statistics.mean)
                 process(med, statistics.median)
 
+    return {
+        "outer_matrix": outer_matrix,
+        "threads_and_sizes": threads_and_sizes,
+        "algorithms": algorithms,
+        "files": files,
+    }
+
+def handle_tablegen(args):
+    path = args.path
+    #mode = args.mode
+
+    processed = prepare_and_extract(path)
+    outer_matrix = processed["outer_matrix"]
+    threads_and_sizes = processed["threads_and_sizes"]
+    algorithms = processed["algorithms"]
+    files = processed["files"]
+
     tex_gen_module.generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files)
 
 def handle_tablegen_all(args):
     cfg = load_json_from_file(args.config)
+    pprint(cfg)
+    os.makedirs(cfg["output"]["path"], exist_ok=True)
+
+    for measure in cfg["measures"]:
+        path = measure["path"]
+        mode = measure["thread-scale"]
+        processed = prepare_and_extract(path)
+        outer_matrix = processed["outer_matrix"]
+        threads_and_sizes = processed["threads_and_sizes"]
+        algorithms = processed["algorithms"]
+        files = processed["files"]
+
 
 # ------------------------------------------------------------------------------
 
@@ -183,6 +209,7 @@ parser_c.set_defaults(func=handle_tablegen_all)
 
 def deflt(args):
     parser.print_help(sys.stderr)
+    return 1
 parser.set_defaults(func=deflt)
 
 args = parser.parse_args()
