@@ -81,9 +81,7 @@ class tex_figure_wrapper:
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
                                   y_headings,
-                                  title,
-                                  header_text,
-                                  label):
+                                  header_text):
     assert len(x_headings) >= 1
     assert len(y_headings) == 1
 
@@ -272,9 +270,7 @@ Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die 
         out = generate_latex_table_single_2(multidim_array,
                                             x_tex_headings,
                                             y_tex_headings,
-                                            title,
-                                            header_text,
-                                            label)
+                                            header_text)
         returnlist.push(out.wrap_resize_box().in_table(title, label))
 
     return returnlist
