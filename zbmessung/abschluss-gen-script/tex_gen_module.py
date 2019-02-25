@@ -113,14 +113,43 @@ def generate_latex_table_single_2(multidim_array,
 
     return tex_figure_wrapper(tex)
 
+
 def generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files):
-    l = generate_latex_table_list(outer_matrix, threads_and_sizes, algorithms, files)
-    for e in l:
-        print(e.tex)
+    table_cfg_kinds = [
+        {
+            "kind": "sa_check",
+            "title": "\\sa Korrektheit Weak-Scaling Large",
+            "text": """
+Wir Überprüfen zunächst, ob alle Testdaten von allen Implementierungen
+korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\texttt{-{}-check} erzeugte Informationen und können in \\cref{%LABEL} eingesehen werden.
+            """[1:-1],
+            "label": "messung:tab:sa-chk-weak-large",
+        },
+        {
+            "kind": "time",
+            "title": "Laufzeit Weak-Scaling Large in Minuten",
+            "text": """
+Wir betrachten nun in \\cref{%LABEL} die mediane Laufzeit, die jeder Algorithmus für die jeweiligen Testdaten erreicht hat.
+Pro Eingabe sind jeweils die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
+            """[1:-1],
+            "label": "messung:tab:duration-weak-large",
+        },
+        {
+            "kind": "mem",
+            "title": "Speicherpeak Weak-Scaling Large in GiB",
+            "text": """
+\\Cref{%LABEL} entnehmen wir den mediane Speicherverbrauch. Der Wert setzt sich zusammen aus der Allokation für den Eingabetext inklusive der vom Algorithmus benötigten extra Sentinel Bytes, die Allokation für das Ausgabe \sa und dem vom Algorithmus selbst benötigten Speichers.
+Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
+            """[1:-1],
+            "label": "messung:tab:mem-weak-large",
+        },
+    ]
 
-def generate_latex_table_list(outer_matrix, threads_and_sizes, algorithms, files):
-    returnlist = []
+    for cfg in table_cfg_kinds:
+        e = generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, files)
+        print(e)
 
+def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, files):
     def if_check(key, cmp, which):
         nonlocal outer_matrix
 
@@ -209,68 +238,61 @@ def generate_latex_table_list(outer_matrix, threads_and_sizes, algorithms, files
 
         return d
 
-    batch = [
-        ("\\sa Korrektheit Weak-Scaling Large", if_check("check_result", "ok", "med"), """
-Wir Überprüfen zunächst, ob alle Testdaten von allen Implementierungen
-korrekt verarbeitet werden konnten. Die Messergebnisse enthalten hierfür von \\texttt{-{}-check} erzeugte Informationen und können in \\cref{%LABEL} eingesehen werden.
-         """[1:-1], "messung:tab:sa-chk-weak-large"),
-        ("Laufzeit Weak-Scaling Large in Minuten", tex_number("duration", time_fmt, "med"), """
-Wir betrachten nun in \\cref{%LABEL} die mediane Laufzeit, die jeder Algorithmus für die jeweiligen Testdaten erreicht hat.
-Pro Eingabe sind jeweils die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
-         """[1:-1], "messung:tab:duration-weak-large"),
-        ("Speicherpeak Weak-Scaling Large in GiB", tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"), """
-\\Cref{%LABEL} entnehmen wir den mediane Speicherverbrauch. Der Wert setzt sich zusammen aus der Allokation für den Eingabetext inklusive der vom Algorithmus benötigten extra Sentinel Bytes, die Allokation für das Ausgabe \sa und dem vom Algorithmus selbst benötigten Speichers.
-Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die schlechtesten drei mit Rot.
-         """[1:-1], "messung:tab:mem-weak-large"),
+    dispatch = {
+        "sa_check": if_check("check_result", "ok", "med"),
+        "time": tex_number("duration", time_fmt, "med"),
+        "mem": tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"),
+    }
+
+    title = cfg["title"]
+    get_data = dispatch[cfg["kind"]]
+    header_text = cfg["text"]
+    label = cfg["label"]
+
+    # data, algorithms, files
+    x_tex_headings = [
+        [nice_file(s) for s in files],
+        ["{}".format(t) for (t, s) in threads_and_sizes],
+    ]
+    y_tex_headings = [
+        [nice_algoname(algorithm_name) for algorithm_name in algorithms],
     ]
 
-    for (title, get_data, header_text, label) in batch:
-        #out = generate_latex_table_single(data, algorithms, files, get_data, title, header_text, label, unit)
+    x_headings = [
+        files,
+        threads_and_sizes,
+    ]
+    y_headings = [
+        algorithms,
+    ]
 
-        # data, algorithms, files
-        x_tex_headings = [
-            [nice_file(s) for s in files],
-            ["{}".format(t) for (t, s) in threads_and_sizes],
-        ]
-        y_tex_headings = [
-            [nice_algoname(algorithm_name) for algorithm_name in algorithms],
-        ]
+    def rec(headings):
+        if len(headings) == 1:
+            return [[e] for e in headings[0]]
+        else:
+            r = []
+            for e in headings[0]:
+                ee = rec(headings[1:])
+                for eee in ee:
+                    eee.insert(0, e)
+                r += ee
+            return r
 
-        x_headings = [
-            files,
-            threads_and_sizes,
-        ]
-        y_headings = [
-            algorithms,
-        ]
+    multidim_array = []
+    for [algorithm] in rec(y_headings):
+        multidim_array.append([])
+        for [file, threads_and_size] in rec(x_headings):
+            #cell = "{}-{}-{}".format(nice_algoname(algorithm), nice_file(file, False), threads_and_size[0])
+            cell = get_data(threads_and_size, file, algorithm)
+            multidim_array[-1].append(cell)
+            #print(algorithm, file, threads_and_size)
 
-        def rec(headings):
-            if len(headings) == 1:
-                return [[e] for e in headings[0]]
-            else:
-                r = []
-                for e in headings[0]:
-                    ee = rec(headings[1:])
-                    for eee in ee:
-                        eee.insert(0, e)
-                    r += ee
-                return r
+    #pprint.pprint(multidim_array)
 
-        multidim_array = []
-        for [algorithm] in rec(y_headings):
-            multidim_array.append([])
-            for [file, threads_and_size] in rec(x_headings):
-                #cell = "{}-{}-{}".format(nice_algoname(algorithm), nice_file(file, False), threads_and_size[0])
-                cell = get_data(threads_and_size, file, algorithm)
-                multidim_array[-1].append(cell)
-                #print(algorithm, file, threads_and_size)
+    out = generate_latex_table_single_2(multidim_array,
+                                        x_tex_headings,
+                                        y_tex_headings,
+                                        header_text)
+    tex_fragment = out.wrap_resize_box().wrap_table(title, label)
 
-        #pprint.pprint(multidim_array)
-
-        out = generate_latex_table_single_2(multidim_array,
-                                            x_tex_headings,
-                                            y_tex_headings,
-                                            header_text)
-        returnlist.push(out.wrap_resize_box().in_table(title, label))
-
-    return returnlist
+    return tex_fragment.tex

@@ -190,10 +190,10 @@ def handle_tablegen_all(args):
         algorithms = processed["algorithms"]
         files = processed["files"]
 
+        tex_gen_module.generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files)
+
 
 # ------------------------------------------------------------------------------
-
-sacabench_exec = "../build/sacabench/sacabench"
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='sub-command help')
