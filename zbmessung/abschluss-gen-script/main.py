@@ -205,25 +205,26 @@ def handle_tablegen_all(args):
         files = processed["files"]
 
         tls = measure["table-label-suffix"]
+        ttitle = measure["title"]
 
         table_cfg_kinds = [
             {
                 "kind": "sa_check",
-                "title": "\\sa Korrektheit",
+                "title": "\\sa Korrektheit {}".format(ttitle),
                 "text": "",
                 "label": "{}{}{}".format(ttlp, clp, tls),
                 "filename": "{}{}".format(clp, tls),
             },
             {
                 "kind": "time",
-                "title": "Laufzeit in Minuten",
+                "title": "Laufzeit in Minuten {}".format(ttitle),
                 "text": "",
                 "label": "{}{}{}".format(ttlp, tlp, tls),
                 "filename": "{}{}".format(tlp, tls),
             },
             {
                 "kind": "mem",
-                "title": "Speicherpeak in GiB",
+                "title": "Speicherpeak in GiB {}".format(ttitle),
                 "text": "",
                 "label": "{}{}{}".format(ttlp, mlp, tls),
                 "filename": "{}{}".format(mlp, tls),

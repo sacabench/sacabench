@@ -3,22 +3,34 @@
         {
             "path": "final-measure/final-100gb-par-strong-results-combined.json",
             "thread-scale": "strong",
-            "table-label-suffix": "large-par-strong"
+            "table-label-suffix": "large-par-strong",
+            "title": "Large Parallel Strong-Scaling",
+            "groups": [
+            ]
         },
         {
             "path": "final-measure/final-100gb-par-weak-results-combined.json",
             "thread-scale": "weak",
-            "table-label-suffix": "large-par-weak"
+            "table-label-suffix": "large-par-weak",
+            "title": "Large parallel Weak-Scaling",
+            "groups": [
+            ]
         },
         {
             "path": "final-measure/final-100gb-seq-weak-results-combined.json",
             "thread-scale": "weak",
-            "table-label-suffix": "large-seq-weak"
+            "table-label-suffix": "large-seq-weak",
+            "title": "Large Sequential Input-Scaling",
+            "groups": [
+            ]
         },
         {
             "path": "final-measure/final-200mb-seq-none-results-combined.json",
             "thread-scale": "none",
-            "table-label-suffix": "small-seq-none"
+            "table-label-suffix": "small-seq-none",
+            "title": "Small Sequential",
+            "groups": [
+            ]
         }
     ],
     "output": {
