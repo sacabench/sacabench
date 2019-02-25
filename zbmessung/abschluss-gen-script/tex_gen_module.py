@@ -80,8 +80,7 @@ class tex_figure_wrapper:
 
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
-                                  y_headings,
-                                  header_text):
+                                  y_headings):
     assert len(x_headings) >= 1
     assert len(y_headings) == 1
 
@@ -246,7 +245,6 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
 
     title = cfg["title"]
     get_data = dispatch[cfg["kind"]]
-    header_text = cfg["text"]
     label = cfg["label"]
 
     # data, algorithms, files
@@ -291,8 +289,7 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
 
     out = generate_latex_table_single_2(multidim_array,
                                         x_tex_headings,
-                                        y_tex_headings,
-                                        header_text)
+                                        y_tex_headings)
     tex_fragment = out.wrap_resize_box().wrap_table(title, label)
 
     return tex_fragment.tex
