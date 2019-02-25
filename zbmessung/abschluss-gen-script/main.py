@@ -20,6 +20,15 @@ def save_json_to_file(d, p):
     with open(str(p), 'w') as outfile:
         json.dump(d, outfile, indent=4, sort_keys=True)
 
+def load_text_from_file(p):
+    with open(str(p), 'r') as f:
+        data = f.read()
+    return data
+
+def save_text_to_file(d, p):
+    with open(str(p), 'w') as outfile:
+        outfile.write(d)
+
 def get_stats(stats):
     mp = {}
     for s in stats["stats"]:
@@ -181,6 +190,11 @@ def handle_tablegen_all(args):
     pprint(cfg)
     os.makedirs(cfg["output"]["path"], exist_ok=True)
 
+    ttlp = cfg["output"]["table-label-prefix"]
+    clp = cfg["output"]["table-check-label-prefix"]
+    mlp = cfg["output"]["table-mem-label-prefix"]
+    tlp = cfg["output"]["table-time-label-prefix"]
+
     for measure in cfg["measures"]:
         path = measure["path"]
         mode = measure["thread-scale"]
@@ -190,7 +204,39 @@ def handle_tablegen_all(args):
         algorithms = processed["algorithms"]
         files = processed["files"]
 
-        tex_gen_module.generate_latex_table(outer_matrix, threads_and_sizes, algorithms, files)
+        tls = measure["table-label-suffix"]
+
+        table_cfg_kinds = [
+            {
+                "kind": "sa_check",
+                "title": "\\sa Korrektheit",
+                "text": "",
+                "label": "{}{}{}".format(ttlp, clp, tls),
+                "filename": "{}{}".format(clp, tls),
+            },
+            {
+                "kind": "time",
+                "title": "Laufzeit in Minuten",
+                "text": "",
+                "label": "{}{}{}".format(ttlp, tlp, tls),
+                "filename": "{}{}".format(tlp, tls),
+            },
+            {
+                "kind": "mem",
+                "title": "Speicherpeak in GiB",
+                "text": "",
+                "label": "{}{}{}".format(ttlp, mlp, tls),
+                "filename": "{}{}".format(mlp, tls),
+            },
+        ]
+
+        for c in table_cfg_kinds:
+            e = tex_gen_module.generate_latex_table_list(c, outer_matrix, threads_and_sizes, algorithms, files)
+            filename = "{}/{}.tex".format(cfg["output"]["path"], c["filename"])
+            save_text_to_file(e, filename)
+            print("\\input{{{}}}".format(filename))
+            #print(filename)
+
 
 
 # ------------------------------------------------------------------------------

@@ -2,22 +2,30 @@
     "measures": [
         {
             "path": "final-measure/final-100gb-par-strong-results-combined.json",
-            "thread-scale": "strong"
+            "thread-scale": "strong",
+            "table-label-suffix": "large-par-strong"
         },
         {
             "path": "final-measure/final-100gb-par-weak-results-combined.json",
-            "thread-scale": "weak"
+            "thread-scale": "weak",
+            "table-label-suffix": "large-par-weak"
         },
         {
             "path": "final-measure/final-100gb-seq-weak-results-combined.json",
-            "thread-scale": "weak"
+            "thread-scale": "weak",
+            "table-label-suffix": "large-seq-weak"
         },
         {
             "path": "final-measure/final-200mb-seq-none-results-combined.json",
-            "thread-scale": "none"
+            "thread-scale": "none",
+            "table-label-suffix": "small-seq-none"
         }
     ],
     "output": {
-        "path": "tex-output"
+        "path": "tex-output",
+        "table-label-prefix": "messung:tab:",
+        "table-check-label-prefix": "sa-chk-",
+        "table-mem-label-prefix": "duration-",
+        "table-time-label-prefix": "mem-"
     }
 }
