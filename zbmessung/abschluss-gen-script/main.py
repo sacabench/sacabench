@@ -242,7 +242,7 @@ def handle_tablegen_all(args):
                 "logdata": logdata,
                 "legend": r"""\begin{tabular}{ll}
 {\color{green}Grün} & Die besten drei Werte.\\
-{\color{red}Rot} & Die schelchtesten drei Werte.\\
+{\color{red}Rot} & Die schlechtesten drei Werte.\\
 \end{tabular}""",
             },
             {
@@ -255,7 +255,7 @@ def handle_tablegen_all(args):
                 "logdata": logdata,
                 "legend": r"""\begin{tabular}{ll}
 {\color{green}Grün} & Die besten drei Werte.\\
-{\color{red}Rot} & Die schelchtesten drei Werte.\\
+{\color{red}Rot} & Die schlechtesten drei Werte.\\
 \end{tabular}""",
             },
         ]
