@@ -23,7 +23,7 @@ struct parallel_div_suf_sort {
     inline static void construct_sa(util::string_span text,
                                     const util::alphabet&,
                                     util::span<sa_index> out_sa) {
-        sadslike<sa_index, int64_t>(text, out_sa, text.size(), pdivsufsort);
+        pdivsufsortlike<sa_index>(text, out_sa, text.size(), pdivsufsort);
     }
 };
 } // namespace sacabench::reference_sacas

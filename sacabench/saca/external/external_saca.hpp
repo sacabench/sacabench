@@ -118,4 +118,39 @@ inline void saislike(util::string_span text, util::span<sa_index> out_sa,
     }
     tdc::StatPhase::resume_tracking();
 }
+
+
+/// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
+///        but uses int32 as the SA index type.
+template <typename sa_index, typename Fn>
+inline void pdivsufsortlike(util::string_span text, util::span<sa_index> out_sa,
+                     size_t n, Fn saca_fn) {
+
+    if constexpr (sizeof(sa_index) != 64) {
+        tdc::StatPhase::pause_tracking();
+        auto sa_correct_size = util::make_container<int64_t>(n);
+        tdc::StatPhase::resume_tracking();
+
+        if (n < 2) {
+            return;
+        }
+
+        {
+            saca_fn(text.data(), sa_correct_size.data(), n);
+        }
+
+        tdc::StatPhase::pause_tracking();
+        for (size_t i = 0; i < n; ++i) {
+            out_sa[i] = sa_correct_size[i];
+        }
+        tdc::StatPhase::resume_tracking();
+    } else {
+        
+        if (n < 2) {
+            return;
+        }
+
+        saca_fn(text.data(), out_sa.data(), n);
+    }
+}
 } // namespace sacabench::reference_sacas
