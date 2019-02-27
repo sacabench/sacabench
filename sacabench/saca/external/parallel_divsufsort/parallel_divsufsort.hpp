@@ -10,7 +10,7 @@
 #include <util/span.hpp>
 #include <cstdint>
 
-extern int32_t pdivsufsort(const uint8_t* T, int32_t* SA, int32_t n);
+extern int32_t pdivsufsort(const uint8_t* T, int64_t* SA, int64_t n);
 
 namespace sacabench::reference_sacas {
 struct parallel_div_suf_sort {
@@ -23,7 +23,7 @@ struct parallel_div_suf_sort {
     inline static void construct_sa(util::string_span text,
                                     const util::alphabet&,
                                     util::span<sa_index> out_sa) {
-        external_saca<sa_index>(text, out_sa, text.size(), pdivsufsort);
+        sadslike<sa_index, int64_t>(text, out_sa, text.size(), pdivsufsort);
     }
 };
 } // namespace sacabench::reference_sacas
