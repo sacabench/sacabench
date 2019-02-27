@@ -70,7 +70,7 @@ class tex_figure_wrapper:
         out = ""
         #out += "\\subsection{{{}}}\n".format(title)
         #out += "\n{}\n".format(header_text).replace("%LABEL", label)
-        out += "\\begin{table}\n"
+        out += "\\begin{table}[h]\n"
         out += self.tex
         out += "\\caption{{{}}}\n".format(title)
         out += "\\label{{{}}}\n".format(label)
@@ -80,9 +80,14 @@ class tex_figure_wrapper:
 
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
-                                  y_headings):
+                                  y_headings,
+                                  cfg):
     assert len(x_headings) >= 1
     assert len(y_headings) == 1
+    x_omit = set()
+    for c in cfg:
+        if c[0] == "x":
+            x_omit.add(c[1])
 
     rv = expand_x_headings(x_headings)
     x_cells = rv[1]
@@ -92,7 +97,7 @@ def generate_latex_table_single_2(multidim_array,
     tex += "\\begin{tabular}{l" + ("r" * x_cells) + "}\n"
     tex += "\\toprule\n"
 
-    for x_cell_level in x_cell_levels:
+    for (x_cell_level_depth, x_cell_level) in enumerate(x_cell_levels):
         x_cell_level_fmt = []
         for (x_cell, span) in x_cell_level:
             if span == 1:
@@ -100,7 +105,8 @@ def generate_latex_table_single_2(multidim_array,
             else:
                 x_cell_level_fmt.append("\\multicolumn{{{}}}{{c}}{{{}}}".format(span,x_cell))
 
-        tex += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
+        if not x_cell_level_depth in x_omit:
+            tex += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
 
     tex += "\\midrule\n"
 
@@ -246,6 +252,8 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
     title = cfg["title"]
     get_data = dispatch[cfg["kind"]]
     label = cfg["label"]
+    omit_headings = cfg["omit_headings"]
+    single_cfg = omit_headings
 
     # data, algorithms, files
     x_tex_headings = [
@@ -289,7 +297,8 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
 
     out = generate_latex_table_single_2(multidim_array,
                                         x_tex_headings,
-                                        y_tex_headings)
+                                        y_tex_headings,
+                                        single_cfg)
     tex_fragment = out.wrap_resize_box().wrap_table(title, label)
 
     return tex_fragment.tex

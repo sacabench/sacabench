@@ -207,6 +207,8 @@ def handle_tablegen_all(args):
         tls = measure["table-label-suffix"]
         ttitle = measure["title"]
 
+        omit_headings = measure["omit-headings"]
+
         table_cfg_kinds = [
             {
                 "kind": "sa_check",
@@ -214,6 +216,7 @@ def handle_tablegen_all(args):
                 "text": "",
                 "label": "{}{}{}".format(ttlp, clp, tls),
                 "filename": "{}{}".format(clp, tls),
+                "omit_headings": omit_headings,
             },
             {
                 "kind": "time",
@@ -221,6 +224,7 @@ def handle_tablegen_all(args):
                 "text": "",
                 "label": "{}{}{}".format(ttlp, tlp, tls),
                 "filename": "{}{}".format(tlp, tls),
+                "omit_headings": omit_headings,
             },
             {
                 "kind": "mem",
@@ -228,6 +232,7 @@ def handle_tablegen_all(args):
                 "text": "",
                 "label": "{}{}{}".format(ttlp, mlp, tls),
                 "filename": "{}{}".format(mlp, tls),
+                "omit_headings": omit_headings,
             },
         ]
 

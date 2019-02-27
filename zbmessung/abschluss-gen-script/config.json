@@ -6,6 +6,8 @@
             "table-label-suffix": "large-par-strong",
             "title": "Large Parallel Strong-Scaling",
             "groups": [
+            ],
+            "omit-headings": [
             ]
         },
         {
@@ -14,6 +16,8 @@
             "table-label-suffix": "large-par-weak",
             "title": "Large parallel Weak-Scaling",
             "groups": [
+            ],
+            "omit-headings": [
             ]
         },
         {
@@ -22,6 +26,8 @@
             "table-label-suffix": "large-seq-weak",
             "title": "Large Sequential Input-Scaling",
             "groups": [
+            ],
+            "omit-headings": [
             ]
         },
         {
@@ -30,6 +36,9 @@
             "table-label-suffix": "small-seq-none",
             "title": "Small Sequential",
             "groups": [
+            ],
+            "omit-headings": [
+                ["x", 1]
             ]
         }
     ],
