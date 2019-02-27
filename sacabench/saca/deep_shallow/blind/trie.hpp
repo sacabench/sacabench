@@ -22,16 +22,6 @@ inline void print_spaces(const size_t depth) {
 template <typename suffix_index_type>
 class trie {
 private:
-    struct node;
-
-    class arena {
-        inline arena() {}
-
-        inline node allocate(const size_t nobj) { return new node[nobj]; }
-
-        inline node deallocate(node* ptr, const size_t nobj) { delete[] ptr; }
-    };
-
     struct node {
         /// \brief The character on the edge that is incident to this node.
         util::character incoming_char;
@@ -44,6 +34,7 @@ private:
 
         inline node() : incoming_char(0), lcp(0), children() {}
         inline node(const node&) = delete;
+        inline node& operator=(const node&) = delete;
 
         inline node(node&&) = default;
         inline node& operator=(node&&) = default;
@@ -164,23 +155,24 @@ private:
             //                  `-> old_node--> ...
             //                              `-> ...
 
-            node new_inner = std::move(node::new_inner_node(lcp_of_new_node));
+            node new_inner = node::new_inner_node(lcp_of_new_node);
             new_inner.incoming_char = input_text[new_element + lcp];
 
             node new_leaf = node::new_leaf(input_text, new_element);
             new_leaf.incoming_char = input_text[new_element + lcp_of_new_node];
 
-            node old_node = std::move(*possible_child);
-            old_node.incoming_char = old_edge_label;
-
             // Remove the old child from children.
-            children.erase(
-                std::remove_if(children.begin(), children.end(),
+            const auto it = std::find_if(children.begin(), children.end(),
                                [&](const node& a) {
                                    return a.incoming_char ==
                                           input_text[new_element + lcp];
-                               }),
-                children.end());
+                               });
+
+            // Extract old node from children.
+            node old_node(std::move(*possible_child));
+            old_node.incoming_char = old_edge_label;
+
+            children.erase(it);
 
             new_inner.add_child(std::move(old_node));
             new_inner.add_child(std::move(new_leaf));
@@ -252,7 +244,7 @@ public:
           m_root(std::move(node::new_inner_node(0))) {
         m_root.incoming_char = util::SENTINEL;
 
-        node n = std::move(node::new_leaf(m_input_text, initial_element));
+        node n = node::new_leaf(m_input_text, initial_element);
         n.incoming_char = m_input_text[initial_element];
         m_root.add_child(std::move(n));
     }
