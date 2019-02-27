@@ -204,41 +204,55 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
             size = len(datapoints)
 
             (d, i) = next((d, i) for (d, n, i) in datapoints if n == algorithm_name)
+
             #print((d, i))
             #print()
 
             raw = outer_matrix[ts][f][algorithm_name][which][key]
             assert raw == d
 
-            formated = fmt(d, i, size)
+            uniq_datapoints = list(sorted(set(map(lambda dx: dx[0], datapoints))))
+
+            classif = 0
+            if len(uniq_datapoints) >= 3:
+                third_best = uniq_datapoints[2]
+                third_worst = uniq_datapoints[-3]
+                if d >= third_worst:
+                    classif = -1
+                if d <= third_best:
+                    classif = 1
+            else:
+                classif = 1
+
+            formated = fmt(d, classif)
 
             return formated
 
         return ret
 
-    def time_fmt(d, i, size):
+    def time_fmt(d, classif):
         d = d / 1000
         d = d / 60
         d = "{:0.2f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
-        if i < 3:
+        if classif > 0:
             d = latex_color(d, "green!60!black")
-        elif (size - (i + 1)) < 3:
+        elif classif < 0:
             d = latex_color(d, "red")
 
         return d
 
-    def mem_fmt(d, i, size):
+    def mem_fmt(d, classif):
         d = d / 1024
         d = d / 1024
         d = d / 1024
         d = "{:0.3f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
-        if i < 3:
+        if classif > 0:
             d = latex_color(d, "green!60!black")
-        elif (size - (i + 1)) < 3:
+        elif classif < 0:
             d = latex_color(d, "red")
 
         return d
