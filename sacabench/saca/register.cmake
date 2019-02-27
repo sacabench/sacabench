@@ -1,5 +1,44 @@
 # Syntax: SACA_REGISTER(<path to header> <c++ type>)
 
+# Reference SACAS:
+SACA_REGISTER("saca/external/deep_shallow.hpp"
+    sacabench::reference_sacas::deep_shallow)
+
+SACA_REGISTER("saca/external/divsufsort/divsufsort.hpp"
+    sacabench::reference_sacas::div_suf_sort)
+
+SACA_REGISTER("saca/external/parallel_divsufsort/parallel_divsufsort.hpp"
+    sacabench::reference_sacas::parallel_div_suf_sort)
+
+SACA_REGISTER("saca/external/divsufsort/divsufsort_par.hpp"
+    sacabench::reference_sacas::div_suf_sort_par)
+
+SACA_REGISTER("saca/external/msufsort/msufsort.hpp"
+    sacabench::reference_sacas::msufsort)
+
+SACA_REGISTER("saca/external/saca_k/saca_k.hpp"
+    sacabench::reference_sacas::saca_k)
+
+SACA_REGISTER("saca/external/sads/sads.hpp"
+    sacabench::reference_sacas::sads)
+
+SACA_REGISTER("saca/external/sais/sais.hpp"
+    sacabench::reference_sacas::sais)
+
+SACA_REGISTER("saca/external/sais_lite/sais_lite.hpp"
+    sacabench::reference_sacas::sais_lite)
+
+SACA_REGISTER("saca/external/gsaca.hpp"
+    sacabench::reference_sacas::gsaca)
+
+SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
+    sacabench::qsufsort_ext::qsufsort_ext)
+
+SACA_REGISTER("saca/external/dc3/dc3.hpp"
+        sacabench::reference_sacas::dc3)
+
+# Our implementations:
+
 SACA_REGISTER("saca/deep_shallow/saca.hpp"
     sacabench::deep_shallow::serial)
 

@@ -416,8 +416,8 @@ private:
         // bd.mark_bucket_sorted(alpha, beta);
         omp_unset_lock(&writelock);
 
-        #pragma omp critical
-        std::cout << ++tasks_done << "/" << tasks << ": " << bucket.size() << " elements, thread id was " << omp_get_thread_num() << std::endl;
+        // #pragma omp critical
+        // std::cout << ++tasks_done << "/" << tasks << ": " << bucket.size() << " elements, thread id was " << omp_get_thread_num() << std::endl;
     }
 
     /// \brief Iteratively sort all buckets.
