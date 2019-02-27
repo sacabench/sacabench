@@ -247,7 +247,7 @@ def handle_tablegen_all(args):
             },
             {
                 "kind": "mem",
-                "title": "Speicherpeak in GiB {}".format(ttitle),
+                "title": "Extra-Speicher in GiB {}".format(ttitle),
                 "text": "",
                 "label": "{}{}{}".format(ttlp, mlp, tls),
                 "filename": "{}{}".format(mlp, tls),

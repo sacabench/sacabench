@@ -278,7 +278,7 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
     get_data = {
         "sa_check": tex_sa_check("check_result", "med"),
         "time": tex_number("duration", time_fmt, "med"),
-        "mem": tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"),
+        "mem": tex_number("mem_local_peak", mem_fmt, "med"),
     }[cfg["kind"]]
     val_align = {
         "sa_check": "c",
