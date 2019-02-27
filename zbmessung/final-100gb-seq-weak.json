@@ -1,0 +1,54 @@
+{
+    "launch" : {
+        "algo": [
+            "Deep-Shallow_ref",
+            "DivSufSort_ref",
+            "MSufSort_ref",
+            "SACA-K_ref",
+            "SADS_ref",
+            "SAIS_ref",
+            "SAIS-LITE_ref",
+            "GSACA_ref",
+            "qsufsort_ref",
+            "DC3_ref",
+            "Deep-Shallow",
+            "Deep-Shallow_bb",
+            "BPR",
+            "BPR_ref",
+            "mSufSort",
+            "mSufSort_scan",
+            "mSufSortV2",
+            "Doubling",
+            "Discarding2",
+            "Discarding4",
+            "SAIS",
+            "SAIS_WPI",
+            "SADS",
+            "GSACA",
+            "GSACA_Opt",
+            "DC7",
+            "qsufsort",
+            "Naiv",
+            "NaivIps4o",
+            "SACA-K",
+            "DC3",
+            "DivSufSort",
+            "nzSufSort",
+            "DC3-Lite",
+            "Osipov_sequential",
+            "Osipov_sequential_wp"
+        ],
+        "input": [
+            "$WORK/large_datasets/commoncrawl.txt",
+            "$WORK/large_datasets/dna.txt",
+            "$WORK/large_datasets/wiki.txt"
+        ],
+        "rep": 1,
+        "prefix": 200,
+        "threads": [
+            1, 2, 4, 8, 12, 16, 20
+        ],
+        "weak_scale": true,
+        "check": true
+    }
+}
