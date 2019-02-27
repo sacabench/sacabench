@@ -66,33 +66,44 @@ class tex_figure_wrapper:
         out += "}\n"
         self.tex = out
         return self
-    def wrap_table(self, title, label):
+    def wrap_table(self, title, label, legend):
         out = ""
         #out += "\\subsection{{{}}}\n".format(title)
         #out += "\n{}\n".format(header_text).replace("%LABEL", label)
-        out += "\\begin{table}\n"
+        out += "\\begin{table}[h]\n"
         out += self.tex
         out += "\\caption{{{}}}\n".format(title)
         out += "\\label{{{}}}\n".format(label)
+        if legend:
+            out += (legend + "\n")
         out += "\\end{table}\n"
         self.tex = out
+        return self
+    def wrap_centering(self):
+        self.tex = "\\centering\n{}".format(self.tex)
         return self
 
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
-                                  y_headings):
+                                  y_headings,
+                                  cfg,
+                                  val_align):
     assert len(x_headings) >= 1
     assert len(y_headings) == 1
+    x_omit = set()
+    for c in cfg:
+        if c[0] == "x":
+            x_omit.add(c[1])
 
     rv = expand_x_headings(x_headings)
     x_cells = rv[1]
     x_cell_levels = rv[0]
 
     tex = ""
-    tex += "\\begin{tabular}{l" + ("r" * x_cells) + "}\n"
+    tex += "\\begin{tabular}{l" + (val_align * x_cells) + "}\n"
     tex += "\\toprule\n"
 
-    for x_cell_level in x_cell_levels:
+    for (x_cell_level_depth, x_cell_level) in enumerate(x_cell_levels):
         x_cell_level_fmt = []
         for (x_cell, span) in x_cell_level:
             if span == 1:
@@ -100,7 +111,8 @@ def generate_latex_table_single_2(multidim_array,
             else:
                 x_cell_level_fmt.append("\\multicolumn{{{}}}{{c}}{{{}}}".format(span,x_cell))
 
-        tex += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
+        if not x_cell_level_depth in x_omit:
+            tex += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
 
     tex += "\\midrule\n"
 
@@ -149,22 +161,32 @@ Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die 
         print(e)
 
 def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, files):
-    def if_check(key, cmp, which):
+    check_log = cfg["logdata"]
+
+    def tex_sa_check(key, which):
         nonlocal outer_matrix
+        nonlocal check_log
 
         def ret(ts, f, algorithm_name):
             nonlocal outer_matrix
-            nonlocal cmp
             nonlocal which
             nonlocal key
 
             if outer_matrix[ts][f][algorithm_name]["data"] != "exists":
+                k = (algorithm_name, f, str(ts[0]))
+                if check_log.get(k) == "timeout":
+                    return "{\color{orange}\\faClockO}"
+                if check_log.get(k) == "crash":
+                    return "{\color{violet}\\faBolt}"
+                if check_log.get(k) == "oom":
+                    return "{\color{purple}\\faFloppyO}"
+
                 return "{\color{darkgray}--}"
 
-            if outer_matrix[ts][f][algorithm_name][which][key] == cmp:
-                return "\\cmarkc"
+            if outer_matrix[ts][f][algorithm_name][which][key] == "ok":
+                return "\\cmarkc" #"{\color{green}\\faCheck}"
             else:
-                return "\\xmarkc"
+                return "\\xmarkc" #"{\color{red}\\faTimes}"
 
         return ret
 
@@ -198,54 +220,74 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
             size = len(datapoints)
 
             (d, i) = next((d, i) for (d, n, i) in datapoints if n == algorithm_name)
+
             #print((d, i))
             #print()
 
             raw = outer_matrix[ts][f][algorithm_name][which][key]
             assert raw == d
 
-            formated = fmt(d, i, size)
+            uniq_datapoints = list(sorted(set(map(lambda dx: dx[0], datapoints))))
+
+            classif = 0
+            if len(uniq_datapoints) >= 3:
+                third_best = uniq_datapoints[2]
+                third_worst = uniq_datapoints[-3]
+                if d >= third_worst:
+                    classif = -1
+                if d <= third_best:
+                    classif = 1
+            else:
+                classif = 1
+
+            formated = fmt(d, classif)
 
             return formated
 
         return ret
 
-    def time_fmt(d, i, size):
+    def time_fmt(d, classif):
         d = d / 1000
         d = d / 60
         d = "{:0.2f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
-        if i < 3:
+        if classif > 0:
             d = latex_color(d, "green!60!black")
-        elif (size - (i + 1)) < 3:
+        elif classif < 0:
             d = latex_color(d, "red")
 
         return d
 
-    def mem_fmt(d, i, size):
+    def mem_fmt(d, classif):
         d = d / 1024
         d = d / 1024
         d = d / 1024
         d = "{:0.3f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
-        if i < 3:
+        if classif > 0:
             d = latex_color(d, "green!60!black")
-        elif (size - (i + 1)) < 3:
+        elif classif < 0:
             d = latex_color(d, "red")
 
         return d
 
-    dispatch = {
-        "sa_check": if_check("check_result", "ok", "med"),
-        "time": tex_number("duration", time_fmt, "med"),
-        "mem": tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"),
-    }
-
+    legend = cfg["legend"]
     title = cfg["title"]
-    get_data = dispatch[cfg["kind"]]
+    get_data = {
+        "sa_check": tex_sa_check("check_result", "med"),
+        "time": tex_number("duration", time_fmt, "med"),
+        "mem": tex_number("mem_local_peak", mem_fmt, "med"),
+    }[cfg["kind"]]
+    val_align = {
+        "sa_check": "c",
+        "time": "r",
+        "mem": "r",
+    }[cfg["kind"]]
     label = cfg["label"]
+    omit_headings = cfg["omit_headings"]
+    single_cfg = omit_headings
 
     # data, algorithms, files
     x_tex_headings = [
@@ -289,7 +331,9 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
 
     out = generate_latex_table_single_2(multidim_array,
                                         x_tex_headings,
-                                        y_tex_headings)
-    tex_fragment = out.wrap_resize_box().wrap_table(title, label)
+                                        y_tex_headings,
+                                        single_cfg,
+                                        val_align)
+    tex_fragment = out.wrap_resize_box().wrap_centering().wrap_table(title, label, legend)
 
     return tex_fragment.tex
