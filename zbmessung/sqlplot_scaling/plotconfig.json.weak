@@ -1,0 +1,20 @@
+[
+    {
+        "mode": "weak",
+        "input": "commoncrawl.txt",
+        "model_name": "none",
+        "prefix": 209715200
+    },
+    {
+        "mode": "weak",
+        "input": "dna.txt",
+        "model_name": "none",
+        "prefix": 209715200
+    },
+    {
+        "mode": "weak",
+        "input": "wiki.txt",
+        "model_name": "none",
+        "prefix": 209715200
+    }
+]

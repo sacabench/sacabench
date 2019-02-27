@@ -52,9 +52,17 @@ public:
             return;
         }
 
-        size_t bucketsort_depth = (std::log(n) / std::log(alph_size));
+        size_t bucketsort_depth;
 
-        if (bucketsort_depth < 3) {
+        if (alph_size <= 9) {
+            bucketsort_depth = 7;
+        } else if (alph_size <= 13) {
+            bucketsort_depth = 6;
+        } else if (alph_size <= 21) {
+            bucketsort_depth = 5;
+        } else if (alph_size <= 46) {
+            bucketsort_depth = 4;
+        } else if (46 < alph_size) {
             bucketsort_depth = 3;
         }
 
