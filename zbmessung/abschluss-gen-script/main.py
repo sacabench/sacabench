@@ -224,6 +224,13 @@ def handle_tablegen_all(args):
                 "filename": "{}{}".format(clp, tls),
                 "omit_headings": omit_headings,
                 "logdata": logdata,
+                "legend": r"""\begin{tabular}{cl}
+\cmarkc & \sa wurde korrekt berechnet.\\
+\xmarkc & \sa wurde falsch berechnet.\\
+{\color{orange}\faClockO} & Berechnung hat Zeitlimit des Systems erreicht.\\
+{\color{purple}\faFloppyO} & Berechnung hat Speicherlimit des Systems erreicht.\\
+{\color{violet}\faBolt} & Berechnung brach mit einem Laufzeitfehler ab.\\
+\end{tabular}""",
             },
             {
                 "kind": "time",
@@ -233,6 +240,10 @@ def handle_tablegen_all(args):
                 "filename": "{}{}".format(tlp, tls),
                 "omit_headings": omit_headings,
                 "logdata": logdata,
+                "legend": r"""\begin{tabular}{ll}
+{\color{green}Grün} & Die besten drei Werte.\\
+{\color{red}Rot} & Die schelchtesten drei Werte.\\
+\end{tabular}""",
             },
             {
                 "kind": "mem",
@@ -242,6 +253,10 @@ def handle_tablegen_all(args):
                 "filename": "{}{}".format(mlp, tls),
                 "omit_headings": omit_headings,
                 "logdata": logdata,
+                "legend": r"""\begin{tabular}{ll}
+{\color{green}Grün} & Die besten drei Werte.\\
+{\color{red}Rot} & Die schelchtesten drei Werte.\\
+\end{tabular}""",
             },
         ]
 

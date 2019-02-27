@@ -66,7 +66,7 @@ class tex_figure_wrapper:
         out += "}\n"
         self.tex = out
         return self
-    def wrap_table(self, title, label):
+    def wrap_table(self, title, label, legend):
         out = ""
         #out += "\\subsection{{{}}}\n".format(title)
         #out += "\n{}\n".format(header_text).replace("%LABEL", label)
@@ -74,8 +74,13 @@ class tex_figure_wrapper:
         out += self.tex
         out += "\\caption{{{}}}\n".format(title)
         out += "\\label{{{}}}\n".format(label)
+        if legend:
+            out += (legend + "\n")
         out += "\\end{table}\n"
         self.tex = out
+        return self
+    def wrap_centering(self):
+        self.tex = "\\centering\n{}".format(self.tex)
         return self
 
 def generate_latex_table_single_2(multidim_array,
@@ -268,20 +273,18 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
 
         return d
 
-    dispatch = {
+    legend = cfg["legend"]
+    title = cfg["title"]
+    get_data = {
         "sa_check": tex_sa_check("check_result", "med"),
         "time": tex_number("duration", time_fmt, "med"),
         "mem": tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"),
-    }
-    dispatch2 = {
+    }[cfg["kind"]]
+    val_align = {
         "sa_check": "c",
         "time": "r",
         "mem": "r",
-    }
-
-    title = cfg["title"]
-    get_data = dispatch[cfg["kind"]]
-    val_align = dispatch2[cfg["kind"]]
+    }[cfg["kind"]]
     label = cfg["label"]
     omit_headings = cfg["omit_headings"]
     single_cfg = omit_headings
@@ -331,6 +334,6 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
                                         y_tex_headings,
                                         single_cfg,
                                         val_align)
-    tex_fragment = out.wrap_resize_box().wrap_table(title, label)
+    tex_fragment = out.wrap_resize_box().wrap_centering().wrap_table(title, label, legend)
 
     return tex_fragment.tex
