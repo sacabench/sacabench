@@ -37,7 +37,7 @@
         "path": "tex-output",
         "table-label-prefix": "messung:tab:",
         "table-check-label-prefix": "sa-chk-",
-        "table-mem-label-prefix": "duration-",
-        "table-time-label-prefix": "mem-"
+        "table-mem-label-prefix": "memory-",
+        "table-time-label-prefix": "time-"
     }
 }
