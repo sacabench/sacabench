@@ -8,7 +8,8 @@
             "groups": [
             ],
             "omit-headings": [
-            ]
+            ],
+            "log": "final-measure/final-100gb-par-strong-combine.log"
         },
         {
             "path": "final-measure/final-100gb-par-weak-results-combined.json",
@@ -18,7 +19,8 @@
             "groups": [
             ],
             "omit-headings": [
-            ]
+            ],
+            "log": "final-measure/final-100gb-par-weak-combine.log"
         },
         {
             "path": "final-measure/final-100gb-seq-weak-results-combined.json",
@@ -28,7 +30,8 @@
             "groups": [
             ],
             "omit-headings": [
-            ]
+            ],
+            "log": "final-measure/final-100gb-seq-weak-combine.log"
         },
         {
             "path": "final-measure/final-200mb-seq-none-results-combined.json",
@@ -39,7 +42,8 @@
             ],
             "omit-headings": [
                 ["x", 1]
-            ]
+            ],
+            "log": "final-measure/final-200mb-seq-none-combine.log"
         }
     ],
     "output": {

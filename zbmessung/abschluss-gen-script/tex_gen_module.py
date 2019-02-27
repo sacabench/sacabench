@@ -81,7 +81,8 @@ class tex_figure_wrapper:
 def generate_latex_table_single_2(multidim_array,
                                   x_headings,
                                   y_headings,
-                                  cfg):
+                                  cfg,
+                                  val_align):
     assert len(x_headings) >= 1
     assert len(y_headings) == 1
     x_omit = set()
@@ -94,7 +95,7 @@ def generate_latex_table_single_2(multidim_array,
     x_cell_levels = rv[0]
 
     tex = ""
-    tex += "\\begin{tabular}{l" + ("r" * x_cells) + "}\n"
+    tex += "\\begin{tabular}{l" + (val_align * x_cells) + "}\n"
     tex += "\\toprule\n"
 
     for (x_cell_level_depth, x_cell_level) in enumerate(x_cell_levels):
@@ -155,22 +156,32 @@ Pro Eingabe sind erneut die besten drei Algorithmen mit Grün markiert, und die 
         print(e)
 
 def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, files):
-    def if_check(key, cmp, which):
+    check_log = cfg["logdata"]
+
+    def tex_sa_check(key, which):
         nonlocal outer_matrix
+        nonlocal check_log
 
         def ret(ts, f, algorithm_name):
             nonlocal outer_matrix
-            nonlocal cmp
             nonlocal which
             nonlocal key
 
             if outer_matrix[ts][f][algorithm_name]["data"] != "exists":
+                k = (algorithm_name, f, str(ts[0]))
+                if check_log.get(k) == "timeout":
+                    return "{\color{orange}\\faClockO}"
+                if check_log.get(k) == "crash":
+                    return "{\color{violet}\\faBolt}"
+                if check_log.get(k) == "oom":
+                    return "{\color{purple}\\faFloppyO}"
+
                 return "{\color{darkgray}--}"
 
-            if outer_matrix[ts][f][algorithm_name][which][key] == cmp:
-                return "\\cmarkc"
+            if outer_matrix[ts][f][algorithm_name][which][key] == "ok":
+                return "\\cmarkc" #"{\color{green}\\faCheck}"
             else:
-                return "\\xmarkc"
+                return "\\xmarkc" #"{\color{red}\\faTimes}"
 
         return ret
 
@@ -258,13 +269,19 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
         return d
 
     dispatch = {
-        "sa_check": if_check("check_result", "ok", "med"),
+        "sa_check": tex_sa_check("check_result", "med"),
         "time": tex_number("duration", time_fmt, "med"),
         "mem": tex_number("mem_local_peak_plus_input_sa", mem_fmt, "med"),
+    }
+    dispatch2 = {
+        "sa_check": "c",
+        "time": "r",
+        "mem": "r",
     }
 
     title = cfg["title"]
     get_data = dispatch[cfg["kind"]]
+    val_align = dispatch2[cfg["kind"]]
     label = cfg["label"]
     omit_headings = cfg["omit_headings"]
     single_cfg = omit_headings
@@ -312,7 +329,8 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
     out = generate_latex_table_single_2(multidim_array,
                                         x_tex_headings,
                                         y_tex_headings,
-                                        single_cfg)
+                                        single_cfg,
+                                        val_align)
     tex_fragment = out.wrap_resize_box().wrap_table(title, label)
 
     return tex_fragment.tex

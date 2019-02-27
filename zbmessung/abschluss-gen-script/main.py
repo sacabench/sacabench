@@ -8,6 +8,7 @@ import json
 import statistics
 import datetime
 import sys
+import re
 
 import tex_gen_module
 
@@ -209,6 +210,11 @@ def handle_tablegen_all(args):
 
         omit_headings = measure["omit-headings"]
 
+        logfile = measure["log"]
+        logdata = parse_logfile(logfile)
+
+        #pprint(logdata)
+
         table_cfg_kinds = [
             {
                 "kind": "sa_check",
@@ -217,6 +223,7 @@ def handle_tablegen_all(args):
                 "label": "{}{}{}".format(ttlp, clp, tls),
                 "filename": "{}{}".format(clp, tls),
                 "omit_headings": omit_headings,
+                "logdata": logdata,
             },
             {
                 "kind": "time",
@@ -225,6 +232,7 @@ def handle_tablegen_all(args):
                 "label": "{}{}{}".format(ttlp, tlp, tls),
                 "filename": "{}{}".format(tlp, tls),
                 "omit_headings": omit_headings,
+                "logdata": logdata,
             },
             {
                 "kind": "mem",
@@ -233,6 +241,7 @@ def handle_tablegen_all(args):
                 "label": "{}{}{}".format(ttlp, mlp, tls),
                 "filename": "{}{}".format(mlp, tls),
                 "omit_headings": omit_headings,
+                "logdata": logdata,
             },
         ]
 
@@ -243,7 +252,52 @@ def handle_tablegen_all(args):
             print("\\input{{{}}}".format(filename))
             #print(filename)
 
+logfile_re = re.compile("Missing data for (.*?), (.*?), (.*?), (.*?) \\(no file (.*?)\\)\n-output----------\n(.*?)\n-----------------\n", re.DOTALL)
+def parse_logfile(logfile):
+    text = load_text_from_file(logfile)
+    ret = {}
+    for m in logfile_re.findall(text):
+        algo_name = m[0]
+        input_name = m[1]
+        input_prefix_str = m[2]
+        threads = m[3]
+        output = m[5]
 
+        kind = "unknown"
+
+        if "DUE TO TIME LIMIT" in output:
+            kind = "timeout"
+
+        # out of memroy patterns
+        if "terminate called after throwing an instance of 'std::bad_alloc'" in output:
+            kind = "oom"
+        if "Some of your processes may have been killed by the cgroup out-of-memory handler." in output:
+            kind = "oom"
+        if "Allocation Error, not enough space" in output:
+            kind = "oom"
+        if "terminate called after throwing an instance of 'std::bad_array_new_length'" in output:
+            kind = "oom"
+        if "malloc failed" in output:
+            kind = "oom"
+
+        # crash patterns
+        if "Segmentation fault" in output:
+            kind = "crash"
+        if "double free or corruption" in output:
+            kind = "crash"
+        if "munmap_chunk(): invalid pointer" in output:
+            kind = "crash"
+        if "free(): invalid size" in output:
+            kind = "crash"
+
+        #print("{}, {}, {}, {}: {}".format(algo_name, input_name, input_prefix_str, threads, kind))
+        if kind == "unknown":
+            #print(output)
+            pass
+
+        assert (algo_name, input_name, threads) not in ret
+        ret[(algo_name, input_name, threads)] = kind
+    return ret
 
 # ------------------------------------------------------------------------------
 
