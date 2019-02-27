@@ -172,10 +172,37 @@ sa_check_result sa_check(span<sa_index_type> sa, string_span text) {
 }
 
 template <typename sa_index_type>
+sa_check_result sa_check_fast(span<sa_index_type> sa, string_span text) {
+    DCHECK(can_represent_all_values<std::remove_cv_t<sa_index_type>>(sa.size() + 1));
+
+    if (sa.size() != text.size()) {
+        return sa_check_result::wrong_length;
+    }
+    size_t const N = text.size();
+
+    if (N > 1) {
+        for (size_t i = 1; i < N; i++) {
+            uint64_t jl = sa[i - 1];
+            uint64_t jr = sa[i];
+
+            if ((jl >= N) || (jr >= N)) {
+                return sa_check_result::not_a_permutation;
+            }
+
+            if (text.slice(jl) >= text.slice(jr)) {
+                return sa_check_result::not_suffix_sorted;
+            }
+        }
+    }
+
+    return sa_check_result::ok;
+}
+
+template <typename sa_index_type>
 sa_check_result sa_check_dispatch(span<sa_index_type> sa, string_span text,
                                   bool fast) {
     if (fast) {
-        return sa_check_naive(sa, text);
+        return sa_check_fast(sa, text);
     }
     /*
     if (fast) {

@@ -987,6 +987,22 @@ struct prefix_discarding_4 {
     }
 };
 
+struct prefix_discarding_2_parallel {
+    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr char const* NAME = "Discarding2Parallel";
+    static constexpr char const* DESCRIPTION =
+        "In-Memory variant of 2-Tupling with Discarding and parallel sorter by R. "
+        "Dementiev, J. Kärkkäinen, J. Mehnert, and P. Sanders";
+
+    template <typename sa_index>
+    static void construct_sa(util::string_span text,
+                             util::alphabet const& /*alphabet_size*/,
+                             util::span<sa_index> out_sa) {
+        prefix_doubling_impl<sa_index, 2, ips4o_sorter_parallel>::doubling_discarding(
+            text, out_sa);
+    }
+};
+
 struct prefix_discarding_4_parallel {
     static constexpr size_t EXTRA_SENTINELS = 0;
     static constexpr char const* NAME = "Discarding4Parallel";

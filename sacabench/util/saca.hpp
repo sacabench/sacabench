@@ -196,9 +196,13 @@ prepare_and_construct_sa(text_initializer const& text_init) {
         alphabet alph;
 
         {
-            tdc::StatPhase init_phase("Allocate SA and Text container");
-            output = make_container<sa_index>(text_size + extra_sentinels);
+            tdc::StatPhase init_phase("Allocate Text container");
             text_with_sentinels = string(text_size + extra_sentinels);
+        }
+
+        {
+            tdc::StatPhase init_phase("Allocate SA container");
+            output = make_container<sa_index>(text_size + extra_sentinels);
         }
 
         // Create a slice to the part of the Text container

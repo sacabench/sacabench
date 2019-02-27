@@ -92,8 +92,8 @@
                 width=0.5\textwidth,
                 height=90mm,
                 title={\VAR{config.escaped_input_file}},
-                xlabel={num Threads, input size [200\,MB]},
-                ylabel={SA construction time [s]},
+                xlabel={num Threads, input size [200\,MiB]},
+                ylabel={SA construction time [m]},
                 legend columns=4,
                 legend to name=legend\VAR{config.id},
                 legend style={
@@ -102,7 +102,7 @@
                 },
             ]
 
-            %% MULTIPLOT(algo) SELECT thread_count AS x, time/1000 AS y, MULTIPLOT
+            %% MULTIPLOT(algo) SELECT thread_count AS x, time/60000 AS y, MULTIPLOT
             %% FROM (
             %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
             %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
@@ -116,11 +116,11 @@
                 width=0.5\textwidth,
                 height=90mm,
                 title={\VAR{config.escaped_input_file}},
-                xlabel={num Threads, input size [200\,MB]},
-                ylabel={Extra Memory [MB]},
+                xlabel={num Threads, input size [200\,MiB]},
+                ylabel={Extra Memory [GiB]},
             ]
 
-            %% MULTIPLOT(algo) SELECT thread_count AS x, memPeak/1000000 AS y, MULTIPLOT
+            %% MULTIPLOT(algo) SELECT thread_count AS x, memPeak/1073741824 AS y, MULTIPLOT
             %% FROM (
             %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
             %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x

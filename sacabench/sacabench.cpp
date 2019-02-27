@@ -86,10 +86,10 @@ void remove_newline(std::string& s) {
 }
 
 int parse_prefix_if_set(std::string const& prefix_size,
-                         size_t& prefix) {
+                        size_t& prefix) {
     if (prefix_size.size() > 0) {
         try {
-            uint32_t unit_factor = 0;
+            size_t unit_factor = 0;
             size_t input_prefix = 0;
             if (prefix_size[prefix_size.size() - 1] == 'K') {
                 std::string number_part =
@@ -280,7 +280,7 @@ std::unique_ptr<sacabench::util::text_initializer> load_input(
 
     std::unique_ptr<util::text_initializer> text;
 
-    size_t prefix;
+    size_t prefix = -1;
     if (parse_prefix_if_set(prefix_size, prefix)) {
         return nullptr;
     }
