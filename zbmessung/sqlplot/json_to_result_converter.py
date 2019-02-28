@@ -48,24 +48,54 @@ def writeFile(filepath, content):
     textFile = open(filepath, "w")
     textFile.write(content)
     textFile.close()
-    
-    
-def get_processor_info():
-    if platform.system() == "Windows":
-        family = platform.processor()
-        name = subprocess.check_output(["wmic","cpu","get", "name"]).strip().decode().split("\n")[1]
-        return ' '.join([name, family])
-    elif platform.system() == "Linux":
-        command = "grep 'model name' /proc/cpuinfo | cut -f 2 -d ':' | awk '{$1=$1}1'"
-        name = subprocess.check_output(command, shell=True).strip().decode().split("\n")[1]
-        return name
-    return ""
+
+class ResultKeys:
+    algo = "algo"
+    algorithm_name = "algorithm_name"
+    id = "id"
+    rep = "rep"
+    rep_id = "rep_id"
+    phases = "phases"
+    phase_id = "phase_id"
+    phase_name = "phase_name"
+    extra_sentinels = "extra_sentinels"
+    input = "input"
+    prefix = "prefix"
+    thread_count = "thread_count"
+    sa_index_bit_size = "sa_index_bit_size"
+    text_size = "text_size"
+    memOff = "memOff"
+    memFinal = "memFinal"
+    memPeak = "memPeak"
+    threads = "threads"
+    time = "time"	
+    checkResult = "sacheck"	
+
+def buildResultString(data):
+    """
+    Creates a line for the algorithm result text file.
+
+    Parameters
+    ----------
+    dict : dictionary
+        The dictionary which contains the data for a repititon of an algorithm.
+
+    Returns
+    ----------
+        A string which represents one line of the algorithm result text file.
+    """
+
+    content = "RESULT\t"
+    for key, value in data.items():
+        content += "{}={}\t".format(key, value)
+    content += "\n"
+    return content
 
 ########################################
 # PROCESSING ALGORITHM DATA
 ########################################
 
-def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):    
+def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionCount, repetitionID):    
     """
     Processes the given dictionary and returns a new dictionary.
     This new dicitionary contains the extracted data needed to create a line in the algorithm result file.
@@ -86,25 +116,22 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
     
     data = {}
     
-    data["algorithmID"] = algorithmID
-    data["repetitionID"] = repetitionID
-
-    data["title"] = dict["title"]
-    data["memFinal"] = dict["memFinal"]
-    data["memOff"] = dict["memOff"]
-    data["memPeak"] = dict["memPeak"]
+    data[ResultKeys.id] = algorithmID
+    data[ResultKeys.rep] = repititionCount
+    data[ResultKeys.rep_id] = repetitionID
 
     stats = dict["stats"]
     for statsDict in stats:
+        if statsDict["key"] == "algorithm_name":
+            data[ResultKeys.algorithm_name] = statsDict["value"]
+            data[ResultKeys.algo] = statsDict["value"]
         if statsDict["key"] == "input_file":
             fullInputPath = statsDict["value"]
-            data["inputFile"] = os.path.basename(fullInputPath)
-        if statsDict["key"] == "repetitions":
-            data["repetitionCount"] = statsDict["value"]
+            data[ResultKeys.input] = os.path.basename(fullInputPath)
         if statsDict["key"] == "prefix":
-            data["prefix"] = statsDict["value"]
+            data[ResultKeys.prefix] = statsDict["value"]
         if statsDict["key"] == "thread_count":
-            data["thread_count"] = statsDict["value"]
+            data[ResultKeys.thread_count] = statsDict["value"]
 
     # Access first item in list of subs to get needed values. 
     # Every item of sub list contains these values.
@@ -112,18 +139,27 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
     exampleStats = exampleSub["stats"]
     for statsDict in exampleStats:
         if statsDict["key"] == "extra_sentinels":
-            data["extraSentinels"] = statsDict["value"]
+            data[ResultKeys.extra_sentinels] = statsDict["value"]
         if statsDict["key"] == "sa_index_bit_size":
-            data["saIndexBitSize"] = statsDict["value"]
+            data[ResultKeys.sa_index_bit_size] = statsDict["value"]
         if statsDict["key"] == "text_size":
-            data["textSize"] = statsDict["value"]
+            data[ResultKeys.text_size] = statsDict["value"]
     
-    timeDict = dict["sub"][0]["sub"]
-    for timeEntry in timeDict:
-        if timeEntry["title"] == "Algorithm":
-            timeEnd = timeEntry["timeEnd"]
-            timeStart = timeEntry["timeStart"]
-            data["time"] = timeEnd - timeStart
+    algorithmDataDict = dict["sub"][0]["sub"]
+    for algorithmEntry in algorithmDataDict:
+        if algorithmEntry["title"] == "Algorithm":
+            # We found values for algorithm!
+            timeEnd = algorithmEntry["timeEnd"]
+            timeStart = algorithmEntry["timeStart"]
+            data[ResultKeys.time] = timeEnd - timeStart
+            data[ResultKeys.memFinal] = algorithmEntry["memFinal"]
+            data[ResultKeys.memOff] = algorithmEntry["memOff"]
+            data[ResultKeys.memPeak] = algorithmEntry["memPeak"]
+
+    saCheckDataDict = dict["sub"][1]["stats"]
+    for checkEntry in saCheckDataDict:
+        if checkEntry["key"] == "check_result":
+            data[ResultKeys.checkResult] = checkEntry["value"]
 
     numberOfPhases = 0
     allPhases = dict["sub"][0]["sub"]
@@ -132,45 +168,9 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repetitionID):
         if len(phases["sub"]) > 0:
             algorithmPhases = phases["sub"]
             numberOfPhases = len(algorithmPhases)
-    data["numberOfPhases"] = numberOfPhases
+    data[ResultKeys.phases] = numberOfPhases
 
     return data
-            
-def buildAlgorithmResultString(data):
-    """
-    Creates a line for the algorithm result text file.
-
-    Parameters
-    ----------
-    dict : dictionary
-        The dictionary which contains the data for a repititon of an algorithm.
-
-    Returns
-    ----------
-        A string which represents one line of the algorithm result text file.
-    """
-
-    content = "RESULT\t"
-    content += "algo={}\t".format(data["title"])
-    content += "algorithm_name={}\t".format(data["title"])
-    content += "id={}\t".format(data["algorithmID"])
-    content += "rep={}\t".format(data["repetitionCount"])
-    content += "rep_id={}\t".format(data["repetitionID"])
-    content += "phases={}\t".format(data["numberOfPhases"])
-    content += "extra_sentinels={}\t".format(data["extraSentinels"])
-    content += "input={}\t".format(data["inputFile"])
-    content += "prefix={}\t".format(data["prefix"])
-    content += "thread_count={}\t".format(data["thread_count"])
-    content += "sa_index_bit_size={}\t".format(data["saIndexBitSize"])
-    content += "text_size={}\t".format(data["textSize"])
-    content += "memOff={}\t".format(data["memOff"])
-    content += "memFinal={}\t".format(data["memFinal"])
-    content += "memPeak={}\t".format(data["memPeak"])
-    # TODO: Number of threads is currently not included in input JSON. 
-    content += "threads=1\t" 
-    content += "time={}\n".format(data["time"])
-
-    return content	
 
 ########################################
 # PROCESSING PHASES DATA
@@ -198,51 +198,66 @@ def extractPhaseDataFromDictionary(dict, algorithmID, repetitionID, phaseID):
     """
     
     data = {}
-    data["algorithmID"] = algorithmID
-    data["repetitionID"] = repetitionID
-    data["phaseID"] = phaseID
+    data[ResultKeys.id] = algorithmID
+    data[ResultKeys.rep_id] = repetitionID
+    data[ResultKeys.phase_id] = phaseID
 
-    data["title"] = dict["title"]
-    data["memFinal"] = dict["memFinal"]
-    data["memOff"] = dict["memOff"]
-    data["memPeak"] = dict["memPeak"]
+    data[ResultKeys.phase_name] = dict["title"]
+    data[ResultKeys.memFinal] = dict["memFinal"]
+    data[ResultKeys.memOff] = dict["memOff"]
+    data[ResultKeys.memPeak] = dict["memPeak"]
 
     timeEnd = dict["timeEnd"]
     timeStart = dict["timeStart"]
-    data["time"] = timeEnd - timeStart
+    data[ResultKeys.time] = timeEnd - timeStart
 
     return data	
-
-def buildPhasesResultString(data):
-    """
-    Creates a line for the phases result text file.
-
-    Parameters
-    ----------
-    dict : dictionary
-        The dictionary which contains the data for a phase.
-
-    Returns
-    ----------
-        A string which represents one line of the phases result text file.
-    """
-
-    content = "RESULT\t"
-    content += "id={}\t".format(data["algorithmID"])
-    content += "rep_id={}\t".format(data["repetitionID"])
-    content += "phase_id={}\t".format(data["phaseID"])
-    content += "phase_name={}\t".format(data["title"])
-    content += "memOff={}\t".format(data["memOff"])
-    content += "memFinal={}\t".format(data["memFinal"])
-    content += "memPeak={}\t".format(data["memPeak"])
-    content += "time={}\n".format(data["time"])
-
-    return content
 
 ########################################
 # PROCESS FILE
 ########################################
 
+def handleAlgorithm(dict, currentAlgorithmNumber, currentRepetitionNumber):
+
+    algorithmFileContent = ""
+    phasesFileContent = ""
+
+    repetitionCount = len(dict)
+
+    for repetition in dict:
+        # Increase id of current repetition when processing a new repetition of the current algorith.
+        currentRepetitionNumber += 1
+
+        # Set id of current phase to 0 when processing an new repititon.
+        currentPhaseNumber = 0
+
+        algorithmDataDict = extractAlgorithmDataFromDictionary(repetition, currentAlgorithmNumber, repetitionCount, currentRepetitionNumber)
+        algorithmFileContent += buildResultString(algorithmDataDict)
+
+        # List of sub contains only one element.
+        allPhases = repetition["sub"][0]["sub"]
+        for algorithmPhase in allPhases:
+            # An algorithm contains next to its normal phases also some preparation phases.
+            # Process only normal phases and ignore the preparation phases.
+            possiblePhases = algorithmPhase["sub"]
+            if len(possiblePhases) > 0:
+                for phase in possiblePhases:
+
+                    currentPhaseNumber += 1
+
+                    phaseDataDict = extractPhaseDataFromDictionary(phase, currentAlgorithmNumber, currentRepetitionNumber, currentPhaseNumber)
+                    phasesFileContent += buildResultString(phaseDataDict)
+
+    return (algorithmFileContent, phasesFileContent)
+
+def get_mode_from_dict(dict):
+    # mode construct
+    if type(dict[0]) == type({}):
+        return "construct"
+    # mode batch
+    if type(dict[0]) == type([]):
+        return "batch"
+                        
 def convertAndSaveData(dict, path):
     """
     Processes the given dictionary and saves the created files to the directory of the given path.
@@ -258,43 +273,29 @@ def convertAndSaveData(dict, path):
     algorithmFileContent = ""
     phasesFileContent = ""
 
-    currentrepetitionNumber = 0
+    currentRepetitionNumber = 0
+    repetitionCount = 0
     currentAlgorithmNumber = 0
     currentPhaseNumber = 0
 
-    for algorithm in dict:
-        # Set id of current repetition to 0 when processing an new algorithm.
-        currentrepetitionNumber = 0
+    mode = get_mode_from_dict(dict)
 
-        # Increase id of each algorithm.
-        currentAlgorithmNumber += 1
+    if mode == "construct":
+        algorithmFileContent, phasesFileContent = handleAlgorithm(dict, currentAlgorithmNumber, currentRepetitionNumber)
+    
+    if mode == "batch":
+        for algorithm in dict:
+            # Set id of current repetition to 0 when processing an new algorithm.
+            currentRepetitionNumber = 0
 
-        for repetition in algorithm:
-            # Increase id of current repetition when processing a new repetition of the current algorith.
-            currentrepetitionNumber += 1
+            # Increase id of each algorithm.
+            currentAlgorithmNumber += 1
 
-            # Set id of current phase to 0 when processing an new repititon.
-            currentPhaseNumber = 0
-
-            algorithmDataDict = extractAlgorithmDataFromDictionary(repetition, currentAlgorithmNumber, currentrepetitionNumber)
-            algorithmFileContent += buildAlgorithmResultString(algorithmDataDict)
-
-            # List of sub contains only one element.
-            allPhases = repetition["sub"][0]["sub"]
-            for algorithmPhase in allPhases:
-                # An algorithm contains next to its normal phases also some preparation phases.
-                # Process only normal phases and ignore the preparation phases.
-                possiblePhases = algorithmPhase["sub"]
-                if len(possiblePhases) > 0:
-                    for phase in possiblePhases:
-
-                        currentPhaseNumber += 1
-
-                        phaseDataDict = extractPhaseDataFromDictionary(phase, currentAlgorithmNumber, currentrepetitionNumber, currentPhaseNumber)
-                        phasesFileContent += buildPhasesResultString(phaseDataDict)
+            newAlgorithmFileContent, newPhasesFileContent = handleAlgorithm(algorithm, currentAlgorithmNumber, currentRepetitionNumber)
+            algorithmFileContent += newAlgorithmFileContent
+            phasesFileContent += newPhasesFileContent
 
     algorithmFilePath = "{}/result_algorithm.txt".format(path)
-    print("Saving {} to {}".format(algorithmFileContent, algorithmFilePath))
     writeFile(algorithmFilePath, algorithmFileContent)
 
     phasesFilePath = "{}/result_phases.txt".format(path)
@@ -304,18 +305,26 @@ def convertAndSaveData(dict, path):
 # GENERATE TEX SOURCE CODE
 ########################################
 class Config:
-    def __init__(self, config_dict, input_dict):
-        algo_count = len(input_dict)
-        self.bar_width = 160 / algo_count
+    def __init__(self, config_dict, input_dict):#
+
+        if scaling:
+            self.mode = "weak"
+            if config_dict["prefix"]:
+                self.prefix = "{} MiB".format(config_dict["prefix"] / 1024 / 1024)
+            if config_dict["mode"]:
+                self.mode = config_dict["mode"]
+        else:
+            algo_count = len(input_dict)
+            self.bar_width = 160 / algo_count
+            if config_dict["repetitions"]:
+                self.repetition_count = config_dict["repetitions"]
+            if config_dict["prefix"]:
+                self.prefix = config_dict["prefix"]
 
         print(config_dict)
         
-        if config_dict["repetitions"]:
-            self.repetition_count = config_dict["repetitions"]
-        if config_dict["prefix"]:
-            self.prefix = config_dict["prefix"]
-        if get_processor_info():
-            self.cpu = get_processor_info()
+        if config_dict["model_name"]:
+            self.cpu = config_dict["model_name"]
         if config_dict["input"]:
             self.input_file = config_dict["input"]
             self.escaped_input_file = config_dict["input"].replace("_", "\_")
@@ -334,12 +343,42 @@ def generate_tex(config_dict, input_dict):
             trim_blocks = True,
             autoescape = False,
             loader = file_loader)
-    template = env.get_template('batch.tex')
+            
+    if scaling:
+        configs = [Config(c, input_dict) for c in config_dict]
+        for count, config in enumerate(configs):
+            config.id = count
+        if configs[0].mode == "weak":
+            template = env.get_template('weakscale.tex')
+        else:
+            template = env.get_template('strongscale.tex')
+        output_file = open('{}.tex'.format(configs[0].mode), 'w')
+        output_file.write(template.render(configs=configs))
 
-    for count, configuration in enumerate(config_dict):
-        config = Config(configuration, input_dict)
-        output_file = open('batch-{}.tex'.format(count), 'w')
-        output_file.write(template.render(config=config))
+
+
+
+        #for count, configuration in enumerate(config_dict):
+            #config = Config(configuration, input_dict)
+            #if config.mode == "weak":
+                #template = env.get_template('weakscale.tex')
+            #else:
+                #template = env.get_template('strongscale.tex')
+            #output_file = open('{}-{}.tex'.format(config.mode, count), 'w')
+            #output_file.write(template.render(config=config))
+    else:
+        mode = get_mode_from_dict(input_dict)
+        for count, configuration in enumerate(config_dict):
+            if mode == "batch":
+                template = env.get_template('batch.tex')
+                output_name = 'batch-{}.tex'.format(count)
+            else:
+                template = env.get_template('construct.tex')
+                output_name = 'construct-{}.tex'.format(count)
+
+            config = Config(configuration, input_dict)
+            output_file = open(output_name, 'w')
+            output_file.write(template.render(config=config))
 
 ########################################
 # MAIN
@@ -360,10 +399,7 @@ def main(plotConfigPath, sourceFilePath, destinationFilePath):
     destinationFilePath : str
         The directory to which the two result files will be saved to.
     """
-    
-    processor_info = get_processor_info()
-    print(processor_info)
-    
+
     configDict = readJSON(plotConfigPath)
     inputDataDict = readJSON(sourceFilePath)
     convertAndSaveData(inputDataDict, destinationFilePath)
@@ -375,6 +411,13 @@ if __name__ == "__main__":
     plotConfigPath = sys.argv[1]
     sourceFilePath = sys.argv[2]
     destinationFilePath = sys.argv[3]
+
+    global scaling
+    scaling = False
+
+    if len(sys.argv) > 4:
+        # We asume that if there are more then 4 arguments, scaling is enabled.
+        scaling = True
 
     # start main function
     main(plotConfigPath, sourceFilePath, destinationFilePath)

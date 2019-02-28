@@ -1,0 +1,56 @@
+{
+    "measures": [
+        {
+            "path": "final-measure/final-100gb-par-strong-results-combined.json",
+            "thread-scale": "strong",
+            "table-label-suffix": "large-par-strong",
+            "title": "Large Parallel Strong-Scaling",
+            "groups": [
+            ],
+            "omit-headings": [
+            ],
+            "log": "final-measure/final-100gb-par-strong-combine.log"
+        },
+        {
+            "path": "final-measure/final-100gb-par-weak-results-combined.json",
+            "thread-scale": "weak",
+            "table-label-suffix": "large-par-weak",
+            "title": "Large parallel Weak-Scaling",
+            "groups": [
+            ],
+            "omit-headings": [
+            ],
+            "log": "final-measure/final-100gb-par-weak-combine.log"
+        },
+        {
+            "path": "final-measure/final-100gb-seq-weak-results-combined.json",
+            "thread-scale": "weak",
+            "table-label-suffix": "large-seq-weak",
+            "title": "Large Sequential Input-Scaling",
+            "groups": [
+            ],
+            "omit-headings": [
+            ],
+            "log": "final-measure/final-100gb-seq-weak-combine.log"
+        },
+        {
+            "path": "final-measure/final-200mb-seq-none-results-combined.json",
+            "thread-scale": "none",
+            "table-label-suffix": "small-seq-none",
+            "title": "Small Sequential",
+            "groups": [
+            ],
+            "omit-headings": [
+                ["x", 1]
+            ],
+            "log": "final-measure/final-200mb-seq-none-combine.log"
+        }
+    ],
+    "output": {
+        "path": "tex-output",
+        "table-label-prefix": "messung:tab:",
+        "table-check-label-prefix": "sa-chk-",
+        "table-mem-label-prefix": "memory-",
+        "table-time-label-prefix": "time-"
+    }
+}

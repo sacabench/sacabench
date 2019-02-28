@@ -1,0 +1,138 @@
+\documentclass[landscape]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{fullpage}
+\usepackage{verbatim}
+
+\usepackage{tikz,pgfplots}
+
+\pgfplotsset{
+    width=160mm,height=150mm,
+    major grid style={thin,dotted,color=black!50},
+    minor grid style={thin,dotted,color=black!50},
+    grid,
+    every axis/.append style={
+        line width=0.5pt,
+        tick style={
+            line cap=round,
+            thin,
+            major tick length=4pt,
+            minor tick length=2pt,
+        },
+    },
+    legend cell align=left,
+    legend pos=north west,
+}
+
+\pgfplotscreateplotcyclelist{exoticlines}{%
+    teal,every mark/.append style={fill=teal!80!black},mark=*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=square*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=otimes*\\%
+    red!70!white,mark=star\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=diamond*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=square*\\%
+    black,every mark/.append style={solid,fill=gray},mark=otimes*\\%
+    blue,densely dashed,mark=star,every mark/.append style=solid\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=diamond*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=square*\\%
+    red!70!white,mark=otimes*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=star\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=diamond*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=*\\%
+    black,every mark/.append style={solid,fill=gray},mark=square*\\%
+    blue,densely dashed,mark=otimes*,every mark/.append style=solid\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=star\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=diamond*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=*\\%
+    red!70!white,mark=square*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=otimes*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=star\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=diamond*\\%
+    black,every mark/.append style={solid,fill=gray},mark=*\\%
+    blue,densely dashed,mark=square*,every mark/.append style=solid\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=otimes*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=star\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=diamond*\\%
+    red!70!white,mark=*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=square*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=otimes*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=star\\%
+    black,every mark/.append style={solid,fill=gray},mark=diamond*\\%
+    blue,densely dashed,mark=square*,every mark/.append style=*\\%
+    teal,every mark/.append style={fill=teal!80!black},mark=square*\\%
+    orange,every mark/.append style={fill=orange!80!black},mark=otimes*\\%
+    cyan!60!black,every mark/.append style={fill=cyan!80!black},mark=star\\%
+    red!70!white,mark=diamond*\\%
+    lime!80!black,every mark/.append style={fill=lime},mark=*\\%
+    red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=square*\\%
+    yellow!60!black,densely dashed,every mark/.append style={solid,fill=yellow!80!black},mark=otimes*\\%
+    black,every mark/.append style={solid,fill=gray},mark=star\\%
+    blue,densely dashed,mark=square*,every mark/.append style=diamond*\\%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\BLOCK{ for config in configs }
+\section{Weak-Scaling: \VAR{config.escaped_input_file}}
+\textbf{Configuration} \hfill Model name: \VAR{config.cpu}
+% IMPORT-DATA stats\VAR{config.id} result/result_algorithm.txt
+
+\begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+                name=axis1,
+                cycle list name={exoticlines},
+                width=0.5\textwidth,
+                height=90mm,
+                title={\VAR{config.escaped_input_file}},
+                xlabel={num Threads, input size [200\,MiB]},
+                ylabel={SA construction time [m]},
+                legend columns=4,
+                legend to name=legend\VAR{config.id},
+                legend style={
+                    /tikz/every even column/.append style={column sep=0.5cm,black},
+                    /tikz/every even column/.append style={black},
+                },
+            ]
+
+            %% MULTIPLOT(algo) SELECT thread_count AS x, time/60000 AS y, MULTIPLOT
+            %% FROM (
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+
+        \end{axis}
+        \begin{axis}[
+                cycle list name={exoticlines},
+                at={(axis1.outer north east)},
+                anchor=outer north west,
+                name=axis2,
+                width=0.5\textwidth,
+                height=90mm,
+                title={\VAR{config.escaped_input_file}},
+                xlabel={num Threads, input size [200\,MiB]},
+                ylabel={Extra Memory [GiB]},
+            ]
+
+            %% MULTIPLOT(algo) SELECT thread_count AS x, memPeak/1073741824 AS y, MULTIPLOT
+            %% FROM (
+            %% SELECT algo, input, MEDIAN(memFinal) AS memFinal, MEDIAN(memOff) AS memOff, AVG(memPeak) AS memPeak, prefix, rep, thread_count, MEDIAN(time) AS time, sacheck FROM stats\VAR{config.id} GROUP BY algo, input, prefix, rep, thread_count
+            %% ) WHERE input="\VAR{config.input_file}" AND sacheck="ok" GROUP BY MULTIPLOT,x ORDER BY MULTIPLOT,x
+
+            \legend{}
+        \end{axis}
+    \end{tikzpicture}
+
+    \medskip
+    \ref{legend\VAR{config.id}}
+\end{center}
+\newpage
+\BLOCK{ endfor }
+
+\end{document}

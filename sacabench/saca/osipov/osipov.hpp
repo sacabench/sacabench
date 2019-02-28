@@ -6,7 +6,7 @@
 #include <util/container.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
-#include <byteswap.h>
+#include <util/macros.hpp>
 
 
 namespace sacabench::osipov {

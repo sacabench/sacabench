@@ -232,8 +232,6 @@ public:
     static inline void construct_sa(util::string_span text,
                              util::alphabet const& alphabet,
                              util::span<sa_index> out_sa) {
-        // Set timer for statistics
-        const auto start = std::chrono::steady_clock::now();
 
         // Check if sa_index type fits for text.size(), END symbol and sign bit
         DCHECK(util::assert_text_length<sa_index>(text.size()+1, 1u));
@@ -443,25 +441,12 @@ public:
                 }
             }
             // Debug information: global_rank at text.size()? (Next rank would be invalid)
-            std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
+            // std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
         #endif
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later
         // (try 2 other options)
-        //const double tosa_timedur = duration([&](){
             util::isa2sa_inplace2<sa_index>(attr.isa.get_span());
-            // util::container<sa_index> sa = util::make_container<sa_index>(text.size());
-            // util::isa2sa_simple_scan_msufsort(attr.isa.get_span(), sa.slice());
-            //
-            // for(size_t i = 0; i < sa.size(); ++i) {
-            //     attr.isa.get_span()[i] = sa[i];
-            // }
-        //});
-        const auto end = std::chrono::steady_clock::now();
-        const auto dur = end - start;
-        const double dur_cast = std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
-        const double to_sa_percent = time_scan/dur_cast;
-        std::cout << time_scan << "/" << dur_cast << " = " << to_sa_percent <<"%"<< std::endl;
 
     }
 };

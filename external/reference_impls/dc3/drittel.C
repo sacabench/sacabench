@@ -1,3 +1,10 @@
+// This is the sample code for the DC3 algorithm presented in article:
+// Simple Linear Work Suffix Array Construction
+// by Juha Karkkainen, Peter Sanders, and Stefan Burkhardt
+// http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.137.7871
+// which draft can be retrieved at:
+// http://people.mpi-inf.mpg.de/~sanders/programs/suffix/
+
 inline bool leq(int a1, int a2,   int b1, int b2) { // lexic. order for pairs
   return(a1 < b1 || a1 == b1 && a2 <= b2); 
 }                                                   // and triples

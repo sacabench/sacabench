@@ -291,8 +291,7 @@ public:
         }
 
         // initialize last chain character value
-        // TODO: optimization: only rank necessary type l lists, not all
-        // util::character last_char = 0;
+        util::character last_char = 0;
 
         // vectors for suffixes to be refined and
         // for suffixes to be sorted by induction
@@ -318,7 +317,7 @@ public:
 
             // before anything happens with type s u-Chain elements, rank type l
             // suffixes for same character (or smaller)
-            for (size_t i = 0; i <= current_char; i++) {
+            for (size_t i = last_char; i <= current_char; i++) {
                 for (size_t j = 0; j <= i; j++) {
                     while (attr.m_list.exists(i, j)) {
                         rank_type_l_list(i, j, attr);
@@ -366,8 +365,7 @@ public:
             }
 
             // set last character to current
-            // TODO: see other todo...
-            // last_char = current_char;
+            last_char = current_char;
         }
 
         // After chain_stack is empty, rank all remaining type-l-lists:
@@ -395,7 +393,7 @@ public:
                 }
             }
             // Debug information: global_rank at text.size()? (Next rank would be invalid)
-            std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
+            // std::cout << "Is global rank == text.size()? - " << (attr.isa.get_global_rank() == text.size()) << std::endl;
         #endif
 
         // Here, hard coded isa2sa inplace conversion is used. Optimize later

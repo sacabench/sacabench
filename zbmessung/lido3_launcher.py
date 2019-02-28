@@ -25,12 +25,18 @@ def load_str(path):
     with open(path, 'r') as f:
         return f.read()
 
+log_str = ""
+def log_print(s):
+    print(s)
+    global log_str
+    log_str += "{}\n".format(s)
+
 # ---------------------
 
 usage = argparse.ArgumentParser()
 
-usage.add_argument("--launch", action="store_true",
-                   help="Launch batch jobs.")
+usage.add_argument("--launch-config", type=Path,
+                   help="Launch batch jobs with the given config file.")
 usage.add_argument("--combine", type=Path,
                    help="Gather results of a index.json file produced by a --launch.")
 usage.add_argument("--test-only", action="store_true",
@@ -46,8 +52,8 @@ sacabench_default="$HOME/sacabench"
 usage.add_argument("--sacabench-directory", default=sacabench_default,
                    help="Location where the sacabench directory is located. Defaults to \"{}\".".format(sacabench_default))
 
-usage.add_argument("--launch-config", type=Path,
-                   help="Config file used by launch.")
+usage.add_argument("--force-sa-check", action="store_true",
+                   help="Force a --launch to enable the sa checker.")
 
 args = usage.parse_args()
 # ---------------------
@@ -111,10 +117,10 @@ def launch_job(cwd, cmd, output, omp_threads, clstcfg):
     )
 
     if args.print_sbatch:
-        print("Instance:\n---\n{}---".format(instance))
+        log_print("Instance:\n---\n{}---".format(instance))
     jobid = subprocess.check_output("sbatch", input=instance, encoding="utf-8")
     jobid = jobid.strip()
-    print("Started job with id {}".format(jobid))
+    log_print("Started job with id {}".format(jobid))
     if jobid != "":
         return jobid
     else:
@@ -149,7 +155,7 @@ cluster_configs = {
 }
 cluster_config_default='20cores'
 
-if args.launch:
+if args.launch_config:
     #TODO: Move to external config file
     ALGOS = []
     DATASETS=[]
@@ -157,22 +163,27 @@ if args.launch:
     PREFIX=10
     THREADS=[None]
     WEAK_SCALE = False
+    CHECK = False
     CLUSTER_CONFIG = cluster_config_default
-    if args.launch_config:
-        j = load_json(args.launch_config)
-        ALGOS = j["launch"]["algo"]
-        DATASETS = j["launch"]["input"]
-        N = j["launch"]["rep"]
-        PREFIX = j["launch"]["prefix"]
-        if "threads" in j["launch"]:
-            THREADS=j["launch"]["threads"]
-        if "weak_scale" in j["launch"]:
-            WEAK_SCALE = j["launch"]["weak_scale"]
-        if "cluster_config" in j["launch"]:
-            CLUSTER_CONFIG = j["launch"]["cluster_config"]
+
+    j = load_json(args.launch_config)
+    ALGOS = j["launch"]["algo"]
+    DATASETS = j["launch"]["input"]
+    N = j["launch"]["rep"]
+    PREFIX = j["launch"]["prefix"]
+    if "threads" in j["launch"]:
+        THREADS=j["launch"]["threads"]
+    if "weak_scale" in j["launch"]:
+        WEAK_SCALE = j["launch"]["weak_scale"]
+    if "check" in j["launch"]:
+        CHECK = j["launch"]["check"]
+    if "cluster_config" in j["launch"]:
+        CLUSTER_CONFIG = j["launch"]["cluster_config"]
+
+    CHECK = CHECK or args.force_sa_check;
 
     counter = 0
-    print("Starting jobs...")
+    log_print("Starting jobs...")
     index = {
         "output_files" : [],
     }
@@ -201,14 +212,24 @@ if args.launch:
                 local_prefix = PREFIX
                 if omp_threads and WEAK_SCALE:
                     local_prefix *= omp_threads
-                local_prefix = "{}M".format(local_prefix)
+                local_prefix_str = "{}M".format(local_prefix)
+                maybe_check = ""
+                if CHECK:
+                    maybe_check = "-q"
 
-                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -p {prefix} -r {rep} --whitelist '{algo}'".format(
+                sa_bits = 32
+
+                if (local_prefix * 1024 * 1024) > (2 ** 31):
+                    sa_bits = 64
+
+                cmd = "./sacabench/sacabench batch {input_path} -b {bench_out} -f -s -p {prefix} -r {rep} --whitelist '{algo}' {maybe_check} -m {sa_bits}".format(
                     bench_out=batch_output,
-                    prefix=local_prefix,
+                    prefix=local_prefix_str,
                     rep=N,
                     algo=algo,
-                    input_path=input_path
+                    input_path=input_path,
+                    maybe_check=maybe_check,
+                    sa_bits=sa_bits,
                 )
 
                 jobid = launch_job(cwd, cmd, output, omp_threads, cluster_configs[CLUSTER_CONFIG])
@@ -219,17 +240,19 @@ if args.launch:
                     "input": str(input_path),
                     "algo": algo,
                     "prefix": "{}M".format(PREFIX),
-                    "actual_prefix": local_prefix,
+                    "actual_prefix": local_prefix_str,
                     "rep": N,
                     "jobid": jobid,
                     "threads": omp_threads,
                     "is_weak": bool(WEAK_SCALE),
+                    "checked": bool(CHECK),
+                    "sa_bits": sa_bits,
                 })
     if not args.test_only:
         write_json(outdir / Path("index.json"), index)
-        print("Started {} jobs!".format(counter))
-        print("Current personal job queue:")
-        subprocess.run("squeue -u $USER", shell=True)
+        log_print("Started {} jobs!".format(counter))
+        #log_print("Current personal job queue:")
+        #subprocess.run("squeue -u $USER", shell=True)
 
 def load_data(dir):
     index = load_json(dir / Path("index.json"))
@@ -261,11 +284,11 @@ def load_data(dir):
         else:
             err_reason = "no file {}".format(stat_output.name)
 
-        print("Missing data for {}, {}, {}, {} ({})".format(algo, input.name, prefix, threads, err_reason))
+        log_print("Missing data for {}, {}, {}, {} ({})".format(algo, input.name, prefix, threads, err_reason))
         if output.is_file():
-            print("-output----------")
-            print(load_str(output))
-            print("-----------------")
+            log_print("-output----------")
+            log_print(load_str(output))
+            log_print("-----------------")
         continue
 
 def stat_nav_sub(stat, title):
@@ -321,6 +344,7 @@ def to_sqlplot(output_file, stats):
 
 if args.combine:
     dir = Path(args.combine)
+
     sqlplot_out = ""
     file_map = {}
 
@@ -366,7 +390,7 @@ if args.combine:
     for key in file_map:
         (input, threads) = key
         op = dir / Path("results-{}-{}.json".format(input.name, threads))
-        print("Writing data to {}".format(op))
+        log_print("Writing data to {}".format(op))
         #combined_json.append({
         #    "threads": threads,
         #    "input": input.name,
@@ -375,16 +399,20 @@ if args.combine:
         combined_json += file_map[key]
         write_json(op, file_map[key])
     op = dir / Path("sqlplot.txt")
-    print("Writing data to {}".format(op))
+    log_print("Writing data to {}".format(op))
     write_str(op, sqlplot_out)
 
     op = dir / Path("results-combined.json")
-    print("Writing data to {}".format(op))
+    log_print("Writing data to {}".format(op))
     #write_json(op, {
     #    "measures": combined_json,
     #    "sqlplot": sqlplot_out,
     #})
     write_json(op, combined_json)
+
+    logpath = dir / Path("combine.log")
+    log_print("Writing data to {}".format(logpath))
+    write_str(logpath, log_str)
 
     # input_file
     # thread_count

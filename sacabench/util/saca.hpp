@@ -31,13 +31,13 @@ public:
     virtual ~abstract_sa() = default;
 
     /// Run the sa checker, and return its result.
-    virtual sa_check_result check(string_span text, bool fast) = 0;
+    virtual sa_check_result check(string_span text, bool fast) const = 0;
 
     /// Write the SA to the `ostream` as a JSON array.
-    virtual void write_json(std::ostream& out) = 0;
+    virtual void write_json(std::ostream& out) const = 0;
 
     /// Write the SA to the `ostream` as a binary array.
-    virtual void write_binary(std::ostream& out, uint8_t bits = 0) = 0;
+    virtual void write_binary(std::ostream& out, uint8_t bits = 0) const = 0;
 };
 
 /// A wrapper around a suffix array container with extra sentinel values.
@@ -56,21 +56,21 @@ public:
         : m_extra_sentinels(extra_sentinels), m_sa(std::move(sa)) {}
 
     /// Return number of sentinel characters
-    inline size_t extra_sentinels() { return m_extra_sentinels; }
+    inline size_t extra_sentinels() const { return m_extra_sentinels; }
 
     /// Return uniform suffix array without sentinel positions.
-    inline span<sa_index> sa_without_sentinels() {
+    inline span<sa_index const> sa_without_sentinels() const {
         return m_sa.slice(extra_sentinels());
     }
 
     /// Return original suffix array, with potential sentinel positions.
-    inline span<sa_index> sa_with_sentinels() { return m_sa; }
+    inline span<sa_index const> sa_with_sentinels() const { return m_sa; }
 
-    inline virtual sa_check_result check(string_span text, bool fast) override {
-        return sa_check_dispatch<sa_index>(sa_without_sentinels(), text, fast);
+    inline virtual sa_check_result check(string_span text, bool fast) const override {
+        return sa_check_dispatch<sa_index const>(sa_without_sentinels(), text, fast);
     }
 
-    inline virtual void write_json(std::ostream& out) {
+    inline virtual void write_json(std::ostream& out) const {
         auto sa = sa_without_sentinels();
         out << "[";
         if (sa.size() > 0) {
@@ -82,7 +82,7 @@ public:
         out << "]";
     }
 
-    inline virtual void write_binary(std::ostream& out, uint8_t bits) {
+    inline virtual void write_binary(std::ostream& out, uint8_t bits) const {
         auto sa = sa_without_sentinels();
         if (bits == 0) {
             if (sa.size() > 0) {
@@ -196,9 +196,13 @@ prepare_and_construct_sa(text_initializer const& text_init) {
         alphabet alph;
 
         {
-            tdc::StatPhase init_phase("Allocate SA and Text container");
-            output = make_container<sa_index>(text_size + extra_sentinels);
+            tdc::StatPhase init_phase("Allocate Text container");
             text_with_sentinels = string(text_size + extra_sentinels);
+        }
+
+        {
+            tdc::StatPhase init_phase("Allocate SA container");
+            output = make_container<sa_index>(text_size + extra_sentinels);
         }
 
         // Create a slice to the part of the Text container
