@@ -24,7 +24,7 @@ make
 If you want to use our benchmark tool for your own SACA implementation, you
 first need to implement our SACA interface within the sacabench/saca directory.
 
-```
+```cpp
 // Either class or struct work
 class your_saca {
     // The amount of sentinels (null byte) your SACA needs at the end of the input text.
@@ -51,9 +51,11 @@ class your_saca {
     }
 };
 ```
+
 After you implement this interface, you still need to register your saca in the
 register.cmake file:
-```
+
+```cmake
 SACA_REGISTER("saca/path_to_your_saca_header/saca.hpp"
     sacabench::your_namespace)
 ```
