@@ -14,7 +14,8 @@
 #include <util/kd_array.hpp>
 #include <util/signed_size_type.hpp>
 #include <util/sort/introsort.hpp>
-#include <util/sort/ips4o.hpp>
+//#include <util/sort/ips4o.hpp>
+#include <util/sort/std_sort.hpp>
 #include <util/span.hpp>
 #include <util/string.hpp>
 #include <util/type_extraction.hpp>
@@ -508,7 +509,7 @@ inline void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
                        util::span<pair_si<sa_index>> to_be_ranked) {
     // sort elements after their sortkey:
     compare_sortkey<sa_index> comparator;
-    util::sort::ips4o_sort_parallel(to_be_ranked, comparator);
+    util::sort::std_par_sort(to_be_ranked, comparator);
 
     // rank all elements in sorted order:
     for (const auto current_index : to_be_ranked) {
