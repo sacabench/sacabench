@@ -341,9 +341,9 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
                     val = 120
                 val = float("{:0.2f}".format(val))
                 if last_multi_y != multi_y:
-                    print()
+                    #print()
                     last_multi_y = multi_y
-                print("({},{},{})".format(multi_y, multi_x, val))
+                #print("({},{},{})".format(multi_y, multi_x, val))
             #print(algorithm, file, threads_and_size)
 
     #pprint.pprint(multidim_array)
