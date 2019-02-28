@@ -175,18 +175,18 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
             if outer_matrix[ts][f][algorithm_name]["data"] != "exists":
                 k = (algorithm_name, f, str(ts[0]))
                 if check_log.get(k) == "timeout":
-                    return "{\color{orange}\\faClockO}"
+                    return ("{\color{orange}\\faClockO}", "timeout")
                 if check_log.get(k) == "crash":
-                    return "{\color{violet}\\faBolt}"
+                    return ("{\color{violet}\\faBolt}", "crash")
                 if check_log.get(k) == "oom":
-                    return "{\color{purple}\\faFloppyO}"
+                    return ("{\color{purple}\\faFloppyO}", "oom")
 
-                return "{\color{darkgray}--}"
+                return ("{\color{darkgray}--}")
 
             if outer_matrix[ts][f][algorithm_name][which][key] == "ok":
-                return "\\cmarkc" #"{\color{green}\\faCheck}"
+                return ("\\cmarkc", "ok") #"{\color{green}\\faCheck}"
             else:
-                return "\\xmarkc" #"{\color{red}\\faTimes}"
+                return ("\\xmarkc", "failed") #"{\color{red}\\faTimes}"
 
         return ret
 
@@ -203,10 +203,10 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
 
 
             if outer_matrix[ts][f][algorithm_name]["data"] != "exists":
-                return "{\color{darkgray}--}"
+                return None
 
             if outer_matrix[ts][f][algorithm_name][which]["check_result"] != "ok":
-                return "{\color{darkgray}--}"
+                return None
 
             datapoints = set()
             for ai in algorithms:
@@ -249,6 +249,7 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
     def time_fmt(d, classif):
         d = d / 1000
         d = d / 60
+        d_orig = d
         d = "{:0.2f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
@@ -257,12 +258,13 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
         elif classif < 0:
             d = latex_color(d, "red")
 
-        return d
+        return (d, d_orig)
 
     def mem_fmt(d, classif):
         d = d / 1024
         d = d / 1024
         d = d / 1024
+        d_orig = d
         d = "{:0.3f}".format(d)
         #d = latex_rotate("\\ " + d + "\\ ")
 
@@ -271,7 +273,7 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
         elif classif < 0:
             d = latex_color(d, "red")
 
-        return d
+        return (d, d_orig)
 
     legend = cfg["legend"]
     title = cfg["title"]
@@ -318,13 +320,30 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
                 r += ee
             return r
 
+    last_multi_y = None
     multidim_array = []
-    for [algorithm] in rec(y_headings):
+    for multi_y,[algorithm] in enumerate(rec(y_headings)):
         multidim_array.append([])
-        for [file, threads_and_size] in rec(x_headings):
+        for multi_x,[file, threads_and_size] in enumerate(rec(x_headings)):
             #cell = "{}-{}-{}".format(nice_algoname(algorithm), nice_file(file, False), threads_and_size[0])
             cell = get_data(threads_and_size, file, algorithm)
-            multidim_array[-1].append(cell)
+            if cell is None:
+                cell = ("{\color{darkgray}--}", None)
+
+            decorated = cell[0]
+            multidim_array[-1].append(decorated)
+
+            if cfg["kind"] == "time":
+                rawval = cell[1]
+                if rawval:
+                    val = cell[1]
+                else:
+                    val = 120
+                val = float("{:0.2f}".format(val))
+                if last_multi_y != multi_y:
+                    print()
+                    last_multi_y = multi_y
+                print("({},{},{})".format(multi_y, multi_x, val))
             #print(algorithm, file, threads_and_size)
 
     #pprint.pprint(multidim_array)
