@@ -53,7 +53,7 @@ class your_saca {
 ```
 
 After you implement this interface, you still need to register your saca in the
-register.cmake file:
+register.cmake file (within the same directory):
 
 ```cmake
 SACA_REGISTER("saca/path_to_your_saca_header/saca.hpp"
