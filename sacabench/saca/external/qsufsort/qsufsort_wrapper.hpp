@@ -19,7 +19,7 @@
 using namespace sacabench::util;
 namespace {
 
-static ssize *I, /* group array, ultimately suffix array.*/
+static int *I, /* group array, ultimately suffix array.*/
     *V,          /* inverse array, ultimately inverse of I.*/
     r,           /* number of symbols aggregated by transform.*/
     h;           /* length of already-sorted prefixes.*/
@@ -33,8 +33,8 @@ static ssize *I, /* group array, ultimately suffix array.*/
 /* Subroutine for select_sort_split and sort_split. Sets group numbers for a
    group whose lowest position in I is pl and highest position is pm.*/
 
-static void update_group(ssize* pl, ssize* pm) {
-    ssize g;
+static void update_group(int* pl, int* pm) {
+    int g;
 
     g = pm - I; /* group number.*/
     V[*pl] = g; /* update group number of first position.*/
@@ -49,9 +49,9 @@ static void update_group(ssize* pl, ssize* pm) {
 /* Quadratic sorting method to use for small subarrays. To be able to update
    group numbers consistently, a variant of selection sorting is used.*/
 
-static void select_sort_split(ssize* p, ssize n) {
-    ssize *pa, *pb, *pi, *pn;
-    ssize f, v, tmp;
+static void select_sort_split(int* p, int n) {
+    int *pa, *pb, *pi, *pn;
+    int f, v, tmp;
 
     pa = p;         /* pa is start of group being picked out.*/
     pn = p + n - 1; /* pn is last position of subarray.*/
@@ -76,9 +76,9 @@ static void select_sort_split(ssize* p, ssize n) {
 
 /* Subroutine for sort_split, algorithm by Bentley & McIlroy.*/
 
-static ssize choose_pivot(ssize* p, ssize n) {
-    ssize *pl, *pm, *pn;
-    ssize s;
+static int choose_pivot(int* p, int n) {
+    int *pl, *pm, *pn;
+    int s;
 
     pm = p + (n >> 1); /* small arrays, middle element.*/
     if (n > 7) {
@@ -101,9 +101,9 @@ static ssize choose_pivot(ssize* p, ssize n) {
    Software -- Practice and Experience 23(11), 1249-1265 (November 1993). This
    function is based on Program 7.*/
 
-static void sort_split(ssize* p, ssize n) {
-    ssize *pa, *pb, *pc, *pd, *pl, *pm, *pn;
-    ssize f, v, s, t, tmp;
+static void sort_split(int* p, int n) {
+    int *pa, *pb, *pc, *pd, *pl, *pm, *pn;
+    int f, v, s, t, tmp;
 
     if (n < 7) { /* multi-selection sort smallest arrays.*/
         select_sort_split(p, n);
@@ -162,8 +162,8 @@ static void sort_split(ssize* p, ssize n) {
    Output: x is V and p is I after the initial sorting stage of the refined
    suffix sorting algorithm.*/
 
-static void bucketsort(ssize* x, ssize* p, ssize n, ssize k) {
-    ssize *pi, i, c, d, g;
+static void bucketsort(int* x, int* p, int n, int k) {
+    int *pi, i, c, d, g;
 
     for (pi = p; pi < p + k; ++pi)
         *pi = -1; /* mark linked lists empty.*/
@@ -202,9 +202,9 @@ static void bucketsort(ssize* x, ssize* p, ssize n, ssize k) {
    new alphabet. If j<=n+1, the alphabet is compacted. The global variable r is
    set to the number of old symbols grouped into one. Only x[n] is 0.*/
 
-static ssize transform(ssize* x, ssize* p, ssize n, ssize k, ssize l, ssize q) {
-    ssize b, c, d, e, i, j, m, s;
-    ssize *pi, *pj;
+static int transform(int* x, int* p, int n, int k, int l, int q) {
+    int b, c, d, e, i, j, m, s;
+    int *pi, *pj;
 
     for (s = 0, i = k - l; i; i >>= 1)
         ++s;          /* s is number of bits in old symbol.*/
@@ -260,9 +260,9 @@ static ssize transform(ssize* x, ssize* p, ssize n, ssize k, ssize l, ssize q) {
    contents of x[n] is disregarded, the n-th symbol being regarded as
    end-of-string smaller than all other symbols.*/
 
-void suffixsort(ssize* x, ssize* p, ssize n, ssize k, ssize l) {
-    ssize *pi, *pk;
-    ssize i, j, s, sl;
+void suffixsort(int* x, int* p, int n, int k, int l) {
+    int *pi, *pk;
+    int i, j, s, sl;
 
     V = x; /* set global values.*/
     I = p;
@@ -319,12 +319,12 @@ public:
         tdc::StatPhase qss_ext("Transformation");
         if (text.size() < 2)
             return;
-        ssize* transform_text = new ssize[text.size() + 1];
-        ssize* transform_sa = new ssize[out_sa.size() + 1];
+        int* transform_text = new int[text.size() + 1];
+        int* transform_sa = new int[out_sa.size() + 1];
 
         // TODO find a way without copying
         for (size_t index = 0; index < text.size(); ++index) {
-            transform_text[index] = (ssize)text[index];
+            transform_text[index] = (int)text[index];
         }
         qss_ext.split("Reference implementation");
         if (!alphabet.is_effective()) {
