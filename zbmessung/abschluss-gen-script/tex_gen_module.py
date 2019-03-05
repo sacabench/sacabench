@@ -70,7 +70,7 @@ class tex_figure_wrapper:
         out = ""
         #out += "\\subsection{{{}}}\n".format(title)
         #out += "\n{}\n".format(header_text).replace("%LABEL", label)
-        out += "\\begin{table}[h]\n"
+        out += "\\begin{table}[ht]\n"
         out += self.tex
         out += "\\caption{{{}}}\n".format(title)
         out += "\\label{{{}}}\n".format(label)
@@ -112,7 +112,10 @@ def generate_latex_table_single_2(multidim_array,
                 x_cell_level_fmt.append("\\multicolumn{{{}}}{{c}}{{{}}}".format(span,x_cell))
 
         if not x_cell_level_depth in x_omit:
-            tex += "     & {} \\\\\n".format(" & ".join(x_cell_level_fmt))
+            heading_label = ""
+            if x_cell_level_depth == 1:
+                heading_label = "Threads:"
+            tex += "{}     & {} \\\\\n".format(heading_label," & ".join(x_cell_level_fmt))
 
     tex += "\\midrule\n"
 
