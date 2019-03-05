@@ -52,7 +52,7 @@ def get_mem_time(phase):
 
     return (peak, duration)
 
-def prepare_and_extract(path, blacklist):
+def prepare_and_extract(path, blacklist, logdata):
     if blacklist.get("input"):
         input_blacklist = blacklist["input"]
     else:
@@ -63,6 +63,11 @@ def prepare_and_extract(path, blacklist):
     algorithms = set()
     files = set()
     threads_and_sizes = set()
+
+    for (algorithm_name, input_file, threads_str) in logdata:
+        algorithms.add(algorithm_name)
+        files.add(input_file)
+        # TODO: Get correct thread count and prefix size as well
 
     js = load_json_from_file(path)
     for repetitions in js:
@@ -204,9 +209,12 @@ def handle_tablegen_all(args):
     blacklist = cfg["blacklist"]
 
     for measure in cfg["measures"]:
+        logfile = measure["log"]
+        logdata = parse_logfile(logfile)
+
         path = measure["path"]
         mode = measure["thread-scale"]
-        processed = prepare_and_extract(path, blacklist)
+        processed = prepare_and_extract(path, blacklist, logdata)
         outer_matrix = processed["outer_matrix"]
         threads_and_sizes = processed["threads_and_sizes"]
         algorithms = processed["algorithms"]
@@ -216,9 +224,6 @@ def handle_tablegen_all(args):
         ttitle = measure["title"]
 
         omit_headings = measure["omit-headings"]
-
-        logfile = measure["log"]
-        logdata = parse_logfile(logfile)
 
         #pprint(logdata)
 
