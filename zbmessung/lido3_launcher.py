@@ -94,7 +94,8 @@ def launch_job(cwd, cmd, output, omp_threads, clstcfg):
     omp_threads_str = ""
     taskset_prefix = ""
     if omp_threads:
-        omp_threads_str = "export OMP_NUM_THREADS={}\n".format(omp_threads)
+        omp_threads_str += "export OMP_NUM_THREADS={}\n".format(omp_threads)
+        omp_threads_str += "export OMP_THREAD_LIMIT={}\n".format(omp_threads)
         taskset_prefix = "taskset -c {} ".format(",".join(list(map(str, range(0, omp_threads)))))
 
     if not args.test_only:
