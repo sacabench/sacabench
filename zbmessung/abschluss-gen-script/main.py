@@ -57,6 +57,10 @@ def prepare_and_extract(path, blacklist, logdata):
         input_blacklist = blacklist["input"]
     else:
         input_blacklist = []
+    if blacklist.get("algorithm"):
+        algorithm_blacklist = blacklist["algorithm"]
+    else:
+        algorithm_blacklist = []
 
     outer_matrix = {}
 
@@ -129,7 +133,8 @@ def prepare_and_extract(path, blacklist, logdata):
         })
 
     # Prepare matrix of all gathered data
-    algorithms = list(sorted(algorithms))
+    algorithms = list(sorted(filter(lambda x: x not in algorithm_blacklist, algorithms)))
+    #print(algorithms)
     threads_and_sizes = list(sorted(threads_and_sizes))
     files = list(sorted(filter(lambda x: x not in input_blacklist, files)))
 
