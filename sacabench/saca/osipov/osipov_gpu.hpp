@@ -380,10 +380,6 @@ struct osipov_gpu {
                     else {print_exceeded_memory<uint64_t>(bytes_needed);}
                 }
             }
-            else
-            {
-                std::cout<<"[No suitable GPU detected]"<<std::endl;
-            }
             
         }
         else {out_sa[0] = 0;}
