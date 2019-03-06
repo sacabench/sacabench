@@ -46,7 +46,7 @@ bool cuda_sufficient_card_available()
     for (int i = 0; i < number_devices; i++) {
         cudaDeviceProp prop;
         cudaGetDeviceProperties(&prop, i);
-        if(prop.major>=2) {
+        if(prop.major>=3) {
             return true;
         }
     }
@@ -60,5 +60,5 @@ bool cuda_sufficient_card_available()
 }
 
 int cuda_GPU_available(){
-    return (cuda_sufficient_card_available()&&cuda_device_memory_available());//&&cuda_version_sufficient());
+    return (cuda_sufficient_card_available()&&cuda_device_memory_available()&&cuda_version_sufficient());
 }
