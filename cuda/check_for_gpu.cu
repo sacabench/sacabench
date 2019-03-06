@@ -12,19 +12,17 @@
 #include <iostream>
 
 
-bool cuda_device_available() {
-    int deviceCount;
-    int deviceNumber;
+bool cuda_device_memory_available() {
+
     size_t free_bytes;
     size_t total_bytes;
-    cudaError_t e1 = cudaGetDeviceCount(&deviceCount);
-    cudaError_t e2 = cudaGetDevice(&deviceNumber);   
-    cudaError_t e3=cudaMemGetInfo(&free_bytes, &total_bytes);
+ 
+    cudaError_t e =cudaMemGetInfo(&free_bytes, &total_bytes);
     
-    bool available = (e1 == cudaSuccess) && (e2 == cudaSuccess) && (e3 == cudaSuccess);
+    bool available = (e == cudaSuccess);
 
     if(!available) {
-        std::cout<<"[No suitable GPU detected]"<<std::endl;
+        std::cout<<"[Couldn't reach GPU memory]"<<std::endl;
     }
     return available;
 }
@@ -40,7 +38,27 @@ bool cuda_version_sufficient() {
     return (sufficient);
 }
 
-//TODO: check compute comp
+bool cuda_sufficient_card_available()
+{
+  int number_devices;
+  cudaGetDeviceCount(&number_devices);
+  if(number_devices>0) {
+    for (int i = 0; i < number_devices; i++) {
+        cudaDeviceProp prop;
+        cudaGetDeviceProperties(&prop, i);
+        if(prop.major>2) {
+            return true;
+        }
+    }
+    std::cout<<"[CUDA compute capability not sufficient]"<<std::endl;
+    return false;
+  }
+  else {
+    std::cout<<"[Couldn't find suitable GPU]"<<std::endl;
+    return false;
+  }
+}
+
 int cuda_GPU_available(){
-    return (cuda_device_available());//&&cuda_version_sufficient());
+    return (cuda_sufficient_card_available()&&cuda_device_memory_available());//&&cuda_version_sufficient());
 }
