@@ -11,11 +11,19 @@
 #include <util/bits.hpp>
 #include <saca/osipov/osipov_gpu.hpp>
 #include "test/saca.hpp"
+#include <check_for_gpu_interface.hpp>
 
 using namespace sacabench::osipov;
 using namespace sacabench;
 using namespace sacabench::util;
 
 TEST(OsipovGpu, CornerCases) {
-    test::saca_corner_cases<sacabench::osipov::osipov_gpu>();
+    if(cuda_GPU_available()) {
+        test::saca_corner_cases<sacabench::osipov::osipov_gpu>();
+    }
+    else
+    {
+        std::cout<<"No suitable GPU detected"<<std::endl;
+    }
+    
 }

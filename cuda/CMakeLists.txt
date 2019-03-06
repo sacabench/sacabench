@@ -2,6 +2,7 @@ add_library(cuda_wrapper
     cuda_wrapper.cu
     cuda_util.cu
     prefix_doubler.cu
+    check_for_gpu.cu
 )
 
 target_include_directories(cuda_wrapper INTERFACE

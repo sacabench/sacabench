@@ -2,6 +2,7 @@
 
 #include <prefix_doubler_interface.hpp>
 #include <cuda_wrapper_interface.hpp>
+#include <check_for_gpu_interface.hpp>
 #include <util/span.hpp>
 #include <saca/osipov/osipov.hpp>
 #include <type_traits>
@@ -339,44 +340,51 @@ struct osipov_gpu {
     static void construct_sa(util::string_span text, util::alphabet const&,
                              util::span<sa_index> out_sa) {
         if(text.size() > 1) {
-            bool memory_sufficient = true;
-            size_t bytes_needed = sizeof(sa_index)*7*out_sa.size()
-            + 0.0001*sizeof(sa_index)*out_sa.size()*2;
-            // Currently only supporting uint32_t and uint64_t
-            if constexpr (std::is_same<sa_index, uint32_t>::value) {
-                memory_sufficient = check_cuda_memory_32(bytes_needed);
-                if(memory_sufficient) {construct_sa_internal(text, out_sa);}
-            }
-            else if constexpr (std::is_same<sa_index, uint64_t>::value) {
-                memory_sufficient = check_cuda_memory_64(bytes_needed);
-                if(memory_sufficient) {construct_sa_internal(text, out_sa);}
-            }
-            else if constexpr (std::is_same<sa_index, util::uint40>::value
-                    || std::is_same<sa_index, util::uint48>::value) {
-                memory_sufficient = check_cuda_memory_64(bytes_needed);
-                if(memory_sufficient) {
-                    auto tmp_out = util::make_container
-                                <util::next_primitive<sa_index>>(out_sa.size());
-                    auto tmp_out_span = util::span<util::next_primitive<sa_index>>(
-                                tmp_out);
-                    construct_sa_internal(text, tmp_out_span);
-                    // Copy content from temporary array
-                    for(size_t i=0; i<out_sa.size(); ++i) {
-                        out_sa[i] = (sa_index)tmp_out_span[i];
+            if(cuda_GPU_available()){
+                bool memory_sufficient = true;
+                size_t bytes_needed = sizeof(sa_index)*7*out_sa.size()
+                + 0.0001*sizeof(sa_index)*out_sa.size()*2;
+                // Currently only supporting uint32_t and uint64_t
+                if constexpr (std::is_same<sa_index, uint32_t>::value) {
+                    memory_sufficient = check_cuda_memory_32(bytes_needed);
+                    if(memory_sufficient) {construct_sa_internal(text, out_sa);}
+                }
+                else if constexpr (std::is_same<sa_index, uint64_t>::value) {
+                    memory_sufficient = check_cuda_memory_64(bytes_needed);
+                    if(memory_sufficient) {construct_sa_internal(text, out_sa);}
+                }
+                else if constexpr (std::is_same<sa_index, util::uint40>::value
+                        || std::is_same<sa_index, util::uint48>::value) {
+                    memory_sufficient = check_cuda_memory_64(bytes_needed);
+                    if(memory_sufficient) {
+                        auto tmp_out = util::make_container
+                                    <util::next_primitive<sa_index>>(out_sa.size());
+                        auto tmp_out_span = util::span<util::next_primitive<sa_index>>(
+                                    tmp_out);
+                        construct_sa_internal(text, tmp_out_span);
+                        // Copy content from temporary array
+                        for(size_t i=0; i<out_sa.size(); ++i) {
+                            out_sa[i] = (sa_index)tmp_out_span[i];
+                        }
                     }
                 }
-            }
-            else {
-                std::cerr << "Type" << " is not supported by osipov on the gpu."
-                        << std::endl;
-            }
-
-            if(!memory_sufficient) {
-                if(std::is_same<sa_index, uint32_t>::value) {
-                    print_exceeded_memory<uint32_t>(bytes_needed);
+                else {
+                    std::cerr << "Type" << " is not supported by osipov on the gpu."
+                            << std::endl;
                 }
-                else {print_exceeded_memory<uint64_t>(bytes_needed);}
+
+                if(!memory_sufficient) {
+                    if(std::is_same<sa_index, uint32_t>::value) {
+                        print_exceeded_memory<uint32_t>(bytes_needed);
+                    }
+                    else {print_exceeded_memory<uint64_t>(bytes_needed);}
+                }
             }
+            else
+            {
+                std::cout<<"[No suitable GPU detected]"<<std::endl;
+            }
+            
         }
         else {out_sa[0] = 0;}
     }
