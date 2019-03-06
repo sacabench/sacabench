@@ -22,7 +22,7 @@ bool cuda_device_memory_available() {
     bool available = (e == cudaSuccess);
 
     if(!available) {
-        std::cout<<"[Couldn't reach GPU memory]"<<std::endl;
+        std::cerr<<"[Couldn't reach GPU memory]"<<std::endl;
     }
     return available;
 }
@@ -33,7 +33,7 @@ bool cuda_version_sufficient() {
     bool sufficient = cuda_version>=10000;
     if(!sufficient)
     {
-        std::cout<<"[CUDA Version ("<<cuda_version<<") not sufficient]"<<std::endl;
+        std::cerr<<"[CUDA Version ("<<cuda_version<<") not sufficient]"<<std::endl;
     }
     return (sufficient);
 }
@@ -50,11 +50,11 @@ bool cuda_sufficient_card_available()
             return true;
         }
     }
-    std::cout<<"[CUDA compute capability not sufficient]"<<std::endl;
+    std::cerr<<"[CUDA compute capability not sufficient]"<<std::endl;
     return false;
   }
   else {
-    std::cout<<"[Couldn't find suitable GPU]"<<std::endl;
+    std::cerr<<"[Couldn't find suitable GPU]"<<std::endl;
     return false;
   }
 }
