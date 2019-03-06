@@ -11,7 +11,19 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 endif()
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
-project(sacabench)
+project(sacabench LANGUAGES C CXX)
+
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+  set(SACA_ENABLE_CUDA ON)
+endif()
+
+if(SACA_ENABLE_CUDA)
+  enable_language(CUDA)
+else()
+  message(STATUS "No CUDA support, GPU algorithms will not be enabled")
+endif()
 
 # Compile all code with ccache, if it exists in the system
 find_program(CCACHE_FOUND ccache)
@@ -80,6 +92,18 @@ git_submodule_subdirectory(external/tudostats)
 git_submodule_subdirectory(external/CLI11)
 set(DATASET_ARGS "--delete_original;--min_prefix_size=200;--max_prefix_size=200" CACHE STRING "" FORCE)
 git_submodule_subdirectory(external/datasets)
+
+if(SACA_ENABLE_CUDA)
+git_submodule(external/cub)
+endif()
+
+add_subdirectory(sacabench)
+add_subdirectory(external/ips4o)
+
+if(SACA_ENABLE_CUDA)
+add_subdirectory(cuda)
+endif()
+
 add_subdirectory(external/reference_impls/gsaca)
 add_subdirectory(external/reference_impls/deep-shallow)
 add_subdirectory(external/reference_impls/divsufsort)
@@ -89,9 +113,13 @@ add_subdirectory(external/reference_impls/dc3)
 add_subdirectory(external/reference_impls/msufsort)
 add_subdirectory(external/reference_impls/saca_k)
 add_subdirectory(external/reference_impls/parallel_divsufsort)
-add_subdirectory(sacabench)
+
+if(SACA_ENABLE_CUDA)
+set(CMAKE_USE_PTHREADS_INIT OFF CACHE BOOL "")
+#set(gtest_disable_pthreads ON CACHE BOOL "")
+endif()
+
 add_subdirectory(test)
 add_subdirectory(bigtest)
-add_subdirectory(external/ips4o)
 
 ################################################################################

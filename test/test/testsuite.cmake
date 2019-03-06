@@ -54,12 +54,12 @@ macro(generic_run_test test_target test_file
         ${test_file}
     )
     target_link_libraries(${test_target}_testrunner
+        PRIVATE
         ${driver_dep}
         ${TEST_TARGET_DEPS}
-        "${OpenMP_CXX_FLAGS}"
     )
 
-    target_compile_options(${test_target}_testrunner PUBLIC
+    target_compile_options(${test_target}_testrunner PRIVATE
         ${SACA_BENCH_FLAGS}
         $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
         $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>

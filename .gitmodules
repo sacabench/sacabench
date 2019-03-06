@@ -10,3 +10,6 @@
 [submodule "external/datasets"]
 	path = external/datasets
 	url = https://github.com/tudocomp/datasets.git
+[submodule "external/cub"]
+	path = external/cub
+	url = https://github.com/NVlabs/cub.git

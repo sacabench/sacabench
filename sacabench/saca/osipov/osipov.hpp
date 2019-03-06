@@ -210,6 +210,7 @@ public:
                 osipov_impl& osipov) {
         tdc::StatPhase phase("Initialization");
         // Check if enough bits free for negation.
+        DCHECK(util::assert_text_length<sa_index>(out_sa.size(), 1u));
         DCHECK(util::assert_text_length<sa_index>(text.size(), 1u));
         (void) text;
 

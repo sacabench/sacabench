@@ -162,3 +162,8 @@ SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
 SACA_REGISTER("saca/osipov/osipov_parallel.hpp"
     sacabench::osipov::osipov_parallel_wp)
 
+if(SACA_ENABLE_CUDA)
+SACA_REGISTER("saca/osipov/osipov_gpu.hpp"
+    sacabench::osipov::osipov_gpu)
+endif()
+

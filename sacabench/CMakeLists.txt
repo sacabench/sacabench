@@ -30,6 +30,12 @@ target_link_libraries(saca_bench_lib INTERFACE
   atomic
 )
 
+if(SACA_ENABLE_CUDA)
+target_link_libraries(saca_bench_lib INTERFACE
+  cuda_wrapper
+)
+endif()
+
 # Create executable that runs all registered SACAs
 add_executable(sacabench
   sacabench.cpp
@@ -37,8 +43,8 @@ add_executable(sacabench
 target_link_libraries(sacabench
   saca_bench_lib
   CLI11
-  "${OpenMP_CXX_FLAGS}"
   atomic
+  OpenMP::OpenMP_CXX
 )
 target_compile_options(sacabench PUBLIC
   ${SACA_BENCH_FLAGS}
@@ -56,6 +62,7 @@ target_link_libraries(sacabench-tools
   atomic
 )
 target_compile_options(sacabench-tools PUBLIC
+
   ${SACA_BENCH_FLAGS}
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
   $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
