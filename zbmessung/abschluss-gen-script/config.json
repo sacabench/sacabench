@@ -52,5 +52,9 @@
         "table-check-label-prefix": "sa-chk-",
         "table-mem-label-prefix": "memory-",
         "table-time-label-prefix": "time-"
+    },
+    "blacklist": {
+        "input": ["combined.txt"],
+        "algorithm": ["mSufSortV2_par", "mSufSort_par", "mSufSort_scan_par"]
     }
 }

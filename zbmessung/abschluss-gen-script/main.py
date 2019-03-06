@@ -52,12 +52,26 @@ def get_mem_time(phase):
 
     return (peak, duration)
 
-def prepare_and_extract(path):
+def prepare_and_extract(path, blacklist, logdata):
+    if blacklist.get("input"):
+        input_blacklist = blacklist["input"]
+    else:
+        input_blacklist = []
+    if blacklist.get("algorithm"):
+        algorithm_blacklist = blacklist["algorithm"]
+    else:
+        algorithm_blacklist = []
+
     outer_matrix = {}
 
     algorithms = set()
     files = set()
     threads_and_sizes = set()
+
+    for (algorithm_name, input_file, threads_str) in logdata:
+        algorithms.add(algorithm_name)
+        files.add(input_file)
+        # TODO: Get correct thread count and prefix size as well
 
     js = load_json_from_file(path)
     for repetitions in js:
@@ -119,9 +133,10 @@ def prepare_and_extract(path):
         })
 
     # Prepare matrix of all gathered data
-    algorithms = list(sorted(algorithms))
+    algorithms = list(sorted(filter(lambda x: x not in algorithm_blacklist, algorithms)))
+    #print(algorithms)
     threads_and_sizes = list(sorted(threads_and_sizes))
-    files = list(sorted(files))
+    files = list(sorted(filter(lambda x: x not in input_blacklist, files)))
 
     # Do some post-processing
     for threads_and_size in threads_and_sizes:
@@ -178,7 +193,7 @@ def handle_tablegen(args):
     path = args.path
     #mode = args.mode
 
-    processed = prepare_and_extract(path)
+    processed = prepare_and_extract(path, {})
     outer_matrix = processed["outer_matrix"]
     threads_and_sizes = processed["threads_and_sizes"]
     algorithms = processed["algorithms"]
@@ -196,10 +211,15 @@ def handle_tablegen_all(args):
     mlp = cfg["output"]["table-mem-label-prefix"]
     tlp = cfg["output"]["table-time-label-prefix"]
 
+    blacklist = cfg["blacklist"]
+
     for measure in cfg["measures"]:
+        logfile = measure["log"]
+        logdata = parse_logfile(logfile)
+
         path = measure["path"]
         mode = measure["thread-scale"]
-        processed = prepare_and_extract(path)
+        processed = prepare_and_extract(path, blacklist, logdata)
         outer_matrix = processed["outer_matrix"]
         threads_and_sizes = processed["threads_and_sizes"]
         algorithms = processed["algorithms"]
@@ -209,9 +229,6 @@ def handle_tablegen_all(args):
         ttitle = measure["title"]
 
         omit_headings = measure["omit-headings"]
-
-        logfile = measure["log"]
-        logdata = parse_logfile(logfile)
 
         #pprint(logdata)
 

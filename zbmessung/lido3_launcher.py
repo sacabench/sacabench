@@ -79,7 +79,7 @@ batch_template = """#!/bin/bash
 {test_only}
 {omp_threads}
 cd {cwd}
-{cmd}
+{taskset_prefix}{cmd}
 """
 
 # ---------------------
@@ -92,8 +92,11 @@ def launch_job(cwd, cmd, output, omp_threads, clstcfg):
         test_only = "#SBATCH --test-only\n"
 
     omp_threads_str = ""
+    taskset_prefix = ""
     if omp_threads:
-        omp_threads_str = "export OMP_NUM_THREADS={}\n".format(omp_threads)
+        omp_threads_str += "export OMP_NUM_THREADS={}\n".format(omp_threads)
+        omp_threads_str += "export OMP_THREAD_LIMIT={}\n".format(omp_threads)
+        taskset_prefix = "taskset -c {} ".format(",".join(list(map(str, range(0, omp_threads)))))
 
     if not args.test_only:
         Path(output).parent.mkdir(parents=True, exist_ok=True)
@@ -113,7 +116,8 @@ def launch_job(cwd, cmd, output, omp_threads, clstcfg):
         mem=clstcfg["mem"],
         constraint=clstcfg["constraint"],
         omp_threads=omp_threads_str,
-        extra_args="\n".join(map(lambda x: "#SBATCH " + x, clstcfg["extra_args"]))
+        extra_args="\n".join(map(lambda x: "#SBATCH " + x, clstcfg["extra_args"])),
+        taskset_prefix=taskset_prefix
     )
 
     if args.print_sbatch:

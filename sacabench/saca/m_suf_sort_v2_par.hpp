@@ -13,7 +13,8 @@
 #include <util/container.hpp>
 #include <util/kd_array.hpp>
 #include <util/signed_size_type.hpp>
-#include <util/sort/ips4o.hpp>
+//#include <util/sort/ips4o.hpp>
+#include <util/sort/std_sort.hpp>
 #include <util/sort/binary_introsort.hpp>
 #include <util/sort/pss.hpp>
 #include <util/span.hpp>
@@ -496,7 +497,7 @@ inline void rank_repetition_sequences_induced(m_suf_sort_attr<sa_index>& attr,
     if(num_rs == 0) return;
     // else, sort all rs by their terminating position's ranks
     compare_repetition_sequences<sa_index> comparator(attr);
-    util::sort::ips4o_sort_parallel(repetition_sequences, comparator);
+    util::sort::std_par_sort(repetition_sequences, comparator);
     for(size_t i = 0; i < repetition_sequences.size(); i++) {
         repetition_sequences[i].first = repetition_sequences[i].first - length;
     }
@@ -692,7 +693,7 @@ inline void easy_induced_sort(m_suf_sort_attr<sa_index>& attr,
     // sort elements after their sortkey:
     compare_sortkey<sa_index> comparator;
 
-    util::sort::ips4o_sort_parallel(to_be_ranked, comparator);
+    util::sort::std_par_sort(to_be_ranked, comparator);
 
 
     // rank all elements in sorted order:
