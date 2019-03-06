@@ -42,5 +42,5 @@ bool cuda_version_sufficient() {
 
 //TODO: check compute comp
 int cuda_GPU_available(){
-    return (cuda_device_available()&&cuda_version_sufficient());
+    return (cuda_device_available());//&&cuda_version_sufficient());
 }
