@@ -183,13 +183,14 @@ if args.launch_config:
         CHECK = j["launch"]["check"]
     if "cluster_config" in j["launch"]:
         CLUSTER_CONFIG = j["launch"]["cluster_config"]
-
     CHECK = CHECK or args.force_sa_check;
 
     counter = 0
     log_print("Starting jobs...")
     index = {
         "output_files" : [],
+        "launch_config_json": j,
+        "launch_config_filename": str(Path(args.launch_config).name),
     }
     outdir = WORK / Path("measure/{}".format(timestamp))
     for (j, dataset_path) in enumerate(DATASETS):
