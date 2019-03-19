@@ -40,7 +40,6 @@
         ],
         "input": [
             "cc_commoncrawl.ascii.200MB",
-            "combined.txt",
             "pc_dblp.xml.200MB",
             "pc_dna.200MB",
             "pc_english.200MB",
