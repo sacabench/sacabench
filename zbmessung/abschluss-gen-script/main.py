@@ -291,7 +291,7 @@ def parse_logfile(logfile):
     for m in logfile_re.findall(text):
         algo_name = m[0]
         input_name = m[1]
-        input_prefix_str = m[2]
+        #input_prefix_str = m[2]
         threads = m[3]
         output = m[5]
 
