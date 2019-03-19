@@ -446,12 +446,14 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     CLI::App& histogram =
         *app.add_subcommand("histogram", "Compute the histogram of a input file.");
+    bool no_hist = false;
     {
         histogram.add_option("input", input_filename,
                             "Path to input file, or - for STDIN.")
             ->required();
         histogram.add_option("-p,--prefix", prefix_size,
                              "Only use a prefix of the input.");
+        histogram.add_flag("-n,--no-hist", no_hist, "Only output alphabet size.");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -802,29 +804,31 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         }
 
         std::cout << "Alphabet size: " << alphabet_size << std::endl;
-        std::cout << "Histogram:" << std::endl;
 
-        std::cout << "   hex, dec, chr,      count,  relative" << std::endl;
-        for (size_t byte = 0; byte < 256; byte++) {
-            char c = ' ';
-            char b = ' ';
-            if (std::isprint(char(byte))) {
-                c = byte;
-                b = '\'';
+        if (!no_hist) {
+            std::cout << "Histogram:" << std::endl;
+            std::cout << "   hex, dec, chr,      count,  relative" << std::endl;
+            for (size_t byte = 0; byte < 256; byte++) {
+                char c = ' ';
+                char b = ' ';
+                if (std::isprint(char(byte))) {
+                    c = byte;
+                    b = '\'';
+                }
+                double percent = double(hist[byte]) / double(text_size) * 100.0;
+
+                std::cout << "  "
+                    << "0x" << std::setfill('0') << std::setw(2) << std::hex << byte
+                    << ", "
+                    << std::setfill(' ') << std::setw(3) << std::dec << byte
+                    << ", "
+                    << b << c << b
+                    << ", "
+                    << std::setfill(' ') << std::setw(10) << std::dec << hist[byte]
+                    << ", "
+                    << std::fixed << std::setprecision(3) << std::setw(7) << percent << " %"
+                    << std::endl;
             }
-            double percent = double(hist[byte]) / double(text_size) * 100.0;
-
-            std::cout << "  "
-                << "0x" << std::setfill('0') << std::setw(2) << std::hex << byte
-                << ", "
-                << std::setfill(' ') << std::setw(3) << std::dec << byte
-                << ", "
-                << b << c << b
-                << ", "
-                << std::setfill(' ') << std::setw(10) << std::dec << hist[byte]
-                << ", "
-                << std::fixed << std::setprecision(3) << std::setw(7) << percent << " %"
-                << std::endl;
         }
     }
 
