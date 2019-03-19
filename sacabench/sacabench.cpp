@@ -36,14 +36,12 @@ struct output_t {
     std::string output;
     int exitcode;
 
-    operator bool() const {
-        return exitcode == 0;
-    }
+    operator bool() const { return exitcode == 0; }
 };
 
 output_t get_output_from_cmd(std::string cmd) {
     std::string data;
-    std::FILE * stream;
+    std::FILE* stream;
     const int max_buffer = 256;
     char buffer[max_buffer];
     cmd.append(" 2>&1");
@@ -57,11 +55,11 @@ output_t get_output_from_cmd(std::string cmd) {
             }
         }
         int st = pclose(stream);
-        if(WIFEXITED(st)) {
+        if (WIFEXITED(st)) {
             exitcode = WEXITSTATUS(st);
         }
     }
-    return output_t {
+    return output_t{
         data,
         exitcode,
     };
@@ -85,8 +83,7 @@ void remove_newline(std::string& s) {
     s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 }
 
-int parse_prefix_if_set(std::string const& prefix_size,
-                        size_t& prefix) {
+int parse_prefix_if_set(std::string const& prefix_size, size_t& prefix) {
     if (prefix_size.size() > 0) {
         try {
             size_t unit_factor = 0;
@@ -110,8 +107,8 @@ int parse_prefix_if_set(std::string const& prefix_size,
             prefix = input_prefix * unit_factor;
         } catch (const std::invalid_argument& ia) {
             std::cerr << "ERROR: input prefix is not a "
-                            "valid prefix value."
-                        << std::endl;
+                         "valid prefix value."
+                      << std::endl;
             return 1;
         }
     }
@@ -136,17 +133,18 @@ sysinfo_t get_full_sysinfo() {
     return r;
 }
 
-nlohmann::json get_config_json(size_t prefix,
-                               size_t repetition_count,
-                               std::string input_filename){
+nlohmann::json get_config_json(size_t prefix, size_t repetition_count,
+                               std::string input_filename) {
     // Create json file with config
     // file name, prefix size, amount of repetitions
     nlohmann::json config_json = nlohmann::json::array();
 
     auto cmd_operating_system = "uname";
-    auto cmd_model_name = "lscpu | grep 'Model name' | cut -f 2 -d ':'| awk '{$1=$1}1'";
+    auto cmd_model_name =
+        "lscpu | grep 'Model name' | cut -f 2 -d ':'| awk '{$1=$1}1'";
     auto cmd_amount_cpus = "grep -c ^processor /proc/cpuinfo";
-    auto cmd_threads_per_socket = "lscpu | grep 'Thread(s)' | cut -f 2 -d ':'| awk '{$1=$1}1'";
+    auto cmd_threads_per_socket =
+        "lscpu | grep 'Thread(s)' | cut -f 2 -d ':'| awk '{$1=$1}1'";
 
     auto operating_system = get_output_from_cmd(cmd_operating_system).output;
     remove_newline(operating_system);
@@ -157,10 +155,12 @@ nlohmann::json get_config_json(size_t prefix,
     auto amount_cpus = get_output_from_cmd(cmd_amount_cpus).output;
     remove_newline(amount_cpus);
 
-    auto threads_per_socket = get_output_from_cmd(cmd_threads_per_socket).output;
+    auto threads_per_socket =
+        get_output_from_cmd(cmd_threads_per_socket).output;
     remove_newline(threads_per_socket);
 
-    // input_filename contains full path to input file. For config_json file we only need the name.
+    // input_filename contains full path to input file. For config_json file we
+    // only need the name.
     input_filename = get_short_filename(input_filename);
 
     auto sysinfo = get_full_sysinfo();
@@ -193,11 +193,8 @@ struct benchmark_json_info {
     std::string input_file;
     size_t prefix = 0;
 
-    bool is_batch() {
-        return kind == benchmark_json_format::batch;
-    }
+    bool is_batch() { return kind == benchmark_json_format::batch; }
 };
-
 
 benchmark_json_info check_benchmark_json_format(nlohmann::json const& j) {
     auto r = benchmark_json_info::unknown;
@@ -217,7 +214,7 @@ benchmark_json_info check_benchmark_json_format(nlohmann::json const& j) {
         }
     }
 
-    auto r2 = benchmark_json_info {};
+    auto r2 = benchmark_json_info{};
     r2.kind = r;
 
     if (first_entry) {
@@ -241,8 +238,7 @@ benchmark_json_info load_benchmark_json_format(std::string const& path) {
     return check_benchmark_json_format(stats_json);
 }
 
-void do_plot(std::string const& benchmark_filename,
-             bool out_benchmark) {
+void do_plot(std::string const& benchmark_filename, bool out_benchmark) {
     auto stats = load_benchmark_json_format(benchmark_filename);
 
     bool batch = stats.is_batch();
@@ -254,12 +250,12 @@ void do_plot(std::string const& benchmark_filename,
     std::cerr << "plot benchmark...";
     if (batch) {
         r_command += " 1 " + short_input_filename + " " +
-                        std::to_string(text_size) +
-                        "'  ..//stats/stat_plot.R test.Rout";
+                     std::to_string(text_size) +
+                     "'  ..//stats/stat_plot.R test.Rout";
     } else if (out_benchmark) {
         r_command += " 0 " + short_input_filename + " " +
-                        std::to_string(text_size) +
-                        "'  ..//stats/stat_plot.R test.Rout";
+                     std::to_string(text_size) +
+                     "'  ..//stats/stat_plot.R test.Rout";
     } else {
         std::cerr << "not able to plot." << std::endl;
         return;
@@ -271,11 +267,9 @@ void do_plot(std::string const& benchmark_filename,
     std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
 }
 
-std::unique_ptr<sacabench::util::text_initializer> load_input(
-    std::string const& input_filename,
-    std::string const& prefix_size,
-    std::string& stdin_buf)
-{
+std::unique_ptr<sacabench::util::text_initializer>
+load_input(std::string const& input_filename, std::string const& prefix_size,
+           std::string& stdin_buf) {
     using namespace sacabench;
 
     std::unique_ptr<util::text_initializer> text;
@@ -286,18 +280,14 @@ std::unique_ptr<sacabench::util::text_initializer> load_input(
     }
 
     if (input_filename == "-") {
-        stdin_buf = std::string(
-            std::istreambuf_iterator<char>(std::cin), {});
-        text =
-            std::make_unique<util::text_initializer_from_span>(
-                util::string_span(
-                    (util::character const*)stdin_buf.data(),
-                    stdin_buf.size()),
-                prefix);
+        stdin_buf = std::string(std::istreambuf_iterator<char>(std::cin), {});
+        text = std::make_unique<util::text_initializer_from_span>(
+            util::string_span((util::character const*)stdin_buf.data(),
+                              stdin_buf.size()),
+            prefix);
     } else {
-        text =
-            std::make_unique<util::text_initializer_from_file>(
-                input_filename, prefix);
+        text = std::make_unique<util::text_initializer_from_file>(
+            input_filename, prefix);
     }
 
     return text;
@@ -318,8 +308,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
     {
         list.add_flag("-n,--no-description", no_desc,
                       "Don't show a description for each algorithm.");
-        list.add_flag("-j,--json", list_json,
-                      "Output list as an json array");
+        list.add_flag("-j,--json", list_json, "Output list as an json array");
     }
 
     CLI::App& construct = *app.add_subcommand("construct", "Construct a SA.");
@@ -350,10 +339,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Path to input file, or - for STDIN.")
             ->required();
         construct.add_flag("-c,--check", check_sa, "Check the constructed SA.");
-        construct.add_flag("-q,--fastcheck", fast_check, "Check the constructed SA with a faster, parallel algorithm.");
-        auto b_opt = construct.add_option("-b,--benchmark", benchmark_filename,
-                             "Record benchmark and output as JSON. Takes path "
-                             "to output file, or - for STDOUT");
+        construct.add_flag(
+            "-q,--fastcheck", fast_check,
+            "Check the constructed SA with a faster, parallel algorithm.");
+        auto b_opt = construct.add_option(
+            "-b,--benchmark", benchmark_filename,
+            "Record benchmark and output as JSON. Takes path "
+            "to output file, or - for STDOUT");
 
         construct.add_option("-J,--json", output_json_filename,
                              "Output SA as JSON array. Takes path to output "
@@ -389,9 +381,16 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             "The value indicates the number of times the SACA(s) will run. A "
             "larger number will possibly yield more accurate results",
             1);
-        construct.add_flag("-z,--rplot", rplot, "Plots measurements with R.")->needs(b_opt);
-        construct.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.")->needs(b_opt);
-        construct.add_flag("-s,--sysinfo", sysinfo, "Add system information to benchmark output.")->needs(b_opt);
+        construct.add_flag("-z,--rplot", rplot, "Plots measurements with R.")
+            ->needs(b_opt);
+        construct
+            .add_flag("--latexplot", latexplot,
+                      "Plots measurements with LaTex and SqlPlotTools.")
+            ->needs(b_opt);
+        construct
+            .add_flag("-s,--sysinfo", sysinfo,
+                      "Add system information to benchmark output.")
+            ->needs(b_opt);
     }
 
     CLI::App& demo =
@@ -407,7 +406,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                         "Path to input file, or - for STDIN.")
             ->required();
         batch.add_flag("-c,--check", check_sa, "Check the constructed SA.");
-        batch.add_flag("-q,--fastcheck", fast_check, "Check the constructed SA with a faster, parallel algorithm.");
+        batch.add_flag(
+            "-q,--fastcheck", fast_check,
+            "Check the constructed SA with a faster, parallel algorithm.");
         auto b_opt =
             batch.add_option("-b,--benchmark", benchmark_filename,
                              "Record benchmark and output as JSON. Takes path "
@@ -431,9 +432,16 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             .add_option("--blacklist", blacklist,
                         "Blacklist algorithms from execution")
             ->excludes(wlist);
-        batch.add_flag("-z,--rplot", rplot, "Plots measurements with R.")->needs(b_opt);
-        batch.add_flag("--latexplot", latexplot, "Plots measurements with LaTex and SqlPlotTools.")->needs(b_opt);
-        batch.add_flag("-s,--sysinfo", sysinfo, "Add system information to benchmark output.")->needs(b_opt);
+        batch.add_flag("-z,--rplot", rplot, "Plots measurements with R.")
+            ->needs(b_opt);
+        batch
+            .add_flag("--latexplot", latexplot,
+                      "Plots measurements with LaTex and SqlPlotTools.")
+            ->needs(b_opt);
+        batch
+            .add_flag("-s,--sysinfo", sysinfo,
+                      "Add system information to benchmark output.")
+            ->needs(b_opt);
     }
 
     CLI::App& plot_app = *app.add_subcommand("plot", "Plot measurements.");
@@ -444,16 +452,18 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             ->required();
     }
 
-    CLI::App& histogram =
-        *app.add_subcommand("histogram", "Compute the histogram of a input file.");
+    CLI::App& histogram = *app.add_subcommand(
+        "histogram", "Compute the histogram of a input file.");
     bool no_hist = false;
     {
-        histogram.add_option("input", input_filename,
-                            "Path to input file, or - for STDIN.")
+        histogram
+            .add_option("input", input_filename,
+                        "Path to input file, or - for STDIN.")
             ->required();
         histogram.add_option("-p,--prefix", prefix_size,
                              "Only use a prefix of the input.");
-        histogram.add_flag("-n,--no-hist", no_hist, "Only output alphabet size.");
+        histogram.add_flag("-n,--no-hist", no_hist,
+                           "Only output alphabet size.");
     }
 
     CLI11_PARSE(app, argc, argv);
@@ -490,7 +500,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << "Currently implemented algorithms:" << std::endl;
         bool first = true;
         if (list_json) {
-                std::cout << "[" << std::endl;
+            std::cout << "[" << std::endl;
         }
         for (const auto& a : saca_list) {
             if (list_json) {
@@ -498,7 +508,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                     std::cout << "\t\"" << a->name() << "\"";
                     first = false;
                 } else {
-                    std::cout << "," << std::endl << "\t\"" << a->name() << "\"";
+                    std::cout << "," << std::endl
+                              << "\t\"" << a->name() << "\"";
                 }
             } else {
                 std::cout << "  [" << a->name() << "]" << std::endl;
@@ -509,7 +520,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             }
         }
         if (list_json) {
-                std::cout << "\n]" << std::endl;
+            std::cout << "\n]" << std::endl;
         }
         std::cout << std::endl;
     };
@@ -518,24 +529,28 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         if (latexplot) {
             // Create json file with config
             // file name, prefix size, amount of repetitions
-            nlohmann::json config_json = get_config_json(prefix, repetition_count, input_filename);
+            nlohmann::json config_json =
+                get_config_json(prefix, repetition_count, input_filename);
 
             auto write_config = [&](std::ostream& out) {
                 out << config_json.dump(4) << std::endl;
             };
 
             std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
-                                                std::ios_base::out |
-                                                    std::ios_base::binary |
-                                                    std::ios_base::trunc);
+                                      std::ios_base::out |
+                                          std::ios_base::binary |
+                                          std::ios_base::trunc);
             write_config(config_file);
 
             std::string pdf_destination = get_parent_path(benchmark_filename);
-            std::string command = "source ../zbmessung/automation.sh " + benchmark_filename + " " + pdf_destination;
+            std::string command = "source ../zbmessung/automation.sh " +
+                                  benchmark_filename + " " + pdf_destination;
             std::cout << command << std::endl;
             int exit_status = system(command.c_str());
             if (exit_status < 0) {
-                std::cerr << "error thrown while running plot automation script." << std::endl;
+                std::cerr
+                    << "error thrown while running plot automation script."
+                    << std::endl;
             }
         }
     };
@@ -572,9 +587,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 write_bench(std::cout);
             } else {
                 std::ofstream benchmark_file(benchmark_filename,
-                                                std::ios_base::out |
-                                                    std::ios_base::binary |
-                                                    std::ios_base::trunc);
+                                             std::ios_base::out |
+                                                 std::ios_base::binary |
+                                                 std::ios_base::trunc);
                 write_bench(benchmark_file);
             }
         }
@@ -582,8 +597,7 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
     sysinfo_t sysinfo_cache;
 
-    auto log_root_stats = [&](tdc::StatPhase& root,
-                              util::saca const& algo,
+    auto log_root_stats = [&](tdc::StatPhase& root, util::saca const& algo,
                               size_t textsize) {
         auto short_input_filename = get_short_filename(input_filename);
 
@@ -642,9 +656,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 tdc::StatPhase root("CLI");
                 {
                     std::string stdin_buf;
-                    std::unique_ptr<util::text_initializer> text
-                        = load_input(input_filename, prefix_size, stdin_buf);
-                    if(text == nullptr) {
+                    std::unique_ptr<util::text_initializer> text =
+                        load_input(input_filename, prefix_size, stdin_buf);
+                    if (text == nullptr) {
                         return 1;
                     }
 
@@ -711,9 +725,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
 
         std::cerr << "Loading input..." << std::endl;
         std::string stdin_buf;
-        std::unique_ptr<util::text_initializer> text
-            = load_input(input_filename, prefix_size, stdin_buf);
-        if(text == nullptr) {
+        std::unique_ptr<util::text_initializer> text =
+            load_input(input_filename, prefix_size, stdin_buf);
+        if (text == nullptr) {
             return 1;
         }
 
@@ -776,9 +790,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         std::cout << "Loading input..." << std::endl;
 
         std::string stdin_buf;
-        std::unique_ptr<util::text_initializer> text_init
-            = load_input(input_filename, prefix_size, stdin_buf);
-        if(text_init == nullptr) {
+        std::unique_ptr<util::text_initializer> text_init =
+            load_input(input_filename, prefix_size, stdin_buf);
+        if (text_init == nullptr) {
             return 1;
         }
 
@@ -786,8 +800,8 @@ std::int32_t main(std::int32_t argc, char const** argv) {
         sacabench::util::string text(text_size);
         text_init->initializer(text.slice());
 
-        std::cout << "Computing histogram for "
-                  << text_size << " bytes of input..." << std::endl;
+        std::cout << "Computing histogram for " << text_size
+                  << " bytes of input..." << std::endl;
 
         std::array<size_t, 256> hist;
         for (auto& counter : hist) {
@@ -818,16 +832,13 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 double percent = double(hist[byte]) / double(text_size) * 100.0;
 
                 std::cout << "  "
-                    << "0x" << std::setfill('0') << std::setw(2) << std::hex << byte
-                    << ", "
-                    << std::setfill(' ') << std::setw(3) << std::dec << byte
-                    << ", "
-                    << b << c << b
-                    << ", "
-                    << std::setfill(' ') << std::setw(10) << std::dec << hist[byte]
-                    << ", "
-                    << std::fixed << std::setprecision(3) << std::setw(7) << percent << " %"
-                    << std::endl;
+                          << "0x" << std::setfill('0') << std::setw(2)
+                          << std::hex << byte << ", " << std::setfill(' ')
+                          << std::setw(3) << std::dec << byte << ", " << b << c
+                          << b << ", " << std::setfill(' ') << std::setw(10)
+                          << std::dec << hist[byte] << ", " << std::fixed
+                          << std::setprecision(3) << std::setw(7) << percent
+                          << " %" << std::endl;
             }
         }
     }
