@@ -110,16 +110,20 @@ def handle_extract(args):
 
 def handle_process(args):
     configs = load_json(args.json, verbose=True)
-    outdir = args.outdir
+    outdir = Path(args.outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
 
     for config in configs:
-        outs = ""
+        combine_log = ""
         def log_print(s):
-            nonlocal outs
-            outs += "{}\n".format(s)
+            nonlocal combine_log
+            combine_log += "{}\n".format(s)
+
+        combined_json = []
 
         gathered = configs[config]["gathered"]
         for key in gathered:
+            repetitions = []
             for datapoint in gathered[key]:
                 if not datapoint["stat"]:
                     err_reason = "no file {}".format("<dummy>")
@@ -130,6 +134,10 @@ def handle_process(args):
                     log_print("-output----------")
                     log_print(datapoint["output"])
                     log_print("-----------------")
+                else:
+                    [single_rep] = datapoint["stat"]
+                    repetitions += single_rep
+            combined_json.append(repetitions)
 
         #Missing data for DC3-Parallel-V2, wiki.txt, 200M, 20 (no file stat-inp002-algo001-threads020.json)
         #-output----------
@@ -141,7 +149,15 @@ def handle_process(args):
 
         #-----------------
 
-        print(outs)
+        config_name = Path(config).stem
+        combined_json_path = outdir / Path("{}-results-combined.json".format(config_name))
+        combined_log_path = outdir / Path("{}-combine.log".format(config_name))
+
+        write_json(combined_json_path, combined_json)
+        write_str(combined_log_path, combine_log)
+
+        #pprint(combined_json)
+        #print(combine_log)
 
 
 parser = argparse.ArgumentParser()
