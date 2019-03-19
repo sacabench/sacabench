@@ -76,61 +76,60 @@ def prepare_and_extract(path, blacklist, logdata):
     js = load_json_from_file(path)
     for repetitions in js:
         # Extract data from json collection
-        assert len(repetitions) == 1
-        root_phase = repetitions[0]
-        checker_phase = find_subphase(root_phase, "SA Checker")
-        saca_phase = find_subphase(root_phase, "SACA")
-        algo_phase = find_subphase(saca_phase, "Algorithm")
-        text_alloc_phase = find_subphase(saca_phase, "Allocate Text container")
-        sa_alloc_phase = find_subphase(saca_phase, "Allocate SA container")
+        for root_phase in repetitions:
+            checker_phase = find_subphase(root_phase, "SA Checker")
+            saca_phase = find_subphase(root_phase, "SACA")
+            algo_phase = find_subphase(saca_phase, "Algorithm")
+            text_alloc_phase = find_subphase(saca_phase, "Allocate Text container")
+            sa_alloc_phase = find_subphase(saca_phase, "Allocate SA container")
 
-        root_stats = get_stats(root_phase)
-        saca_stats = get_stats(saca_phase)
-        check_stats = get_stats(checker_phase)
+            root_stats = get_stats(root_phase)
+            saca_stats = get_stats(saca_phase)
+            check_stats = get_stats(checker_phase)
 
-        input_file = root_stats["input_file"]
-        prefix = int(root_stats["prefix"])
-        assert int(root_stats["repetitions"]) == 1
-        thread_count = int(root_stats["thread_count"])
-        algorithm_name = root_stats["algorithm_name"]
-        check_result = check_stats["check_result"]
-        extra_sentinels = int(saca_stats["extra_sentinels"])
-        sa_index_bit_size = int(saca_stats["sa_index_bit_size"])
-        assert int(saca_stats["text_size"]) == prefix
-        (algo_peak,
-         algo_time) = get_mem_time(algo_phase)
-        text_peak = get_mem_time(text_alloc_phase)[0]
-        sa_peak = get_mem_time(sa_alloc_phase)[0]
+            input_file = root_stats["input_file"]
+            prefix = int(root_stats["prefix"])
+            assert int(root_stats["repetitions"]) == 1
+            thread_count = int(root_stats["thread_count"])
+            algorithm_name = root_stats["algorithm_name"]
+            check_result = check_stats["check_result"]
+            extra_sentinels = int(saca_stats["extra_sentinels"])
+            sa_index_bit_size = int(saca_stats["sa_index_bit_size"])
+            assert int(saca_stats["text_size"]) == prefix
+            (algo_peak,
+            algo_time) = get_mem_time(algo_phase)
+            text_peak = get_mem_time(text_alloc_phase)[0]
+            sa_peak = get_mem_time(sa_alloc_phase)[0]
 
-        # Gather data in central data structure
+            # Gather data in central data structure
 
-        if (thread_count, prefix) not in outer_matrix:
-            outer_matrix[(thread_count, prefix)] = {}
+            if (thread_count, prefix) not in outer_matrix:
+                outer_matrix[(thread_count, prefix)] = {}
 
-        matrix = outer_matrix[(thread_count, prefix)]
+            matrix = outer_matrix[(thread_count, prefix)]
 
-        if input_file not in matrix:
-            matrix[input_file] = {}
+            if input_file not in matrix:
+                matrix[input_file] = {}
 
-        algorithms.add(algorithm_name)
-        threads_and_sizes.add((thread_count, prefix))
-        files.add(input_file)
+            algorithms.add(algorithm_name)
+            threads_and_sizes.add((thread_count, prefix))
+            files.add(input_file)
 
-        if algorithm_name not in matrix[input_file]:
-            matrix[input_file][algorithm_name] = {
-                "data" : "exists",
-                "all" : [],
-                "avg": {},
-                "med": {}
-            }
-        lst = matrix[input_file][algorithm_name]["all"]
-        lst.append({
-            "check_result" : check_result,
-            "extra_sentinels" : extra_sentinels,
-            "mem_local_peak" : algo_peak,
-            "mem_local_peak_plus_input_sa": algo_peak + text_peak + sa_peak,
-            "duration" : algo_time,
-        })
+            if algorithm_name not in matrix[input_file]:
+                matrix[input_file][algorithm_name] = {
+                    "data" : "exists",
+                    "all" : [],
+                    "avg": {},
+                    "med": {}
+                }
+            lst = matrix[input_file][algorithm_name]["all"]
+            lst.append({
+                "check_result" : check_result,
+                "extra_sentinels" : extra_sentinels,
+                "mem_local_peak" : algo_peak,
+                "mem_local_peak_plus_input_sa": algo_peak + text_peak + sa_peak,
+                "duration" : algo_time,
+            })
 
     # Prepare matrix of all gathered data
     algorithms = list(sorted(filter(lambda x: x not in algorithm_blacklist, algorithms)))

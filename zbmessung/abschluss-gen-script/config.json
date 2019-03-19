@@ -54,7 +54,7 @@
         "table-time-label-prefix": "time-"
     },
     "blacklist": {
-        "input": ["combined.txt"],
+        "input": ["combined.txt", "pcr_fib41.200MB", "pcr_rs.13.200MB", "pcr_tm29.200MB"],
         "algorithm": ["mSufSortV2_par", "mSufSort_par", "mSufSort_scan_par"]
     }
 }
