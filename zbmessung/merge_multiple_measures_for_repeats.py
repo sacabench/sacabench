@@ -115,39 +115,41 @@ def handle_process(args):
 
     for config in configs:
         combine_log = ""
-        def log_print(s):
-            nonlocal combine_log
-            combine_log += "{}\n".format(s)
 
         combined_json = []
 
         gathered = configs[config]["gathered"]
         for key in gathered:
             repetitions = []
+            missing_log = []
+
             for datapoint in gathered[key]:
                 if not datapoint["stat"]:
                     err_reason = "no file {}".format("<dummy>")
                     (input, algo, threads) = datapoint["key"]
                     prefix = "<dummy>"
 
+                    outs = ""
+                    def log_print(s):
+                        nonlocal outs
+                        outs += "{}\n".format(s)
                     log_print("Missing data for {}, {}, {}, {} ({})".format(algo, input, prefix, threads, err_reason))
                     log_print("-output----------")
                     log_print(datapoint["output"])
                     log_print("-----------------")
+
+                    missing_log.append(outs)
                 else:
                     [single_rep] = datapoint["stat"]
                     repetitions += single_rep
+
+            if len(repetitions) == 0:
+                combine_log += missing_log[0]
+
             combined_json.append(repetitions)
 
-        #Missing data for DC3-Parallel-V2, wiki.txt, 200M, 20 (no file stat-inp002-algo001-threads020.json)
-        #-output----------
-        #Loading input...
-        #Running DC3-Parallel-V2 (1/1)
-        #terminate called after throwing an instance of 'std::bad_alloc'
-        #what():  std::bad_alloc
-        #/var/spool/slurm/d/job3543224/slurm_script: line 21: 152922 Aborted                 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-02-24T23:58:32/stat-inp002-algo001-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
-
-        #-----------------
+            #if len(repetitions) + len(missing_log) != 3:
+                #print("{} repetitions: {}, missing_log: {}".format(key, len(repetitions), len(missing_log)))
 
         config_name = Path(config).stem
         combined_json_path = outdir / Path("{}-results-combined.json".format(config_name))
