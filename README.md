@@ -21,63 +21,15 @@ make
 ## Using the cli
 ```sacabench list``` lists all available suffix array construction algorithms contained in this project.
 
-Usage: ```sacabench/sacabench list [OPTIONS]```
-
-Available options are:
-
-  -h,--help: Print this help message and exit<br>
-  -n,--no-description: Don't show a description for each algorithm.<br>
-  -j,--json: Output list as an json array
-
----
-
 ```sacabench demo``` tests the correct functionality on the current system.
-
-Usage: ```sacabench/sacabench demo [OPTIONS]```
-
-Available options are:
-
-  -h,--help: Print this help message and exit<br>
-  
----
 
 ```sacabench construct``` executes a single SACA.
 
-Usage: ```sacabench/sacabench construct [OPTIONS] algorithm input```
-
-Positionals:
-
-  algorithm TEXT REQUIRED: Which algorithm to run.<br>
-  input TEXT REQUIRED: Path to input file, or - for STDIN.
-
-Available options are:
-  -h,--help:                   Print this help message and exit<br>
-  --config TEXT:               Read an config file for CLI args<br>
-  -c,--check:                  Check the constructed SA.<br>
-  -q,--fastcheck:              Check the constructed SA with a faster, parallel algorithm.<br>
-  -b,--benchmark TEXT:         Record benchmark and output as JSON. Takes path to output file, or - for STDOUT<br>
-  -J,--json TEXT:              Output SA as JSON array. Takes path to output file, or - for STDOUT.<br>
-  -B,--binary TEXT:            Output SA as binary array of unsigned integers, with a 1 Byte header describing the number of bits used for each integer. Takes path to output file, or - for STDOUT.<br>
-  -F,--fixed UINT Needs --binary: Elide the header, and output a fixed number of bits per SA entry<br>
-  -p,--prefix TEXT:            Calculate SA of prefix of size TEXT.<br>
-  -f,--force:                  Overwrite existing files instead of raising an error.<br>
-  -m,--minimum_sa_bits UINT=32: The lower bound of bits to use per SA entry during construction<br>
-  -r,--repetitions UINT=1: The value indicates the number of times the SACA(s) will run. A larger number will possibly yield more accurate results<br>
-  -z,--rplot Needs --benchmark: Plots measurements with R.<br>
-  --latexplot Needs --benchmark: Plots measurements with LaTex and SqlPlotTools.<br>
-  -s,--sysinfo Needs --benchmark: Add system information to benchmark output.
-  
----
-
 ```sacabench batch``` allows to execute and compare multiple SACAs.
-
-Usage: ```sacabench/sacabench batch [OPTIONS] input```
-  
----
 
 ```sacabench plot``` generates plots from a previously mesurement.
 
-Usage: ```sacabench/sacabench plot [OPTIONS] benchmark_file```
+For more information about the commands and available options, use -h or --help, e.g. ```sacabench list --help```
 
 ## Including your own SACA
 If you want to use our benchmark tool for your own SACA implementation, you
