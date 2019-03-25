@@ -4,7 +4,7 @@ TBD
 
 ## Dependencies
 
-On a fresh Ubuntu 18.04 LTS installation, the following depencies need to be installed:
+On a fresh Ubuntu 18.04 LTS installation, the following dependencies need to be installed:
 
 ```sh
 # REQUIRED: git, the gcc compiler, the cmake build system
@@ -31,7 +31,7 @@ cd sacabench
 mkdir build
 cd build
 
-# Configure the build system for a optimised "Release" build
+# Configure the build system for a optimized "Release" build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 
 # Build the sacabench tool
@@ -41,13 +41,14 @@ make
 make check
 ```
 
-There are also a few cmake options and buildsystem targets that are useful for actove development:
+There are also a few cmake options and build system targets that are useful for active development:
 
-- `cmake .. -DCMAKE_BUILD_TYPE=Release` configure for optimised release builds.
+- `cmake .. -DCMAKE_BUILD_TYPE=Release` configure for optimized release builds.
 - `cmake .. -DCMAKE_BUILD_TYPE=Debug` configure for unoptimized debug builds with assertions.
 - `make build_check` only build the unit tests, don't run them.
 - `cmake .. -DSACA_WERROR=ON` turn gcc warnings into hard errors.
-- `cmake .. -DSACA_RELEASE_DEBUGINFO=ON` activate debug informations (`-g`) in release builds.
+- `cmake .. -DSACA_RELEASE_DEBUGINFO=ON` activate debug information (`-g`) in release builds.
+- `make datasets` download a few 200MiB datasets from different sources.
 
 ## Using the cli
 
@@ -57,7 +58,7 @@ After you've build the `sacabench` tool via `make`, it can be found at `<build d
 - `sacabench demo` tests the correct functionality on the current system.
 - `sacabench construct` executes a single SACA.
 - `sacabench batch` allows to execute and compare multiple SACAs.
-- `sacabench plot` generates plots from a previously mesurement.
+- `sacabench plot` generates plots from a previously measurement.
 
 For more information about the commands and available options, use `-h` or `--help`, e.g. `sacabench list --help`
 
