@@ -57,6 +57,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
 option(SACA_WERROR "Turn GCC warnings into errors")
+option(SACA_RELEASE_DEBUGINFO "Enable debug info in release builds, to aid profiling")
 
 IF (WIN32)
 
@@ -69,8 +70,11 @@ set(SACA_BENCH_FLAGS "-Wall;-pedantic;-Wpedantic;-Wextra;-Werror=return-type;-fd
 if (SACA_WERROR)
     set(SACA_BENCH_FLAGS "${SACA_BENCH_FLAGS};-Werror;-pedantic-errors")
 endif()
-set(SACA_BENCH_DEBUG_FLAGS "-O0;-g;-ggdb;-DDEBUG;")
-set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG;-g;")
+set(SACA_BENCH_DEBUG_FLAGS "-O0;-g;-ggdb;-DDEBUG")
+set(SACA_BENCH_RELEASE_FLAGS "-O3;-march=native;-DNDEBUG")
+if (SACA_RELEASE_DEBUGINFO)
+    set(SACA_BENCH_RELEASE_FLAGS "${SACA_BENCH_RELEASE_FLAGS};-g")
+endif()
 
 ENDIF()
 
