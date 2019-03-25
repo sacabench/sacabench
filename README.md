@@ -2,34 +2,64 @@
 ## What is it?
 TBD
 
-## How to get it?
-First clone this repository, then build all executables.
+## Dependencies
+
+On a fresh Ubuntu 18.04 LTS installation, the following depencies need to be installed:
+
 ```sh
-git clone git@flint-v3.cs.tu-dortmund.de:sacabench/sacabench.git
+# REQUIRED: git, the gcc compiler, the cmake build system
+sudo apt install git build-essential cmake
+
+# REQUIRED for some dependencies: the autoconf build system
+sudo apt install autoconf libtool
+
+# RECOMMENDED for faster rebuilds during development: ccache
+sudo apt install ccache
+
+# OPTIONAL for some support scripts: python 3
+sudo apt install python3
+```
+
+## How to build
+
+```sh
+# Clone this repo
+git clone https://github.com/sacabench/sacabench.git
+
+# Create build directory
 cd sacabench
 mkdir build
 cd build
-cmake ..
 
-# Run tests:
-make check
+# Configure the build system for a optimised "Release" build
+cmake .. -DCMAKE_BUILD_TYPE=Release
 
-# Run examples:
+# Build the sacabench tool
 make
+
+# Build & Run unit tests:
+make check
 ```
 
+There are also a few cmake options and buildsystem targets that are useful for actove development:
+
+- `cmake .. -DCMAKE_BUILD_TYPE=Release` configure for optimised release builds.
+- `cmake .. -DCMAKE_BUILD_TYPE=Debug` configure for unoptimized debug builds with assertions.
+- `make build_check` only build the unit tests, don't run them.
+- `cmake .. -DSACA_WERROR=ON` turn gcc warnings into hard errors.
+- `cmake .. -DSACA_RELEASE_DEBUGINFO=ON` activate debug informations (`-g`) in release builds.
+
 ## Using the cli
-```sacabench list``` lists all available suffix array construction algorithms contained in this project.
 
-```sacabench demo``` tests the correct functionality on the current system.
+After you've build the `sacabench` tool via `make`, it can be found at `<build directory>/sacabench/sacabench`. It offers the following CLI options:
 
-```sacabench construct``` executes a single SACA.
+- `sacabench list` lists all available suffix array construction algorithms contained in this project.
+- `sacabench demo` tests the correct functionality on the current system.
+- `sacabench construct` executes a single SACA.
+- `sacabench batch` allows to execute and compare multiple SACAs.
+- `sacabench plot` generates plots from a previously mesurement.
 
-```sacabench batch``` allows to execute and compare multiple SACAs.
-
-```sacabench plot``` generates plots from a previously mesurement.
-
-For more information about the commands and available options, use -h or --help, e.g. ```sacabench list --help```
+For more information about the commands and available options, use `-h` or `--help`, e.g. `sacabench list --help`
 
 ## Including your own SACA
 If you want to use our benchmark tool for your own SACA implementation, you
