@@ -18,6 +18,9 @@ sudo apt install ccache
 
 # OPTIONAL for some support scripts: python 3
 sudo apt install python3
+
+# OPTIONAL for the --rplot option: the R programming language
+sudo apt  install r-base r-cran-rjson r-cran-rcolorbrewer
 ```
 
 ## How to build
