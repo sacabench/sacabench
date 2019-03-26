@@ -1,0 +1,1 @@
+static char const* SACABENCH_SOURCE_DIRECTORY = "${CMAKE_SOURCE_DIR}";

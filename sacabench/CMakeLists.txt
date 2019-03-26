@@ -51,8 +51,11 @@ target_compile_options(sacabench PUBLIC
   $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
   $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
 )
+configure_file(util/source_dir_constant.hpp.in
+               source_dir_constant.hpp)
+target_include_directories(sacabench PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-# Create executable that runs all registered SACAs
+# A debugging tool (legacy)
 add_executable(sacabench-tools
   sacabench-tools.cpp
 )

@@ -16,6 +16,8 @@
 #include "util/container.hpp"
 #include "util/saca.hpp"
 
+#include "source_dir_constant.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -264,13 +266,13 @@ void do_plot(std::string const& benchmark_filename, bool out_benchmark) {
               << benchmark_filename;
     std::cerr << "plot benchmark...";
     if (batch) {
-        r_command << " 1 " << short_input_filename << " " << text_size
-                  << "'  ../stats/stat_plot.R " << benchmark_filename
-                  << ".Rout";
+        r_command << " 1 " << short_input_filename << " " << text_size << "'  "
+                  << SACABENCH_SOURCE_DIRECTORY << "/stats/stat_plot.R "
+                  << benchmark_filename << ".Rout";
     } else if (out_benchmark) {
-        r_command << " 0 " << short_input_filename << " " << text_size
-                  << "'  ../stats/stat_plot.R " << benchmark_filename
-                  << ".Rout";
+        r_command << " 0 " << short_input_filename << " " << text_size << "'  "
+                  << SACABENCH_SOURCE_DIRECTORY << "/stats/stat_plot.R "
+                  << benchmark_filename << ".Rout";
     } else {
         std::cerr << "not able to plot." << std::endl;
         return;
@@ -552,14 +554,17 @@ std::int32_t main(std::int32_t argc, char const** argv) {
                 out << config_json.dump(4) << std::endl;
             };
 
-            std::ofstream config_file("../zbmessung/sqlplot/plotconfig.json",
+            std::ofstream config_file(std::string(SACABENCH_SOURCE_DIRECTORY) +
+                                          "/zbmessung/sqlplot/plotconfig.json",
                                       std::ios_base::out |
                                           std::ios_base::binary |
                                           std::ios_base::trunc);
             write_config(config_file);
 
             std::string pdf_destination = get_parent_path(benchmark_filename);
-            std::string command = "source ../zbmessung/automation.sh " +
+            std::string command = std::string("sh -c ") +
+                                  SACABENCH_SOURCE_DIRECTORY +
+                                  "/zbmessung/automation.sh " +
                                   benchmark_filename + " " + pdf_destination;
             std::cout << command << std::endl;
 
