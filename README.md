@@ -20,7 +20,7 @@ sudo apt install ccache
 sudo apt install python3
 
 # OPTIONAL for the --rplot option: the R programming language
-sudo apt  install r-base r-cran-rjson r-cran-rcolorbrewer
+sudo apt  install r-base
 ```
 
 ## How to build

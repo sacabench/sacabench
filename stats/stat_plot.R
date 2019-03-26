@@ -5,13 +5,14 @@
 # *
 # * All rights reserved. Published under the BSD-3 license in the LICENSE file.
 # ******************************************************************************/
- 
+
 chooseCRANmirror(ind=1)
 
-install.packages("rjson")
-install.packages("RColorBrewer")
-library("rjson")
-library("RColorBrewer")
+dir.create("./.rlib")
+install.packages("rjson", lib="./.rlib")
+install.packages("RColorBrewer", lib="./.rlib")
+library("rjson", lib="./.rlib")
+library("RColorBrewer", lib="./.rlib")
 
 args <- commandArgs(TRUE)
 
