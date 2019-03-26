@@ -245,26 +245,29 @@ void do_plot(std::string const& benchmark_filename, bool out_benchmark) {
     auto short_input_filename = stats.input_file;
     size_t text_size = stats.prefix;
 
-    std::string r_command =
-        "R CMD BATCH --no-save --no-restore '--args " + benchmark_filename;
+    std::stringstream r_command;
+    r_command << "R CMD BATCH --no-save --no-restore '--args "
+              << benchmark_filename;
     std::cerr << "plot benchmark...";
     if (batch) {
-        r_command += " 1 " + short_input_filename + " " +
-                     std::to_string(text_size) +
-                     "'  ..//stats/stat_plot.R test.Rout";
+        r_command << " 1 " << short_input_filename << " " << text_size
+                  << "'  ../stats/stat_plot.R " << benchmark_filename
+                  << ".Rout";
     } else if (out_benchmark) {
-        r_command += " 0 " + short_input_filename + " " +
-                     std::to_string(text_size) +
-                     "'  ..//stats/stat_plot.R test.Rout";
+        r_command << " 0 " << short_input_filename << " " << text_size
+                  << "'  ../stats/stat_plot.R " << benchmark_filename
+                  << ".Rout";
     } else {
         std::cerr << "not able to plot." << std::endl;
         return;
     }
-    int exit_status = system(r_command.c_str());
-    if (exit_status < 0) {
+    std::string r_command_s = r_command.str();
+    int exit_status = system(r_command_s.c_str());
+    if (exit_status != 0) {
         std::cerr << "error thrown while running R-script." << std::endl;
+    } else {
+        std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
     }
-    std::cerr << "saved as: " << benchmark_filename << ".pdf" << std::endl;
 }
 
 std::unique_ptr<sacabench::util::text_initializer>
