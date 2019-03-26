@@ -460,7 +460,7 @@ prepare_plot_data <- function(names, runtimes, mems, pareto, logarithmic, plot_s
 #datafra=data.frame(name=c("d","e"),x=c(3,2),y=c(1,5),
 #                   stringsAsFactors = FALSE)
 
-pdf(paste(args[1],".pdf"))
+pdf(paste(args[1],".pdf", sep=""))
 
 
 if(args[2] == 0){
