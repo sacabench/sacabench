@@ -65,6 +65,20 @@ output_t get_output_from_cmd(std::string cmd) {
     };
 }
 
+int get_exit_code_from_cmd(std::string cmd) {
+    int status = system(cmd.c_str());
+    if (status < 0) {
+        std::cerr << "ERROR: " << strerror(errno) << '\n';
+        return 102; // system() call error
+    } else {
+        if (WIFEXITED(status))
+            return WEXITSTATUS(status);
+        else {
+            return 101; // abnormal exit
+        }
+    }
+}
+
 std::string get_short_filename(std::string const& s) {
     auto filename_start_index = s.find_last_of("\\/");
     if (filename_start_index != std::string::npos) {
@@ -261,8 +275,7 @@ void do_plot(std::string const& benchmark_filename, bool out_benchmark) {
         std::cerr << "not able to plot." << std::endl;
         return;
     }
-    std::string r_command_s = r_command.str();
-    int exit_status = system(r_command_s.c_str());
+    int exit_status = get_exit_code_from_cmd(r_command.str());
     if (exit_status != 0) {
         std::cerr << "error thrown while running R-script." << std::endl;
     } else {
@@ -549,8 +562,9 @@ std::int32_t main(std::int32_t argc, char const** argv) {
             std::string command = "source ../zbmessung/automation.sh " +
                                   benchmark_filename + " " + pdf_destination;
             std::cout << command << std::endl;
-            int exit_status = system(command.c_str());
-            if (exit_status < 0) {
+
+            int exit_status = get_exit_code_from_cmd(command);
+            if (exit_status != 0) {
                 std::cerr
                     << "error thrown while running plot automation script."
                     << std::endl;
