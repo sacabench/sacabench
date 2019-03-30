@@ -35,7 +35,7 @@ namespace sacabench::reference_sacas {
             DCHECK_MSG(int(n) >= 0 && n == size_t(int(n)),
                        "reference gsaca can only handle textsizes that fit in a `int`.");
 
-            external_saca<sa_index>(text_with_sentinels, out_sa, n, ::gsaca);
+            external_saca_32bit_only<sa_index>(text_with_sentinels, out_sa, n, ::gsaca);
         }
     }; // class gsaca
 } // namespace sacabench::reference_sacas

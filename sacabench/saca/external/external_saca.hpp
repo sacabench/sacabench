@@ -73,8 +73,9 @@ inline void sadslike(util::string_span text, util::span<sa_index> out_sa,
 /// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
 ///        but uses int32 as the SA index type.
 template <typename sa_index, typename Fn>
-inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
-                          size_t n, Fn saca_fn) {
+inline void external_saca_32bit_only(util::string_span text,
+                                     util::span<sa_index> out_sa,
+                                     size_t n, Fn saca_fn) {
 
     tdc::StatPhase::pause_tracking();
     auto sa_correct_size = util::make_container<int32_t>(n);

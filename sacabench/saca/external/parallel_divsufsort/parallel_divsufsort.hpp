@@ -27,7 +27,7 @@ struct parallel_div_suf_sort {
 
         const size_t n = text.size();
 
-        if constexpr (sizeof(sa_index) == 64) {  
+        if constexpr (sizeof(sa_index) == 64) {
             if (n < 2) {
                 return;
             }
