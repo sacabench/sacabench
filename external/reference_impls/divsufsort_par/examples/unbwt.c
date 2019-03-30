@@ -72,7 +72,7 @@ void
 print_help(const char *progname, int status) {
   fprintf(stderr,
           "unbwt, an inverse burrows-wheeler transform program, version %s.\n",
-          divsufsort_version());
+          divsufsort_par_version());
   fprintf(stderr, "usage: %s INFILE OUTFILE\n\n", progname);
   exit(status);
 }
@@ -172,7 +172,7 @@ main(int argc, const char *argv[]) {
     }
 
     /* Inverse Burrows-Wheeler Transform. */
-    if((err = inverse_bw_transform(T, T, A, m, pidx)) != 0) {
+    if((err = inverse_bw_transform_par(T, T, A, m, pidx)) != 0) {
       fprintf(stderr, "%s (reverseBWT): %s.\n",
         argv[0],
         (err == -1) ? "Invalid data" : "Cannot allocate memory");

@@ -43,7 +43,7 @@ static const saint_t lg_table[256]= {
 static INLINE
 saint_t
 tr_ilg(saidx_t n) {
-#if defined(BUILD_DIVSUFSORT64)
+#if defined(BUILD_DIVSUFSORT_PAR64)
   return (n >> 32) ?
           ((n >> 48) ?
             ((n >> 56) ?
@@ -552,7 +552,7 @@ tr_introsort(saidx_t *ISA, const saidx_t *ISAd,
 
 /* Tandem repeat sort */
 void
-trsort(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth) {
+trsort_par(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth) {
   saidx_t *ISAd;
   saidx_t *first, *last;
   trbudget_t budget;

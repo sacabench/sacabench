@@ -125,7 +125,7 @@ note:
           }
         }
         if(l == 0) { break; }
-        sssort(T, PAb, SA + k, SA + l,
+        sssort_par(T, PAb, SA + k, SA + l,
                curbuf, bufsize, 2, n, *(SA + k) == (m - 1));
       }
     }
@@ -135,7 +135,7 @@ note:
       for(c1 = ALPHABET_SIZE - 1; c0 < c1; j = i, --c1) {
         i = BUCKET_BSTAR(c0, c1);
         if(1 < (j - i)) {
-          sssort(T, PAb, SA + i, SA + j,
+          sssort_par(T, PAb, SA + i, SA + j,
                  buf, bufsize, 2, n, *(SA + i) == (m - 1));
         }
       }
@@ -156,7 +156,7 @@ note:
     }
 
     /* Construct the inverse suffix array of type B* suffixes using trsort. */
-    trsort(ISAb, SA, m, 1);
+    trsort_par(ISAb, SA, m, 1);
 
     /* Set the sorted order of tyoe B* suffixes. */
     for(i = n - 1, j = m, c0 = T[n - 1]; 0 <= i;) {
@@ -393,6 +393,6 @@ divbwt_par(const sauchar_t *T, sauchar_t *U, saidx_t *A, saidx_t n) {
 }
 
 const char *
-divsufsort_version_par(void) {
+divsufsort_par_version(void) {
   return PROJECT_VERSION_FULL;
 }

@@ -19,7 +19,7 @@ include(ProjectCPack)
 ## Project options ##
 option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
 option(BUILD_EXAMPLES "Build examples" ON)
-option(BUILD_DIVSUFSORT64 "Build libdivsufsort64" OFF)
+option(BUILD_DIVSUFSORT64 "Build libdivsufsort64" ON)
 
 option(USE_OPENMP "Use OpenMP for parallelization" OFF)
 MESSAGE( STATUS "Parallelization in ref_divsufsort enabled: " ${USE_OPENMP} )

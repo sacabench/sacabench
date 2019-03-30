@@ -11,6 +11,7 @@
 #include <cstdint>
 
 extern "C" int32_t divsufsort(const uint8_t* T, int32_t* SA, int32_t n);
+extern "C" int32_t divsufsort64(const uint8_t* T, int64_t* SA, int64_t n);
 
 namespace sacabench::reference_sacas {
 struct div_suf_sort {
@@ -23,7 +24,7 @@ struct div_suf_sort {
     inline static void construct_sa(util::string_span text,
                                     const util::alphabet&,
                                     util::span<sa_index> out_sa) {
-        external_saca<sa_index>(text, out_sa, text.size(), divsufsort);
+        external_saca_32bit_only<sa_index>(text, out_sa, text.size(), ::divsufsort);
     }
 };
 } // namespace sacabench::reference_sacas

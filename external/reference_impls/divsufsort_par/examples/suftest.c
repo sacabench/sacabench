@@ -60,7 +60,7 @@ void
 print_help(const char *progname, int status) {
   fprintf(stderr,
           "suftest, a suffixsort tester, version %s.\n",
-          divsufsort_version());
+          divsufsort_par_version());
   fprintf(stderr, "usage: %s FILE\n\n", progname);
   exit(status);
 }
@@ -154,7 +154,7 @@ main(int argc, const char *argv[]) {
   fprintf(stderr, "%.4f sec\n", (double)(finish - start) / (double)CLOCKS_PER_SEC);
 
   /* Check the suffix array. */
-  if(sufcheck(T, SA, (saidx_t)n, 1) != 0) { exit(EXIT_FAILURE); }
+  if(sufcheck_par(T, SA, (saidx_t)n, 1) != 0) { exit(EXIT_FAILURE); }
 
   /* Deallocate memory. */
   free(SA);
