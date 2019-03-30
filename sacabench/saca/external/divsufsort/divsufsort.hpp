@@ -24,7 +24,11 @@ struct div_suf_sort {
     inline static void construct_sa(util::string_span text,
                                     const util::alphabet&,
                                     util::span<sa_index> out_sa) {
-        external_saca_32bit_only<sa_index>(text, out_sa, text.size(), ::divsufsort);
+        external_saca<sa_index>(text,
+                                out_sa,
+                                text.size(),
+                                ::divsufsort,
+                                ::divsufsort64);
     }
 };
 } // namespace sacabench::reference_sacas
