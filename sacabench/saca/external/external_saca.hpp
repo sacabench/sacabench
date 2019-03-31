@@ -14,22 +14,64 @@
 
 namespace sacabench::reference_sacas {
 
+/// \brief Allocates a untracked container<inner_sa_index>, calls the algorithm
+/// with it, and copies the result out of it.
 template <typename sa_index, typename inner_sa_index, typename Fn>
 inline void call_with_untracked_inner_sa_index_buffer(
     util::string_span text, util::span<sa_index> out_sa, size_t n, Fn saca_fn) {
-    tdc::StatPhase::pause_tracking();
-    auto sa_correct_size = util::make_container<inner_sa_index>(n);
-    tdc::StatPhase::resume_tracking();
+    DCHECK(out_sa.size() == n);
+    DCHECK(text.size() == n);
 
-    { saca_fn(text.data(), sa_correct_size.data(), n); }
-
-    tdc::StatPhase::pause_tracking();
-    for (size_t i = 0; i < n; ++i) {
-        out_sa[i] = sa_correct_size[i];
+    util::container<inner_sa_index> sa_correct_size;
+    {
+        tdc::StatPhase::pause_tracking();
+        sa_correct_size = util::make_container<inner_sa_index>(n);
+        tdc::StatPhase::resume_tracking();
     }
-    tdc::StatPhase::resume_tracking();
+    { saca_fn(text.data(), sa_correct_size.data(), n); }
+    {
+        tdc::StatPhase::pause_tracking();
+        for (size_t i = 0; i < n; ++i) {
+            out_sa[i] = sa_correct_size[i];
+        }
+        { auto dropme1 = std::move(sa_correct_size); }
+        tdc::StatPhase::resume_tracking();
+    }
 }
 
+/// \brief Allocates a untracked container<inner_sa_index> and a copy of the
+/// input, calls the algorithm with it, and copies the result out of it.
+template <typename sa_index, typename inner_sa_index, typename Fn>
+inline void call_with_untracked_inner_sa_index_buffer_and_writable_text(
+    util::string_span text, util::span<sa_index> out_sa, size_t n, Fn saca_fn) {
+    DCHECK(out_sa.size() == n);
+    DCHECK(text.size() == n);
+
+    util::container<inner_sa_index> sa_correct_size;
+    util::container<util::character> writeable_text;
+    {
+        tdc::StatPhase::pause_tracking();
+        util::allow_container_copy _guard;
+        sa_correct_size = util::make_container<inner_sa_index>(n);
+        writeable_text = text;
+        tdc::StatPhase::resume_tracking();
+    }
+    { saca_fn(text.data(), sa_correct_size.data(), n); }
+    {
+        tdc::StatPhase::pause_tracking();
+        for (size_t i = 0; i < n; ++i) {
+            out_sa[i] = sa_correct_size[i];
+        }
+        {
+            auto dropme1 = std::move(sa_correct_size);
+            auto dropme2 = std::move(writeable_text);
+        }
+        tdc::StatPhase::resume_tracking();
+    }
+}
+
+/// \brief Errors out if the input is too long and does an early return if it is
+/// too short.
 template <typename check_index>
 inline bool early_check(size_t n) {
     if (std::numeric_limits<check_index>::max() < n) {
@@ -43,6 +85,23 @@ inline bool early_check(size_t n) {
     }
     return false;
 }
+
+/// \brief Changes the spans such that they point at the right places
+/// despite the input containing extra sentinels.
+template <typename sa_index>
+inline void adjust_spans_for_sentinels(util::string_span* text,
+                                       util::span<sa_index>* out_sa, size_t n) {
+    DCHECK(out_sa->size() == text->size());
+    DCHECK(out_sa->size() >= n);
+    DCHECK(text->size() >= n);
+    size_t sentinels = text->size() - n;
+
+    *text = text->slice(0, n);
+    *out_sa = out_sa->slice(sentinels, n + sentinels);
+}
+
+template <typename sa_index>
+constexpr size_t INDEX_BITS = sizeof(sa_index) * CHAR_BIT;
 
 /// \brief Use this if your SACA overwrites the input texts or sentinels,
 ///        but uses int32 as the SA index type.
@@ -75,27 +134,31 @@ inline void external_saca_with_writable_text(util::string_span text,
 template <typename sa_index, typename inner_sa_index, typename Fn>
 inline void sadslike(util::string_span text, util::span<sa_index> out_sa,
                      size_t n, size_t alphabet_size, Fn saca_fn) {
-    if (early_check<inner_sa_index>(text.size())) {
+    if (early_check<inner_sa_index>(n)) {
         return;
     }
+    adjust_spans_for_sentinels(&text, &out_sa, n);
 
-    tdc::StatPhase::pause_tracking();
-    auto sa_correct_size = util::make_container<inner_sa_index>(n);
-    util::container<uint8_t> writeable_text(text);
-    tdc::StatPhase::resume_tracking();
-
+    util::container<inner_sa_index> sa_correct_size;
+    util::container<util::character> writeable_text;
+    {
+        tdc::StatPhase::pause_tracking();
+        util::allow_container_copy _guard;
+        sa_correct_size = util::make_container<inner_sa_index>(n);
+        writeable_text = text;
+        tdc::StatPhase::resume_tracking();
+    }
     {
         saca_fn(writeable_text.data(), sa_correct_size.data(), n, alphabet_size,
                 n, 0);
     }
-
-    tdc::StatPhase::pause_tracking();
-    const size_t SENTINELS = text.size() - n;
-
-    for (size_t i = 0; i < n; ++i) {
-        out_sa[SENTINELS + i] = sa_correct_size[i];
+    {
+        tdc::StatPhase::pause_tracking();
+        for (size_t i = 0; i < n; ++i) {
+            out_sa[i] = sa_correct_size[i];
+        }
+        tdc::StatPhase::resume_tracking();
     }
-    tdc::StatPhase::resume_tracking();
 }
 
 /// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
@@ -104,12 +167,13 @@ template <typename sa_index, typename Fn>
 inline void external_saca_32bit_only(util::string_span text,
                                      util::span<sa_index> out_sa, size_t n,
                                      Fn saca_fn) {
-    if (early_check<int32_t>(text.size())) {
+    if (early_check<int32_t>(n)) {
         return;
     }
+    adjust_spans_for_sentinels(&text, &out_sa, n);
 
-    if constexpr (sizeof(sa_index) == 32) {
-        saca_fn(text.data(), out_sa.data(), n);
+    if constexpr (INDEX_BITS<sa_index> == 32) {
+        saca_fn(text.data(), (int32_t*)out_sa.data(), n);
     } else {
         call_with_untracked_inner_sa_index_buffer<sa_index, int32_t>(
             text, out_sa, n, saca_fn);
@@ -120,17 +184,18 @@ inline void external_saca_32bit_only(util::string_span text,
 template <typename sa_index, typename Fn32, typename Fn64>
 inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
                           size_t n, Fn32 saca_fn_32, Fn64 saca_fn_64) {
-    if (early_check<int64_t>(text.size())) {
+    if (early_check<int64_t>(n)) {
         return;
     }
+    adjust_spans_for_sentinels(&text, &out_sa, n);
 
     // surpress unused warning
     (void)saca_fn_32;
     (void)saca_fn_64;
-    if constexpr (sizeof(sa_index) == 64) {
-        saca_fn_64(text.data(), out_sa.data(), n);
-    } else if constexpr (sizeof(sa_index) == 32) {
-        saca_fn_32(text.data(), out_sa.data(), n);
+    if constexpr (INDEX_BITS<sa_index> == 32) {
+        saca_fn_32(text.data(), (int32_t*)out_sa.data(), n);
+    } else if constexpr (INDEX_BITS<sa_index> == 64) {
+        saca_fn_64(text.data(), (int64_t*)out_sa.data(), n);
     } else {
         call_with_untracked_inner_sa_index_buffer<sa_index, int64_t>(
             text, out_sa, n, saca_fn_64);
@@ -142,9 +207,10 @@ inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
 template <typename sa_index, typename Fn>
 inline void saislike(util::string_span text, util::span<sa_index> out_sa,
                      size_t n, size_t alphabet_size, Fn saca_fn) {
-    if (early_check<int32_t>(text.size())) {
+    if (early_check<int32_t>(n)) {
         return;
     }
+    adjust_spans_for_sentinels(&text, &out_sa, n);
 
     call_with_untracked_inner_sa_index_buffer<sa_index, int32_t>(
         text, out_sa, n,

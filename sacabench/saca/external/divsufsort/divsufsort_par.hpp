@@ -26,8 +26,8 @@ struct div_suf_sort_par {
                                     util::span<sa_index> out_sa) {
         size_t n = text.size() - EXTRA_SENTINELS;
         DCHECK_EQ(text[n], 0);
-        external_saca<sa_index>(text.slice(0, n),
-                                out_sa.slice(EXTRA_SENTINELS, n + EXTRA_SENTINELS),
+        external_saca<sa_index>(text,
+                                out_sa,
                                 n,
                                 ::divsufsort_par,
                                 ::divsufsort_par64);

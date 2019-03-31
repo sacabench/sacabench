@@ -32,9 +32,6 @@ namespace sacabench::reference_sacas {
                                         sacabench::util::span<sa_index> out_sa) {
 
             size_t n = text_with_sentinels.size();
-            DCHECK_MSG(int(n) >= 0 && n == size_t(int(n)),
-                       "reference gsaca can only handle textsizes that fit in a `int`.");
-
             external_saca_32bit_only<sa_index>(text_with_sentinels, out_sa, n, ::gsaca);
         }
     }; // class gsaca
