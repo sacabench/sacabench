@@ -23,65 +23,18 @@ public:
         "Difference Cover Modulo 3 Reference implementation";
 
     template <typename sa_index>
-    inline static void construct_sa(util::string_span text_with_sentinels,
+    inline static void construct_sa(util::string_span text,
                                     const util::alphabet& alphabet,
                                     util::span<sa_index> out_sa) {
+        //alphabet size
+        int K = alphabet.max_character_value();
+        size_t n = text.size() - EXTRA_SENTINELS;
 
-        tdc::StatPhase::pause_tracking();
-        {
-            // TODO: This might still measure the allocation and copy time,
-            // just not its memory usage
-
-            //length of text with extra sentinals
-            size_t n = text_with_sentinels.size();
-            if (n <= 4) {
-                tdc::StatPhase::resume_tracking();
-                return;
-            }
-
-            // adjust out_sa for extra sentinels
-            out_sa = out_sa.slice(EXTRA_SENTINELS);
-
-            //creates arrays of type int for input text and out_sa
-            auto s = std::make_unique<int[]>(n);
-            std::unique_ptr<int[]> optional_sa_alloc;
-            int* SA = nullptr;
-            if constexpr (INDEX_BITS<sa_index> == INDEX_BITS<int>) {
-                SA = (int*) out_sa.data();
-            } else {
-                optional_sa_alloc = std::make_unique<int[]>(n);
-                SA = optional_sa_alloc.get();
-            }
-
-            //cast input text in ints
-            for (size_t index = 0; index < n; index++) {
-                s[index] = static_cast<int>(text_with_sentinels[index]);
-            }
-
-            //alphabet size
-            int K = alphabet.max_character_value();
-
-            {
-                tdc::StatPhase::resume_tracking();
-
-                //run algorithm with input text (incl. 3 Sentinals),
-                //empty SuffixArray, length of text without sentinals
-                //and alphabet size for radix sort
-                ::suffixArray(s.get(), SA, n - EXTRA_SENTINELS, K);
-
-                tdc::StatPhase::pause_tracking();
-            }
-
-            if constexpr (INDEX_BITS<sa_index> != INDEX_BITS<int>) {
-                //copy SA into correct positions of out_sa
-                for (size_t index = 0; index < (n - EXTRA_SENTINELS); index++) {
-                    out_sa[index] = static_cast<sa_index>(SA[index]);
-                }
-            } else {
-                // already in out_sa
-            }
-        }
-        tdc::StatPhase::resume_tracking();
+        auto saca_fn = [K](auto text_ptr, auto sa_ptr, size_t n) {
+            ::suffixArray(text_ptr, sa_ptr, n, K);
+        };
+        external_saca_with_writable_text_one_size_only<sa_index, int, int>(text, out_sa, n,
+                                     saca_fn);
     }
 
 }; // class dc3
