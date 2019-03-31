@@ -22,7 +22,7 @@ inline int32_t pdivsufsort64(const uint8_t* T, int64_t* SA, int64_t n) {
     return ::pdivsufsort(T, SA, n);
 }
 struct parallel_div_suf_sort {
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "DivSufSort_PARALLEL_ref";
     static constexpr char const* DESCRIPTION =
         "Parallel Reference implementation of DivSufSort by Shun and Labeit";
@@ -31,9 +31,11 @@ struct parallel_div_suf_sort {
     inline static void construct_sa(util::string_span text,
                                     const util::alphabet&,
                                     util::span<sa_index> out_sa) {
-        external_saca<sa_index>(text,
-                                out_sa,
-                                text.size(),
+        size_t n = text.size() - EXTRA_SENTINELS;
+        DCHECK_EQ(text[n], 0);
+        external_saca<sa_index>(text.slice(0, n),
+                                out_sa.slice(EXTRA_SENTINELS, n + EXTRA_SENTINELS),
+                                n,
                                 pdivsufsort32,
                                 pdivsufsort64);
     }
