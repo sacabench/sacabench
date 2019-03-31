@@ -59,7 +59,7 @@ void
 print_help(const char *progname, int status) {
   fprintf(stderr,
           "sasearch, a simple SA-based full-text search tool, version %s\n",
-          divsufsort_version());
+          divsufsort_par_version());
   fprintf(stderr, "usage: %s PATTERN FILE SAFILE\n\n", progname);
   exit(status);
 }
@@ -150,7 +150,7 @@ main(int argc, const char *argv[]) {
   fclose(fp);
 
   /* Search and print */
-  size = sa_search(T, (saidx_t)n,
+  size = sa_search_par(T, (saidx_t)n,
                    (const sauchar_t *)P, (saidx_t)Psize,
                    SA, (saidx_t)n, &left);
   for(i = 0; i < size; ++i) {

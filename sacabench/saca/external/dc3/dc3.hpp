@@ -23,46 +23,18 @@ public:
         "Difference Cover Modulo 3 Reference implementation";
 
     template <typename sa_index>
-    inline static void construct_sa(util::string_span text_with_sentinels,
+    inline static void construct_sa(util::string_span text,
                                     const util::alphabet& alphabet,
                                     util::span<sa_index> out_sa) {
-
-        tdc::StatPhase::pause_tracking();
-
-        //length of text with extra sentinals
-        size_t n = text_with_sentinels.size();
-        if (n <= 4) {
-            tdc::StatPhase::resume_tracking();
-            return;
-        }
-
-        //creates arrays of type int for input text and out_sa
-        auto s = std::make_unique<int[]>(n);
-        auto SA = std::make_unique<int[]>(n);
-
-        //cast input text in ints
-        for (size_t index = 0; index < n; index++) {
-            s[index] = static_cast<int>(text_with_sentinels[index]);
-        }
-
         //alphabet size
         int K = alphabet.max_character_value();
+        size_t n = text.size() - EXTRA_SENTINELS;
 
-        tdc::StatPhase::resume_tracking();
-
-        //run algorithm with input text (incl. 3 Sentinals),
-        //empty SuffixArray, length of text without sentinals
-        //and alphabet size for radix sort
-        ::suffixArray(s.get(), SA.get(), n - 3, K);
-
-        tdc::StatPhase::pause_tracking();
-
-        //copy SA into correct positions of out_sa
-        for (size_t index = 3; index < n; index++) {
-            out_sa[index] = static_cast<sa_index>(SA[index - 3]);
-        }
-
-        tdc::StatPhase::resume_tracking();
+        auto saca_fn = [K](auto text_ptr, auto sa_ptr, size_t n) {
+            ::suffixArray(text_ptr, sa_ptr, n, K);
+        };
+        external_saca_with_writable_text_one_size_only<sa_index, int, int>(text, out_sa, n,
+                                     saca_fn);
     }
 
 }; // class dc3

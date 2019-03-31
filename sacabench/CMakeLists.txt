@@ -18,7 +18,9 @@ target_link_libraries(saca_bench_lib INTERFACE
   reference_gsaca
   reference_saca_deep_shallow
   divsufsort
+  divsufsort64
   divsufsort_par
+  divsufsort_par64
   parallel_divsufsort
   reference_bpr2_SuffixArray
   reference_bpr2_Util

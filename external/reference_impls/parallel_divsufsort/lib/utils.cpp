@@ -53,7 +53,7 @@ binarysearch_lower(const saidx_t *A, saidx_t size, saidx_t value) {
 /* Burrows-Wheeler transform. */
 template<class saidx_t>
 saint_t
-bw_transform(const sauchar_t *T, sauchar_t *U, saidx_t *SA,
+bw_transform_labeit(const sauchar_t *T, sauchar_t *U, saidx_t *SA,
              saidx_t n, saidx_t *idx) {
   saidx_t *A, i, j, p, t;
   saint_t c;
@@ -113,7 +113,7 @@ bw_transform(const sauchar_t *T, sauchar_t *U, saidx_t *SA,
 /* Inverse Burrows-Wheeler transform. */
 template<class saidx_t>
 saint_t
-inverse_bw_transform(const sauchar_t *T, sauchar_t *U, saidx_t *A,
+inverse_bw_transform_labeit(const sauchar_t *T, sauchar_t *U, saidx_t *A,
                      saidx_t n, saidx_t idx) {
   saidx_t C[ALPHABET_SIZE];
   sauchar_t D[ALPHABET_SIZE];
@@ -163,7 +163,7 @@ inverse_bw_transform(const sauchar_t *T, sauchar_t *U, saidx_t *A,
 /* Checks the suffix array SA of the string T. */
 template<class saidx_t>
 saint_t
-sufcheck(const sauchar_t *T, const saidx_t *SA,
+sufcheck_labeit(const sauchar_t *T, const saidx_t *SA,
          saidx_t n, saint_t verbose) {
   saidx_t C[ALPHABET_SIZE];
   saidx_t i, p, q, t;
@@ -244,14 +244,14 @@ sufcheck(const sauchar_t *T, const saidx_t *SA,
 
 // Template instantiation for linker.
 saint_t
-sufcheck(const sauchar_t *T, const int32_t *SA,
+sufcheck_labeit(const sauchar_t *T, const int32_t *SA,
          int32_t n, saint_t verbose) {
-	return sufcheck<int32_t>(T, SA, n, verbose);
+	return sufcheck_labeit<int32_t>(T, SA, n, verbose);
 }
 saint_t
-sufcheck(const sauchar_t *T, const int64_t *SA,
+sufcheck_labeit(const sauchar_t *T, const int64_t *SA,
          int64_t n, saint_t verbose) {
-	return sufcheck<int64_t>(T, SA, n, verbose);
+	return sufcheck_labeit<int64_t>(T, SA, n, verbose);
 }
 
 template<class saidx_t>
@@ -271,7 +271,7 @@ _compare(const sauchar_t *T, saidx_t Tsize,
 /* Search for the pattern P in the string T. */
 template<class saidx_t>
 saidx_t
-sa_search(const sauchar_t *T, saidx_t Tsize,
+sa_search_labeit(const sauchar_t *T, saidx_t Tsize,
           const sauchar_t *P, saidx_t Psize,
           const saidx_t *SA, saidx_t SAsize,
           saidx_t *idx) {
@@ -342,7 +342,7 @@ sa_search(const sauchar_t *T, saidx_t Tsize,
 /* Search for the character c in the string T. */
 template<class saidx_t>
 saidx_t
-sa_simplesearch(const sauchar_t *T, saidx_t Tsize,
+sa_simplesearch_labeit(const sauchar_t *T, saidx_t Tsize,
                 const saidx_t *SA, saidx_t SAsize,
                 saint_t c, saidx_t *idx) {
   saidx_t size, lsize, rsize, half;

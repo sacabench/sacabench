@@ -60,7 +60,7 @@ void
 print_help(const char *progname, int status) {
   fprintf(stderr,
           "mksary, a simple suffix array builder, version %s.\n",
-          divsufsort_version());
+          divsufsort_par_version());
   fprintf(stderr, "usage: %s INFILE OUTFILE\n\n", progname);
   exit(status);
 }

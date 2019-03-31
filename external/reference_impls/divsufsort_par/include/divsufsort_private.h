@@ -24,8 +24,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _DIVSUFSORT_PRIVATE_H
-#define _DIVSUFSORT_PRIVATE_H 1
+#ifndef _DIVSUFSORT_PAR_PRIVATE_H
+#define _DIVSUFSORT_PAR_PRIVATE_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,7 +58,7 @@ extern "C" {
 #  include <stdint.h>
 # endif
 #endif
-#if defined(BUILD_DIVSUFSORT64)
+#if defined(BUILD_DIVSUFSORT_PAR64)
 # include "divsufsort64.h"
 # ifndef SAIDX_T
 #  define SAIDX_T
@@ -67,16 +67,16 @@ extern "C" {
 # ifndef PRIdSAIDX_T
 #  define PRIdSAIDX_T PRIdSAIDX64_T
 # endif /* PRIdSAIDX_T */
-# define divsufsort divsufsort64
-# define divbwt divbwt64
-# define divsufsort_version divsufsort64_version
-# define bw_transform bw_transform64
-# define inverse_bw_transform inverse_bw_transform64
-# define sufcheck sufcheck64
-# define sa_search sa_search64
-# define sa_simplesearch sa_simplesearch64
-# define sssort sssort64
-# define trsort trsort64
+# define divsufsort_par divsufsort_par64
+# define divbwt_par divbwt_par64
+# define divsufsort_par_version divsufsort_par64_version
+# define bw_transform_par bw_transform_par64
+# define inverse_bw_transform_par inverse_bw_transform_par64
+# define sufcheck_par sufcheck_par64
+# define sa_search_par sa_search_par64
+# define sa_simplesearch_par sa_simplesearch_par64
+# define sssort_par sssort_par64
+# define trsort_par trsort_par64
 #else
 # include "divsufsort.h"
 #endif
@@ -117,7 +117,7 @@ extern "C" {
 #endif
 /* minstacksize = log(SS_BLOCKSIZE) / log(3) * 2 */
 #if SS_BLOCKSIZE == 0
-# if defined(BUILD_DIVSUFSORT64)
+# if defined(BUILD_DIVSUFSORT_PAR64)
 #  define SS_MISORT_STACKSIZE (96)
 # else
 #  define SS_MISORT_STACKSIZE (64)
@@ -127,14 +127,14 @@ extern "C" {
 #else
 # define SS_MISORT_STACKSIZE (24)
 #endif
-#if defined(BUILD_DIVSUFSORT64)
+#if defined(BUILD_DIVSUFSORT_PAR64)
 # define SS_SMERGE_STACKSIZE (64)
 #else
 # define SS_SMERGE_STACKSIZE (32)
 #endif
 /* for trsort.c */
 #define TR_INSERTIONSORT_THRESHOLD (8)
-#if defined(BUILD_DIVSUFSORT64)
+#if defined(BUILD_DIVSUFSORT_PAR64)
 # define TR_STACKSIZE (96)
 #else
 # define TR_STACKSIZE (64)
@@ -191,17 +191,17 @@ extern "C" {
 /*- Private Prototypes -*/
 /* sssort.c */
 void
-sssort(const sauchar_t *Td, const saidx_t *PA,
+sssort_par(const sauchar_t *Td, const saidx_t *PA,
        saidx_t *first, saidx_t *last,
        saidx_t *buf, saidx_t bufsize,
        saidx_t depth, saidx_t n, saint_t lastsuffix);
 /* trsort.c */
 void
-trsort(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth);
+trsort_par(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth);
 
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* _DIVSUFSORT_PRIVATE_H */
+#endif /* _DIVSUFSORT_PAR_PRIVATE_H */

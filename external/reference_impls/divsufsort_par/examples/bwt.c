@@ -69,7 +69,7 @@ void
 print_help(const char *progname, int status) {
   fprintf(stderr,
           "bwt, a burrows-wheeler transform program, version %s.\n",
-          divsufsort_version());
+          divsufsort_par_version());
   fprintf(stderr, "usage: %s [-b num] INFILE OUTFILE\n", progname);
   fprintf(stderr, "  -b num    set block size to num MiB [1..512] (default: 32)\n\n");
   exit(status);
@@ -183,7 +183,7 @@ main(int argc, const char *argv[]) {
   start = clock();
   for(n = 0; 0 < (m = fread(T, sizeof(sauchar_t), blocksize, fp)); n += m) {
     /* Burrows-Wheeler Transform. */
-    pidx = divbwt(T, T, SA, m);
+    pidx = divbwt_par(T, T, SA, m);
     if(pidx < 0) {
       fprintf(stderr, "%s (bw_transform): %s.\n",
         argv[0],

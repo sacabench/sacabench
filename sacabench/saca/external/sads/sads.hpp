@@ -17,9 +17,11 @@ public:
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-        sadslike<sa_index, int32_t>(
-            text, out_sa, text.size(), alphabet.size_with_sentinel(),
-            sacabench::reference_sacas::sads_reference::SA_DS);
+        auto saca_fn = sadslike_adapter(alphabet.size_with_sentinel(),
+                                        sacabench::reference_sacas::sads_reference::SA_DS);
+        external_saca_one_size_only<sa_index, int32_t>(
+            text, out_sa, text.size(),
+            saca_fn);
     }
 };
 } // namespace sacabench::reference_sacas

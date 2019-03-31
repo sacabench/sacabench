@@ -763,7 +763,7 @@ ss_swapmerge(const sauchar_t *T, const saidx_t *PA,
 /* Substring sort */
 template<class saidx_t>
 void
-sssort(const sauchar_t *T, const saidx_t *PA,
+sssort_labeit(const sauchar_t *T, const saidx_t *PA,
        saidx_t *first, saidx_t *last,
        saidx_t *buf, saidx_t bufsize,
        saidx_t depth, saidx_t n, saint_t lastsuffix) {
@@ -832,15 +832,15 @@ sssort(const sauchar_t *T, const saidx_t *PA,
     *(a - 1) = i;
   }
 }
-void sssort(const sauchar_t *T, const int32_t *PA,
+void sssort_labeit(const sauchar_t *T, const int32_t *PA,
        int32_t *first, int32_t *last,
        int32_t *buf, int32_t bufsize,
        int32_t depth, int32_t n, saint_t lastsuffix) {
-	sssort<int32_t>(T, PA, first, last, buf, bufsize, depth, n, lastsuffix);
+	sssort_labeit<int32_t>(T, PA, first, last, buf, bufsize, depth, n, lastsuffix);
 }
-void sssort(const sauchar_t *T, const int64_t *PA,
+void sssort_labeit(const sauchar_t *T, const int64_t *PA,
        int64_t *first, int64_t *last,
        int64_t *buf, int64_t bufsize,
        int64_t depth, int64_t n, saint_t lastsuffix) {
-	sssort<int64_t>(T, PA, first, last, buf, bufsize, depth, n, lastsuffix);
+	sssort_labeit<int64_t>(T, PA, first, last, buf, bufsize, depth, n, lastsuffix);
 }

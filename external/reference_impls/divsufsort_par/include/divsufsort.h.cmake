@@ -24,8 +24,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _DIVSUFSORT@W64BIT@_H
-#define _DIVSUFSORT@W64BIT@_H 1
+#ifndef _DIVSUFSORT_PAR@W64BIT@_H
+#define _DIVSUFSORT_PAR@W64BIT@_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +34,7 @@ extern "C" {
 @INCFILE@
 
 #ifndef DIVSUFSORT_API
-# ifdef DIVSUFSORT_BUILD_DLL
+# ifdef DIVSUFSORT_PAR_BUILD_DLL
 #  define DIVSUFSORT_API @DIVSUFSORT_EXPORT@
 # else
 #  define DIVSUFSORT_API @DIVSUFSORT_IMPORT@
@@ -73,7 +73,7 @@ typedef @SAINDEX_TYPE@ saidx@W64BIT@_t;
  */
 DIVSUFSORT_API
 saint_t
-divsufsort@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t *SA, saidx@W64BIT@_t n);
+divsufsort_par@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t *SA, saidx@W64BIT@_t n);
 
 /**
  * Constructs the burrows-wheeler transformed string of a given string.
@@ -85,7 +85,7 @@ divsufsort@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t *SA, saidx@W64BIT@_t n);
  */
 DIVSUFSORT_API
 saidx@W64BIT@_t
-divbwt@W64BIT@(const sauchar_t *T, sauchar_t *U, saidx@W64BIT@_t *A, saidx@W64BIT@_t n);
+divbwt_par@W64BIT@(const sauchar_t *T, sauchar_t *U, saidx@W64BIT@_t *A, saidx@W64BIT@_t n);
 
 /**
  * Returns the version of the divsufsort library.
@@ -93,7 +93,7 @@ divbwt@W64BIT@(const sauchar_t *T, sauchar_t *U, saidx@W64BIT@_t *A, saidx@W64BI
  */
 DIVSUFSORT_API
 const char *
-divsufsort@W64BIT@_version(void);
+divsufsort_par@W64BIT@_version(void);
 
 
 /**
@@ -107,7 +107,7 @@ divsufsort@W64BIT@_version(void);
  */
 DIVSUFSORT_API
 saint_t
-bw_transform@W64BIT@(const sauchar_t *T, sauchar_t *U,
+bw_transform_par@W64BIT@(const sauchar_t *T, sauchar_t *U,
              saidx@W64BIT@_t *SA /* can NULL */,
              saidx@W64BIT@_t n, saidx@W64BIT@_t *idx);
 
@@ -122,7 +122,7 @@ bw_transform@W64BIT@(const sauchar_t *T, sauchar_t *U,
  */
 DIVSUFSORT_API
 saint_t
-inverse_bw_transform@W64BIT@(const sauchar_t *T, sauchar_t *U,
+inverse_bw_transform_par@W64BIT@(const sauchar_t *T, sauchar_t *U,
                      saidx@W64BIT@_t *A /* can NULL */,
                      saidx@W64BIT@_t n, saidx@W64BIT@_t idx);
 
@@ -136,7 +136,7 @@ inverse_bw_transform@W64BIT@(const sauchar_t *T, sauchar_t *U,
  */
 DIVSUFSORT_API
 saint_t
-sufcheck@W64BIT@(const sauchar_t *T, const saidx@W64BIT@_t *SA, saidx@W64BIT@_t n, saint_t verbose);
+sufcheck_par@W64BIT@(const sauchar_t *T, const saidx@W64BIT@_t *SA, saidx@W64BIT@_t n, saint_t verbose);
 
 /**
  * Search for the pattern P in the string T.
@@ -151,7 +151,7 @@ sufcheck@W64BIT@(const sauchar_t *T, const saidx@W64BIT@_t *SA, saidx@W64BIT@_t 
  */
 DIVSUFSORT_API
 saidx@W64BIT@_t
-sa_search@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t Tsize,
+sa_search_par@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t Tsize,
           const sauchar_t *P, saidx@W64BIT@_t Psize,
           const saidx@W64BIT@_t *SA, saidx@W64BIT@_t SAsize,
           saidx@W64BIT@_t *left);
@@ -168,7 +168,7 @@ sa_search@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t Tsize,
  */
 DIVSUFSORT_API
 saidx@W64BIT@_t
-sa_simplesearch@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t Tsize,
+sa_simplesearch_par@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t Tsize,
                 const saidx@W64BIT@_t *SA, saidx@W64BIT@_t SAsize,
                 saint_t c, saidx@W64BIT@_t *left);
 
@@ -177,4 +177,4 @@ sa_simplesearch@W64BIT@(const sauchar_t *T, saidx@W64BIT@_t Tsize,
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* _DIVSUFSORT@W64BIT@_H */
+#endif /* _DIVSUFSORT_PAR@W64BIT@_H */

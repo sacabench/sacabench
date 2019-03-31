@@ -46,7 +46,7 @@ static INLINE
 saint_t
 ss_ilg(saidx_t n) {
 #if SS_BLOCKSIZE == 0
-# if defined(BUILD_DIVSUFSORT64)
+# if defined(BUILD_DIVSUFSORT_PAR64)
   return (n >> 32) ?
           ((n >> 48) ?
             ((n >> 56) ?
@@ -744,7 +744,7 @@ ss_swapmerge(const sauchar_t *T, const saidx_t *PA,
 
 /* Substring sort */
 void
-sssort(const sauchar_t *T, const saidx_t *PA,
+sssort_par(const sauchar_t *T, const saidx_t *PA,
        saidx_t *first, saidx_t *last,
        saidx_t *buf, saidx_t bufsize,
        saidx_t depth, saidx_t n, saint_t lastsuffix) {

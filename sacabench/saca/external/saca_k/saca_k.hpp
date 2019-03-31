@@ -19,9 +19,10 @@ public:
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-        sadslike<sa_index, uint32_t>(text, out_sa, text.size(),
-                                     alphabet.size_with_sentinel(),
-                                     reference_sacas::saca_k_reference::SACA_K);
+        auto saca_fn = sadslike_adapter(alphabet.size_with_sentinel(),
+                                    reference_sacas::saca_k_reference::SACA_K);
+        external_saca_with_writable_text_one_size_only<sa_index, unsigned int, unsigned char>(text, out_sa, text.size(),
+                                     saca_fn);
     }
 };
 } // namespace sacabench::reference_sacas

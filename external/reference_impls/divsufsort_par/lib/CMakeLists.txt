@@ -16,16 +16,16 @@ set_target_properties(divsufsort_par PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../examples")
 
 ## libdivsufsort64 ##
-if(BUILD_DIVSUFSORT_PAR_64)
-  add_library(divsufsort_par_64 ${divsufsort_par_SRCS})
-  install(TARGETS divsufsort_par_64
+if(BUILD_DIVSUFSORT_PAR64)
+  add_library(divsufsort_par64 ${divsufsort_par_SRCS})
+  install(TARGETS divsufsort_par64
     RUNTIME DESTINATION ${CMAKE_INSTALL_RUNTIMEDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-  set_target_properties(divsufsort_par_64 PROPERTIES
+  set_target_properties(divsufsort_par64 PROPERTIES
     VERSION   "${LIBRARY_VERSION}"
     SOVERSION "${LIBRARY_SOVERSION}"
     DEFINE_SYMBOL DIVSUFSORT_PAR_BUILD_DLL
-    COMPILE_FLAGS "-DBUILD_DIVSUFSORT_PAR_64"
+    COMPILE_FLAGS "-DBUILD_DIVSUFSORT_PAR64"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../examples")
-endif(BUILD_DIVSUFSORT_PAR_64)
+endif(BUILD_DIVSUFSORT_PAR64)

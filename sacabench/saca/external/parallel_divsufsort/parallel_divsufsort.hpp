@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "../external_saca.hpp"
 #include <util/span.hpp>
 #include <cstdint>
 
@@ -14,8 +15,14 @@ extern int32_t pdivsufsort(const uint8_t* T, int32_t* SA, int32_t n);
 extern int32_t pdivsufsort(const uint8_t* T, int64_t* SA, int64_t n);
 
 namespace sacabench::reference_sacas {
+inline int32_t pdivsufsort32(const uint8_t* T, int32_t* SA, int32_t n) {
+    return ::pdivsufsort(T, SA, n);
+}
+inline int32_t pdivsufsort64(const uint8_t* T, int64_t* SA, int64_t n) {
+    return ::pdivsufsort(T, SA, n);
+}
 struct parallel_div_suf_sort {
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "DivSufSort_PARALLEL_ref";
     static constexpr char const* DESCRIPTION =
         "Parallel Reference implementation of DivSufSort by Shun and Labeit";
@@ -24,38 +31,13 @@ struct parallel_div_suf_sort {
     inline static void construct_sa(util::string_span text,
                                     const util::alphabet&,
                                     util::span<sa_index> out_sa) {
-
-        const size_t n = text.size();
-
-        if constexpr (sizeof(sa_index) == 64) {  
-            if (n < 2) {
-                return;
-            }
-            pdivsufsort(text.data(), out_sa.data(), n);
-        } else if constexpr (sizeof(sa_index) == 32) {
-            if (n < 2) {
-                return;
-            }
-            pdivsufsort(text.data(), out_sa.data(), n);
-        } else {
-            tdc::StatPhase::pause_tracking();
-            auto sa_correct_size = util::make_container<int64_t>(n);
-            tdc::StatPhase::resume_tracking();
-
-            if (n < 2) {
-                return;
-            }
-
-            {
-                pdivsufsort(text.data(), sa_correct_size.data(), n);
-            }
-
-            tdc::StatPhase::pause_tracking();
-            for (size_t i = 0; i < n; ++i) {
-                out_sa[i] = sa_correct_size[i];
-            }
-            tdc::StatPhase::resume_tracking();
-        }
+        size_t n = text.size() - EXTRA_SENTINELS;
+        DCHECK_EQ(text[n], 0);
+        external_saca<sa_index>(text,
+                                out_sa,
+                                n,
+                                pdivsufsort32,
+                                pdivsufsort64);
     }
 };
 } // namespace sacabench::reference_sacas
