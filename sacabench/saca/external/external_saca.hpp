@@ -41,7 +41,8 @@ inline void with_sa_copy(util::string_span text, util::span<sa_index> out_sa,
 
 /// \brief Allocates a untracked container<inner_sa_index> and a copy of the
 /// input, calls the algorithm with it, and copies the result out of it.
-template <typename sa_index, typename inner_sa_index, typename Fn>
+template <typename sa_index, typename inner_sa_index, typename inner_char,
+          typename Fn>
 inline void with_sa_and_text_copy(util::string_span text,
                                   util::span<sa_index> out_sa, size_t n,
                                   Fn saca_fn) {
@@ -49,12 +50,14 @@ inline void with_sa_and_text_copy(util::string_span text,
     DCHECK(text.size() >= n);
 
     util::container<inner_sa_index> sa_correct_size;
-    util::container<util::character> writeable_text;
+    util::container<inner_char> writeable_text;
     {
         tdc::StatPhase::pause_tracking();
-        util::allow_container_copy _guard;
         sa_correct_size = util::make_container<inner_sa_index>(n);
-        writeable_text = text;
+        writeable_text = util::make_container<inner_char>(text.size());
+        for (size_t i = 0; i < text.size(); i++) {
+            writeable_text[i] = (inner_char)text[i];
+        }
         tdc::StatPhase::resume_tracking();
     }
     { saca_fn(writeable_text.data(), sa_correct_size.data(), n); }
@@ -73,17 +76,20 @@ inline void with_sa_and_text_copy(util::string_span text,
 
 /// \brief Allocates a copy of the
 /// input, calls the algorithm with it, and copies the result out of it.
-template <typename sa_index, typename inner_sa_index, typename Fn>
+template <typename sa_index, typename inner_sa_index, typename inner_char,
+          typename Fn>
 inline void with_text_copy(util::string_span text, util::span<sa_index> out_sa,
                            size_t n, Fn saca_fn) {
     DCHECK(out_sa.size() == n);
     DCHECK(text.size() >= n);
 
-    util::container<util::character> writeable_text;
+    util::container<inner_char> writeable_text;
     {
         tdc::StatPhase::pause_tracking();
-        util::allow_container_copy _guard;
-        writeable_text = text;
+        writeable_text = util::make_container<inner_char>(text.size());
+        for (size_t i = 0; i < text.size(); i++) {
+            writeable_text[i] = (inner_char)text[i];
+        }
         tdc::StatPhase::resume_tracking();
     }
     { saca_fn(writeable_text.data(), (inner_sa_index*)out_sa.data(), n); }
@@ -170,7 +176,8 @@ inline void external_saca_one_size_only(util::string_span text,
 
 /// \brief Use this if your SACA overwrites the input texts or sentinels,
 ///        but uses only a single SA index_type.
-template <typename sa_index, typename inner_sa_index, typename Fn>
+template <typename sa_index, typename inner_sa_index, typename inner_char,
+          typename Fn>
 inline void external_saca_with_writable_text_one_size_only(
     util::string_span text, util::span<sa_index> out_sa, size_t n, Fn saca_fn) {
     if (early_check<inner_sa_index>(n)) {
@@ -179,10 +186,11 @@ inline void external_saca_with_writable_text_one_size_only(
     adjust_sa_span_for_sentinels(&out_sa, text, n);
 
     if constexpr (INDEX_BITS<sa_index> == INDEX_BITS<inner_sa_index>) {
-        with_text_copy<sa_index, inner_sa_index>(text, out_sa, n, saca_fn);
+        with_text_copy<sa_index, inner_sa_index, inner_char>(text, out_sa, n,
+                                                             saca_fn);
     } else {
-        with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n,
-                                                        saca_fn);
+        with_sa_and_text_copy<sa_index, inner_sa_index, inner_char>(
+            text, out_sa, n, saca_fn);
     }
 }
 

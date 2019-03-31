@@ -17,7 +17,7 @@ public:
     static void construct_sa(util::string_span text,
                              const sacabench::util::alphabet&,
                              util::span<sa_index> out_sa) {
-        external_saca_with_writable_text_one_size_only<sa_index, unsigned int>(
+        external_saca_with_writable_text_one_size_only<sa_index, unsigned int, unsigned char>(
             text, out_sa, text.size(), msufsort_ref);
     }
 
