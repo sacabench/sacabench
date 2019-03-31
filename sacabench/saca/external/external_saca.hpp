@@ -14,6 +14,9 @@
 
 namespace sacabench::reference_sacas {
 
+// TODO: The disabled phase tracking in this file might still measure
+// the allocation and copy time, just not its memory usage.
+
 /// \brief Allocates a untracked container<inner_sa_index>, calls the algorithm
 /// with it, and copies the result out of it.
 template <typename sa_index, typename inner_sa_index, typename Fn>
