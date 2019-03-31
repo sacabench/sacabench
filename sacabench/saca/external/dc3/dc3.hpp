@@ -29,6 +29,9 @@ public:
 
         tdc::StatPhase::pause_tracking();
         {
+            // TODO: This might still measure the allocation and copy time,
+            // just not its memory usage
+
             //length of text with extra sentinals
             size_t n = text_with_sentinels.size();
             if (n <= 4) {
@@ -36,9 +39,19 @@ public:
                 return;
             }
 
+            // adjust out_sa for extra sentinels
+            out_sa = out_sa.slice(EXTRA_SENTINELS);
+
             //creates arrays of type int for input text and out_sa
             auto s = std::make_unique<int[]>(n);
-            auto SA = std::make_unique<int[]>(n);
+            std::unique_ptr<int[]> optional_sa_alloc;
+            int* SA = nullptr;
+            if constexpr (INDEX_BITS<sa_index> == INDEX_BITS<int>) {
+                SA = (int*) out_sa.data();
+            } else {
+                optional_sa_alloc = std::make_unique<int[]>(n);
+                SA = optional_sa_alloc.get();
+            }
 
             //cast input text in ints
             for (size_t index = 0; index < n; index++) {
@@ -54,14 +67,18 @@ public:
                 //run algorithm with input text (incl. 3 Sentinals),
                 //empty SuffixArray, length of text without sentinals
                 //and alphabet size for radix sort
-                ::suffixArray(s.get(), SA.get(), n - 3, K);
+                ::suffixArray(s.get(), SA, n - EXTRA_SENTINELS, K);
 
                 tdc::StatPhase::pause_tracking();
             }
 
-            //copy SA into correct positions of out_sa
-            for (size_t index = 3; index < n; index++) {
-                out_sa[index] = static_cast<sa_index>(SA[index - 3]);
+            if constexpr (INDEX_BITS<sa_index> != INDEX_BITS<int>) {
+                //copy SA into correct positions of out_sa
+                for (size_t index = 0; index < (n - EXTRA_SENTINELS); index++) {
+                    out_sa[index] = static_cast<sa_index>(SA[index]);
+                }
+            } else {
+                // already in out_sa
             }
         }
         tdc::StatPhase::resume_tracking();
