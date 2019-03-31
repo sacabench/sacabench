@@ -16,9 +16,9 @@ public:
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-        saislike_one_size_only<sa_index>(text, out_sa, text.size(),
-                           alphabet.size_with_sentinel(),
-                           sacabench::reference_sacas::sais_reference::SAIS);
+        auto saca_fn = saislike_adapter(alphabet.size_with_sentinel(),
+                                        sacabench::reference_sacas::sais_reference::SAIS);
+        external_saca_one_size_only<sa_index, int>(text, out_sa, text.size(), saca_fn);
     }
 };
 } // namespace sacabench::reference_sacas

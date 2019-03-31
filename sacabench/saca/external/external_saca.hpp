@@ -86,7 +86,7 @@ inline void with_text_copy(util::string_span text, util::span<sa_index> out_sa,
         writeable_text = text;
         tdc::StatPhase::resume_tracking();
     }
-    { saca_fn(writeable_text.data(), out_sa.data(), n); }
+    { saca_fn(writeable_text.data(), (inner_sa_index*)out_sa.data(), n); }
     {
         tdc::StatPhase::pause_tracking();
         { auto dropme2 = std::move(writeable_text); }
@@ -178,40 +178,26 @@ inline void external_saca_with_writable_text_one_size_only(
     }
     adjust_sa_span_for_sentinels(&out_sa, text, n);
 
-    // TODO: need option to copy text but not sa
-    with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n, saca_fn);
+    if constexpr (INDEX_BITS<sa_index> == INDEX_BITS<inner_sa_index>) {
+        with_text_copy<sa_index, inner_sa_index>(text, out_sa, n, saca_fn);
+    } else {
+        with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n,
+                                                        saca_fn);
+    }
 }
 
-/// \brief Use this if your SACA overwrites the input texts or sentinels,
-///        but uses only a single SA index_type.
-template <typename sa_index, typename inner_sa_index, typename Fn>
-inline void sadslike_one_size_only(util::string_span text,
-                                   util::span<sa_index> out_sa, size_t n,
-                                   size_t alphabet_size, Fn saca_fn) {
-    auto adapter_fn = [alphabet_size, &saca_fn](util::character const* text_ptr,
-                                                inner_sa_index* sa_ptr,
-                                                size_t n) {
+template <typename Fn>
+inline auto sadslike_adapter(size_t alphabet_size, Fn saca_fn) {
+    return [alphabet_size, saca_fn](auto text_ptr, auto sa_ptr, size_t n) {
         saca_fn(text_ptr, sa_ptr, n, alphabet_size, n, 0);
     };
-
-    external_saca_one_size_only<sa_index, inner_sa_index>(text, out_sa, n,
-                                                          adapter_fn);
 }
 
-/// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
-///        but uses only a single SA index_type.
-template <typename sa_index, typename inner_sa_index, typename Fn>
-inline void saislike_one_size_only(util::string_span text,
-                                   util::span<sa_index> out_sa, size_t n,
-                                   size_t alphabet_size, Fn saca_fn) {
-    auto adapter_fn = [alphabet_size, &saca_fn](util::character const* text_ptr,
-                                                inner_sa_index* sa_ptr,
-                                                size_t n) {
+template <typename Fn>
+inline auto saislike_adapter(size_t alphabet_size, Fn saca_fn) {
+    return [alphabet_size, saca_fn](auto text_ptr, auto sa_ptr, size_t n) {
         saca_fn(text_ptr, sa_ptr, n, alphabet_size, sizeof(util::character), 0);
     };
-
-    external_saca_one_size_only<sa_index, inner_sa_index>(text, out_sa, n,
-                                                          adapter_fn);
 }
 
 } // namespace sacabench::reference_sacas
