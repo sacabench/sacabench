@@ -17,10 +17,10 @@ namespace sacabench::reference_sacas {
 /// \brief Allocates a untracked container<inner_sa_index>, calls the algorithm
 /// with it, and copies the result out of it.
 template <typename sa_index, typename inner_sa_index, typename Fn>
-inline void call_with_untracked_inner_sa_index_buffer(
-    util::string_span text, util::span<sa_index> out_sa, size_t n, Fn saca_fn) {
+inline void with_sa_copy(util::string_span text, util::span<sa_index> out_sa,
+                         size_t n, Fn saca_fn) {
     DCHECK(out_sa.size() == n);
-    DCHECK(text.size() == n);
+    DCHECK(text.size() >= n);
 
     util::container<inner_sa_index> sa_correct_size;
     {
@@ -42,10 +42,11 @@ inline void call_with_untracked_inner_sa_index_buffer(
 /// \brief Allocates a untracked container<inner_sa_index> and a copy of the
 /// input, calls the algorithm with it, and copies the result out of it.
 template <typename sa_index, typename inner_sa_index, typename Fn>
-inline void call_with_untracked_inner_sa_index_buffer_and_writable_text(
-    util::string_span text, util::span<sa_index> out_sa, size_t n, Fn saca_fn) {
+inline void with_sa_and_text_copy(util::string_span text,
+                                  util::span<sa_index> out_sa, size_t n,
+                                  Fn saca_fn) {
     DCHECK(out_sa.size() == n);
-    DCHECK(text.size() == n);
+    DCHECK(text.size() >= n);
 
     util::container<inner_sa_index> sa_correct_size;
     util::container<util::character> writeable_text;
@@ -56,7 +57,7 @@ inline void call_with_untracked_inner_sa_index_buffer_and_writable_text(
         writeable_text = text;
         tdc::StatPhase::resume_tracking();
     }
-    { saca_fn(text.data(), sa_correct_size.data(), n); }
+    { saca_fn(writeable_text.data(), sa_correct_size.data(), n); }
     {
         tdc::StatPhase::pause_tracking();
         for (size_t i = 0; i < n; ++i) {
@@ -89,14 +90,13 @@ inline bool early_check(size_t n) {
 /// \brief Changes the spans such that they point at the right places
 /// despite the input containing extra sentinels.
 template <typename sa_index>
-inline void adjust_spans_for_sentinels(util::string_span* text,
-                                       util::span<sa_index>* out_sa, size_t n) {
-    DCHECK(out_sa->size() == text->size());
+inline void adjust_sa_span_for_sentinels(util::span<sa_index>* out_sa,
+                                         util::string_span text, size_t n) {
+    DCHECK(out_sa->size() == text.size());
     DCHECK(out_sa->size() >= n);
-    DCHECK(text->size() >= n);
-    size_t sentinels = text->size() - n;
+    DCHECK(text.size() >= n);
+    size_t sentinels = text.size() - n;
 
-    *text = text->slice(0, n);
     *out_sa = out_sa->slice(sentinels, n + sentinels);
 }
 
@@ -109,24 +109,20 @@ template <typename sa_index, typename inner_sa_index, typename Fn>
 inline void external_saca_with_writable_text(util::string_span text,
                                              util::span<sa_index> out_sa,
                                              size_t n, Fn saca_fn) {
-    if (early_check<inner_sa_index>(text.size())) {
+    if (early_check<inner_sa_index>(n)) {
         return;
     }
+    adjust_sa_span_for_sentinels(&out_sa, text, n);
 
-    tdc::StatPhase::pause_tracking();
-    auto sa_correct_size = util::make_container<inner_sa_index>(n);
-    util::container<uint8_t> writeable_text(text);
-    tdc::StatPhase::resume_tracking();
+    if constexpr (INDEX_BITS<inner_sa_index> == 32) {
 
-    { saca_fn(writeable_text.data(), sa_correct_size.data(), n); }
+    } else if constexpr (INDEX_BITS<inner_sa_index> == 64) {
 
-    tdc::StatPhase::pause_tracking();
-    const size_t SENTINELS = text.size() - n;
-
-    for (size_t i = 0; i < n; ++i) {
-        out_sa[SENTINELS + i] = sa_correct_size[i];
+    } else {
+        std::cerr << "ERROR: unsupported inner_sa_index type" << std::endl;
     }
-    tdc::StatPhase::resume_tracking();
+
+    with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n, saca_fn);
 }
 
 /// \brief Use this if your SACA overwrites the input texts or sentinels,
@@ -137,28 +133,15 @@ inline void sadslike(util::string_span text, util::span<sa_index> out_sa,
     if (early_check<inner_sa_index>(n)) {
         return;
     }
-    adjust_spans_for_sentinels(&text, &out_sa, n);
+    adjust_sa_span_for_sentinels(&out_sa, text, n);
 
-    util::container<inner_sa_index> sa_correct_size;
-    util::container<util::character> writeable_text;
-    {
-        tdc::StatPhase::pause_tracking();
-        util::allow_container_copy _guard;
-        sa_correct_size = util::make_container<inner_sa_index>(n);
-        writeable_text = text;
-        tdc::StatPhase::resume_tracking();
-    }
-    {
-        saca_fn(writeable_text.data(), sa_correct_size.data(), n, alphabet_size,
-                n, 0);
-    }
-    {
-        tdc::StatPhase::pause_tracking();
-        for (size_t i = 0; i < n; ++i) {
-            out_sa[i] = sa_correct_size[i];
-        }
-        tdc::StatPhase::resume_tracking();
-    }
+    auto adapter_fn = [alphabet_size, &saca_fn](util::character* text_ptr,
+                                                inner_sa_index* sa_ptr,
+                                                size_t n) {
+        saca_fn(text_ptr, sa_ptr, n, alphabet_size, n, 0);
+    };
+    with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n,
+                                                    adapter_fn);
 }
 
 /// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
@@ -170,13 +153,12 @@ inline void external_saca_32bit_only(util::string_span text,
     if (early_check<int32_t>(n)) {
         return;
     }
-    adjust_spans_for_sentinels(&text, &out_sa, n);
+    adjust_sa_span_for_sentinels(&out_sa, text, n);
 
     if constexpr (INDEX_BITS<sa_index> == 32) {
         saca_fn(text.data(), (int32_t*)out_sa.data(), n);
     } else {
-        call_with_untracked_inner_sa_index_buffer<sa_index, int32_t>(
-            text, out_sa, n, saca_fn);
+        with_sa_copy<sa_index, int32_t>(text, out_sa, n, saca_fn);
     }
 }
 
@@ -187,7 +169,7 @@ inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
     if (early_check<int64_t>(n)) {
         return;
     }
-    adjust_spans_for_sentinels(&text, &out_sa, n);
+    adjust_sa_span_for_sentinels(&out_sa, text, n);
 
     // surpress unused warning
     (void)saca_fn_32;
@@ -197,8 +179,7 @@ inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
     } else if constexpr (INDEX_BITS<sa_index> == 64) {
         saca_fn_64(text.data(), (int64_t*)out_sa.data(), n);
     } else {
-        call_with_untracked_inner_sa_index_buffer<sa_index, int64_t>(
-            text, out_sa, n, saca_fn_64);
+        with_sa_copy<sa_index, int64_t>(text, out_sa, n, saca_fn_64);
     }
 }
 
@@ -210,14 +191,12 @@ inline void saislike(util::string_span text, util::span<sa_index> out_sa,
     if (early_check<int32_t>(n)) {
         return;
     }
-    adjust_spans_for_sentinels(&text, &out_sa, n);
+    adjust_sa_span_for_sentinels(&out_sa, text, n);
 
-    call_with_untracked_inner_sa_index_buffer<sa_index, int32_t>(
-        text, out_sa, n,
-        [alphabet_size, &saca_fn](util::character const* text_ptr,
-                                  int32_t* sa_ptr, size_t n) {
-            saca_fn(text_ptr, sa_ptr, n, alphabet_size, sizeof(util::character),
-                    0);
-        });
+    auto adapter_fn = [alphabet_size, &saca_fn](util::character const* text_ptr,
+                                                int32_t* sa_ptr, size_t n) {
+        saca_fn(text_ptr, sa_ptr, n, alphabet_size, sizeof(util::character), 0);
+    };
+    with_sa_copy<sa_index, int32_t>(text, out_sa, n, adapter_fn);
 }
 } // namespace sacabench::reference_sacas
