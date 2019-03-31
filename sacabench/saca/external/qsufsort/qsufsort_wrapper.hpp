@@ -15,6 +15,7 @@
 #include "util/signed_size_type.hpp"
 #include <limits.h>
 #include <tudocomp_stat/StatPhase.hpp>
+#include "../external_saca.hpp"
 
 using namespace sacabench::util;
 namespace {
@@ -308,7 +309,7 @@ void suffixsort(int* x, int* p, int n, int k, int l) {
 namespace sacabench::qsufsort_ext {
 class qsufsort_ext {
 public:
-    static constexpr size_t EXTRA_SENTINELS = 0;
+    static constexpr size_t EXTRA_SENTINELS = 1;
     static constexpr char const* NAME = "qsufsort_ref";
     static constexpr char const* DESCRIPTION =
         "Reference implementation of N. Larssons and K. Sadakanes qsufsort";
@@ -316,28 +317,24 @@ public:
     static void construct_sa(sacabench::util::string_span text,
                              sacabench::util::alphabet const& alphabet,
                              sacabench::util::span<sa_index> out_sa) {
-        tdc::StatPhase qss_ext("Transformation");
-        if (text.size() < 2)
-            return;
-        int* transform_text = new int[text.size() + 1];
-        int* transform_sa = new int[out_sa.size() + 1];
+        using namespace sacabench::reference_sacas;
 
-        // TODO find a way without copying
-        for (size_t index = 0; index < text.size(); ++index) {
-            transform_text[index] = (int)text[index];
-        }
-        qss_ext.split("Reference implementation");
-        if (!alphabet.is_effective()) {
-            auto new_alphabet = apply_effective_alphabet(string(text));
-            suffixsort(transform_text, transform_sa, text.size(),
-                       new_alphabet.max_character_value() + 1, 1);
-        } else {
-            suffixsort(transform_text, transform_sa, text.size(),
-                       alphabet.max_character_value() + 1, 1);
-        }
-        for (size_t index = 1; index < out_sa.size() + 1; ++index) {
-            out_sa[index - 1] = transform_sa[index];
-        }
+        size_t alphabet_size = alphabet.max_character_value() + 1;
+
+        tdc::StatPhase qss_ext("Transformation");
+        DCHECK(alphabet.is_effective());
+
+        auto saca_fn = [alphabet_size, &qss_ext](auto text_ptr,
+                                                    auto sa_ptr,
+                                                    size_t n)
+        {
+            qss_ext.split("Reference implementation");
+            suffixsort(text_ptr, sa_ptr, n - 1, alphabet_size, 1);
+        };
+
+        external_saca_with_writable_text_one_size_only<sa_index, int, int>(
+            text, out_sa, text.size(), saca_fn);
+
     }
 };
 } // namespace sacabench::qsufsort_ext
