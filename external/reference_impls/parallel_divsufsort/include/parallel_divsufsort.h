@@ -24,8 +24,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _DIVSUFSORT_H
-#define _DIVSUFSORT_H 1
+#ifndef _DIVSUFSORT_LABEIT_H
+#define _DIVSUFSORT_LABEIT_H 1
 
 #include <inttypes.h>
 /*- Datatypes -*/
@@ -94,9 +94,9 @@ pdivsufsort(const sauchar_t *T, int64_t *SA, int64_t n);
  * @param verbose The verbose mode.
  * @return 0 if no error occurred.
  */
-saint_t sufcheck(const sauchar_t *T, const int32_t *SA,
-		int32_t n, saint_t verbose); 
-saint_t sufcheck(const sauchar_t *T, const int64_t *SA,
+saint_t sufcheck_labeit(const sauchar_t *T, const int32_t *SA,
+		int32_t n, saint_t verbose);
+saint_t sufcheck_labeit(const sauchar_t *T, const int64_t *SA,
 		int64_t n, saint_t verbose);
 /**
  * Search for the pattern P in the string T.
@@ -129,4 +129,4 @@ saint_t sufcheck(const sauchar_t *T, const int64_t *SA,
 //sa_simplesearch(const sauchar_t *T, saidx_t Tsize,
 //                const saidx_t *SA, saidx_t SAsize,
 //                saint_t c, saidx_t *left);
-#endif /* _DIVSUFSORT_H */
+#endif /* _DIVSUFSORT_LABEIT_H */

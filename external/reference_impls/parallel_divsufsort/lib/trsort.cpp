@@ -566,7 +566,7 @@ tr_introsort(saidx_t *ISA, const saidx_t *ISAd,
 /* Tandem repeat sort */
 template<class saidx_t>
 void
-trsort(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth) {
+trsort_labeit(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth) {
   saidx_t *ISAd;
   saidx_t *first, *last;
   trbudget_t<saidx_t> budget;

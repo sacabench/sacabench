@@ -24,8 +24,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _DIVSUFSORT_PRIVATE_H
-#define _DIVSUFSORT_PRIVATE_H 1
+#ifndef _DIVSUFSORT_LABEIT_PRIVATE_H
+#define _DIVSUFSORT_LABEIT_PRIVATE_H 1
 
 #include <assert.h>
 #include <stdio.h>
@@ -154,18 +154,18 @@
 /* sssort.c */
 template<class saidx_t>
 void
-sssort(const sauchar_t *Td, const saidx_t *PA,
+sssort_labeit(const sauchar_t *Td, const saidx_t *PA,
        saidx_t *first, saidx_t *last,
        saidx_t *buf, saidx_t bufsize,
        saidx_t depth, saidx_t n, saint_t lastsuffix);
 /* trsort.c */
 template<class saidx_t>
 void
-trsort(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth);
+trsort_labeit(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t depth);
 
 /* paralleltrsort.c */
 template<class saidx_t>
 void
-paralleltrsort(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t* buf, saidx_t buffer_len);
+paralleltrsort_labeit(saidx_t *ISA, saidx_t *SA, saidx_t n, saidx_t* buf, saidx_t buffer_len);
 
-#endif /* _DIVSUFSORT_PRIVATE_H */
+#endif /* _DIVSUFSORT_LABEIT_PRIVATE_H */
