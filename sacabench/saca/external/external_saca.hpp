@@ -71,6 +71,29 @@ inline void with_sa_and_text_copy(util::string_span text,
     }
 }
 
+/// \brief Allocates a copy of the
+/// input, calls the algorithm with it, and copies the result out of it.
+template <typename sa_index, typename inner_sa_index, typename Fn>
+inline void with_text_copy(util::string_span text, util::span<sa_index> out_sa,
+                           size_t n, Fn saca_fn) {
+    DCHECK(out_sa.size() == n);
+    DCHECK(text.size() >= n);
+
+    util::container<util::character> writeable_text;
+    {
+        tdc::StatPhase::pause_tracking();
+        util::allow_container_copy _guard;
+        writeable_text = text;
+        tdc::StatPhase::resume_tracking();
+    }
+    { saca_fn(writeable_text.data(), out_sa.data(), n); }
+    {
+        tdc::StatPhase::pause_tracking();
+        { auto dropme2 = std::move(writeable_text); }
+        tdc::StatPhase::resume_tracking();
+    }
+}
+
 /// \brief Errors out if the input is too long and does an early return if it is
 /// too short.
 template <typename check_index>
@@ -87,8 +110,8 @@ inline bool early_check(size_t n) {
     return false;
 }
 
-/// \brief Changes the spans such that they point at the right places
-/// despite the input containing extra sentinels.
+/// \brief Changes the SA span such that it starts at the right position
+/// for a input with extra sentinel bytes.
 template <typename sa_index>
 inline void adjust_sa_span_for_sentinels(util::span<sa_index>* out_sa,
                                          util::string_span text, size_t n) {
@@ -103,66 +126,10 @@ inline void adjust_sa_span_for_sentinels(util::span<sa_index>* out_sa,
 template <typename sa_index>
 constexpr size_t INDEX_BITS = sizeof(sa_index) * CHAR_BIT;
 
-/// \brief Use this if your SACA overwrites the input texts or sentinels,
-///        but uses int32 as the SA index type.
-template <typename sa_index, typename inner_sa_index, typename Fn>
-inline void external_saca_with_writable_text(util::string_span text,
-                                             util::span<sa_index> out_sa,
-                                             size_t n, Fn saca_fn) {
-    if (early_check<inner_sa_index>(n)) {
-        return;
-    }
-    adjust_sa_span_for_sentinels(&out_sa, text, n);
-
-    if constexpr (INDEX_BITS<inner_sa_index> == 32) {
-
-    } else if constexpr (INDEX_BITS<inner_sa_index> == 64) {
-
-    } else {
-        std::cerr << "ERROR: unsupported inner_sa_index type" << std::endl;
-    }
-
-    with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n, saca_fn);
-}
-
-/// \brief Use this if your SACA overwrites the input texts or sentinels,
-///        but uses int32 as the SA index type.
-template <typename sa_index, typename inner_sa_index, typename Fn>
-inline void sadslike(util::string_span text, util::span<sa_index> out_sa,
-                     size_t n, size_t alphabet_size, Fn saca_fn) {
-    if (early_check<inner_sa_index>(n)) {
-        return;
-    }
-    adjust_sa_span_for_sentinels(&out_sa, text, n);
-
-    auto adapter_fn = [alphabet_size, &saca_fn](util::character* text_ptr,
-                                                inner_sa_index* sa_ptr,
-                                                size_t n) {
-        saca_fn(text_ptr, sa_ptr, n, alphabet_size, n, 0);
-    };
-    with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n,
-                                                    adapter_fn);
-}
+//////// main interface
 
 /// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
-///        but uses int32 as the SA index type.
-template <typename sa_index, typename Fn>
-inline void external_saca_32bit_only(util::string_span text,
-                                     util::span<sa_index> out_sa, size_t n,
-                                     Fn saca_fn) {
-    if (early_check<int32_t>(n)) {
-        return;
-    }
-    adjust_sa_span_for_sentinels(&out_sa, text, n);
-
-    if constexpr (INDEX_BITS<sa_index> == 32) {
-        saca_fn(text.data(), (int32_t*)out_sa.data(), n);
-    } else {
-        with_sa_copy<sa_index, int32_t>(text, out_sa, n, saca_fn);
-    }
-}
-
-/// \brief Use this if your SACA doesn't overwrite the input texts or sentinels.
+///        and uses both int32_t and int64_t as SA index_type.
 template <typename sa_index, typename Fn32, typename Fn64>
 inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
                           size_t n, Fn32 saca_fn_32, Fn64 saca_fn_64) {
@@ -184,19 +151,67 @@ inline void external_saca(util::string_span text, util::span<sa_index> out_sa,
 }
 
 /// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
-///        but uses int32 as the SA index type.
-template <typename sa_index, typename Fn>
-inline void saislike(util::string_span text, util::span<sa_index> out_sa,
-                     size_t n, size_t alphabet_size, Fn saca_fn) {
-    if (early_check<int32_t>(n)) {
+///        but uses only a single SA index_type.
+template <typename sa_index, typename inner_sa_index, typename Fn>
+inline void external_saca_one_size_only(util::string_span text,
+                                        util::span<sa_index> out_sa, size_t n,
+                                        Fn saca_fn) {
+    if (early_check<inner_sa_index>(n)) {
         return;
     }
     adjust_sa_span_for_sentinels(&out_sa, text, n);
 
+    if constexpr (INDEX_BITS<sa_index> == INDEX_BITS<inner_sa_index>) {
+        saca_fn(text.data(), (inner_sa_index*)out_sa.data(), n);
+    } else {
+        with_sa_copy<sa_index, inner_sa_index>(text, out_sa, n, saca_fn);
+    }
+}
+
+/// \brief Use this if your SACA overwrites the input texts or sentinels,
+///        but uses only a single SA index_type.
+template <typename sa_index, typename inner_sa_index, typename Fn>
+inline void external_saca_with_writable_text_one_size_only(
+    util::string_span text, util::span<sa_index> out_sa, size_t n, Fn saca_fn) {
+    if (early_check<inner_sa_index>(n)) {
+        return;
+    }
+    adjust_sa_span_for_sentinels(&out_sa, text, n);
+
+    // TODO: need option to copy text but not sa
+    with_sa_and_text_copy<sa_index, inner_sa_index>(text, out_sa, n, saca_fn);
+}
+
+/// \brief Use this if your SACA overwrites the input texts or sentinels,
+///        but uses only a single SA index_type.
+template <typename sa_index, typename inner_sa_index, typename Fn>
+inline void sadslike_one_size_only(util::string_span text,
+                                   util::span<sa_index> out_sa, size_t n,
+                                   size_t alphabet_size, Fn saca_fn) {
     auto adapter_fn = [alphabet_size, &saca_fn](util::character const* text_ptr,
-                                                int32_t* sa_ptr, size_t n) {
+                                                inner_sa_index* sa_ptr,
+                                                size_t n) {
+        saca_fn(text_ptr, sa_ptr, n, alphabet_size, n, 0);
+    };
+
+    external_saca_one_size_only<sa_index, inner_sa_index>(text, out_sa, n,
+                                                          adapter_fn);
+}
+
+/// \brief Use this if your SACA doesn't overwrite the input texts or sentinels,
+///        but uses only a single SA index_type.
+template <typename sa_index, typename inner_sa_index, typename Fn>
+inline void saislike_one_size_only(util::string_span text,
+                                   util::span<sa_index> out_sa, size_t n,
+                                   size_t alphabet_size, Fn saca_fn) {
+    auto adapter_fn = [alphabet_size, &saca_fn](util::character const* text_ptr,
+                                                inner_sa_index* sa_ptr,
+                                                size_t n) {
         saca_fn(text_ptr, sa_ptr, n, alphabet_size, sizeof(util::character), 0);
     };
-    with_sa_copy<sa_index, int32_t>(text, out_sa, n, adapter_fn);
+
+    external_saca_one_size_only<sa_index, inner_sa_index>(text, out_sa, n,
+                                                          adapter_fn);
 }
+
 } // namespace sacabench::reference_sacas

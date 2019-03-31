@@ -32,7 +32,7 @@ namespace sacabench::reference_sacas {
                                         sacabench::util::span<sa_index> out_sa) {
 
             size_t n = text_with_sentinels.size();
-            external_saca_32bit_only<sa_index>(text_with_sentinels, out_sa, n, ::gsaca);
+            external_saca_one_size_only<sa_index, int32_t>(text_with_sentinels, out_sa, n, ::gsaca);
         }
     }; // class gsaca
 } // namespace sacabench::reference_sacas

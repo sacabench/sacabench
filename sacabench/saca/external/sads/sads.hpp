@@ -17,7 +17,7 @@ public:
     static void construct_sa(util::string_span text,
                              sacabench::util::alphabet alphabet,
                              util::span<sa_index> out_sa) {
-        sadslike<sa_index, int32_t>(
+        sadslike_one_size_only<sa_index, int32_t>(
             text, out_sa, text.size(), alphabet.size_with_sentinel(),
             sacabench::reference_sacas::sads_reference::SA_DS);
     }
