@@ -2,1166 +2,986 @@ Missing data for GSACA_Opt, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <du
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3713830 ON cstd01-123 CANCELLED AT 2019-03-18T02:29:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042390 ON cstd02-019 CANCELLED AT 2019-04-04T15:43:56 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3713834 ON cstd01-127 CANCELLED AT 2019-03-18T02:29:26 DUE TO TIME LIMIT ***
-
------------------
-Missing data for BPR, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for BPR_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for DC3, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for DC3-Lite, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for DC3_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for DC7, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Deep-Shallow, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Deep-Shallow_bb, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Deep-Shallow_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Discarding2, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Discarding4, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for DivSufSort, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for DivSufSort_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Doubling, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for GSACA, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for GSACA_Opt, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for GSACA_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for MSufSort_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Naiv, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for NaivIps4o, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Osipov_sequential, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for Osipov_sequential_wp, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SACA-K, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SACA-K_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SADS, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SADS_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SAIS, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SAIS-LITE_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SAIS_WPI, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for SAIS_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for mSufSort, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for mSufSortV2, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for mSufSort_scan, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for nzSufSort, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for qsufsort, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
-
------------------
-Missing data for qsufsort_ref, combined.txt, <dummy>, 20 (no file <dummy>)
--output----------
-ERROR: Input file /home/smmaloeb/sacabench/external/datasets/downloads/combined.txt does not exist.
+slurmstepd: error: *** JOB 4042394 ON cstd02-053 CANCELLED AT 2019-04-04T15:43:56 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3713902 ON cstd02-020 CANCELLED AT 2019-03-18T02:29:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042426 ON cstd02-038 CANCELLED AT 2019-04-04T15:45:57 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3713906 ON cstd02-005 CANCELLED AT 2019-03-18T02:29:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042430 ON cstd01-019 CANCELLED AT 2019-04-04T15:46:29 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3713938 ON cstd01-020 CANCELLED AT 2019-03-18T02:31:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042462 ON cstd02-026 CANCELLED AT 2019-04-04T15:48:29 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3713942 ON cstd01-171 CANCELLED AT 2019-03-18T02:31:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042466 ON cstd02-072 CANCELLED AT 2019-04-04T15:48:29 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pc_english.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3713974 ON cstd02-026 CANCELLED AT 2019-03-18T02:33:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042499 ON cstd01-017 CANCELLED AT 2019-04-04T15:52:00 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pc_english.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3713978 ON cgpu01-005 CANCELLED AT 2019-03-18T02:33:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042503 ON cstd02-020 CANCELLED AT 2019-04-04T15:52:00 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714010 ON cstd01-116 CANCELLED AT 2019-03-18T02:35:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042535 ON cstd01-207 CANCELLED AT 2019-04-04T15:56:00 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714014 ON cstd01-133 CANCELLED AT 2019-03-18T02:35:26 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042539 ON cstd02-023 CANCELLED AT 2019-04-04T15:56:00 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714046 ON cstd01-114 CANCELLED AT 2019-03-18T02:37:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042571 ON cstd02-025 CANCELLED AT 2019-04-04T15:58:00 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714050 ON cstd01-155 CANCELLED AT 2019-03-18T02:37:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042575 ON cstd02-039 CANCELLED AT 2019-04-04T15:58:30 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow (1/1)
-slurmstepd: error: *** JOB 3714068 ON cstd01-040 CANCELLED AT 2019-03-18T02:37:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042593 ON cstd02-018 CANCELLED AT 2019-04-04T15:59:30 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_bb, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_bb (1/1)
-slurmstepd: error: *** JOB 3714069 ON cstd01-109 CANCELLED AT 2019-03-18T02:37:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042594 ON cstd02-056 CANCELLED AT 2019-04-04T15:59:30 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714082 ON cstd01-025 CANCELLED AT 2019-03-18T02:38:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042607 ON cstd01-042 CANCELLED AT 2019-04-04T16:00:31 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714086 ON cstd01-172 CANCELLED AT 2019-03-18T02:38:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042611 ON cstd02-068 CANCELLED AT 2019-04-04T16:00:31 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for nzSufSort, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
-slurmstepd: error: *** JOB 3714090 ON cstd01-022 CANCELLED AT 2019-03-18T02:39:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042615 ON cstd01-204 CANCELLED AT 2019-04-04T16:01:05 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714118 ON cstd01-167 CANCELLED AT 2019-03-18T02:39:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042643 ON cgpu01-006 CANCELLED AT 2019-04-04T16:04:03 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714122 ON cstd01-156 CANCELLED AT 2019-03-18T02:40:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042647 ON cstd01-209 CANCELLED AT 2019-04-04T16:06:03 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for BPR, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR (1/1)
-slurmstepd: error: *** JOB 3714142 ON cgpu01-008 CANCELLED AT 2019-03-18T02:40:59 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042667 ON cstd02-041 CANCELLED AT 2019-04-04T16:11:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for BPR_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR_ref (1/1)
-slurmstepd: error: *** JOB 3714143 ON cstd01-003 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042668 ON cgpu01-005 CANCELLED AT 2019-04-04T16:11:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3 (1/1)
-slurmstepd: error: *** JOB 3714160 ON cstd01-108 CANCELLED AT 2019-03-18T02:42:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042685 ON cstd01-035 CANCELLED AT 2019-04-04T16:18:13 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3-Lite, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3-Lite (1/1)
-slurmstepd: error: *** JOB 3714163 ON cgpu01-014 CANCELLED AT 2019-03-18T02:42:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042688 ON cstd02-011 CANCELLED AT 2019-04-04T16:18:13 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3_ref (1/1)
-slurmstepd: error: *** JOB 3714139 ON cstd01-165 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042664 ON cstd01-223 CANCELLED AT 2019-04-04T16:11:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC7, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC7 (1/1)
-slurmstepd: error: *** JOB 3714155 ON cstd01-153 CANCELLED AT 2019-03-18T02:41:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042680 ON cstd02-016 CANCELLED AT 2019-04-04T16:15:42 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow (1/1)
-slurmstepd: error: *** JOB 3714140 ON cstd01-181 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042665 ON cstd02-069 CANCELLED AT 2019-04-04T16:11:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_bb, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_bb (1/1)
-slurmstepd: error: *** JOB 3714141 ON cgpu01-002 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042666 ON cstd02-040 CANCELLED AT 2019-04-04T16:11:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_ref (1/1)
-slurmstepd: error: *** JOB 3714130 ON cstd01-027 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042655 ON cstd02-054 CANCELLED AT 2019-04-04T16:08:06 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Discarding2, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Discarding2 (1/1)
-slurmstepd: error: *** JOB 3714148 ON cstd01-098 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042673 ON cstd01-155 CANCELLED AT 2019-04-04T16:13:39 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Discarding4, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Discarding4 (1/1)
-slurmstepd: error: *** JOB 3714149 ON cstd01-170 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042674 ON cstd02-012 CANCELLED AT 2019-04-04T16:14:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DivSufSort, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort (1/1)
-slurmstepd: error: *** JOB 3714161 ON cstd01-180 CANCELLED AT 2019-03-18T02:42:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042686 ON cstd01-079 CANCELLED AT 2019-04-04T16:18:13 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DivSufSort_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort_ref (1/1)
-slurmstepd: error: *** JOB 3714131 ON cstd01-030 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042656 ON cstd02-055 CANCELLED AT 2019-04-04T16:08:06 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Doubling, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Doubling (1/1)
-slurmstepd: error: *** JOB 3714147 ON cstd01-083 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042672 ON cstd02-007 CANCELLED AT 2019-04-04T16:13:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA (1/1)
-slurmstepd: error: *** JOB 3714153 ON cstd01-124 CANCELLED AT 2019-03-18T02:41:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042678 ON cstd01-097 CANCELLED AT 2019-04-04T16:15:42 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714154 ON cstd01-126 CANCELLED AT 2019-03-18T02:41:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042679 ON cstd02-005 CANCELLED AT 2019-04-04T16:15:42 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_ref (1/1)
-slurmstepd: error: *** JOB 3714137 ON cstd01-146 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042662 ON cstd01-173 CANCELLED AT 2019-04-04T16:10:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for MSufSort_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running MSufSort_ref (1/1)
-slurmstepd: error: *** JOB 3714132 ON cstd01-061 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042657 ON cstd01-028 CANCELLED AT 2019-04-04T16:08:36 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Naiv, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Naiv (1/1)
-slurmstepd: error: *** JOB 3714157 ON cstd02-004 CANCELLED AT 2019-03-18T02:41:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042682 ON cstd01-184 CANCELLED AT 2019-04-04T16:16:42 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714158 ON cstd01-015 CANCELLED AT 2019-03-18T02:42:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042683 ON cstd02-059 CANCELLED AT 2019-04-04T16:17:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Osipov_sequential, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_sequential (1/1)
-slurmstepd: error: *** JOB 3714164 ON cstd01-008 CANCELLED AT 2019-03-18T02:43:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042689 ON cstd02-071 CANCELLED AT 2019-04-04T16:18:13 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Osipov_sequential_wp, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_sequential_wp (1/1)
-slurmstepd: error: *** JOB 3714165 ON cstd01-011 CANCELLED AT 2019-03-18T02:43:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042690 ON cstd01-032 CANCELLED AT 2019-04-04T16:19:13 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SACA-K, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SACA-K (1/1)
-slurmstepd: error: *** JOB 3714159 ON cstd01-080 CANCELLED AT 2019-03-18T02:42:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042684 ON cgpu01-004 CANCELLED AT 2019-04-04T16:17:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SACA-K_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SACA-K_ref (1/1)
-slurmstepd: error: *** JOB 3714133 ON cstd01-097 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042658 ON cstd02-008 CANCELLED AT 2019-04-04T16:09:06 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SADS, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SADS (1/1)
-slurmstepd: error: *** JOB 3714152 ON cstd01-021 CANCELLED AT 2019-03-18T02:41:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042677 ON cstd01-007 CANCELLED AT 2019-04-04T16:15:42 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SADS_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SADS_ref (1/1)
-slurmstepd: error: *** JOB 3714134 ON cstd01-103 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042659 ON cstd01-026 CANCELLED AT 2019-04-04T16:10:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS (1/1)
-slurmstepd: error: *** JOB 3714150 ON cgpu01-004 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042675 ON cstd01-154 CANCELLED AT 2019-04-04T16:14:42 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS-LITE_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS-LITE_ref (1/1)
-slurmstepd: error: *** JOB 3714136 ON cstd01-139 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042661 ON cstd01-095 CANCELLED AT 2019-04-04T16:10:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS_WPI, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS_WPI (1/1)
-slurmstepd: error: *** JOB 3714151 ON cstd01-007 CANCELLED AT 2019-03-18T02:41:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042676 ON cstd01-157 CANCELLED AT 2019-04-04T16:15:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS_ref (1/1)
-slurmstepd: error: *** JOB 3714135 ON cstd01-113 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042660 ON cstd01-036 CANCELLED AT 2019-04-04T16:10:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSort, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort (1/1)
-slurmstepd: error: *** JOB 3714144 ON cstd01-005 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042669 ON cstd02-044 CANCELLED AT 2019-04-04T16:11:39 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSortV2, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSortV2 (1/1)
-slurmstepd: error: *** JOB 3714146 ON cstd01-079 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042671 ON cstd02-009 CANCELLED AT 2019-04-04T16:12:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSort_scan, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_scan (1/1)
-slurmstepd: error: *** JOB 3714145 ON cstd01-032 CANCELLED AT 2019-03-18T02:41:28 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042670 ON cstd01-038 CANCELLED AT 2019-04-04T16:12:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for nzSufSort, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
-slurmstepd: error: *** JOB 3714162 ON cstd01-009 CANCELLED AT 2019-03-18T02:42:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042687 ON cstd01-205 CANCELLED AT 2019-04-04T16:18:13 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for qsufsort, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running qsufsort (1/1)
-slurmstepd: error: *** JOB 3714156 ON cstd02-002 CANCELLED AT 2019-03-18T02:41:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042681 ON cstd01-001 CANCELLED AT 2019-04-04T16:16:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for qsufsort_ref, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running qsufsort_ref (1/1)
-slurmstepd: error: *** JOB 3714138 ON cstd01-148 CANCELLED AT 2019-03-18T02:40:58 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042663 ON cstd01-057 CANCELLED AT 2019-04-04T16:11:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow (1/1)
-slurmstepd: error: *** JOB 3714176 ON cstd01-094 CANCELLED AT 2019-03-18T02:44:29 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042701 ON cstd01-020 CANCELLED AT 2019-04-04T16:21:43 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_bb, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_bb (1/1)
-slurmstepd: error: *** JOB 3714177 ON cstd01-159 CANCELLED AT 2019-03-18T02:44:29 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042702 ON cstd01-054 CANCELLED AT 2019-04-04T16:21:43 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714190 ON cstd01-023 CANCELLED AT 2019-03-18T02:48:33 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042715 ON cstd01-055 CANCELLED AT 2019-04-04T16:25:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Naiv, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Naiv (1/1)
-slurmstepd: error: *** JOB 3714193 ON cstd02-023 CANCELLED AT 2019-03-18T02:48:33 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042718 ON cstd01-203 CANCELLED AT 2019-04-04T16:25:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714194 ON cstd02-041 CANCELLED AT 2019-03-18T02:48:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042719 ON cgpu01-003 CANCELLED AT 2019-04-04T16:25:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow (1/1)
-slurmstepd: error: *** JOB 3714212 ON cstd01-046 CANCELLED AT 2019-03-18T02:53:03 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042737 ON cstd02-042 CANCELLED AT 2019-04-04T16:33:48 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_bb, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_bb (1/1)
-slurmstepd: error: *** JOB 3714213 ON cstd01-045 CANCELLED AT 2019-03-18T02:53:33 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042738 ON cstd02-057 CANCELLED AT 2019-04-04T16:33:48 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714226 ON cstd01-028 CANCELLED AT 2019-03-18T02:55:03 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042751 ON cstd01-053 CANCELLED AT 2019-04-04T16:36:52 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714230 ON cstd01-048 CANCELLED AT 2019-03-18T02:55:33 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042755 ON cstd01-006 CANCELLED AT 2019-04-04T16:38:52 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for nzSufSort, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
-slurmstepd: error: *** JOB 3714234 ON cstd01-033 CANCELLED AT 2019-03-18T02:56:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042759 ON cstd01-031 CANCELLED AT 2019-04-04T16:39:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for BPR, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR (1/1)
-slurmstepd: error: *** JOB 3714250 ON cstd01-125 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042775 ON cgpu01-017 CANCELLED AT 2019-04-04T16:41:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for BPR_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR_ref (1/1)
-slurmstepd: error: *** JOB 3714251 ON cstd01-053 CANCELLED AT 2019-03-18T02:59:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042776 ON cstd01-134 CANCELLED AT 2019-04-04T16:41:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3 (1/1)
-slurmstepd: error: *** JOB 3714268 ON cgpu01-010 CANCELLED AT 2019-03-18T03:01:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042793 ON cstd01-099 CANCELLED AT 2019-04-04T16:44:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3-Lite, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3-Lite (1/1)
-slurmstepd: error: *** JOB 3714271 ON cstd01-158 CANCELLED AT 2019-03-18T03:02:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042796 ON cstd01-214 CANCELLED AT 2019-04-04T16:45:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3_ref (1/1)
-slurmstepd: error: *** JOB 3714247 ON cstd01-161 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042772 ON cstd01-108 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC7, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC7 (1/1)
-slurmstepd: error: *** JOB 3714263 ON cstd02-009 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042788 ON cstd01-215 CANCELLED AT 2019-04-04T16:43:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow (1/1)
-slurmstepd: error: *** JOB 3714248 ON cstd02-007 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042773 ON cstd01-027 CANCELLED AT 2019-04-04T16:41:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_bb, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_bb (1/1)
-slurmstepd: error: *** JOB 3714249 ON cstd02-008 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042774 ON cstd01-213 CANCELLED AT 2019-04-04T16:41:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_ref (1/1)
-slurmstepd: error: *** JOB 3714238 ON cstd01-160 CANCELLED AT 2019-03-18T02:57:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042763 ON cstd01-008 CANCELLED AT 2019-04-04T16:39:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Discarding2, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Discarding2 (1/1)
-slurmstepd: error: *** JOB 3714256 ON cstd02-013 CANCELLED AT 2019-03-18T02:59:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042781 ON cstd01-064 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Discarding4, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Discarding4 (1/1)
-slurmstepd: error: *** JOB 3714257 ON cstd02-014 CANCELLED AT 2019-03-18T02:59:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042782 ON cstd01-120 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DivSufSort, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort (1/1)
-slurmstepd: error: *** JOB 3714269 ON cstd01-047 CANCELLED AT 2019-03-18T03:01:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042794 ON cstd01-009 CANCELLED AT 2019-04-04T16:45:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DivSufSort_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort_ref (1/1)
-slurmstepd: error: *** JOB 3714239 ON cstd02-003 CANCELLED AT 2019-03-18T02:57:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042764 ON cstd01-075 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Doubling, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Doubling (1/1)
-slurmstepd: error: *** JOB 3714255 ON cstd01-162 CANCELLED AT 2019-03-18T02:59:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042780 ON cstd02-003 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA (1/1)
-slurmstepd: error: *** JOB 3714261 ON cstd01-115 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042786 ON cstd01-047 CANCELLED AT 2019-04-04T16:43:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714262 ON cstd01-142 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042787 ON cstd01-081 CANCELLED AT 2019-04-04T16:43:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_ref (1/1)
-slurmstepd: error: *** JOB 3714245 ON cstd01-129 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042770 ON cstd01-106 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for MSufSort_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running MSufSort_ref (1/1)
-slurmstepd: error: *** JOB 3714240 ON cstd01-013 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042765 ON cstd01-239 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Naiv, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Naiv (1/1)
-slurmstepd: error: *** JOB 3714265 ON cstd01-054 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042790 ON cgpu01-002 CANCELLED AT 2019-04-04T16:43:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714266 ON cstd01-081 CANCELLED AT 2019-03-18T03:01:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042791 ON cstd01-202 CANCELLED AT 2019-04-04T16:43:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Osipov_sequential, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_sequential (1/1)
-slurmstepd: error: *** JOB 3714272 ON cstd01-205 CANCELLED AT 2019-03-18T03:02:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042797 ON cstd01-067 CANCELLED AT 2019-04-04T16:47:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Osipov_sequential_wp, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_sequential_wp (1/1)
-slurmstepd: error: *** JOB 3714273 ON cstd01-087 CANCELLED AT 2019-03-18T03:02:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042798 ON cstd01-212 CANCELLED AT 2019-04-04T16:47:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SACA-K, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SACA-K (1/1)
-slurmstepd: error: *** JOB 3714267 ON cgpu01-009 CANCELLED AT 2019-03-18T03:01:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042792 ON cstd01-046 CANCELLED AT 2019-04-04T16:44:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SACA-K_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SACA-K_ref (1/1)
-slurmstepd: error: *** JOB 3714241 ON cstd01-037 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042766 ON cstd01-131 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SADS, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SADS (1/1)
-slurmstepd: error: *** JOB 3714260 ON cstd01-050 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042785 ON cstd01-123 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SADS_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SADS_ref (1/1)
-slurmstepd: error: *** JOB 3714242 ON cstd01-085 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042767 ON cstd01-132 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS (1/1)
-slurmstepd: error: *** JOB 3714258 ON cstd01-004 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042783 ON cstd01-121 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS-LITE_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS-LITE_ref (1/1)
-slurmstepd: error: *** JOB 3714244 ON cstd01-120 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042769 ON cstd01-105 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS_WPI, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS_WPI (1/1)
-slurmstepd: error: *** JOB 3714259 ON cstd01-014 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042784 ON cstd01-122 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS_ref (1/1)
-slurmstepd: error: *** JOB 3714243 ON cstd01-095 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042768 ON cstd01-133 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSort, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort (1/1)
-slurmstepd: error: *** JOB 3714252 ON cstd01-056 CANCELLED AT 2019-03-18T02:59:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042777 ON cstd01-025 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSortV2, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSortV2 (1/1)
-slurmstepd: error: *** JOB 3714254 ON cstd01-147 CANCELLED AT 2019-03-18T02:59:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042779 ON cstd01-238 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSort_scan, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_scan (1/1)
-slurmstepd: error: *** JOB 3714253 ON cstd01-091 CANCELLED AT 2019-03-18T02:59:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042778 ON cstd01-048 CANCELLED AT 2019-04-04T16:42:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for nzSufSort, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
-slurmstepd: error: *** JOB 3714270 ON cstd01-051 CANCELLED AT 2019-03-18T03:02:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042795 ON cstd01-096 CANCELLED AT 2019-04-04T16:45:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for qsufsort, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running qsufsort (1/1)
-slurmstepd: error: *** JOB 3714264 ON cstd01-038 CANCELLED AT 2019-03-18T03:00:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042789 ON cstd02-030 CANCELLED AT 2019-04-04T16:43:26 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for qsufsort_ref, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running qsufsort_ref (1/1)
-slurmstepd: error: *** JOB 3714246 ON cstd01-131 CANCELLED AT 2019-03-18T02:58:34 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042771 ON cstd01-107 CANCELLED AT 2019-04-04T16:40:22 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for BPR, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR (1/1)
-slurmstepd: error: *** JOB 3714286 ON cstd01-119 CANCELLED AT 2019-03-18T03:08:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042811 ON cstd02-022 CANCELLED AT 2019-04-04T17:09:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for BPR_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR_ref (1/1)
-slurmstepd: error: *** JOB 3714287 ON cstd02-027 CANCELLED AT 2019-03-18T03:08:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042812 ON cstd01-029 CANCELLED AT 2019-04-04T17:09:38 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3 (1/1)
-slurmstepd: error: *** JOB 3714304 ON cstd02-010 CANCELLED AT 2019-03-18T03:29:43 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042829 ON cstd02-043 CANCELLED AT 2019-04-04T17:16:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3-Lite, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3-Lite (1/1)
-slurmstepd: error: *** JOB 3714307 ON cstd01-012 CANCELLED AT 2019-03-18T03:33:43 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042832 ON cstd01-060 CANCELLED AT 2019-04-04T17:19:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC3_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC3_ref (1/1)
-slurmstepd: error: *** JOB 3714283 ON cstd02-022 CANCELLED AT 2019-03-18T03:07:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042808 ON cstd01-052 CANCELLED AT 2019-04-04T17:07:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DC7, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DC7 (1/1)
-slurmstepd: error: *** JOB 3714299 ON cstd01-099 CANCELLED AT 2019-03-18T03:20:09 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042824 ON cstd02-024 CANCELLED AT 2019-04-04T17:14:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow (1/1)
-slurmstepd: error: *** JOB 3714284 ON cstd01-001 CANCELLED AT 2019-03-18T03:08:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042809 ON cstd01-049 CANCELLED AT 2019-04-04T17:08:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_bb, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_bb (1/1)
-slurmstepd: error: *** JOB 3714285 ON cstd01-055 CANCELLED AT 2019-03-18T03:08:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042810 ON cstd01-185 CANCELLED AT 2019-04-04T17:09:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Deep-Shallow_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_ref (1/1)
-slurmstepd: error: *** JOB 3714274 ON cstd02-024 CANCELLED AT 2019-03-18T03:03:04 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042799 ON cstd01-037 CANCELLED AT 2019-04-04T16:47:56 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Discarding2, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Discarding2 (1/1)
-slurmstepd: error: *** JOB 3714292 ON cstd01-031 CANCELLED AT 2019-03-18T03:15:39 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042817 ON cstd02-037 CANCELLED AT 2019-04-04T17:11:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Discarding4, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Discarding4 (1/1)
-slurmstepd: error: *** JOB 3714293 ON cstd01-102 CANCELLED AT 2019-03-18T03:15:39 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042818 ON cstd01-098 CANCELLED AT 2019-04-04T17:11:38 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DivSufSort, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort (1/1)
-slurmstepd: error: *** JOB 3714305 ON cstd02-025 CANCELLED AT 2019-03-18T03:33:13 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042830 ON cstd01-051 CANCELLED AT 2019-04-04T17:18:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for DivSufSort_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort_ref (1/1)
-slurmstepd: error: *** JOB 3714275 ON cstd01-077 CANCELLED AT 2019-03-18T03:04:05 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042800 ON cstd01-050 CANCELLED AT 2019-04-04T16:47:56 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Doubling, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Doubling (1/1)
-slurmstepd: error: *** JOB 3714291 ON cstd01-069 CANCELLED AT 2019-03-18T03:13:37 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042816 ON cstd01-016 CANCELLED AT 2019-04-04T17:10:38 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA (1/1)
-slurmstepd: error: *** JOB 3714297 ON cstd01-128 CANCELLED AT 2019-03-18T03:18:39 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042822 ON cstd01-041 CANCELLED AT 2019-04-04T17:14:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714298 ON cstd02-012 CANCELLED AT 2019-03-18T03:19:39 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042823 ON cstd02-014 CANCELLED AT 2019-04-04T17:14:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_ref (1/1)
-slurmstepd: error: *** JOB 3714281 ON cstd01-010 CANCELLED AT 2019-03-18T03:07:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042806 ON cstd01-045 CANCELLED AT 2019-04-04T17:01:33 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for MSufSort_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running MSufSort_ref (1/1)
-slurmstepd: error: *** JOB 3714276 ON cstd01-140 CANCELLED AT 2019-03-18T03:04:05 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042801 ON cstd01-030 CANCELLED AT 2019-04-04T16:48:58 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Naiv, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Naiv (1/1)
-slurmstepd: error: *** JOB 3714301 ON cstd01-104 CANCELLED AT 2019-03-18T03:26:41 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042826 ON cstd02-045 CANCELLED AT 2019-04-04T17:14:44 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714302 ON cstd01-157 CANCELLED AT 2019-03-18T03:28:43 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042827 ON cstd01-210 CANCELLED AT 2019-04-04T17:16:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Osipov_sequential, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_sequential (1/1)
-slurmstepd: error: *** JOB 3714308 ON cstd01-002 CANCELLED AT 2019-03-18T03:34:13 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042833 ON cstd02-031 CANCELLED AT 2019-04-04T17:19:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for Osipov_sequential_wp, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_sequential_wp (1/1)
-slurmstepd: error: *** JOB 3714309 ON cstd01-017 CANCELLED AT 2019-03-18T03:34:13 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042834 ON cstd01-004 CANCELLED AT 2019-04-04T17:21:15 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SACA-K, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SACA-K (1/1)
-slurmstepd: error: *** JOB 3714303 ON cgpu01-011 CANCELLED AT 2019-03-18T03:28:43 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042828 ON cstd02-006 CANCELLED AT 2019-04-04T17:16:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SACA-K_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SACA-K_ref (1/1)
-slurmstepd: error: *** JOB 3714277 ON cstd01-059 CANCELLED AT 2019-03-18T03:05:05 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042802 ON cstd01-040 CANCELLED AT 2019-04-04T16:48:58 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SADS, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SADS (1/1)
-slurmstepd: error: *** JOB 3714296 ON cstd01-117 CANCELLED AT 2019-03-18T03:17:39 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042821 ON cstd01-034 CANCELLED AT 2019-04-04T17:14:12 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SADS_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SADS_ref (1/1)
-slurmstepd: error: *** JOB 3714278 ON cgpu01-001 CANCELLED AT 2019-03-18T03:05:05 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042803 ON cstd02-017 CANCELLED AT 2019-04-04T16:48:58 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS (1/1)
-slurmstepd: error: *** JOB 3714294 ON cstd01-118 CANCELLED AT 2019-03-18T03:16:39 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042819 ON cstd01-100 CANCELLED AT 2019-04-04T17:12:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS-LITE_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS-LITE_ref (1/1)
-slurmstepd: error: *** JOB 3714280 ON cstd01-006 CANCELLED AT 2019-03-18T03:07:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042805 ON cstd01-208 CANCELLED AT 2019-04-04T16:54:30 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS_WPI, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS_WPI (1/1)
-slurmstepd: error: *** JOB 3714295 ON cstd01-078 CANCELLED AT 2019-03-18T03:17:39 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042820 ON cstd02-021 CANCELLED AT 2019-04-04T17:13:09 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for SAIS_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running SAIS_ref (1/1)
-slurmstepd: error: *** JOB 3714279 ON cstd01-093 CANCELLED AT 2019-03-18T03:06:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042804 ON cstd02-010 CANCELLED AT 2019-04-04T16:49:28 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSort, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort (1/1)
-slurmstepd: error: *** JOB 3714288 ON cstd01-111 CANCELLED AT 2019-03-18T03:09:37 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042813 ON cstd01-063 CANCELLED AT 2019-04-04T17:09:38 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSortV2, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSortV2 (1/1)
-slurmstepd: error: *** JOB 3714290 ON cgpu01-012 CANCELLED AT 2019-03-18T03:12:37 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042815 ON cstd02-067 CANCELLED AT 2019-04-04T17:10:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for mSufSort_scan, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_scan (1/1)
-slurmstepd: error: *** JOB 3714289 ON cstd01-121 CANCELLED AT 2019-03-18T03:09:37 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042814 ON cstd02-013 CANCELLED AT 2019-04-04T17:10:08 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for nzSufSort, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
-slurmstepd: error: *** JOB 3714306 ON cstd01-136 CANCELLED AT 2019-03-18T03:33:13 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042831 ON cstd01-201 CANCELLED AT 2019-04-04T17:18:14 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for qsufsort, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running qsufsort (1/1)
-slurmstepd: error: *** JOB 3714300 ON cstd01-150 CANCELLED AT 2019-03-18T03:22:11 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042825 ON cstd01-183 CANCELLED AT 2019-04-04T17:14:44 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for qsufsort_ref, pcr_tm29.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running qsufsort_ref (1/1)
-slurmstepd: error: *** JOB 3714282 ON cstd01-026 CANCELLED AT 2019-03-18T03:07:35 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042807 ON cstd01-033 CANCELLED AT 2019-04-04T17:02:33 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714334 ON cstd02-006 CANCELLED AT 2019-03-18T03:40:17 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042859 ON cstd01-206 CANCELLED AT 2019-04-04T17:29:17 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714338 ON cgpu01-003 CANCELLED AT 2019-03-18T03:40:47 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042863 ON cstd01-021 CANCELLED AT 2019-04-04T17:31:17 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for GSACA_Opt, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
-slurmstepd: error: *** JOB 3714370 ON cstd01-070 CANCELLED AT 2019-03-18T03:46:21 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042895 ON cstd02-070 CANCELLED AT 2019-04-04T17:35:47 DUE TO TIME LIMIT ***
 
 -----------------
 Missing data for NaivIps4o, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
-slurmstepd: error: *** JOB 3714374 ON cstd01-076 CANCELLED AT 2019-03-18T03:46:21 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 4042899 ON cstd02-048 CANCELLED AT 2019-04-04T17:36:17 DUE TO TIME LIMIT ***
 
 -----------------
