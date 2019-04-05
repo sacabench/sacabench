@@ -1,3 +1,31 @@
+Missing data for BPR_par, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
 Missing data for BPR_par, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -5,6 +33,27 @@ Running BPR_par (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4011965/slurm_script: line 22: 169084 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for BPR_par, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V1, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Parallel-V1, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -24,6 +73,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4011901/slurm_script: line 22: 10680 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo000-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
 
 -----------------
+Missing data for DC3-Parallel-V1, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3-Parallel-V1, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -31,6 +87,27 @@ Running DC3-Parallel-V1 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4011902/slurm_script: line 22: 116180 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo000-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V1, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V1, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V2, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Parallel-V2, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -50,6 +127,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4011908/slurm_script: line 22: 103419 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo001-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
 
 -----------------
+Missing data for DC3-Parallel-V2, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3-Parallel-V2, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -57,6 +141,27 @@ Running DC3-Parallel-V2 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4011909/slurm_script: line 22: 191487 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo001-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V2, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
 
 -----------------
 Missing data for Deep-Shallow_par, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -73,11 +178,39 @@ Running Deep-Shallow_par (1/1)
 /var/spool/slurm/d/job4011971/slurm_script: line 22: 89852 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo010-threads016.json -f -s -p 3200M -r 1 --whitelist 'Deep-Shallow_par' -q -m 64
 
 -----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
 Missing data for Deep-Shallow_par, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_par (1/1)
 /var/spool/slurm/d/job4011972/slurm_script: line 22: 19972 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo010-threads020.json -f -s -p 4000M -r 1 --whitelist 'Deep-Shallow_par' -q -m 64
+
+-----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2Parallel, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding2Parallel, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -98,6 +231,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4011936/slurm_script: line 22: 41307 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
 
 -----------------
+Missing data for Discarding2Parallel, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding2Parallel, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -105,6 +245,27 @@ Running Discarding2Parallel (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4011937/slurm_script: line 22: 171668 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2Parallel, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4Parallel, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding4Parallel, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -125,6 +286,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4011943/slurm_script: line 22: 115620 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo006-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
 
 -----------------
+Missing data for Discarding4Parallel, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding4Parallel, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -132,6 +300,20 @@ Running Discarding4Parallel (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4011944/slurm_script: line 22: 159984 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo006-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4Parallel, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for DivSufSort_PARALLEL_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
@@ -183,6 +365,55 @@ Running DivSufSort_PARALLEL_ref (1/1)
 /var/spool/slurm/d/job4011913/slurm_script: line 22: 80674 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
 
 -----------------
+Missing data for DivSufSort_par_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivIps4oParallel, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
 -output----------
 Loading input...
@@ -232,12 +463,61 @@ Running NaivIps4oParallel (1/1)
 slurmstepd: error: *** JOB 4011948 ON cstd01-041 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for NaivParallel, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivParallel, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivParallel (1/1)
 /var/spool/slurm/d/job4011958/slurm_script: line 22: 189783 Killed                  taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'NaivParallel' -q -m 64
 slurmstepd: error: Detected 9 oom-kill event(s) in step 4011958.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for NaivParallel, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_parallel_wp, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
 
 -----------------
 Missing data for Osipov_parallel_wp, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -258,6 +538,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4011929/slurm_script: line 22: 86368 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_parallel_wp, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_parallel_wp, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -267,12 +554,26 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4011930/slurm_script: line 22: 55519 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_parallel_wp, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_parallel_wp, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_parallel_wp (1/1)
 /var/spool/slurm/d/job4011927/slurm_script: line 22: 136115 Killed                  taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo004-threads008.json -f -s -p 1600M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 32
 slurmstepd: error: Detected 3 oom-kill event(s) in step 4011927.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for PARALLEL_SAIS, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
 
 -----------------
 Missing data for PARALLEL_SAIS, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -426,11 +727,39 @@ Running PARALLEL_SAIS (1/1)
 /var/spool/slurm/d/job4011978/slurm_script: line 22: 192208 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo011-threads016.json -f -s -p 3200M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
 
 -----------------
+Missing data for PARALLEL_SAIS, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
 Missing data for PARALLEL_SAIS, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running PARALLEL_SAIS (1/1)
 /var/spool/slurm/d/job4011979/slurm_script: line 22: 26232 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp000-algo011-threads020.json -f -s -p 4000M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
+
+-----------------
+Missing data for PARALLEL_SAIS, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for PARALLEL_SAIS, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2_par, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
 
 -----------------
 Missing data for mSufSortV2_par, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -447,6 +776,13 @@ Running mSufSortV2_par (1/1)
 slurmstepd: error: *** JOB 4011999 ON cstd02-004 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSortV2_par, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSortV2_par, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -454,11 +790,25 @@ Running mSufSortV2_par (1/1)
 slurmstepd: error: *** JOB 4012000 ON cstd02-005 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSortV2_par, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSortV2_par, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSortV2_par (1/1)
 slurmstepd: error: *** JOB 4011997 ON cstd02-002 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
 
 -----------------
 Missing data for mSufSort_par, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -475,11 +825,25 @@ Running mSufSort_par (1/1)
 slurmstepd: error: *** JOB 4011985 ON cstd02-050 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSort_par, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSort_par, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_par (1/1)
 slurmstepd: error: *** JOB 4011986 ON cstd02-051 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_par, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
 
 -----------------
 Missing data for mSufSort_par, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
@@ -489,11 +853,81 @@ Running mSufSort_par (1/1)
 slurmstepd: error: *** JOB 4011983 ON cstd02-048 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSort_scan_par, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSort_scan_par, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_scan_par (1/1)
 slurmstepd: error: *** JOB 4011993 ON cstd02-058 CANCELLED AT 2019-03-31T21:18:04 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_scan_par, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
 
 -----------------
 Missing data for BPR_par, dna.txt, <dummy>, 20 (no file <dummy>)
@@ -503,6 +937,27 @@ Running BPR_par (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012070/slurm_script: line 22: 160611 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for BPR_par, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V1, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Parallel-V1, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -522,6 +977,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012006/slurm_script: line 22: 46407 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo000-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
 
 -----------------
+Missing data for DC3-Parallel-V1, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3-Parallel-V1, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -529,6 +991,27 @@ Running DC3-Parallel-V1 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012007/slurm_script: line 22: 22594 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo000-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V1, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V1, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V2, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Parallel-V2, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -548,6 +1031,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012013/slurm_script: line 22: 138996 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo001-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
 
 -----------------
+Missing data for DC3-Parallel-V2, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3-Parallel-V2, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -555,6 +1045,76 @@ Running DC3-Parallel-V2 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012014/slurm_script: line 22: 83877 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo001-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V2, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2Parallel, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding2Parallel, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -575,6 +1135,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012041/slurm_script: line 22: 139105 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
 
 -----------------
+Missing data for Discarding2Parallel, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding2Parallel, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -582,6 +1149,27 @@ Running Discarding2Parallel (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012042/slurm_script: line 22: 41423 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2Parallel, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4Parallel, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding4Parallel, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -602,6 +1190,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012048/slurm_script: line 22: 160480 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo006-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
 
 -----------------
+Missing data for Discarding4Parallel, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding4Parallel, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -609,6 +1204,20 @@ Running Discarding4Parallel (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012049/slurm_script: line 22: 169576 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo006-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4Parallel, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for DivSufSort_PARALLEL_ref, dna.txt, <dummy>, 1 (no file <dummy>)
@@ -660,6 +1269,55 @@ Running DivSufSort_PARALLEL_ref (1/1)
 /var/spool/slurm/d/job4012018/slurm_script: line 22: 33980 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
 
 -----------------
+Missing data for DivSufSort_par_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivIps4oParallel, dna.txt, <dummy>, 1 (no file <dummy>)
 -output----------
 Loading input...
@@ -709,12 +1367,61 @@ Running NaivIps4oParallel (1/1)
 slurmstepd: error: *** JOB 4012053 ON cstd02-022 CANCELLED AT 2019-03-31T21:18:34 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for NaivParallel, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivParallel, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivParallel (1/1)
 /var/spool/slurm/d/job4012063/slurm_script: line 22: 86532 Killed                  taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'NaivParallel' -q -m 64
 slurmstepd: error: Detected 19 oom-kill event(s) in step 4012063.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for NaivParallel, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_parallel_wp, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
 
 -----------------
 Missing data for Osipov_parallel_wp, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -735,6 +1442,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012034/slurm_script: line 22: 69586 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_parallel_wp, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_parallel_wp, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -744,12 +1458,26 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012035/slurm_script: line 22: 185538 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_parallel_wp, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_parallel_wp, dna.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_parallel_wp (1/1)
 /var/spool/slurm/d/job4012032/slurm_script: line 22: 25924 Killed                  taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo004-threads008.json -f -s -p 1600M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 32
 slurmstepd: error: Detected 3 oom-kill event(s) in step 4012032.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for PARALLEL_SAIS, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
 
 -----------------
 Missing data for PARALLEL_SAIS, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -1064,6 +1792,13 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 /var/spool/slurm/d/job4012083/slurm_script: line 22: 142100 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo011-threads016.json -f -s -p 3200M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
 
 -----------------
+Missing data for PARALLEL_SAIS, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
 Missing data for PARALLEL_SAIS, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1256,6 +1991,34 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 /var/spool/slurm/d/job4012084/slurm_script: line 22:  1347 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo011-threads020.json -f -s -p 4000M -r 1 --whitelist 'PARALLEL_SAIS' -q -m 64
 
 -----------------
+Missing data for PARALLEL_SAIS, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for PARALLEL_SAIS, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2_par, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2_par, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSortV2_par, dna.txt, <dummy>, 16 (no file <dummy>)
 -output----------
 Loading input...
@@ -1263,11 +2026,39 @@ Running mSufSortV2_par (1/1)
 slurmstepd: error: *** JOB 4012104 ON cstd01-022 CANCELLED AT 2019-03-31T21:22:34 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSortV2_par, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSortV2_par, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSortV2_par (1/1)
 slurmstepd: error: *** JOB 4012105 ON cstd01-028 CANCELLED AT 2019-03-31T21:22:34 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2_par, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2_par, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_par, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
 
 -----------------
 Missing data for mSufSort_par, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -1284,11 +2075,109 @@ Running mSufSort_par (1/1)
 slurmstepd: error: *** JOB 4012090 ON cstd02-025 CANCELLED AT 2019-03-31T21:21:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSort_par, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSort_par, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_par (1/1)
 /var/spool/slurm/d/job4012091/slurm_script: line 22: 136979 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp001-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'mSufSort_par' -q -m 64
+
+-----------------
+Missing data for mSufSort_par, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_par, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
 
 -----------------
 Missing data for BPR_par, wiki.txt, <dummy>, 20 (no file <dummy>)
@@ -1298,6 +2187,27 @@ Running BPR_par (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012175/slurm_script: line 22: 76179 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo009-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR_par' -q -m 64
+
+-----------------
+Missing data for BPR_par, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_par, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_par (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V1, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Parallel-V1, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1317,6 +2227,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012111/slurm_script: line 22: 26191 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo000-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
 
 -----------------
+Missing data for DC3-Parallel-V1, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3-Parallel-V1, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1324,6 +2241,27 @@ Running DC3-Parallel-V1 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012112/slurm_script: line 22: 119873 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo000-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V1' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V1, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V1, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V1 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V2, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Parallel-V2, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1343,6 +2281,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012118/slurm_script: line 22:  3781 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo001-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
 
 -----------------
+Missing data for DC3-Parallel-V2, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3-Parallel-V2, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1350,6 +2295,76 @@ Running DC3-Parallel-V2 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012119/slurm_script: line 22: 172864 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo001-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3-Parallel-V2' -q -m 64
+
+-----------------
+Missing data for DC3-Parallel-V2, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Parallel-V2, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Parallel-V2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_par, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_par (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2Parallel, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding2Parallel, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1370,6 +2385,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012146/slurm_script: line 22: 67178 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo005-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
 
 -----------------
+Missing data for Discarding2Parallel, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding2Parallel, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1377,6 +2399,27 @@ Running Discarding2Parallel (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012147/slurm_script: line 22: 17739 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo005-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding2Parallel, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2Parallel, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4Parallel, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding4Parallel, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1397,6 +2440,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012153/slurm_script: line 22: 171288 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo006-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
 
 -----------------
+Missing data for Discarding4Parallel, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding4Parallel, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1404,6 +2454,20 @@ Running Discarding4Parallel (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4012154/slurm_script: line 22: 75665 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo006-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4Parallel' -q -m 64
+
+-----------------
+Missing data for Discarding4Parallel, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4Parallel, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4Parallel (1/1)
+SA check OK
 
 -----------------
 Missing data for DivSufSort_PARALLEL_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
@@ -1455,6 +2519,55 @@ Running DivSufSort_PARALLEL_ref (1/1)
 /var/spool/slurm/d/job4012123/slurm_script: line 22: 104622 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'DivSufSort_PARALLEL_ref' -q -m 32
 
 -----------------
+Missing data for DivSufSort_par_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_par_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_par_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivIps4oParallel, wiki.txt, <dummy>, 1 (no file <dummy>)
 -output----------
 Loading input...
@@ -1504,12 +2617,61 @@ Running NaivIps4oParallel (1/1)
 slurmstepd: error: *** JOB 4012158 ON cstd02-067 CANCELLED AT 2019-03-31T21:25:35 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for NaivParallel, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivParallel, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivParallel (1/1)
 /var/spool/slurm/d/job4012168/slurm_script: line 22: 19250 Killed                  taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo008-threads020.json -f -s -p 4000M -r 1 --whitelist 'NaivParallel' -q -m 64
 slurmstepd: error: Detected 1 oom-kill event(s) in step 4012168.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for NaivParallel, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for NaivParallel, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running NaivParallel (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_parallel_wp, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
 
 -----------------
 Missing data for Osipov_parallel_wp, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1530,6 +2692,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012139/slurm_script: line 22: 75508 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo004-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_parallel_wp, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_parallel_wp, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1539,12 +2708,26 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4012140/slurm_script: line 22: 23854 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo004-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_parallel_wp, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_parallel_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_parallel_wp, wiki.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running Osipov_parallel_wp (1/1)
 /var/spool/slurm/d/job4012137/slurm_script: line 22: 173319 Killed                  taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-03-31T19:17:34/stat-inp002-algo004-threads008.json -f -s -p 1600M -r 1 --whitelist 'Osipov_parallel_wp' -q -m 32
 slurmstepd: error: Detected 8 oom-kill event(s) in step 4012137.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+-----------------
+Missing data for PARALLEL_SAIS, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
 
 -----------------
 Missing data for PARALLEL_SAIS, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1700,11 +2883,46 @@ Running PARALLEL_SAIS (1/1)
 slurmstepd: error: *** JOB 4012188 ON cstd02-009 CANCELLED AT 2019-03-31T21:27:34 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for PARALLEL_SAIS, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
 Missing data for PARALLEL_SAIS, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running PARALLEL_SAIS (1/1)
 slurmstepd: error: *** JOB 4012189 ON cstd02-023 CANCELLED AT 2019-03-31T21:27:34 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for PARALLEL_SAIS, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for PARALLEL_SAIS, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running PARALLEL_SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2_par, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2_par, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
 
 -----------------
 Missing data for mSufSortV2_par, wiki.txt, <dummy>, 16 (no file <dummy>)
@@ -1714,11 +2932,39 @@ Running mSufSortV2_par (1/1)
 slurmstepd: error: *** JOB 4012209 ON cstd01-023 CANCELLED AT 2019-03-31T21:29:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSortV2_par, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSortV2_par, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSortV2_par (1/1)
 slurmstepd: error: *** JOB 4012210 ON cstd01-121 CANCELLED AT 2019-03-31T21:29:04 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSortV2_par, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2_par, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_par, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
 
 -----------------
 Missing data for mSufSort_par, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1735,6 +2981,13 @@ Running mSufSort_par (1/1)
 slurmstepd: error: *** JOB 4012195 ON cstd02-053 CANCELLED AT 2019-03-31T21:28:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSort_par, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSort_par, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1742,10 +2995,66 @@ Running mSufSort_par (1/1)
 slurmstepd: error: *** JOB 4012196 ON cstd01-018 CANCELLED AT 2019-03-31T21:29:04 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSort_par, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_par (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSort_par, wiki.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_par (1/1)
 slurmstepd: error: *** JOB 4012193 ON cstd01-054 CANCELLED AT 2019-03-31T21:28:04 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_scan_par, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan_par, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan_par (1/1)
+SA check OK
 
 -----------------

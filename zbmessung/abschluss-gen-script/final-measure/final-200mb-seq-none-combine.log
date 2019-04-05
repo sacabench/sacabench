@@ -1,8 +1,135 @@
+Missing data for BPR, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042390 ON cstd02-019 CANCELLED AT 2019-04-04T15:43:56 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
@@ -12,11 +139,250 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042394 ON cstd02-053 CANCELLED AT 2019-04-04T15:43:56 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, cc_commoncrawl.ascii.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042426 ON cstd02-038 CANCELLED AT 2019-04-04T15:45:57 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
@@ -26,11 +392,250 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042430 ON cstd01-019 CANCELLED AT 2019-04-04T15:46:29 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pc_dblp.xml.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042462 ON cstd02-026 CANCELLED AT 2019-04-04T15:48:29 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
@@ -40,11 +645,250 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042466 ON cstd02-072 CANCELLED AT 2019-04-04T15:48:29 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pc_dna.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pc_english.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042499 ON cstd01-017 CANCELLED AT 2019-04-04T15:52:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, pc_english.200MB, <dummy>, 20 (no file <dummy>)
@@ -54,11 +898,250 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042503 ON cstd02-020 CANCELLED AT 2019-04-04T15:52:00 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pc_english.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042535 ON cstd01-207 CANCELLED AT 2019-04-04T15:56:00 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
@@ -68,6 +1151,223 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042539 ON cstd02-023 CANCELLED AT 2019-04-04T15:56:00 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pc_proteins.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -75,11 +1375,187 @@ Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042571 ON cstd02-025 CANCELLED AT 2019-04-04T15:58:00 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for GSACA_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivIps4o, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042575 ON cstd02-039 CANCELLED AT 2019-04-04T15:58:30 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Osipov_sequential, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pc_sources.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
 
 -----------------
 Missing data for Deep-Shallow, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
@@ -96,11 +1572,82 @@ Running Deep-Shallow_bb (1/1)
 slurmstepd: error: *** JOB 4042594 ON cstd02-056 CANCELLED AT 2019-04-04T15:59:30 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Deep-Shallow_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042607 ON cstd01-042 CANCELLED AT 2019-04-04T16:00:31 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
@@ -110,11 +1657,221 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042611 ON cstd02-068 CANCELLED AT 2019-04-04T16:00:31 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
 Missing data for nzSufSort, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4042615 ON cstd01-204 CANCELLED AT 2019-04-04T16:01:05 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for qsufsort, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pcr_cere.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
 
 -----------------
 Missing data for GSACA_Opt, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
@@ -124,11 +1881,145 @@ Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042643 ON cgpu01-006 CANCELLED AT 2019-04-04T16:04:03 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for GSACA_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivIps4o, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042647 ON cstd01-209 CANCELLED AT 2019-04-04T16:06:03 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Osipov_sequential, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pcr_einstein.en.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
 
 -----------------
 Missing data for BPR, pcr_fib41.200MB, <dummy>, 20 (no file <dummy>)
@@ -383,6 +2274,48 @@ Running qsufsort_ref (1/1)
 slurmstepd: error: *** JOB 4042663 ON cstd01-057 CANCELLED AT 2019-04-04T16:11:09 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for BPR, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for Deep-Shallow, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -397,11 +2330,75 @@ Running Deep-Shallow_bb (1/1)
 slurmstepd: error: *** JOB 4042702 ON cstd01-054 CANCELLED AT 2019-04-04T16:21:43 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Deep-Shallow_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042715 ON cstd01-055 CANCELLED AT 2019-04-04T16:25:14 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
 
 -----------------
 Missing data for Naiv, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
@@ -418,6 +2415,160 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042719 ON cgpu01-003 CANCELLED AT 2019-04-04T16:25:14 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pcr_kernel.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for Deep-Shallow, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -432,11 +2583,82 @@ Running Deep-Shallow_bb (1/1)
 slurmstepd: error: *** JOB 4042738 ON cstd02-057 CANCELLED AT 2019-04-04T16:33:48 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Deep-Shallow_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042751 ON cstd01-053 CANCELLED AT 2019-04-04T16:36:52 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
@@ -446,11 +2668,116 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042755 ON cstd01-006 CANCELLED AT 2019-04-04T16:38:52 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
 Missing data for nzSufSort, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4042759 ON cstd01-031 CANCELLED AT 2019-04-04T16:39:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for qsufsort, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, pcr_para.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
 
 -----------------
 Missing data for BPR, pcr_rs.13.200MB, <dummy>, 20 (no file <dummy>)
@@ -957,11 +3284,138 @@ Running qsufsort_ref (1/1)
 slurmstepd: error: *** JOB 4042807 ON cstd01-033 CANCELLED AT 2019-04-04T17:02:33 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for BPR, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042859 ON cstd01-206 CANCELLED AT 2019-04-04T17:29:17 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
@@ -971,6 +3425,223 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042863 ON cstd01-021 CANCELLED AT 2019-04-04T17:31:17 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, tagme_wiki-disamb30.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA_Opt, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -978,10 +3649,144 @@ Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4042895 ON cstd02-070 CANCELLED AT 2019-04-04T17:35:47 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for GSACA_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for Naiv, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
 Missing data for NaivIps4o, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4042899 ON cstd02-048 CANCELLED AT 2019-04-04T17:36:17 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Osipov_sequential, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, wiki_all_vital.txt.200MB, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
 
 -----------------

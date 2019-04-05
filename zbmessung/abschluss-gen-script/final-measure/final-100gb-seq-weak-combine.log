@@ -1,3 +1,31 @@
+Missing data for BPR, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
 Missing data for BPR, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -5,6 +33,27 @@ Running BPR (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013727/slurm_script: line 22: 17788 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
 
 -----------------
 Missing data for BPR_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -23,12 +72,40 @@ Running BPR_ref (1/1)
 slurmstepd: error: Detected 1 oom-kill event(s) in step 4013733.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 
 -----------------
+Missing data for BPR_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for BPR_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR_ref (1/1)
 Error in file kbs_SuffixArrayConstDStepAndPre.c, line 623:
   Allocation Error, not enough space
+
+-----------------
+Missing data for BPR_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -49,6 +126,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013852/slurm_script: line 22: 126530 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo030-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3' -q -m 64
 
 -----------------
+Missing data for DC3, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -56,6 +140,27 @@ Running DC3 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013853/slurm_script: line 22: 26759 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo030-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Lite, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -72,6 +177,13 @@ Running DC3-Lite (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013873/slurm_script: line 22: 30407 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo033-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for DC3-Lite, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Lite, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
@@ -97,6 +209,65 @@ Running DC3-Lite (1/1)
 slurmstepd: error: *** JOB 4013871 ON cgpu01-015 CANCELLED AT 2019-04-01T09:10:01 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for DC3_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC7, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
 -output----------
 Loading input...
@@ -114,6 +285,13 @@ Running DC7 (1/1)
 slurmstepd: error: Detected 1 oom-kill event(s) in step 4013817.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 
 -----------------
+Missing data for DC7, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC7, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -121,6 +299,27 @@ Running DC7 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013818/slurm_script: line 22: 39931 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo025-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for DC7, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
 
 -----------------
 Missing data for Deep-Shallow, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -135,6 +334,13 @@ Missing data for Deep-Shallow, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
 Loading input...
 Running Deep-Shallow (1/1)
 slurmstepd: error: *** JOB 4013712 ON cstd02-009 CANCELLED AT 2019-04-01T08:43:39 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
 
 -----------------
 Missing data for Deep-Shallow, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
@@ -156,6 +362,13 @@ Missing data for Deep-Shallow, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
 Loading input...
 Running Deep-Shallow (1/1)
 slurmstepd: error: *** JOB 4013710 ON cstd02-007 CANCELLED AT 2019-04-01T08:43:39 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Deep-Shallow_bb, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
 
 -----------------
 Missing data for Deep-Shallow_bb, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -200,11 +413,63 @@ Running Deep-Shallow_bb (1/1)
 slurmstepd: error: *** JOB 4013717 ON cstd02-014 CANCELLED AT 2019-04-01T08:43:39 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for Deep-Shallow_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_ref (1/1)
 slurmstepd: error: *** JOB 4013640 ON cstd01-187 CANCELLED AT 2019-04-01T08:43:39 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Discarding2, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding2, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -225,6 +490,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013768/slurm_script: line 22: 186887 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo018-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2' -q -m 64
 
 -----------------
+Missing data for Discarding2, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding2, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -232,6 +504,27 @@ Running Discarding2 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013769/slurm_script: line 22: 109222 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo018-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding4, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -252,6 +545,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013775/slurm_script: line 22: 151918 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo019-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4' -q -m 64
 
 -----------------
+Missing data for Discarding4, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding4, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -261,6 +561,34 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013776/slurm_script: line 22: 28211 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo019-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4' -q -m 64
 
 -----------------
+Missing data for Discarding4, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
 Missing data for DivSufSort, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
 -output----------
 Loading input...
@@ -268,11 +596,88 @@ Running DivSufSort (1/1)
 slurmstepd: error: *** JOB 4013859 ON cstd01-149 CANCELLED AT 2019-04-01T09:05:31 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for DivSufSort, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
 Missing data for DivSufSort, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort (1/1)
 slurmstepd: error: *** JOB 4013860 ON cstd01-005 CANCELLED AT 2019-04-01T09:06:01 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DivSufSort, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
 
 -----------------
 Missing data for Doubling, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -293,6 +698,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013761/slurm_script: line 22:  5589 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo017-threads016.json -f -s -p 3200M -r 1 --whitelist 'Doubling' -q -m 64
 
 -----------------
+Missing data for Doubling, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
 Missing data for Doubling, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -302,11 +714,25 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013762/slurm_script: line 22: 186832 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo017-threads020.json -f -s -p 4000M -r 1 --whitelist 'Doubling' -q -m 64
 
 -----------------
+Missing data for Doubling, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
 Missing data for Doubling, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running Doubling (1/1)
 slurmstepd: error: *** JOB 4013759 ON cstd01-194 CANCELLED AT 2019-04-01T08:45:41 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for GSACA, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
 
 -----------------
 Missing data for GSACA, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -327,6 +753,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013803/slurm_script: line 22: 106851 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo023-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA' -q -m 64
 
 -----------------
+Missing data for GSACA, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -334,6 +767,20 @@ Running GSACA (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013804/slurm_script: line 22: 39633 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo023-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
 
 -----------------
 Missing data for GSACA_Opt, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
@@ -390,6 +837,90 @@ Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4013808 ON cstd01-020 CANCELLED AT 2019-04-01T08:52:48 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for GSACA_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+ERROR: SA check failed
+
+-----------------
+Missing data for MSufSort_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+ERROR: SA check failed
+
+-----------------
+Missing data for MSufSort_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
 Missing data for MSufSort_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -399,11 +930,26 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013657/slurm_script: line 22: 187626 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo002-threads020.json -f -s -p 4000M -r 1 --whitelist 'MSufSort_ref' -q -m 64
 
 -----------------
+Missing data for MSufSort_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
 Missing data for MSufSort_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running MSufSort_ref (1/1)
 /var/spool/slurm/d/job4013654/slurm_script: line 22: 55481 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'MSufSort_ref' -q -m 32
+
+-----------------
+Missing data for Naiv, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for Naiv, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -420,11 +966,32 @@ Running Naiv (1/1)
 slurmstepd: error: *** JOB 4013831 ON cstd02-067 CANCELLED AT 2019-04-01T08:56:52 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Naiv, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
 Missing data for Naiv, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running Naiv (1/1)
 slurmstepd: error: *** JOB 4013832 ON cstd01-037 CANCELLED AT 2019-04-01T08:57:22 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Naiv, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
@@ -476,6 +1043,13 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4013836 ON cgpu01-002 CANCELLED AT 2019-04-01T08:57:53 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
 -output----------
 Loading input...
@@ -494,6 +1068,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013880/slurm_script: line 22: 27174 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo034-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential' -q -m 64
 
 -----------------
+Missing data for Osipov_sequential, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -501,6 +1082,27 @@ Running Osipov_sequential (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013881/slurm_script: line 22: 18772 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo034-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
 
 -----------------
 Missing data for Osipov_sequential_wp, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -521,6 +1123,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013887/slurm_script: line 22: 79183 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo035-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_sequential_wp, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential_wp, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -530,11 +1139,496 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013888/slurm_script: line 22: 31082 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo035-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_sequential_wp, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSort, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort (1/1)
 slurmstepd: error: *** JOB 4013741 ON cstd01-056 CANCELLED AT 2019-04-01T08:44:40 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
 
 -----------------
 Missing data for mSufSortV2, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
@@ -544,11 +1638,74 @@ Running mSufSortV2 (1/1)
 slurmstepd: error: *** JOB 4013755 ON cstd02-063 CANCELLED AT 2019-04-01T08:45:10 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for mSufSortV2, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
 Missing data for mSufSort_scan, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running mSufSort_scan (1/1)
 slurmstepd: error: *** JOB 4013748 ON cstd02-002 CANCELLED AT 2019-04-01T08:44:40 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
 
 -----------------
 Missing data for nzSufSort, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
@@ -563,6 +1720,13 @@ Missing data for nzSufSort, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
 Loading input...
 Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4013866 ON cstd01-059 CANCELLED AT 2019-04-01T09:09:01 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
 
 -----------------
 Missing data for nzSufSort, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
@@ -586,11 +1750,32 @@ Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4013864 ON cstd01-119 CANCELLED AT 2019-04-01T09:08:01 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for qsufsort, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
 Missing data for qsufsort, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
 -output----------
 Loading input...
 Running qsufsort (1/1)
 slurmstepd: error: *** JOB 4013824 ON cstd01-222 CANCELLED AT 2019-04-01T08:54:49 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for qsufsort, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
 
 -----------------
 Missing data for qsufsort, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
@@ -602,6 +1787,100 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013825/slurm_script: line 22: 110166 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/commoncrawl.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp000-algo026-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort' -q -m 64
 
 -----------------
+Missing data for qsufsort, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, commoncrawl.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
 Missing data for BPR, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -609,6 +1888,27 @@ Running BPR (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4013979/slurm_script: line 22: 22758 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
 
 -----------------
 Missing data for BPR_ref, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -627,12 +1927,40 @@ Running BPR_ref (1/1)
 slurmstepd: error: Detected 1 oom-kill event(s) in step 4013985.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 
 -----------------
+Missing data for BPR_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for BPR_ref, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR_ref (1/1)
 Error in file kbs_SuffixArrayConstDStepAndPre.c, line 726:
   Allocation Error, not enough space
+
+-----------------
+Missing data for BPR_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -653,6 +1981,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014104/slurm_script: line 22: 163235 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo030-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3' -q -m 64
 
 -----------------
+Missing data for DC3, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -660,6 +1995,27 @@ Running DC3 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014105/slurm_script: line 22: 163382 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo030-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Lite, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -676,6 +2032,13 @@ Running DC3-Lite (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014125/slurm_script: line 22:   369 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo033-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for DC3-Lite, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Lite, dna.txt, <dummy>, 20 (no file <dummy>)
@@ -701,6 +2064,65 @@ Running DC3-Lite (1/1)
 slurmstepd: error: *** JOB 4014123 ON cstd01-009 CANCELLED AT 2019-04-01T10:15:17 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for DC3_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC7, dna.txt, <dummy>, 12 (no file <dummy>)
 -output----------
 Loading input...
@@ -718,6 +2140,13 @@ Running DC7 (1/1)
 slurmstepd: error: Detected 1 oom-kill event(s) in step 4014069.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 
 -----------------
+Missing data for DC7, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC7, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -725,6 +2154,177 @@ Running DC7 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014070/slurm_script: line 22: 152347 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo025-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC7' -q -m 64
+
+-----------------
+Missing data for DC7, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: SA check failed
+
+-----------------
+Missing data for Discarding2, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding2, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -745,6 +2345,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014020/slurm_script: line 22: 14565 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo018-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2' -q -m 64
 
 -----------------
+Missing data for Discarding2, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding2, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -752,6 +2359,27 @@ Running Discarding2 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014021/slurm_script: line 22: 117350 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo018-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding4, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -772,6 +2400,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014027/slurm_script: line 22: 72680 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo019-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4' -q -m 64
 
 -----------------
+Missing data for Discarding4, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding4, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -781,11 +2416,123 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014028/slurm_script: line 22: 16163 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo019-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4' -q -m 64
 
 -----------------
+Missing data for Discarding4, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
 Missing data for DivSufSort, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort (1/1)
 slurmstepd: error: *** JOB 4014112 ON cgpu01-003 CANCELLED AT 2019-04-01T10:10:16 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DivSufSort, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
 
 -----------------
 Missing data for Doubling, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -806,6 +2553,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014013/slurm_script: line 22:  3012 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo017-threads016.json -f -s -p 3200M -r 1 --whitelist 'Doubling' -q -m 64
 
 -----------------
+Missing data for Doubling, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
 Missing data for Doubling, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -813,6 +2567,27 @@ Running Doubling (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014014/slurm_script: line 22: 23638 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo017-threads020.json -f -s -p 4000M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
 
 -----------------
 Missing data for GSACA, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -833,6 +2608,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014055/slurm_script: line 22: 98607 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo023-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA' -q -m 64
 
 -----------------
+Missing data for GSACA, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -840,6 +2622,20 @@ Running GSACA (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014056/slurm_script: line 22:  2637 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo023-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
 
 -----------------
 Missing data for GSACA_Opt, dna.txt, <dummy>, 1 (no file <dummy>)
@@ -896,6 +2692,90 @@ Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4014060 ON cstd01-060 CANCELLED AT 2019-04-01T09:52:01 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for GSACA_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+ERROR: SA check failed
+
+-----------------
+Missing data for MSufSort_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+ERROR: SA check failed
+
+-----------------
+Missing data for MSufSort_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
 Missing data for MSufSort_ref, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -905,11 +2785,68 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4013909/slurm_script: line 22: 80190 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo002-threads020.json -f -s -p 4000M -r 1 --whitelist 'MSufSort_ref' -q -m 64
 
 -----------------
+Missing data for MSufSort_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
 Missing data for MSufSort_ref, dna.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running MSufSort_ref (1/1)
 /var/spool/slurm/d/job4013906/slurm_script: line 22: 112594 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'MSufSort_ref' -q -m 32
+
+-----------------
+Missing data for Naiv, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, dna.txt, <dummy>, 1 (no file <dummy>)
@@ -961,6 +2898,13 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4014088 ON cstd01-017 CANCELLED AT 2019-04-01T10:01:07 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential, dna.txt, <dummy>, 12 (no file <dummy>)
 -output----------
 Loading input...
@@ -979,6 +2923,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014132/slurm_script: line 22: 161576 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo034-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential' -q -m 64
 
 -----------------
+Missing data for Osipov_sequential, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -986,6 +2937,27 @@ Running Osipov_sequential (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014133/slurm_script: line 22: 124868 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo034-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
 
 -----------------
 Missing data for Osipov_sequential_wp, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -1006,6 +2978,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014139/slurm_script: line 22:  1009 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo035-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_sequential_wp, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential_wp, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1013,6 +2992,575 @@ Running Osipov_sequential_wp (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014140/slurm_script: line 22: 164324 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo035-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
 
 -----------------
 Missing data for nzSufSort, dna.txt, <dummy>, 12 (no file <dummy>)
@@ -1029,6 +3577,13 @@ Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4014118 ON cstd01-050 CANCELLED AT 2019-04-01T10:12:17 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for nzSufSort, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
 Missing data for nzSufSort, dna.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1036,11 +3591,46 @@ Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4014119 ON cstd01-049 CANCELLED AT 2019-04-01T10:13:17 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for nzSufSort, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
+
+-----------------
 Missing data for nzSufSort, dna.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4014116 ON cstd01-034 CANCELLED AT 2019-04-01T10:12:17 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for qsufsort, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
 
 -----------------
 Missing data for qsufsort, dna.txt, <dummy>, 20 (no file <dummy>)
@@ -1052,6 +3642,100 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014077/slurm_script: line 22:  6725 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/dna.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp001-algo026-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort' -q -m 64
 
 -----------------
+Missing data for qsufsort, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, dna.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
 Missing data for BPR, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1059,6 +3743,27 @@ Running BPR (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014231/slurm_script: line 22: 46355 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo012-threads020.json -f -s -p 4000M -r 1 --whitelist 'BPR' -q -m 64
+
+-----------------
+Missing data for BPR, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
 
 -----------------
 Missing data for BPR_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1077,12 +3782,40 @@ Running BPR_ref (1/1)
 slurmstepd: error: Detected 1 oom-kill event(s) in step 4014237.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 
 -----------------
+Missing data for BPR_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for BPR_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running BPR_ref (1/1)
 Error in file kbs_SuffixArrayConstDStepAndPre.c, line 623:
   Allocation Error, not enough space
+
+-----------------
+Missing data for BPR_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for BPR_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running BPR_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1103,6 +3836,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014356/slurm_script: line 22: 12797 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo030-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3' -q -m 64
 
 -----------------
+Missing data for DC3, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC3, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1110,6 +3850,27 @@ Running DC3 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014357/slurm_script: line 22: 134404 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo030-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC3' -q -m 64
+
+-----------------
+Missing data for DC3, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3-Lite, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Lite, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1126,6 +3887,13 @@ Running DC3-Lite (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014377/slurm_script: line 22: 133850 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo033-threads016.json -f -s -p 3200M -r 1 --whitelist 'DC3-Lite' -q -m 64
+
+-----------------
+Missing data for DC3-Lite, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3-Lite (1/1)
+SA check OK
 
 -----------------
 Missing data for DC3-Lite, wiki.txt, <dummy>, 20 (no file <dummy>)
@@ -1151,6 +3919,65 @@ Running DC3-Lite (1/1)
 slurmstepd: error: *** JOB 4014375 ON cgpu01-002 CANCELLED AT 2019-04-01T11:05:03 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for DC3_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for DC3_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC3_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC3_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC7, wiki.txt, <dummy>, 12 (no file <dummy>)
 -output----------
 Loading input...
@@ -1168,6 +3995,13 @@ Running DC7 (1/1)
 slurmstepd: error: Detected 1 oom-kill event(s) in step 4014321.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
 
 -----------------
+Missing data for DC7, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
 Missing data for DC7, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1177,11 +4011,175 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014322/slurm_script: line 22: 185442 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo025-threads020.json -f -s -p 4000M -r 1 --whitelist 'DC7' -q -m 64
 
 -----------------
+Missing data for DC7, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for DC7, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DC7 (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_bb, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_bb (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for Deep-Shallow_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Deep-Shallow_ref (1/1)
+SA check OK
+
+-----------------
 Missing data for Deep-Shallow_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running Deep-Shallow_ref (1/1)
 slurmstepd: error: *** JOB 4014144 ON cstd01-184 CANCELLED AT 2019-04-01T10:22:17 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for Discarding2, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding2, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1202,6 +4200,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014272/slurm_script: line 22: 52997 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo018-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding2' -q -m 64
 
 -----------------
+Missing data for Discarding2, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding2, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1209,6 +4214,27 @@ Running Discarding2 (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014273/slurm_script: line 22: 46473 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo018-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding2' -q -m 64
+
+-----------------
+Missing data for Discarding2, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding2, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding2 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
 
 -----------------
 Missing data for Discarding4, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1229,6 +4255,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014279/slurm_script: line 22:  1922 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo019-threads016.json -f -s -p 3200M -r 1 --whitelist 'Discarding4' -q -m 64
 
 -----------------
+Missing data for Discarding4, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
 Missing data for Discarding4, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1238,11 +4271,123 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014280/slurm_script: line 22:  2504 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo019-threads020.json -f -s -p 4000M -r 1 --whitelist 'Discarding4' -q -m 64
 
 -----------------
+Missing data for Discarding4, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for Discarding4, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Discarding4 (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
 Missing data for DivSufSort, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
 Running DivSufSort (1/1)
 slurmstepd: error: *** JOB 4014364 ON cstd01-001 CANCELLED AT 2019-04-01T11:01:03 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for DivSufSort, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for DivSufSort_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running DivSufSort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
 
 -----------------
 Missing data for Doubling, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1263,6 +4408,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014265/slurm_script: line 22:  1336 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo017-threads016.json -f -s -p 3200M -r 1 --whitelist 'Doubling' -q -m 64
 
 -----------------
+Missing data for Doubling, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
 Missing data for Doubling, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1270,6 +4422,27 @@ Running Doubling (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014266/slurm_script: line 22: 119770 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo017-threads020.json -f -s -p 4000M -r 1 --whitelist 'Doubling' -q -m 64
+
+-----------------
+Missing data for Doubling, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for Doubling, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Doubling (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
 
 -----------------
 Missing data for GSACA, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1290,6 +4463,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014307/slurm_script: line 22: 54013 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo023-threads016.json -f -s -p 3200M -r 1 --whitelist 'GSACA' -q -m 64
 
 -----------------
+Missing data for GSACA, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
 Missing data for GSACA, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1297,6 +4477,20 @@ Running GSACA (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014308/slurm_script: line 22: 174006 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo023-threads020.json -f -s -p 4000M -r 1 --whitelist 'GSACA' -q -m 64
+
+-----------------
+Missing data for GSACA, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA (1/1)
+SA check OK
 
 -----------------
 Missing data for GSACA_Opt, wiki.txt, <dummy>, 1 (no file <dummy>)
@@ -1353,6 +4547,90 @@ Running GSACA_Opt (1/1)
 slurmstepd: error: *** JOB 4014312 ON cstd01-038 CANCELLED AT 2019-04-01T10:52:59 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for GSACA_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for GSACA_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for GSACA_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running GSACA_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
+Missing data for MSufSort_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+ERROR: SA check failed
+
+-----------------
+Missing data for MSufSort_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+ERROR: SA check failed
+
+-----------------
+Missing data for MSufSort_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
 Missing data for MSufSort_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1362,11 +4640,68 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014161/slurm_script: line 22: 195798 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo002-threads020.json -f -s -p 4000M -r 1 --whitelist 'MSufSort_ref' -q -m 64
 
 -----------------
+Missing data for MSufSort_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running MSufSort_ref (1/1)
+                                   
+SA check OK
+
+-----------------
 Missing data for MSufSort_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
 -output----------
 Loading input...
 Running MSufSort_ref (1/1)
 /var/spool/slurm/d/job4014158/slurm_script: line 22:  9359 Segmentation fault      taskset -c 0,1,2,3,4,5,6,7 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo002-threads008.json -f -s -p 1600M -r 1 --whitelist 'MSufSort_ref' -q -m 32
+
+-----------------
+Missing data for Naiv, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
+
+-----------------
+Missing data for Naiv, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Naiv (1/1)
+SA check OK
 
 -----------------
 Missing data for NaivIps4o, wiki.txt, <dummy>, 1 (no file <dummy>)
@@ -1418,6 +4753,13 @@ Running NaivIps4o (1/1)
 slurmstepd: error: *** JOB 4014340 ON cstd02-068 CANCELLED AT 2019-04-01T10:57:03 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for Osipov_sequential, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential, wiki.txt, <dummy>, 12 (no file <dummy>)
 -output----------
 Loading input...
@@ -1436,6 +4778,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014384/slurm_script: line 22: 191705 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo034-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential' -q -m 64
 
 -----------------
+Missing data for Osipov_sequential, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1443,6 +4792,27 @@ Running Osipov_sequential (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014385/slurm_script: line 22: 128575 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo034-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
 
 -----------------
 Missing data for Osipov_sequential_wp, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1463,6 +4833,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 /var/spool/slurm/d/job4014391/slurm_script: line 22: 192222 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo035-threads016.json -f -s -p 3200M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
 
 -----------------
+Missing data for Osipov_sequential_wp, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
 Missing data for Osipov_sequential_wp, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1470,6 +4847,575 @@ Running Osipov_sequential_wp (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014392/slurm_script: line 22: 128727 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo035-threads020.json -f -s -p 4000M -r 1 --whitelist 'Osipov_sequential_wp' -q -m 64
+
+-----------------
+Missing data for Osipov_sequential_wp, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for Osipov_sequential_wp, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running Osipov_sequential_wp (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SACA-K_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SACA-K_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SADS_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SADS_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SADS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS-LITE_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS-LITE_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_WPI, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_WPI (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for SAIS_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running SAIS_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSortV2, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSortV2 (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for mSufSort_scan, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running mSufSort_scan (1/1)
+SA check OK
+
+-----------------
+Missing data for nzSufSort, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
 
 -----------------
 Missing data for nzSufSort, wiki.txt, <dummy>, 12 (no file <dummy>)
@@ -1484,6 +5430,13 @@ Missing data for nzSufSort, wiki.txt, <dummy>, 16 (no file <dummy>)
 Loading input...
 Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4014370 ON cstd01-187 CANCELLED AT 2019-04-01T11:02:03 DUE TO TIME LIMIT ***
+
+-----------------
+Missing data for nzSufSort, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running nzSufSort (1/1)
+SA check OK
 
 -----------------
 Missing data for nzSufSort, wiki.txt, <dummy>, 20 (no file <dummy>)
@@ -1507,6 +5460,34 @@ Running nzSufSort (1/1)
 slurmstepd: error: *** JOB 4014368 ON cstd01-004 CANCELLED AT 2019-04-01T11:02:03 DUE TO TIME LIMIT ***
 
 -----------------
+Missing data for qsufsort, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
 Missing data for qsufsort, wiki.txt, <dummy>, 20 (no file <dummy>)
 -output----------
 Loading input...
@@ -1514,5 +5495,71 @@ Running qsufsort (1/1)
 terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
 /var/spool/slurm/d/job4014329/slurm_script: line 22: 185594 Aborted                 taskset -c 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ./sacabench/sacabench batch /work/smmaloeb/large_datasets/wiki.txt -b /work/smmaloeb/measure/2019-04-01T06:43:21/stat-inp002-algo026-threads020.json -f -s -p 4000M -r 1 --whitelist 'qsufsort' -q -m 64
+
+-----------------
+Missing data for qsufsort, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, <dummy>, 1 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, <dummy>, 12 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, <dummy>, 16 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, <dummy>, 2 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, <dummy>, 20 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+ERROR: This algorithm only supports inputs addressable with 32Bit
+ERROR: SA check failed
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, <dummy>, 4 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
+
+-----------------
+Missing data for qsufsort_ref, wiki.txt, <dummy>, 8 (no file <dummy>)
+-output----------
+Loading input...
+Running qsufsort_ref (1/1)
+SA check OK
 
 -----------------

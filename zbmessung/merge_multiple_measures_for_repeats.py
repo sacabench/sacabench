@@ -115,8 +115,11 @@ def handle_process(args):
             repetitions = []
             missing_log = []
 
+            # generate missing data annotations for successfull runs as well
+            append_all = True
+
             for datapoint in gathered[key]:
-                if not datapoint["stat"]:
+                if not datapoint["stat"] or append_all:
                     err_reason = "no file {}".format("<dummy>")
                     (input, algo, threads) = datapoint["key"]
                     prefix = "<dummy>"
@@ -131,11 +134,11 @@ def handle_process(args):
                     log_print("-----------------")
 
                     missing_log.append(outs)
-                else:
+                if datapoint["stat"]:
                     [single_rep] = datapoint["stat"]
                     repetitions += single_rep
 
-            if len(repetitions) == 0:
+            if len(repetitions) == 0 or append_all:
                 combine_log += missing_log[0]
 
             combined_json.append(repetitions)
