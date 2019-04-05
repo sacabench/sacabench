@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include <unistd.h>
 #include <sys/resource.h>
@@ -22,16 +23,19 @@ size_t getPeakRSS() {
 }
 
 int main(int argc, char* args[]) {
-	if (argc != 2) {
-		cout << "Expected one argument (input file)."
-			<< endl;	
+	if (argc < 2 || argc > 3) {
+		cout << "Usage: <input file> [prefix]" << endl;
 		return -1;
 	}
+	size_t prefix = ~0ull;
+	if (argc == 3) {
+
+    }
 	std::cout.precision(4);
 	string text;
 	{ // Read input file.
 		ifstream input_file(args[1]);
-		input_file.seekg(0, ios::end);   
+		input_file.seekg(0, ios::end);
 		text.reserve(input_file.tellg());
 		input_file.seekg(0, ios::beg);
 		text.assign((istreambuf_iterator<char>(input_file)),
@@ -48,7 +52,7 @@ int main(int argc, char* args[]) {
 		cout.flush();
 	}
 	cout << getPeakRSS() / (1024*1024)<< endl;
-	if (sufcheck((sauchar_t*)text.data(), SA, size, false)) {
+	if (sufcheck_labeit((sauchar_t*)text.data(), SA, size, false)) {
 		cout << "Sufcheck failed!" << endl;
 		return -1;
 	}
