@@ -27,19 +27,47 @@ int main(int argc, char* args[]) {
 		cout << "Usage: <input file> [prefix]" << endl;
 		return -1;
 	}
-	size_t prefix = ~0ull;
+	uint64_t prefix = ~0ull;
 	if (argc == 3) {
-
+        uint64_t mult = 1;
+        std::string pres = args[2];
+        if (pres.size() == 0) return -1;
+        if (pres.back() == 'B' || pres.back() == 'b') {
+            pres.pop_back();
+        }
+        if (pres.back() == 'i') {
+            pres.pop_back();
+        }
+        if (pres.back() == 'K' || pres.back() == 'k') {
+            pres.pop_back();
+            mult = 1024ull;
+        } else if (pres.back() == 'M' || pres.back() == 'm') {
+            pres.pop_back();
+            mult = 1024ull * 1024ull;
+        } else if (pres.back() == 'G' || pres.back() == 'g') {
+            pres.pop_back();
+            mult = 1024ull * 1024ull * 1024ull;
+        }
+        for (auto c : pres) {
+            if ((c < '0') || (c > '9')) {
+                std::cout << "integer parser error in '" << pres << "'" << std::endl;
+                return 1;
+            }
+        }
+        prefix = std::stoi(pres);
+        prefix *= mult;
     }
 	std::cout.precision(4);
 	string text;
 	{ // Read input file.
 		ifstream input_file(args[1]);
 		input_file.seekg(0, ios::end);
-		text.reserve(input_file.tellg());
+        uint64_t text_size = input_file.tellg();
 		input_file.seekg(0, ios::beg);
-		text.assign((istreambuf_iterator<char>(input_file)),
-				istreambuf_iterator<char>());
+        uint64_t actual_prefix = std::min(prefix, text_size);
+		text.resize(actual_prefix);
+        std::cout << "reading a prefix of " << text.size() << " bytes" << std::endl;
+        input_file.read(text.data(), actual_prefix);
 	}
 	num_type size = text.size();
 	num_type *SA = new num_type[size];
