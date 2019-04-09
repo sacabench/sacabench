@@ -12,6 +12,11 @@ target_link_libraries(
     parallel_divsufsort
     lprange
 )
+target_compile_options(parallel_divsufsort PUBLIC
+  ${SACA_BENCH_FLAGS}
+  $<$<CONFIG:Debug>:${SACA_BENCH_DEBUG_FLAGS}>
+  $<$<CONFIG:Release>:${SACA_BENCH_RELEASE_FLAGS}>
+)
 install(TARGETS parallel_divsufsort
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib

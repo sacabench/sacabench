@@ -246,6 +246,7 @@ def handle_tablegen_all(args):
 {\color{orange}\faClockO} & Berechnung hat Zeitlimit des Systems erreicht.\\
 {\color{purple}\faFloppyO} & Berechnung hat Speicherlimit des Systems erreicht.\\
 {\color{violet}\faBolt} & Berechnung brach mit einem Laufzeitfehler ab.\\
+{\color{teal}\faBan} & Nicht durch Implementierung unterstützt.\\
 \end{tabular}""",
             },
             {
@@ -320,6 +321,10 @@ def parse_logfile(logfile):
             kind = "crash"
         if "free(): invalid size" in output:
             kind = "crash"
+
+        # unsupported
+        if "ERROR: This algorithm only supports" in output:
+            kind = "unsupported"
 
         #print("{}, {}, {}, {}: {}".format(algo_name, input_name, input_prefix_str, threads, kind))
         if kind == "unknown":

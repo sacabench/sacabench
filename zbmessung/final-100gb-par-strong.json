@@ -12,10 +12,7 @@
             "NaivParallel",
             "BPR_par",
             "Deep-Shallow_par",
-            "PARALLEL_SAIS",
-            "mSufSort_par",
-            "mSufSort_scan_par",
-            "mSufSortV2_par"
+            "PARALLEL_SAIS"
         ],
         "input": [
             "$WORK/large_datasets/commoncrawl.txt",

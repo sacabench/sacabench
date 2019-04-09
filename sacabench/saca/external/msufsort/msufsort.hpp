@@ -17,18 +17,17 @@ public:
     static void construct_sa(util::string_span text,
                              const sacabench::util::alphabet&,
                              util::span<sa_index> out_sa) {
-        external_saca_with_writable_text_one_size_only<sa_index, unsigned int, unsigned char>(
+        external_saca_with_writable_text_one_size_only<sa_index, int32_t, unsigned char>(
             text, out_sa, text.size(), msufsort_ref);
     }
 
 private:
-    static void msufsort_ref(unsigned char* text, unsigned int* sa,
-                             unsigned int n) {
+    static void msufsort_ref(unsigned char* text, int32_t* sa, size_t n) {
         MSufSort m_suffixSorter;
         m_suffixSorter.Sort(text, n);
 
         // calculate SA from ISA
-        for (int32_t i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             sa[m_suffixSorter.ISA(i) - 1] = i;
         }
     }

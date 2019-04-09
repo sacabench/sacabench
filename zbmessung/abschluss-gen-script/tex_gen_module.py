@@ -174,9 +174,12 @@ def generate_latex_table_list(cfg, outer_matrix, threads_and_sizes, algorithms, 
             nonlocal outer_matrix
             nonlocal which
             nonlocal key
+            k = (algorithm_name, f, str(ts[0]))
+
+            if check_log.get(k) == "unsupported":
+                return ("{\color{teal}\\faBan}", "unsupported")
 
             if outer_matrix[ts][f][algorithm_name]["data"] != "exists":
-                k = (algorithm_name, f, str(ts[0]))
                 if check_log.get(k) == "timeout":
                     return ("{\color{orange}\\faClockO}", "timeout")
                 if check_log.get(k) == "crash":
