@@ -145,21 +145,22 @@ def extractAlgorithmDataFromDictionary(dict, algorithmID, repititionCount, repet
         if statsDict["key"] == "text_size":
             data[ResultKeys.text_size] = statsDict["value"]
     
-    algorithmDataDict = dict["sub"][0]["sub"]
-    for algorithmEntry in algorithmDataDict:
-        if algorithmEntry["title"] == "Algorithm":
-            # We found values for algorithm!
-            timeEnd = algorithmEntry["timeEnd"]
-            timeStart = algorithmEntry["timeStart"]
-            data[ResultKeys.time] = timeEnd - timeStart
-            data[ResultKeys.memFinal] = algorithmEntry["memFinal"]
-            data[ResultKeys.memOff] = algorithmEntry["memOff"]
-            data[ResultKeys.memPeak] = algorithmEntry["memPeak"]
+    algorithmDataDict = dict["sub"][0]
+    timeEnd = algorithmDataDict["timeEnd"]
+    timeStart = algorithmDataDict["timeStart"]
+    data[ResultKeys.time] = timeEnd - timeStart
+    data[ResultKeys.memFinal] = algorithmDataDict["memFinal"]
+    data[ResultKeys.memOff] = algorithmDataDict["memOff"]
+    data[ResultKeys.memPeak] = algorithmDataDict["memPeak"]
+    #for algorithmEntry in algorithmDataDict:
+    #  if algorithmEntry["title"] == "SACA":
+          # We found values for algorithm!
+          
 
-    saCheckDataDict = dict["sub"][1]["stats"]
-    for checkEntry in saCheckDataDict:
-        if checkEntry["key"] == "check_result":
-            data[ResultKeys.checkResult] = checkEntry["value"]
+    #saCheckDataDict = dict["sub"][1]["stats"]
+    #for checkEntry in saCheckDataDict:
+    #    if checkEntry["key"] == "check_result":
+    #        data[ResultKeys.checkResult] = checkEntry["value"]
 
     numberOfPhases = 0
     allPhases = dict["sub"][0]["sub"]
@@ -316,18 +317,18 @@ class Config:
         else:
             algo_count = len(input_dict)
             self.bar_width = 160 / algo_count
-            if config_dict["repetitions"]:
-                self.repetition_count = config_dict["repetitions"]
-            if config_dict["prefix"]:
-                self.prefix = config_dict["prefix"]
+            #if config_dict["repetitions"]:
+            #    self.repetition_count = config_dict["repetitions"]
+            #if config_dict["prefix"]:
+            #    self.prefix = config_dict["prefix"]
 
         print(config_dict)
         
-        if config_dict["model_name"]:
-            self.cpu = config_dict["model_name"]
-        if config_dict["input"]:
-            self.input_file = config_dict["input"]
-            self.escaped_input_file = config_dict["input"].replace("_", "\_")
+        #if config_dict["model_name"]:
+        #    self.cpu = config_dict["model_name"]
+        #if config_dict["input"]:
+        #    self.input_file = config_dict["input"]
+        #    self.escaped_input_file = config_dict["input"].replace("_", "\_")
 
 def generate_tex(config_dict, input_dict):
     file_loader = FileSystemLoader('templates')

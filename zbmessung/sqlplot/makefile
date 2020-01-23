@@ -16,7 +16,7 @@ json:
 
 sql: json sqlplottools
 	for file in $(shell ls *.tex); do \
-		./sqlplottools/build/src/sp-process $$file; \
+		./sqlplottools/build/src/sqlplot-tools $$file; \
 	done;
 
 main: sql
