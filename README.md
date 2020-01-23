@@ -1,7 +1,10 @@
 # SACABench
 ## What is it?
-TBD
+SACABench is a suffix array construction algorithms benchmark framework that allows for an easy and reproducible benchmarks of suffix array construction algorithms (SACAs).
+It contains (to our best knowledge) all publicly available SACAs and new SACAs can easily be included in a few straight forward steps.
+In addition, this framework contains multiple new implementations of SACAs where we tried out techniques to improve existing implementations.
 
+Below, you find information on how to install and use SACABench, and also on how to include new SACAs in the framework.
 ## Dependencies
 
 On a fresh Ubuntu 18.04 LTS installation, the following dependencies need to be installed:
