@@ -16,6 +16,7 @@ target_link_libraries(saca_bench_lib INTERFACE
   $<$<CONFIG:Debug>:dl>
   tudocomp_stat
   reference_gsaca
+  reference_libsais
   reference_saca_deep_shallow
   divsufsort
   divsufsort64
