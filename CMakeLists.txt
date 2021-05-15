@@ -109,6 +109,7 @@ add_subdirectory(cuda)
 endif()
 
 add_subdirectory(external/reference_impls/gsaca)
+add_subdirectory(external/reference_impls/libsais)
 add_subdirectory(external/reference_impls/deep-shallow)
 add_subdirectory(external/reference_impls/divsufsort)
 add_subdirectory(external/reference_impls/divsufsort_par)

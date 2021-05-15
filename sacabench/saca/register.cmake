@@ -31,6 +31,12 @@ SACA_REGISTER("saca/external/sais_lite/sais_lite.hpp"
 SACA_REGISTER("saca/external/gsaca.hpp"
     sacabench::reference_sacas::gsaca)
 
+SACA_REGISTER("saca/external/libsais.hpp"
+    sacabench::reference_sacas::libsais_seq)
+
+SACA_REGISTER("saca/external/libsais.hpp"
+    sacabench::reference_sacas::libsais_par)
+
 SACA_REGISTER("saca/external/qsufsort/qsufsort_wrapper.hpp"
     sacabench::qsufsort_ext::qsufsort_ext)
 
